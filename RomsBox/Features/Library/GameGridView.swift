@@ -1,15 +1,20 @@
 import SwiftUI
 import SwiftData
+import RomsBoxModels
 import RomsBoxPersistence
+import RomsBoxEmulation
 
 struct GameGridView: View {
     @Query private var games: [Game]
     @Binding var selectedGame: Game?
     private let sortOrder: GameSortOrder
 
+    @Environment(LaunchCoordinator.self) private var launchCoordinator
+    @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+    @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
 
     private let cellScale: CGFloat
 
@@ -63,7 +68,12 @@ struct GameGridView: View {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(displayedGames) { game in
                         GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID, width: cellWidth)
-                            .onTapGesture { selectedGame = game }
+                            // Both gestures attached together let SwiftUI
+                            // disambiguate by tap count itself (waiting
+                            // briefly after one tap to see if a second
+                            // arrives) rather than needing to do that by hand.
+                            .onTapGesture(count: 2) { play(game) }
+                            .onTapGesture(count: 1) { selectedGame = game }
                             .contextMenu { contextMenuContent(for: game) }
                     }
                 }
@@ -73,8 +83,26 @@ struct GameGridView: View {
         .navigationTitle("")
     }
 
+    private func play(_ game: Game) {
+        selectedGame = game
+        launchCoordinator.play(game: game, retroArchStore: retroArchStore)
+    }
+
     @ViewBuilder
     private func contextMenuContent(for game: Game) -> some View {
+        let target = resolvedTarget(for: game)
+        let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
+        let isBusy = launchCoordinator.state == .launching || isRunningThisGame
+
+        Button(isRunningThisGame ? "Running…" : "Play") {
+            play(game)
+        }
+        .disabled(target == nil || isBusy)
+
+        launchWithMenu(for: game)
+
+        Divider()
+
         Button(game.favorite ? "Remove from Favorites" : "Add to Favorites") {
             game.favorite.toggle()
             try? game.modelContext?.save()
@@ -93,6 +121,55 @@ struct GameGridView: View {
             }
             .disabled(!theGamesDBCredentialsStore.isConfigured)
         }
+
+        Divider()
+
+        Button("Reveal in Finder") {
+            NSWorkspace.shared.activateFileViewerSelecting([game.romAbsoluteURL])
+        }
+    }
+
+    @ViewBuilder
+    private func launchWithMenu(for game: Game) -> some View {
+        Menu("Launch With") {
+            if game.launchOverride != nil {
+                Button("Use System Default") {
+                    game.launchOverride = nil
+                    try? game.modelContext?.save()
+                }
+                Divider()
+            }
+
+            if let systemID = game.system?.systemID {
+                let cores = retroArchStore.cores(for: systemID)
+                if !cores.isEmpty {
+                    Section("RetroArch Cores") {
+                        ForEach(cores) { core in
+                            Button(core.displayName) {
+                                game.launchOverride = .retroArchCore(coreIdentifier: core.coreIdentifier)
+                                try? game.modelContext?.save()
+                            }
+                        }
+                    }
+                }
+
+                let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) }
+                if !matchingProfiles.isEmpty {
+                    Section("Custom Emulators") {
+                        ForEach(matchingProfiles) { profile in
+                            Button(profile.name) {
+                                game.launchOverride = .emulatorProfile(id: profile.id)
+                                try? game.modelContext?.save()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func resolvedTarget(for game: Game) -> LaunchTargetReference? {
+        LaunchTargetResolution.resolve(gameOverride: game.launchOverride, systemDefault: game.system?.defaultLaunchTarget)
     }
 
     /// Games belonging to `selection` alone, ignoring the search box — used
