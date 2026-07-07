@@ -19,6 +19,7 @@ let package = Package(
         .target(name: "RomsBoxEmulation", dependencies: ["RomsBoxModels"]),
 
         .testTarget(name: "RomsBoxModelsTests", dependencies: ["RomsBoxModels"]),
+        .testTarget(name: "RomsBoxPersistenceTests", dependencies: ["RomsBoxPersistence"]),
         .testTarget(name: "RomsBoxLibraryScanningTests", dependencies: ["RomsBoxLibraryScanning"]),
         .testTarget(name: "RomsBoxEmulationTests", dependencies: ["RomsBoxEmulation"])
     ]
