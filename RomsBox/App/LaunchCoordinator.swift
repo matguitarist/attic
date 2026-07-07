@@ -20,6 +20,7 @@ final class LaunchCoordinator {
 
     private(set) var state: State = .idle
     private var currentSession: RunningGameSession?
+    private let zippedROMExtractor = ZippedROMExtractor()
 
     func play(game: Game, retroArchStore: RetroArchSettingsStore) {
         guard state == .idle || isFailed else { return }
@@ -62,8 +63,12 @@ final class LaunchCoordinator {
             guard let core = retroArchStore.core(withIdentifier: identifier) else {
                 throw LaunchError.coreNotInstalled(identifier)
             }
+            // Zipped ROMs need resolving to a real extracted file first —
+            // see ZippedROMExtractor for why passing the zip straight to
+            // RetroArch's command line is unreliable.
+            let romURL = zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
-                .launch(coreDylibURL: core.dylibURL, romURL: game.romAbsoluteURL)
+                .launch(coreDylibURL: core.dylibURL, romURL: romURL)
 
         case .emulatorProfile(let id):
             guard let profile = fetchEmulatorProfile(id: id, context: game.modelContext) else {
