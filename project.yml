@@ -2,7 +2,7 @@ name: RomsBox
 options:
   bundleIdPrefix: com.romsbox
   deploymentTarget:
-    macOS: "15.0"
+    macOS: "26.0"
   createIntermediateGroups: true
 
 packages:
@@ -24,7 +24,7 @@ targets:
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "6.0"
-        MACOSX_DEPLOYMENT_TARGET: "15.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: RomsBox/RomsBox.entitlements
         CODE_SIGN_STYLE: Automatic

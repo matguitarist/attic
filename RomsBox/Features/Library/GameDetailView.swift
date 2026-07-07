@@ -23,12 +23,13 @@ struct GameDetailView: View {
                     Text(game.title)
                         .font(.title2.bold())
 
-                    HStack {
+                    HStack(spacing: 10) {
                         Button {
                             game.favorite.toggle()
                         } label: {
                             Label(game.favorite ? "Favorited" : "Favorite", systemImage: game.favorite ? "star.fill" : "star")
                         }
+                        .buttonStyle(.glass)
 
                         playButton(for: game)
                         launchWithMenu(for: game)
@@ -84,7 +85,7 @@ struct GameDetailView: View {
         } label: {
             Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.glassProminent)
         .disabled(target == nil || isBusy)
         .help(target == nil ? "Set a default emulator for this system in Settings, or choose one below." : "")
     }
@@ -126,9 +127,10 @@ struct GameDetailView: View {
                 }
             }
         } label: {
-            Image(systemName: "chevron.down.circle")
+            Image(systemName: "ellipsis")
         }
-        .menuStyle(.borderlessButton)
+        .buttonStyle(.glass)
+        .menuStyle(.button)
         .fixedSize()
         .help("Launch with a specific core or emulator for just this game")
     }

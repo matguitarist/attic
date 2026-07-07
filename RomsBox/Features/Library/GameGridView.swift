@@ -7,7 +7,11 @@ struct GameGridView: View {
     @Binding var selectedGame: Game?
     private let sortOrder: GameSortOrder
 
-    private let columns = [GridItem(.adaptive(minimum: 140, maximum: 180), spacing: 16)]
+    // Fixed (not ranged) min==max width so every column — and therefore
+    // every row — lines up identically regardless of window width; the grid
+    // just fits however many equal-width columns fit.
+    private static let cellWidth: CGFloat = 160
+    private let columns = [GridItem(.adaptive(minimum: Self.cellWidth, maximum: Self.cellWidth), spacing: 20)]
 
     init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, selectedGame: Binding<Game?>) {
         // Recently Played always shows most-recent-first, regardless of the
