@@ -9,6 +9,8 @@ struct RomsBoxApp: App {
     @State private var launchCoordinator = LaunchCoordinator()
     @State private var romsRootsStore = RomsRootsStore()
     @State private var retroArchSettingsStore = RetroArchSettingsStore()
+    @State private var screenScraperCredentialsStore = ScreenScraperCredentialsStore()
+    @State private var scrapeCoordinator = ScrapeCoordinator()
 
     init() {
         let container: ModelContainer
@@ -28,6 +30,8 @@ struct RomsBoxApp: App {
                 .environment(launchCoordinator)
                 .environment(romsRootsStore)
                 .environment(retroArchSettingsStore)
+                .environment(screenScraperCredentialsStore)
+                .environment(scrapeCoordinator)
                 .frame(minWidth: 800, minHeight: 500)
         }
         .modelContainer(modelContainer)
@@ -38,6 +42,8 @@ struct RomsBoxApp: App {
                 .environment(launchCoordinator)
                 .environment(romsRootsStore)
                 .environment(retroArchSettingsStore)
+                .environment(screenScraperCredentialsStore)
+                .environment(scrapeCoordinator)
                 .modelContainer(modelContainer)
         }
     }

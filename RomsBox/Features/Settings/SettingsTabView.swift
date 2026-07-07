@@ -9,6 +9,8 @@ struct SettingsTabView: View {
                 .tabItem { Label("RetroArch", systemImage: "gamecontroller") }
             EmulatorProfilesSettingsView()
                 .tabItem { Label("Custom Emulators", systemImage: "puzzlepiece.extension") }
+            ScreenScraperSettingsView()
+                .tabItem { Label("ScreenScraper", systemImage: "photo.on.rectangle.angled") }
         }
     }
 }

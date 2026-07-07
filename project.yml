@@ -41,3 +41,5 @@ targets:
         product: RomsBoxLibraryScanning
       - package: RomsBoxKit
         product: RomsBoxEmulation
+      - package: RomsBoxKit
+        product: RomsBoxScraping

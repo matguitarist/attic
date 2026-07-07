@@ -9,6 +9,8 @@ struct GameDetailView: View {
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
+    @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
+    @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
 
     var body: some View {
@@ -36,9 +38,13 @@ struct GameDetailView: View {
 
                         playButton(for: game)
                         launchWithMenu(for: game)
+                        scrapeButton(for: game)
                     }
 
                     if case .failed(let message) = launchCoordinator.state {
+                        Text(message).foregroundStyle(.red).font(.callout)
+                    }
+                    if case .failed(let message) = scrapeCoordinator.state {
                         Text(message).foregroundStyle(.red).font(.callout)
                     }
 
@@ -143,6 +149,27 @@ struct GameDetailView: View {
         .menuStyle(.button)
         .fixedSize()
         .help("Launch with a specific core or emulator for just this game")
+    }
+
+    @ViewBuilder
+    private func scrapeButton(for game: Game) -> some View {
+        let isScraping = scrapeCoordinator.state == .scraping
+
+        Button {
+            Task {
+                await scrapeCoordinator.scrape(game: game, credentials: screenScraperCredentialsStore.credentials)
+            }
+        } label: {
+            if isScraping {
+                ProgressView().controlSize(.small)
+            } else {
+                Image(systemName: "photo.badge.magnifyingglass")
+            }
+        }
+        .buttonStyle(.glass)
+        .fixedSize()
+        .disabled(!screenScraperCredentialsStore.isConfigured || isScraping)
+        .help(screenScraperCredentialsStore.isConfigured ? "Scrape missing info from ScreenScraper" : "Add a ScreenScraper devID/devPassword in Settings first")
     }
 
     private func resolvedTarget(for game: Game) -> LaunchTargetReference? {
