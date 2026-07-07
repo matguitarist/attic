@@ -15,10 +15,13 @@ struct GameDetailView: View {
         if let game {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    // Fixed card size regardless of the system — real box art
+                    // proportions vary wildly (NES portrait, SNES landscape,
+                    // GBA near-square), so GameCoverArtView fits the whole
+                    // image inside this frame rather than cropping.
                     GameCoverArtView(url: game.coverArtURL, title: game.title)
-                        .aspectRatio(3.0 / 4.0, contentMode: .fit)
-                        .frame(maxWidth: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .frame(width: 220, height: 220 / (3.0 / 4.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                     Text(game.title)
                         .font(.title2.bold())
@@ -40,7 +43,14 @@ struct GameDetailView: View {
                     }
 
                     if let description = game.gameDescription, !description.isEmpty {
-                        Text(description)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Description")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            Text(description)
+                                .font(.callout)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
 
                     Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
