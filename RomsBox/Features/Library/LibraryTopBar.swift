@@ -19,7 +19,8 @@ struct LibraryTopBar: View {
             sortMenu
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 6)
+        .padding(.top, 4)
+        .padding(.bottom, 10)
     }
 
     private var zoomSlider: some View {
