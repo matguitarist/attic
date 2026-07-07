@@ -56,9 +56,39 @@ import Testing
         return romsSystemFolder
     }
 
+    /// Builds `<root>/ROMs/<system>/...` + `<root>/downloaded_media/<system>/...`
+    /// with NO `ES-DE/` wrapper folder — media is a direct sibling of ROMs.
+    /// Confirmed against a real user ES-DE library configured this way
+    /// (custom "app data directory" pointed at the same parent as ROMs).
+    private func makeFlatESDERoot(systemName: String = "snes") throws -> URL {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appending(path: "romsbox-esde-flat-fixture-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let romsSystemFolder = root.appending(path: "ROMs").appending(path: systemName)
+        try fm.createDirectory(at: romsSystemFolder, withIntermediateDirectories: true)
+        try Data().write(to: romsSystemFolder.appending(path: "Super Metroid.sfc"))
+
+        let mediaRoot = root.appending(path: "downloaded_media").appending(path: systemName)
+        try fm.createDirectory(at: mediaRoot.appending(path: "covers"), withIntermediateDirectories: true)
+        try Data().write(to: mediaRoot.appending(path: "covers/Super Metroid.png"))
+
+        return romsSystemFolder
+    }
+
     @Test func detectReturnsTrueWhenGamelistExistsInSiblingESDETree() throws {
         let folder = try makeESDERoot()
         #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+    }
+
+    @Test func detectReturnsTrueForFlatLayoutWithNoESDEWrapperFolder() throws {
+        let folder = try makeFlatESDERoot()
+        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+    }
+
+    @Test func resolvesCoverArtInFlatLayoutWithNoESDEWrapperFolder() throws {
+        let folder = try makeFlatESDERoot()
+        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let metroid = try #require(data.games.first { $0.romRelativePath == "Super Metroid.sfc" })
+        #expect(metroid.coverArtURL?.lastPathComponent == "Super Metroid.png")
     }
 
     @Test func detectReturnsTrueWhenOnlyDownloadedMediaExists() throws {
