@@ -50,8 +50,8 @@ struct LibraryBrowserView: View {
             ScrapeMissingButton(selection: selection ?? .allGames)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 2)
-        .padding(.bottom, 4)
+        .padding(.top, 0)
+        .padding(.bottom, 2)
     }
 
     private var selectionTitle: String {
