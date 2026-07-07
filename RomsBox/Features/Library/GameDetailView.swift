@@ -46,25 +46,27 @@ struct GameDetailView: View {
                         .frame(width: 220, height: 220 / (3.0 / 4.0))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-                    Text(game.title)
+                    TextField("Title", text: titleBinding(for: game))
+                        .textFieldStyle(.plain)
                         .font(.title2.bold())
 
-                    if let description = game.gameDescription, !description.isEmpty {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Description")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            Text(description)
-                                .font(.callout)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Description")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        TextEditor(text: optionalTextBinding(\.gameDescription, for: game))
+                            .font(.callout)
+                            .frame(minHeight: 90, maxHeight: 180)
+                            .scrollContentBackground(.hidden)
+                            .padding(6)
+                            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                     }
 
-                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
-                        detailRow("Developer", game.developer)
-                        detailRow("Publisher", game.publisher)
-                        detailRow("Genre", game.genre)
-                        detailRow("Players", game.players)
+                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+                        editableRow("Developer", optionalTextBinding(\.developer, for: game))
+                        editableRow("Publisher", optionalTextBinding(\.publisher, for: game))
+                        editableRow("Genre", optionalTextBinding(\.genre, for: game))
+                        editableRow("Players", optionalTextBinding(\.players, for: game))
                         if let releaseDate = game.releaseDate {
                             detailRow("Released", releaseDate.formatted(date: .abbreviated, time: .omitted))
                         }
@@ -199,5 +201,41 @@ struct GameDetailView: View {
                 Text(value)
             }
         }
+    }
+
+    private func editableRow(_ label: String, _ value: Binding<String>) -> some View {
+        GridRow {
+            Text(label).foregroundStyle(.secondary)
+            TextField(label, text: value)
+                .textFieldStyle(.plain)
+        }
+    }
+
+    /// `title` isn't optional, but keeping it in sync with `sortTitle` on
+    /// edit matters — that's the field sort actually runs on, and it has
+    /// no UI of its own, so a manually retitled game would otherwise sort
+    /// under its old name.
+    private func titleBinding(for game: Game) -> Binding<String> {
+        Binding(
+            get: { game.title },
+            set: { newValue in
+                game.title = newValue
+                game.sortTitle = newValue
+                try? game.modelContext?.save()
+            }
+        )
+    }
+
+    /// Empty text commits as `nil` rather than `""`, matching how scraped/
+    /// imported data represents "no value" — an editable field cleared out
+    /// by the user should look the same as one that was never populated.
+    private func optionalTextBinding(_ keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) -> Binding<String> {
+        Binding(
+            get: { game[keyPath: keyPath] ?? "" },
+            set: { newValue in
+                game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
+                try? game.modelContext?.save()
+            }
+        )
     }
 }
