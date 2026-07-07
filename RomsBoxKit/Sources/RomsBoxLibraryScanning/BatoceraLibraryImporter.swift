@@ -14,7 +14,7 @@ public struct BatoceraLibraryImporter: LibraryImporter {
     public func importSystem(systemFolderURL: URL, canonicalID: CanonicalSystemID) throws -> ImportedSystemData {
         let gamelistURL = systemFolderURL.appending(path: "gamelist.xml")
         let data = try Data(contentsOf: gamelistURL)
-        let games = try BatoceraGamelistParser(systemFolderURL: systemFolderURL).parse(data)
+        let games = try BatoceraGamelistParser.parse(data, systemFolderURL: systemFolderURL)
         return ImportedSystemData(
             canonicalID: canonicalID,
             libraryFormat: .batocera,
