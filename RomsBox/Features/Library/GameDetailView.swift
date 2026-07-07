@@ -11,6 +11,7 @@ struct GameDetailView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
+    @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
     @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
 
     var body: some View {
@@ -38,7 +39,7 @@ struct GameDetailView: View {
 
                         playButton(for: game)
                         launchWithMenu(for: game)
-                        scrapeButton(for: game)
+                        scrapeMenu(for: game)
                     }
 
                     if case .failed(let message) = launchCoordinator.state {
@@ -152,13 +153,19 @@ struct GameDetailView: View {
     }
 
     @ViewBuilder
-    private func scrapeButton(for game: Game) -> some View {
+    private func scrapeMenu(for game: Game) -> some View {
         let isScraping = scrapeCoordinator.state == .scraping
 
-        Button {
-            Task {
-                await scrapeCoordinator.scrape(game: game, credentials: screenScraperCredentialsStore.credentials)
+        Menu {
+            Button("ScreenScraper") {
+                Task { await scrapeCoordinator.scrapeUsingScreenScraper(game: game, credentials: screenScraperCredentialsStore.credentials) }
             }
+            .disabled(!screenScraperCredentialsStore.isConfigured)
+
+            Button("TheGamesDB") {
+                Task { await scrapeCoordinator.scrapeUsingTheGamesDB(game: game, credentials: theGamesDBCredentialsStore.credentials) }
+            }
+            .disabled(!theGamesDBCredentialsStore.isConfigured)
         } label: {
             if isScraping {
                 ProgressView().controlSize(.small)
@@ -167,9 +174,10 @@ struct GameDetailView: View {
             }
         }
         .buttonStyle(.glass)
+        .menuStyle(.button)
         .fixedSize()
-        .disabled(!screenScraperCredentialsStore.isConfigured || isScraping)
-        .help(screenScraperCredentialsStore.isConfigured ? "Scrape missing info from ScreenScraper" : "Add a ScreenScraper devID/devPassword in Settings first")
+        .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+        .help("Scrape missing info from ScreenScraper or TheGamesDB")
     }
 
     private func resolvedTarget(for game: Game) -> LaunchTargetReference? {

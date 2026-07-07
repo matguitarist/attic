@@ -1,9 +1,10 @@
 import Foundation
 
-/// The subset of ScreenScraper's `jeuInfos.php` response RomsBox cares
-/// about, already flattened out of ScreenScraper's region/language-array
-/// shape into single best-pick values.
-public struct ScreenScraperGameInfo: Sendable, Equatable {
+/// A scraper-agnostic result shape — both `ScreenScraperClient` and
+/// `TheGamesDBClient` flatten their own very different response formats
+/// down to this same struct, so the app layer merges scraped data into a
+/// `Game` the same way regardless of which source it came from.
+public struct ScrapedGameInfo: Sendable, Equatable {
     public var title: String?
     public var description: String?
     public var genre: String?
@@ -11,7 +12,9 @@ public struct ScreenScraperGameInfo: Sendable, Equatable {
     public var developer: String?
     public var publisher: String?
     public var releaseDate: Date?
-    /// Normalized to 0...1 (ScreenScraper's own "note" is 0...20).
+    /// Normalized to 0...1 regardless of source (ScreenScraper's own
+    /// "note" is 0...20; TheGamesDB doesn't provide a numeric rating at
+    /// all, so its mapper always leaves this nil).
     public var rating: Double?
     public var coverArtURL: URL?
 

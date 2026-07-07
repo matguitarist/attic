@@ -11,6 +11,8 @@ struct SettingsTabView: View {
                 .tabItem { Label("Custom Emulators", systemImage: "puzzlepiece.extension") }
             ScreenScraperSettingsView()
                 .tabItem { Label("ScreenScraper", systemImage: "photo.on.rectangle.angled") }
+            TheGamesDBSettingsView()
+                .tabItem { Label("TheGamesDB", systemImage: "text.book.closed") }
         }
     }
 }

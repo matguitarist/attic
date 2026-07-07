@@ -4,10 +4,11 @@ import RomsBoxModels
 import RomsBoxPersistence
 import RomsBoxScraping
 
-/// Fetches missing metadata/art for a single game from ScreenScraper and
-/// merges it in. Lives in the app layer (like `ScanCoordinator`) since it
-/// touches the SwiftData `Game` model directly, keeping `RomsBoxScraping`
-/// itself persistence-ignorant and independently testable.
+/// Fetches missing metadata/art for a single game from either ScreenScraper
+/// or TheGamesDB and merges it in. Lives in the app layer (like
+/// `ScanCoordinator`) since it touches the SwiftData `Game` model directly,
+/// keeping `RomsBoxScraping` itself persistence-ignorant and independently
+/// testable.
 @Observable
 @MainActor
 final class ScrapeCoordinator {
@@ -19,14 +20,17 @@ final class ScrapeCoordinator {
 
     private(set) var state: State = .idle
 
-    private let client: ScreenScraperClientProtocol
+    private let screenScraperClient: ScreenScraperClientProtocol
+    private let theGamesDBClient: TheGamesDBClientProtocol
     private let mediaCacheDirectory: URL
 
     init(
-        client: ScreenScraperClientProtocol = ScreenScraperClient(),
+        screenScraperClient: ScreenScraperClientProtocol = ScreenScraperClient(),
+        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(),
         mediaCacheDirectory: URL = ScrapeCoordinator.defaultMediaCacheDirectory
     ) {
-        self.client = client
+        self.screenScraperClient = screenScraperClient
+        self.theGamesDBClient = theGamesDBClient
         self.mediaCacheDirectory = mediaCacheDirectory
     }
 
@@ -40,19 +44,18 @@ final class ScrapeCoordinator {
     /// shouldn't silently get overwritten by a scrape, and re-scraping
     /// the same game repeatedly shouldn't keep re-downloading art it
     /// already has.
-    func scrape(game: Game, credentials: ScreenScraperCredentials, force: Bool = false) async {
+    func scrapeUsingScreenScraper(game: Game, credentials: ScreenScraperCredentials, force: Bool = false) async {
         guard let systemeID = ScreenScraperSystemID.systemeID(for: CanonicalSystemID(game.systemCanonicalID)) else {
             state = .failed("ScreenScraper doesn't support this system yet.")
             return
         }
 
         state = .scraping
-
         let romURL = game.romAbsoluteURL
         let romSizeBytes = (try? FileManager.default.attributesOfItem(atPath: romURL.path))?[.size] as? Int
 
         do {
-            let info = try await client.fetchGameInfo(
+            let info = try await screenScraperClient.fetchGameInfo(
                 romFilename: romURL.lastPathComponent,
                 romSizeBytes: romSizeBytes,
                 systemeID: systemeID,
@@ -67,7 +70,31 @@ final class ScrapeCoordinator {
         }
     }
 
-    private func apply(_ info: ScreenScraperGameInfo, to game: Game, force: Bool) async throws {
+    func scrapeUsingTheGamesDB(game: Game, credentials: TheGamesDBCredentials, force: Bool = false) async {
+        guard let platformID = TheGamesDBSystemID.platformID(for: CanonicalSystemID(game.systemCanonicalID)) else {
+            state = .failed("TheGamesDB doesn't support this system yet.")
+            return
+        }
+
+        state = .scraping
+        let romURL = game.romAbsoluteURL
+
+        do {
+            let info = try await theGamesDBClient.fetchGameInfo(
+                romFilename: romURL.lastPathComponent,
+                platformID: platformID,
+                credentials: credentials
+            )
+            try await apply(info, to: game, force: force)
+            state = .idle
+        } catch let error as TheGamesDBError {
+            state = .failed(Self.message(for: error))
+        } catch {
+            state = .failed(error.localizedDescription)
+        }
+    }
+
+    private func apply(_ info: ScrapedGameInfo, to game: Game, force: Bool) async throws {
         if force || game.gameDescription == nil { game.gameDescription = info.description ?? game.gameDescription }
         if force || game.developer == nil { game.developer = info.developer ?? game.developer }
         if force || game.publisher == nil { game.publisher = info.publisher ?? game.publisher }
@@ -109,6 +136,21 @@ final class ScrapeCoordinator {
             "Network error: \(detail)"
         case .malformedResponse(let detail):
             "Unexpected response from ScreenScraper: \(detail)"
+        }
+    }
+
+    private static func message(for error: TheGamesDBError) -> String {
+        switch error {
+        case .notConfigured:
+            "TheGamesDB isn't configured yet — add your API key in Settings."
+        case .noMatch:
+            "No match found on TheGamesDB for this ROM."
+        case .credentialsRejectedOrQuotaExceeded(let detail):
+            "TheGamesDB rejected the request (bad API key or quota exceeded): \(detail)"
+        case .network(let detail):
+            "Network error: \(detail)"
+        case .malformedResponse(let detail):
+            "Unexpected response from TheGamesDB: \(detail)"
         }
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Picks one best-match value out of ScreenScraper's region/language arrays
-/// and flattens the response into `ScreenScraperGameInfo`.
+/// and flattens the response into `ScrapedGameInfo`.
 enum ScreenScraperMapper {
     /// Preference order for region-tagged fields (names, release dates).
     private static let regionPreference = ["us", "wor", "eu", "ss", "jp"]
@@ -12,10 +12,10 @@ enum ScreenScraperMapper {
     /// front-cover image; box-3D is a rendered 3D box, used as a fallback.
     private static let coverMediaTypePreference = ["box-2D", "box-2D-side", "mixrsdb", "box-3D"]
 
-    static func map(_ envelope: ScreenScraperResponseEnvelope) -> ScreenScraperGameInfo? {
+    static func map(_ envelope: ScreenScraperResponseEnvelope) -> ScrapedGameInfo? {
         guard let jeu = envelope.response?.jeu else { return nil }
 
-        return ScreenScraperGameInfo(
+        return ScrapedGameInfo(
             title: bestRegional(jeu.noms)?.text,
             description: bestLocalized(jeu.synopsis)?.text,
             genre: jeu.genres?.first.flatMap { bestLocalized($0.noms)?.text },

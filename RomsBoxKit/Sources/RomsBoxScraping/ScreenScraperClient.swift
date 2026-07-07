@@ -8,7 +8,7 @@ public protocol ScreenScraperClientProtocol: Sendable {
         romSizeBytes: Int?,
         systemeID: Int,
         credentials: ScreenScraperCredentials
-    ) async throws -> ScreenScraperGameInfo
+    ) async throws -> ScrapedGameInfo
 }
 
 /// Matches a ROM by filename (+ optional file size) rather than by
@@ -34,7 +34,7 @@ public struct ScreenScraperClient: ScreenScraperClientProtocol {
         romSizeBytes: Int?,
         systemeID: Int,
         credentials: ScreenScraperCredentials
-    ) async throws -> ScreenScraperGameInfo {
+    ) async throws -> ScrapedGameInfo {
         guard credentials.isConfigured else { throw ScreenScraperError.notConfigured }
         guard let url = requestURL(romFilename: romFilename, romSizeBytes: romSizeBytes, systemeID: systemeID, credentials: credentials) else {
             throw ScreenScraperError.malformedResponse("could not build request URL")
