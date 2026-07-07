@@ -16,7 +16,7 @@ struct LibraryBrowserView: View {
         // which a three-column NavigationSplitView (sidebar/content/detail)
         // can't express since each column owns its own top-to-bottom
         // content independently. Grid and detail are instead a manual
-        // HSplitView living below one shared header, so they start at
+        // resizable split living below one shared header, so they start at
         // exactly the same height.
         NavigationSplitView {
             LibrarySidebarView(systems: systems, selection: $selection)
@@ -27,7 +27,7 @@ struct LibraryBrowserView: View {
                 LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder, cellScale: $cellScale)
                 BatchScrapeStatusBar()
                 Divider()
-                HSplitView {
+                ResizableHSplit(initialTrailingWidth: 320, minTrailingWidth: 260, maxTrailingWidth: 480) {
                     GameGridView(
                         selection: selection ?? .allGames,
                         searchText: searchText,
@@ -35,13 +35,8 @@ struct LibraryBrowserView: View {
                         cellScale: CGFloat(cellScale),
                         selectedGame: $selectedGame
                     )
-                    .frame(minWidth: 420)
-
-                    // Roughly matches the earlier 2:1 grid:detail ratio at
-                    // the window's default width, while staying
-                    // user-resizable via the HSplitView divider.
+                } trailing: {
                     GameDetailView(game: selectedGame)
-                        .frame(minWidth: 260, idealWidth: 320, maxWidth: 420)
                 }
             }
         }
@@ -55,7 +50,7 @@ struct LibraryBrowserView: View {
             ScrapeMissingButton(selection: selection ?? .allGames)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 14)
+        .padding(.top, 2)
         .padding(.bottom, 4)
     }
 
