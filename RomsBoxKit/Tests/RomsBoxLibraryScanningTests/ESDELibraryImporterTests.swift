@@ -20,6 +20,20 @@ import Testing
     </gameList>
     """
 
+    /// A fresh, empty directory used as the injected "home directory" for
+    /// every `ESDELibraryImporter` instance below, so its real-`~/ES-DE`
+    /// fallback candidate never has anything to find. Without this, tests
+    /// using realistic system short names ("nes", "snes", "psx", "gba" —
+    /// all genuinely scraped in `~/ES-DE/gamelists` on the machine this was
+    /// developed on) would pass or fail based on that ambient state instead
+    /// of the fixture actually being exercised.
+    private func isolatedHome() throws -> URL {
+        let home = FileManager.default.temporaryDirectory
+            .appending(path: "romsbox-esde-isolated-home-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
+        return home
+    }
+
     /// Builds `<root>/ROMs/<system>/...` + `<root>/ES-DE/{gamelists,downloaded_media}/<system>/...`
     /// — the default ES-DE install layout, where ES-DE's app data tree is a
     /// sibling of the ROMs root rather than nested inside a system folder.
@@ -76,24 +90,25 @@ import Testing
 
     @Test func detectReturnsTrueWhenGamelistExistsInSiblingESDETree() throws {
         let folder = try makeESDERoot()
-        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: folder))
     }
 
     @Test func detectReturnsTrueForFlatLayoutWithNoESDEWrapperFolder() throws {
         let folder = try makeFlatESDERoot()
-        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: folder))
     }
 
     @Test func resolvesCoverArtInFlatLayoutWithNoESDEWrapperFolder() throws {
         let folder = try makeFlatESDERoot()
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
         let metroid = try #require(data.games.first { $0.romRelativePath == "Super Metroid.sfc" })
         #expect(metroid.coverArtURL?.lastPathComponent == "Super Metroid.png")
     }
 
     @Test func detectReturnsTrueWhenOnlyDownloadedMediaExists() throws {
         let folder = try makeESDERoot(includeGamelist: false, includeMedia: true)
-        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: folder))
     }
 
     /// Confirmed against a real ES-DE library: a system folder can be
@@ -103,14 +118,14 @@ import Testing
     /// hiding a populated system neither convention has positively claimed.
     @Test func detectReturnsTrueForPopulatedButEntirelyUnscrapedFolder() throws {
         let folder = try makeESDERoot(includeGamelist: false, includeMedia: false)
-        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: folder))
     }
 
     @Test func detectReturnsFalseForACompletelyEmptyFolder() throws {
         let fm = FileManager.default
         let root = fm.temporaryDirectory.appending(path: "romsbox-esde-empty-\(UUID().uuidString)", directoryHint: .isDirectory)
         try fm.createDirectory(at: root, withIntermediateDirectories: true)
-        #expect(ESDELibraryImporter().detect(systemFolderURL: root) == false)
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: root) == false)
     }
 
     @Test func detectReturnsFalseWhenOnlyASystemInfoFileIsPresent() throws {
@@ -120,7 +135,7 @@ import Testing
         let root = fm.temporaryDirectory.appending(path: "romsbox-esde-systeminfo-only-\(UUID().uuidString)", directoryHint: .isDirectory)
         try fm.createDirectory(at: root, withIntermediateDirectories: true)
         try Data().write(to: root.appending(path: "systeminfo.txt"))
-        #expect(ESDELibraryImporter().detect(systemFolderURL: root) == false)
+        #expect(ESDELibraryImporter(homeDirectoryURL: try isolatedHome()).detect(systemFolderURL: root) == false)
     }
 
     @Test func systemInfoFileIsNotImportedAsABareGame() throws {
@@ -130,14 +145,16 @@ import Testing
         try Data().write(to: root.appending(path: "systeminfo.txt"))
         try Data().write(to: root.appending(path: "Sonic the Hedgehog.md"))
 
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: root, canonicalID: .genesis)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: root, canonicalID: .genesis)
         #expect(data.games.count == 1)
         #expect(data.games.first?.romRelativePath == "Sonic the Hedgehog.md")
     }
 
     @Test func importParsesScrapedGameFromGamelist() throws {
         let folder = try makeESDERoot()
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
 
         #expect(data.canonicalID == .snes)
         #expect(data.libraryFormat == .esde)
@@ -152,17 +169,20 @@ import Testing
 
     @Test func coverArtPrefersMiximageOverCover() throws {
         let folder = try makeESDERoot()
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let importer = ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+        let data = try importer.importSystem(systemFolderURL: folder, canonicalID: .snes)
         let metroid = try #require(data.games.first { $0.title == "Super Metroid" })
 
-        let expectedMiximage = ESDELibraryImporter.esdeRootURL(forSystemFolderURL: folder)
-            .appending(path: "downloaded_media/snes/miximages/Super Metroid.png")
+        // makeESDERoot() creates media under <root>/ES-DE/downloaded_media/snes.
+        let esdeRoot = folder.deletingLastPathComponent().deletingLastPathComponent().appending(path: "ES-DE")
+        let expectedMiximage = esdeRoot.appending(path: "downloaded_media/snes/miximages/Super Metroid.png")
         #expect(metroid.coverArtURL == expectedMiximage)
     }
 
     @Test func resolvesTitleScreenAndVideoByFilename() throws {
         let folder = try makeESDERoot()
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
         let metroid = try #require(data.games.first { $0.title == "Super Metroid" })
 
         #expect(metroid.titleScreenURL?.lastPathComponent == "Super Metroid.png")
@@ -171,7 +191,8 @@ import Testing
 
     @Test func unscrapedROMFallsBackToBareRecordWithFilenameTitle() throws {
         let folder = try makeESDERoot()
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
 
         #expect(data.games.count == 2)
         let chrono = try #require(data.games.first { $0.romRelativePath == "Chrono Trigger.sfc" })
@@ -182,7 +203,8 @@ import Testing
 
     @Test func importWithNoGamelistFallsBackEntirelyToBareRecords() throws {
         let folder = try makeESDERoot(includeGamelist: false, includeMedia: true)
-        let data = try ESDELibraryImporter().importSystem(systemFolderURL: folder, canonicalID: .snes)
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
 
         #expect(data.games.count == 2)
         #expect(data.games.allSatisfy { $0.description == nil })
@@ -208,7 +230,7 @@ import Testing
         try "<gameList><game><path>./Mario.nes</path><name>Mario</name></game></gameList>"
             .write(to: nesFolder.appending(path: "gamelist.xml"), atomically: true, encoding: .utf8)
 
-        let esde = ESDELibraryImporter()
+        let esde = ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
         let batocera = BatoceraLibraryImporter()
 
         #expect(esde.detect(systemFolderURL: snesFolder) == true)

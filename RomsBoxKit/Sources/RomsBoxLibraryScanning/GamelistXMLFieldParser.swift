@@ -16,12 +16,30 @@ final class GamelistXMLFieldParser: NSObject, XMLParserDelegate {
     private var insideGame = false
 
     func parse(_ data: Data) throws -> [[String: String]] {
-        let parser = XMLParser(data: data)
+        let parser = XMLParser(data: Self.sanitized(data))
         parser.delegate = self
         guard parser.parse() else {
             throw GamelistXMLParserError.malformedXML(parser.parserError)
         }
         return games
+    }
+
+    /// Some real ES-DE `gamelist.xml` files have a sibling
+    /// `<alternativeEmulator>` element *before* `<gameList>`, making the
+    /// file not a single well-formed XML document with one root element —
+    /// confirmed against a real, otherwise-valid 789-game SNES gamelist.xml
+    /// that fails to parse for exactly this reason (Foundation's XMLParser
+    /// reports "junk after document element" once it hits `<gameList>`,
+    /// having already treated `<alternativeEmulator>` as the whole
+    /// document). ES-DE's own parser evidently tolerates this; strip
+    /// anything before the actual `<gameList` root so real files parse.
+    private static func sanitized(_ data: Data) -> Data {
+        guard let string = String(data: data, encoding: .utf8),
+              let gameListRange = string.range(of: "<gameList") else {
+            return data
+        }
+        let sanitized = "<?xml version=\"1.0\"?>\n" + string[gameListRange.lowerBound...]
+        return Data(sanitized.utf8)
     }
 
     func parser(

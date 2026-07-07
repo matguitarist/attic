@@ -2,33 +2,41 @@ import Foundation
 import RomsBoxModels
 
 /// ES-DE convention: `gamelist.xml` lives in a separate tree at
-/// `<ES-DE root>/gamelists/<system>/gamelist.xml`, not inside the ROMs
-/// folder itself (contrast `BatoceraLibraryImporter`, where it's colocated
-/// with the ROMs). Media is matched purely by filename against
-/// `<ES-DE root>/downloaded_media/<system>/<type>/`.
+/// `<root>/gamelists/<system>/gamelist.xml`, not inside the ROMs folder
+/// itself (contrast `BatoceraLibraryImporter`, where it's colocated with
+/// the ROMs). Media is matched purely by filename against
+/// `<root>/downloaded_media/<system>/<type>/`.
 ///
-/// The ES-DE root is located by probing two real-world layouts against the
-/// ROMs root's parent directory: ES-DE's packaged-default sibling folder
-/// (`~/ROMs` and `~/ES-DE` side by side), and the equally common setup where
-/// a user points ES-DE's "app data directory" *at* the same parent that
-/// holds `ROMs/` directly (e.g. `~/Emulation/{ROMs,downloaded_media,
-/// gamelists}` with no extra `ES-DE/` path component) — confirmed against a
-/// real ES-DE library that uses the latter. A fully independent custom
-/// location unrelated to the ROMs root's parent is out of MVP scope.
+/// Critically, the gamelists root and the downloaded_media root are
+/// resolved **independently** — confirmed against a real library where
+/// ROMs and downloaded_media both live under a customized `~/Emulation`
+/// folder, while gamelists (never moved) stayed at ES-DE's untouched
+/// default `~/ES-DE/gamelists`. Tying both to one shared "ES-DE root" (an
+/// earlier version of this importer did) silently found the media but
+/// missed all the real scraped metadata, since the two trees aren't
+/// actually in the same place. Each is resolved by probing the same three
+/// candidate roots — the packaged-default sibling of the ROMs root
+/// (`~/ROMs` next to `~/ES-DE`), the flat layout where ROMs/downloaded_media/
+/// gamelists all share one parent directly, and ES-DE's literal untouched
+/// default `~/ES-DE` — independently picking whichever candidate actually
+/// has a `<gamelists|downloaded_media>/<system>` subfolder for each concern.
 public struct ESDELibraryImporter: LibraryImporter {
-    public init() {}
+    /// Overridable so tests never depend on the real machine's actual home
+    /// directory contents — on the machine this was developed on, `~/ES-DE`
+    /// has real scraped data for most MVP system short names, which would
+    /// otherwise make fixture-based tests pass or fail based on ambient
+    /// state rather than the fixture actually being exercised.
+    private let homeDirectoryURL: URL
+
+    public init(homeDirectoryURL: URL = FileManager.default.homeDirectoryForCurrentUser) {
+        self.homeDirectoryURL = homeDirectoryURL
+    }
 
     public func detect(systemFolderURL: URL) -> Bool {
-        let systemName = systemFolderURL.lastPathComponent
-        let esdeRoot = Self.esdeRootURL(forSystemFolderURL: systemFolderURL)
-
-        if FileManager.default.fileExists(atPath: Self.gamelistURL(esdeRoot: esdeRoot, systemName: systemName).path) {
+        if gamelistURL(forSystemFolderURL: systemFolderURL) != nil {
             return true
         }
-
-        var isDirectory: ObjCBool = false
-        let mediaDir = esdeRoot.appending(path: "downloaded_media").appending(path: systemName)
-        if FileManager.default.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+        if mediaRoot(forSystemFolderURL: systemFolderURL) != nil {
             return true
         }
 
@@ -47,12 +55,12 @@ public struct ESDELibraryImporter: LibraryImporter {
 
     public func importSystem(systemFolderURL: URL, canonicalID: CanonicalSystemID) throws -> ImportedSystemData {
         let systemName = systemFolderURL.lastPathComponent
-        let esdeRoot = Self.esdeRootURL(forSystemFolderURL: systemFolderURL)
-        let mediaResolver = ESDEMediaResolver(esdeRoot: esdeRoot, systemName: systemName)
-        let gamelistURL = Self.gamelistURL(esdeRoot: esdeRoot, systemName: systemName)
+        let resolvedMediaRoot = mediaRoot(forSystemFolderURL: systemFolderURL)
+            ?? candidateRoots(forSystemFolderURL: systemFolderURL)[0]
+        let mediaResolver = ESDEMediaResolver(esdeRoot: resolvedMediaRoot, systemName: systemName)
 
         var games: [ImportedGameRecord] = []
-        if FileManager.default.fileExists(atPath: gamelistURL.path) {
+        if let gamelistURL = gamelistURL(forSystemFolderURL: systemFolderURL) {
             let data = try Data(contentsOf: gamelistURL)
             games = try ESDEGamelistMapper.parse(data, mediaResolver: mediaResolver)
         }
@@ -72,31 +80,44 @@ public struct ESDELibraryImporter: LibraryImporter {
         )
     }
 
-    static func esdeRootURL(forSystemFolderURL systemFolderURL: URL) -> URL {
+    private func candidateRoots(forSystemFolderURL systemFolderURL: URL) -> [URL] {
         let sharedParent = systemFolderURL
             .deletingLastPathComponent() // ROMs root, e.g. ~/ROMs or ~/Emulation/ROMs
             .deletingLastPathComponent() // shared parent, e.g. ~ or ~/Emulation
 
-        let candidates = [
+        return [
             sharedParent.appending(path: "ES-DE"), // packaged default: ~/ES-DE next to ~/ROMs
-            sharedParent // flat layout: ~/Emulation/{ROMs,downloaded_media,gamelists}
+            sharedParent, // flat layout: ~/Emulation/{ROMs,downloaded_media,gamelists}
+            homeDirectoryURL.appending(path: "ES-DE") // ES-DE's untouched default
         ]
-        return candidates.first(where: looksLikeESDERoot) ?? candidates[0]
     }
 
-    private static func looksLikeESDERoot(_ root: URL) -> Bool {
-        let fm = FileManager.default
-        var isDirectory: ObjCBool = false
-        for name in ["downloaded_media", "gamelists"] {
-            if fm.fileExists(atPath: root.appending(path: name).path, isDirectory: &isDirectory), isDirectory.boolValue {
-                return true
+    /// First candidate root with a `gamelists/<system>/gamelist.xml`.
+    private func gamelistURL(forSystemFolderURL systemFolderURL: URL) -> URL? {
+        let systemName = systemFolderURL.lastPathComponent
+        for root in candidateRoots(forSystemFolderURL: systemFolderURL) {
+            let url = root.appending(path: "gamelists").appending(path: systemName).appending(path: "gamelist.xml")
+            if FileManager.default.fileExists(atPath: url.path) {
+                return url
             }
         }
-        return false
+        return nil
     }
 
-    private static func gamelistURL(esdeRoot: URL, systemName: String) -> URL {
-        esdeRoot.appending(path: "gamelists").appending(path: systemName).appending(path: "gamelist.xml")
+    /// First candidate root with a `downloaded_media/<system>` folder,
+    /// resolved independently of `gamelistURL` since the two don't have to
+    /// live in the same place.
+    private func mediaRoot(forSystemFolderURL systemFolderURL: URL) -> URL? {
+        let systemName = systemFolderURL.lastPathComponent
+        let fm = FileManager.default
+        var isDirectory: ObjCBool = false
+        for root in candidateRoots(forSystemFolderURL: systemFolderURL) {
+            let mediaDir = root.appending(path: "downloaded_media").appending(path: systemName)
+            if fm.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                return root
+            }
+        }
+        return nil
     }
 
     private static func romFiles(in systemFolderURL: URL) -> [String] {
