@@ -5,27 +5,34 @@ import RomsBoxScraping
 /// ScreenScraper devID/devPassword (registered client software, required
 /// by the API) and an optional personal ssid/sspassword — all stored in
 /// the Keychain, never UserDefaults, since these are real account secrets.
+/// Persisted via the shared `ScraperCredentialsVault` (one Keychain item
+/// for all scraper credentials) rather than one item per field.
 @Observable
 @MainActor
 final class ScreenScraperCredentialsStore {
-    private static let devIDAccount = "devID"
-    private static let devPasswordAccount = "devPassword"
-    private static let userIDAccount = "userID"
-    private static let userPasswordAccount = "userPassword"
+    private let vaultStore: ScraperCredentialsVaultStore
 
-    private let keychain: KeychainStoring
+    var devID: String { didSet { persist() } }
+    var devPassword: String { didSet { persist() } }
+    var userID: String { didSet { persist() } }
+    var userPassword: String { didSet { persist() } }
 
-    var devID: String { didSet { keychain.write(account: Self.devIDAccount, value: devID) } }
-    var devPassword: String { didSet { keychain.write(account: Self.devPasswordAccount, value: devPassword) } }
-    var userID: String { didSet { keychain.write(account: Self.userIDAccount, value: userID) } }
-    var userPassword: String { didSet { keychain.write(account: Self.userPasswordAccount, value: userPassword) } }
+    init(vaultStore: ScraperCredentialsVaultStore = ScraperCredentialsVaultStore()) {
+        self.vaultStore = vaultStore
+        let vault = vaultStore.load()
+        self.devID = vault.screenScraperDevID
+        self.devPassword = vault.screenScraperDevPassword
+        self.userID = vault.screenScraperUserID
+        self.userPassword = vault.screenScraperUserPassword
+    }
 
-    init(keychain: KeychainStoring = KeychainStore()) {
-        self.keychain = keychain
-        self.devID = keychain.read(account: Self.devIDAccount) ?? ""
-        self.devPassword = keychain.read(account: Self.devPasswordAccount) ?? ""
-        self.userID = keychain.read(account: Self.userIDAccount) ?? ""
-        self.userPassword = keychain.read(account: Self.userPasswordAccount) ?? ""
+    private func persist() {
+        var vault = vaultStore.load()
+        vault.screenScraperDevID = devID
+        vault.screenScraperDevPassword = devPassword
+        vault.screenScraperUserID = userID
+        vault.screenScraperUserPassword = userPassword
+        vaultStore.save(vault)
     }
 
     var credentials: ScreenScraperCredentials {

@@ -2,20 +2,25 @@ import Foundation
 import Observation
 import RomsBoxScraping
 
-/// TheGamesDB's single self-serve API key, stored in the Keychain (not
-/// UserDefaults) alongside `ScreenScraperCredentialsStore`'s secrets.
+/// TheGamesDB's single self-serve API key, stored in the Keychain via the
+/// shared `ScraperCredentialsVault` alongside `ScreenScraperCredentialsStore`'s
+/// secrets (one Keychain item for all scraper credentials, not one per field).
 @Observable
 @MainActor
 final class TheGamesDBCredentialsStore {
-    private static let apiKeyAccount = "theGamesDBApiKey"
+    private let vaultStore: ScraperCredentialsVaultStore
 
-    private let keychain: KeychainStoring
+    var apiKey: String { didSet { persist() } }
 
-    var apiKey: String { didSet { keychain.write(account: Self.apiKeyAccount, value: apiKey) } }
+    init(vaultStore: ScraperCredentialsVaultStore = ScraperCredentialsVaultStore()) {
+        self.vaultStore = vaultStore
+        self.apiKey = vaultStore.load().theGamesDBApiKey
+    }
 
-    init(keychain: KeychainStoring = KeychainStore()) {
-        self.keychain = keychain
-        self.apiKey = keychain.read(account: Self.apiKeyAccount) ?? ""
+    private func persist() {
+        var vault = vaultStore.load()
+        vault.theGamesDBApiKey = apiKey
+        vaultStore.save(vault)
     }
 
     var credentials: TheGamesDBCredentials {
