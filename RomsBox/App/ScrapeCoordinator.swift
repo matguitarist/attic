@@ -155,12 +155,29 @@ final class ScrapeCoordinator {
         batchState = .finished(scraped: scraped, alreadyPresent: games.count - missing.count, failed: failed)
     }
 
+    /// Scraped results are kept app-only, never written back into
+    /// gamelist.xml — but still need protecting from a *future* rescan,
+    /// which re-imports straight from gamelist.xml and would otherwise
+    /// silently erase whatever a scrape just filled in. Setting the same
+    /// `metadataManuallyEdited` flag GameDetailView's editable fields use
+    /// covers both cases with one mechanism.
     private func apply(_ info: ScrapedGameInfo, to game: Game, force: Bool) async throws {
-        if force || game.gameDescription == nil { game.gameDescription = info.description ?? game.gameDescription }
-        if force || game.developer == nil { game.developer = info.developer ?? game.developer }
-        if force || game.publisher == nil { game.publisher = info.publisher ?? game.publisher }
-        if force || game.genre == nil { game.genre = info.genre ?? game.genre }
-        if force || game.players == nil { game.players = info.players ?? game.players }
+        var changedProtectedField = false
+        if force || game.gameDescription == nil {
+            if info.description != nil { game.gameDescription = info.description; changedProtectedField = true }
+        }
+        if force || game.developer == nil {
+            if info.developer != nil { game.developer = info.developer; changedProtectedField = true }
+        }
+        if force || game.publisher == nil {
+            if info.publisher != nil { game.publisher = info.publisher; changedProtectedField = true }
+        }
+        if force || game.genre == nil {
+            if info.genre != nil { game.genre = info.genre; changedProtectedField = true }
+        }
+        if force || game.players == nil {
+            if info.players != nil { game.players = info.players; changedProtectedField = true }
+        }
         if force || game.releaseDate == nil { game.releaseDate = info.releaseDate ?? game.releaseDate }
         if force || game.rating == nil { game.rating = info.rating ?? game.rating }
 
@@ -168,6 +185,10 @@ final class ScrapeCoordinator {
             if let localURL = try? await downloadCoverArt(from: remoteURL, systemID: game.systemCanonicalID, romFilename: game.romAbsoluteURL.lastPathComponent) {
                 game.coverArtPath = localURL.path
             }
+        }
+
+        if changedProtectedField {
+            game.metadataManuallyEdited = true
         }
 
         try? game.modelContext?.save()
