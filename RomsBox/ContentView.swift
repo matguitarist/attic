@@ -21,5 +21,7 @@ struct ContentView: View {
     ContentView()
         .modelContainer(container)
         .environment(ScanCoordinator(libraryStore: LibraryStore(modelContainer: container)))
+        .environment(LaunchCoordinator())
         .environment(RomsRootsStore(userDefaults: UserDefaults(suiteName: "preview")!))
+        .environment(RetroArchSettingsStore(userDefaults: UserDefaults(suiteName: "preview")!))
 }

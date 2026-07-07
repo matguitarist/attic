@@ -6,7 +6,9 @@ import RomsBoxPersistence
 struct RomsBoxApp: App {
     let modelContainer: ModelContainer
     @State private var scanCoordinator: ScanCoordinator
+    @State private var launchCoordinator = LaunchCoordinator()
     @State private var romsRootsStore = RomsRootsStore()
+    @State private var retroArchSettingsStore = RetroArchSettingsStore()
 
     init() {
         let container: ModelContainer
@@ -23,15 +25,20 @@ struct RomsBoxApp: App {
         WindowGroup {
             ContentView()
                 .environment(scanCoordinator)
+                .environment(launchCoordinator)
                 .environment(romsRootsStore)
+                .environment(retroArchSettingsStore)
                 .frame(minWidth: 800, minHeight: 500)
         }
         .modelContainer(modelContainer)
 
         Settings {
-            GeneralSettingsView()
+            SettingsTabView()
                 .environment(scanCoordinator)
+                .environment(launchCoordinator)
                 .environment(romsRootsStore)
+                .environment(retroArchSettingsStore)
+                .modelContainer(modelContainer)
         }
     }
 }

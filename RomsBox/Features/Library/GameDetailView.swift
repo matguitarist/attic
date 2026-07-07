@@ -1,8 +1,12 @@
 import SwiftUI
 import RomsBoxPersistence
+import RomsBoxEmulation
 
 struct GameDetailView: View {
     let game: Game?
+
+    @Environment(LaunchCoordinator.self) private var launchCoordinator
+    @Environment(RetroArchSettingsStore.self) private var retroArchStore
 
     var body: some View {
         if let game {
@@ -23,14 +27,11 @@ struct GameDetailView: View {
                             Label(game.favorite ? "Favorited" : "Favorite", systemImage: game.favorite ? "star.fill" : "star")
                         }
 
-                        Button {
-                            // Wired to RetroArch / custom emulator launching in Phase 7-8.
-                        } label: {
-                            Label("Play", systemImage: "play.fill")
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(true)
-                        .help("Launching a game arrives in Phase 7")
+                        playButton(for: game)
+                    }
+
+                    if case .failed(let message) = launchCoordinator.state {
+                        Text(message).foregroundStyle(.red).font(.callout)
                     }
 
                     if let description = game.gameDescription, !description.isEmpty {
@@ -63,6 +64,28 @@ struct GameDetailView: View {
                 description: Text("Select a game to see its details.")
             )
         }
+    }
+
+    @ViewBuilder
+    private func playButton(for game: Game) -> some View {
+        let core = resolvedCore(for: game)
+        let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
+        let isBusy = launchCoordinator.state == .launching || isRunningThisGame
+
+        Button {
+            guard let core else { return }
+            launchCoordinator.playWithRetroArch(game: game, core: core, retroArchBinaryURL: retroArchStore.binaryURL)
+        } label: {
+            Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(core == nil || isBusy)
+        .help(core == nil ? "Set a default RetroArch core for this system in Settings \u{2192} RetroArch" : "")
+    }
+
+    private func resolvedCore(for game: Game) -> RetroArchCoreInfo? {
+        guard case .retroArchCore(let identifier) = game.system?.defaultLaunchTarget else { return nil }
+        return retroArchStore.core(withIdentifier: identifier)
     }
 
     @ViewBuilder
