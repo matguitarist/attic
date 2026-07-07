@@ -11,43 +11,52 @@ struct LibraryBrowserView: View {
     @AppStorage("gridCellScale") private var cellScale: Double = 1.0
 
     var body: some View {
+        // Two columns, not three — the title/search/sort header needs to
+        // span the full width above *both* the grid and the detail panel,
+        // which a three-column NavigationSplitView (sidebar/content/detail)
+        // can't express since each column owns its own top-to-bottom
+        // content independently. Grid and detail are instead a manual
+        // HSplitView living below one shared header, so they start at
+        // exactly the same height.
         NavigationSplitView {
             LibrarySidebarView(systems: systems, selection: $selection)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
-        } content: {
+        } detail: {
             VStack(spacing: 0) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(selectionTitle)
-                        .font(.largeTitle.bold())
-                    Spacer()
-                    ScrapeMissingButton(selection: selection ?? .allGames)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 14)
-                .padding(.bottom, 4)
-
+                header
                 LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder, cellScale: $cellScale)
                 BatchScrapeStatusBar()
                 Divider()
-                GameGridView(
-                    selection: selection ?? .allGames,
-                    searchText: searchText,
-                    sortOrder: sortOrder,
-                    cellScale: CGFloat(cellScale),
-                    selectedGame: $selectedGame
-                )
+                HSplitView {
+                    GameGridView(
+                        selection: selection ?? .allGames,
+                        searchText: searchText,
+                        sortOrder: sortOrder,
+                        cellScale: CGFloat(cellScale),
+                        selectedGame: $selectedGame
+                    )
+                    .frame(minWidth: 420)
+
+                    // Roughly matches the earlier 2:1 grid:detail ratio at
+                    // the window's default width, while staying
+                    // user-resizable via the HSplitView divider.
+                    GameDetailView(game: selectedGame)
+                        .frame(minWidth: 260, idealWidth: 320, maxWidth: 420)
+                }
             }
-            // Content:detail defaults to roughly 2:1 (2/3 vs 1/3 of the pane).
-            .navigationSplitViewColumnWidth(min: 420, ideal: 640)
-        } detail: {
-            GameDetailView(game: selectedGame)
-                // Capped so the detail/inspector pane doesn't silently
-                // absorb all leftover window width on larger screens —
-                // NavigationSplitView otherwise grows the trailing column
-                // to fill any space beyond the sum of every column's ideal
-                // width, which left detail far wider than the grid.
-                .navigationSplitViewColumnWidth(min: 260, ideal: 320, max: 420)
         }
+    }
+
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(selectionTitle)
+                .font(.largeTitle.bold())
+            Spacer()
+            ScrapeMissingButton(selection: selection ?? .allGames)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 4)
     }
 
     private var selectionTitle: String {
