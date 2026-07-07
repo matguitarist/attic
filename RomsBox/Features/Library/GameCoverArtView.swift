@@ -13,11 +13,19 @@ import SwiftUI
 struct GameCoverArtView: View {
     let url: URL?
     let title: String
+    /// Grid cells keep the filler card (`true`) so every cell has the same
+    /// uniform "box" footprint regardless of art shape. The detail panel
+    /// turns it off for a cleaner look now that the art is shown bigger
+    /// and centered on its own, where a visible card edge around
+    /// differently-shaped art reads as clutter rather than alignment.
+    var showBackground: Bool = true
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(.quaternary.opacity(0.4))
+            if showBackground {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(.quaternary.opacity(0.4))
+            }
 
             if let url {
                 AsyncImage(url: url) { phase in
@@ -25,7 +33,7 @@ struct GameCoverArtView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .padding(8)
+                            .padding(showBackground ? 8 : 0)
                     } else {
                         placeholderGlyph
                     }

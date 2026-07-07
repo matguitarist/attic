@@ -38,13 +38,16 @@ struct GameDetailView: View {
                         Text(message).foregroundStyle(.red).font(.callout)
                     }
 
-                    // Fixed card size regardless of the system — real box art
+                    // Fixed frame regardless of the system — real box art
                     // proportions vary wildly (NES portrait, SNES landscape,
                     // GBA near-square), so GameCoverArtView fits the whole
-                    // image inside this frame rather than cropping.
-                    GameCoverArtView(url: game.coverArtURL, title: game.title)
-                        .frame(width: 220, height: 220 / (3.0 / 4.0))
+                    // image inside this frame rather than cropping. No card
+                    // background here (unlike the grid) since at this size
+                    // it just reads as an unnecessary border around the art.
+                    GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
+                        .frame(width: 260, height: 260 / (3.0 / 4.0))
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .frame(maxWidth: .infinity, alignment: .center)
 
                     TextField("Title", text: titleBinding(for: game))
                         .textFieldStyle(.plain)
