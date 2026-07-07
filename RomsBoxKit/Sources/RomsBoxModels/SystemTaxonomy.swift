@@ -14,8 +14,10 @@ public struct SystemDefinition: Sendable, Hashable {
     public let batoceraShortName: String
     public let esdeShortName: String
     /// RetroArch core `.info` `systemid` values known to map to this system.
-    /// Populated from libretro-core-info; may gain entries in Phase 7 once
-    /// parsed against real installed `.info` files.
+    /// Confirmed against real installed cores' `.info` files (nestopia,
+    /// snes9x, genesis_plus_gx, mednafen_psx/swanstation, mgba) in Phase 5;
+    /// the first entry is the confirmed value, later entries are defensive
+    /// fallback aliases in case a different installed core disagrees.
     public let retroArchSystemIDs: [String]
 
     public init(
@@ -56,21 +58,21 @@ public enum SystemTaxonomy {
             displayName: "Sega Genesis / Mega Drive",
             batoceraShortName: "megadrive",
             esdeShortName: "genesis",
-            retroArchSystemIDs: ["megadrive", "genesis"]
+            retroArchSystemIDs: ["mega_drive", "megadrive", "genesis"]
         ),
         SystemDefinition(
             canonicalID: .psx,
             displayName: "Sony PlayStation",
             batoceraShortName: "psx",
             esdeShortName: "psx",
-            retroArchSystemIDs: ["psx"]
+            retroArchSystemIDs: ["playstation", "psx"]
         ),
         SystemDefinition(
             canonicalID: .gba,
             displayName: "Game Boy Advance",
             batoceraShortName: "gba",
             esdeShortName: "gba",
-            retroArchSystemIDs: ["gba"]
+            retroArchSystemIDs: ["game_boy_advance", "gba"]
         )
     ]
 

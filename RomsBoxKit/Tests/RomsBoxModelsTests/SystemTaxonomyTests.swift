@@ -27,6 +27,20 @@ import Testing
         #expect(SystemTaxonomy.system(forRetroArchSystemID: "snes")?.canonicalID == .snes)
     }
 
+    // Confirmed against real installed cores' .info files (genesis_plus_gx,
+    // mednafen_psx/swanstation, mgba) rather than guessed.
+    @Test func retroArchMegaDriveMapsToCanonicalGenesis() {
+        #expect(SystemTaxonomy.system(forRetroArchSystemID: "mega_drive")?.canonicalID == .genesis)
+    }
+
+    @Test func retroArchPlaystationMapsToCanonicalPsx() {
+        #expect(SystemTaxonomy.system(forRetroArchSystemID: "playstation")?.canonicalID == .psx)
+    }
+
+    @Test func retroArchGameBoyAdvanceMapsToCanonicalGba() {
+        #expect(SystemTaxonomy.system(forRetroArchSystemID: "game_boy_advance")?.canonicalID == .gba)
+    }
+
     @Test(arguments: [
         ("nes", CanonicalSystemID.nes),
         ("snes", CanonicalSystemID.snes),
