@@ -201,6 +201,26 @@ import Testing
         #expect(chrono.description == nil)
     }
 
+    /// Confirmed against a real gamelist.xml left truncated mid-write (no
+    /// leading `<?xml?>`/`<gameList>` at all — an interrupted save,
+    /// apparently) — the whole system must not disappear just because its
+    /// gamelist.xml is corrupt; the ROMs are still real and present.
+    @Test func corruptedGamelistFallsBackToBareRecordsInsteadOfDroppingTheWholeSystem() throws {
+        let folder = try makeESDERoot(includeGamelist: false, includeMedia: false)
+        let gamelistDir = folder.deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "ES-DE/gamelists/snes")
+        try FileManager.default.createDirectory(at: gamelistDir, withIntermediateDirectories: true)
+        try "mission text with no opening tags at all</desc></game></gameList>"
+            .write(to: gamelistDir.appending(path: "gamelist.xml"), atomically: true, encoding: .utf8)
+
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: folder, canonicalID: .snes)
+
+        #expect(data.games.count == 2)
+        #expect(data.games.allSatisfy { $0.description == nil })
+        #expect(Set(data.games.map(\.romRelativePath)) == ["Super Metroid.sfc", "Chrono Trigger.sfc"])
+    }
+
     @Test func importWithNoGamelistFallsBackEntirelyToBareRecords() throws {
         let folder = try makeESDERoot(includeGamelist: false, includeMedia: true)
         let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())

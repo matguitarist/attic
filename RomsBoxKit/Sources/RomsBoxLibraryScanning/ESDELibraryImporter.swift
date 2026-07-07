@@ -60,9 +60,14 @@ public struct ESDELibraryImporter: LibraryImporter {
         let mediaResolver = ESDEMediaResolver(esdeRoot: resolvedMediaRoot, systemName: systemName)
 
         var games: [ImportedGameRecord] = []
-        if let gamelistURL = gamelistURL(forSystemFolderURL: systemFolderURL) {
-            let data = try Data(contentsOf: gamelistURL)
-            games = try ESDEGamelistMapper.parse(data, mediaResolver: mediaResolver)
+        if let gamelistURL = gamelistURL(forSystemFolderURL: systemFolderURL),
+           let data = try? Data(contentsOf: gamelistURL) {
+            // A gamelist.xml that fails to parse (confirmed against a real
+            // one left truncated mid-write, missing its <?xml?>/<gameList>
+            // opening entirely) shouldn't hide every ROM in the folder —
+            // fall through to bare-file discovery below instead of losing
+            // the whole system.
+            games = (try? ESDEGamelistMapper.parse(data, mediaResolver: mediaResolver)) ?? []
         }
 
         // Fall back to bare ROM-file discovery for anything not covered by
