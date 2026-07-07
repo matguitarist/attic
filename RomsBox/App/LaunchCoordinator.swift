@@ -44,10 +44,11 @@ final class LaunchCoordinator {
 
         currentSession = session
         state = .running(gameID: game.persistentModelID)
+        let playSession = recordSessionStarted(game: game, launchMethod: target)
 
         Task {
             _ = await session.waitUntilExit()
-            recordSessionEnded(game: game)
+            recordSessionEnded(game: game, playSession: playSession)
         }
     }
 
@@ -102,9 +103,26 @@ final class LaunchCoordinator {
         return false
     }
 
-    private func recordSessionEnded(game: Game) {
+    /// Inserts the append-only `PlaySession` audit row for this launch.
+    /// Aggregates (`playCount`/`lastPlayedDate`/`totalPlaytimeSeconds`) are
+    /// only finalized in `recordSessionEnded`, once the actual duration is
+    /// known.
+    private func recordSessionStarted(game: Game, launchMethod: LaunchTargetReference) -> PlaySession? {
+        guard let context = game.modelContext else { return nil }
+        let session = PlaySession(game: game, launchMethod: launchMethod)
+        context.insert(session)
+        try? context.save()
+        return session
+    }
+
+    private func recordSessionEnded(game: Game, playSession: PlaySession?) {
+        let now = Date.now
         game.playCount += 1
-        game.lastPlayedDate = .now
+        game.lastPlayedDate = now
+        if let playSession {
+            playSession.endedAt = now
+            game.totalPlaytimeSeconds += max(0, now.timeIntervalSince(playSession.startedAt))
+        }
         try? game.modelContext?.save()
         currentSession = nil
         state = .idle

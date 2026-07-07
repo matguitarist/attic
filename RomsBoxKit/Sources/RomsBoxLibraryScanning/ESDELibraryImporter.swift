@@ -28,7 +28,21 @@ public struct ESDELibraryImporter: LibraryImporter {
 
         var isDirectory: ObjCBool = false
         let mediaDir = esdeRoot.appending(path: "downloaded_media").appending(path: systemName)
-        return FileManager.default.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory) && isDirectory.boolValue
+        if FileManager.default.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+            return true
+        }
+
+        // No positive ES-DE signal, but also no Batocera signal (a colocated
+        // gamelist.xml) — confirmed against a real ES-DE library where a
+        // system folder can be entirely unscraped (no gamelist.xml or
+        // downloaded_media exist anywhere for it yet) while still containing
+        // real ROM files. ES-DE itself still lists those as bare, art-less
+        // entries rather than hiding the system, so default to that instead
+        // of silently dropping populated folders neither convention claims.
+        let hasColocatedGamelist = FileManager.default.fileExists(
+            atPath: systemFolderURL.appending(path: "gamelist.xml").path
+        )
+        return !hasColocatedGamelist && !Self.romFiles(in: systemFolderURL).isEmpty
     }
 
     public func importSystem(systemFolderURL: URL, canonicalID: CanonicalSystemID) throws -> ImportedSystemData {
@@ -95,6 +109,9 @@ public struct ESDELibraryImporter: LibraryImporter {
         return entries.compactMap { url -> String? in
             if url.lastPathComponent.hasPrefix(".") { return nil }
             if url.lastPathComponent == "gamelist.xml" { return nil }
+            // ES-DE auto-generates this per-system metadata file (supported
+            // extensions, launch command templates) — not a ROM.
+            if url.lastPathComponent.caseInsensitiveCompare("systeminfo.txt") == .orderedSame { return nil }
             let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
             return isDirectory ? nil : url.lastPathComponent
         }.sorted()

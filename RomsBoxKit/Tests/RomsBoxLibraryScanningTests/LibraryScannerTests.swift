@@ -8,9 +8,12 @@ import Testing
     /// Builds two entirely separate roots (not sibling "ROMs"/"roms" under
     /// one parent — those collide into the same directory on the default
     /// case-insensitive APFS volume): an ES-DE-style ROMs root containing a
-    /// recognized `snes` system, an unrecognized folder name, and a
-    /// recognized-but-undetected `psx` folder; and a Batocera-style root
-    /// containing a recognized `nes` system.
+    /// fully-scraped `snes` system, an unrecognized folder name, a
+    /// genuinely-empty (still undetected) `psx` folder, a populated-but-
+    /// unscraped `gba` folder (no gamelist.xml/downloaded_media at all —
+    /// confirmed against a real ES-DE library, this is still picked up via
+    /// the bare-file fallback rather than skipped), and a Batocera-style
+    /// root containing a recognized `nes` system.
     private func makeMixedRoot() throws -> (esdeRomsRoot: URL, batoceraRomsRoot: URL) {
         let fm = FileManager.default
         let esdeParent = fm.temporaryDirectory.appending(path: "romsbox-scanner-esde-\(UUID().uuidString)", directoryHint: .isDirectory)
@@ -34,7 +37,11 @@ import Testing
 
         let undetectedPSXFolder = esdeRomsRoot.appending(path: "psx")
         try fm.createDirectory(at: undetectedPSXFolder, withIntermediateDirectories: true)
-        try Data().write(to: undetectedPSXFolder.appending(path: "Final Fantasy VII.bin"))
+
+        let unscrapedGBAFolder = esdeRomsRoot.appending(path: "gba")
+        try fm.createDirectory(at: unscrapedGBAFolder, withIntermediateDirectories: true)
+        try Data().write(to: unscrapedGBAFolder.appending(path: "Metroid Fusion.gba"))
+        try Data().write(to: unscrapedGBAFolder.appending(path: "systeminfo.txt"))
 
         let hiddenFolder = esdeRomsRoot.appending(path: ".DS_Store")
         try Data().write(to: hiddenFolder)
@@ -48,13 +55,19 @@ import Testing
         return (esdeRomsRoot, batoceraRomsRoot)
     }
 
-    @Test func scanRecognizesESDESystemAndSkipsUnrecognizedAndUndetectedFolders() throws {
+    @Test func scanRecognizesESDESystemsIncludingUnscrapedAndSkipsUnrecognizedAndUndetectedFolders() throws {
         let (esdeRoot, _) = try makeMixedRoot()
         let result = LibraryScanner().scan(romsRootURL: esdeRoot)
 
-        #expect(result.systems.count == 1)
-        #expect(result.systems.first?.canonicalID == .snes)
-        #expect(result.systems.first?.libraryFormat == .esde)
+        #expect(result.systems.count == 2)
+        let snes = try #require(result.systems.first { $0.canonicalID == .snes })
+        #expect(snes.libraryFormat == .esde)
+        #expect(snes.games.map(\.title) == ["Super Metroid"])
+
+        let gba = try #require(result.systems.first { $0.canonicalID == .gba })
+        #expect(gba.libraryFormat == .esde)
+        // Bare fallback: filename-derived title, systeminfo.txt excluded.
+        #expect(gba.games.map(\.romRelativePath) == ["Metroid Fusion.gba"])
 
         #expect(result.issues.contains { $0.folderURL.lastPathComponent == "totally-unknown-system" && $0.reason == .unrecognizedSystemFolderName })
         #expect(result.issues.contains { $0.folderURL.lastPathComponent == "psx" && $0.reason == .noImporterRecognizedFormat })
@@ -77,7 +90,7 @@ import Testing
         let result = LibraryScanner().scan(romsRootURLs: [esdeRoot, batoceraRoot])
 
         let canonicalIDs = Set(result.systems.map(\.canonicalID))
-        #expect(canonicalIDs == [.snes, .nes])
+        #expect(canonicalIDs == [.snes, .gba, .nes])
     }
 
     @Test func scanOfNonexistentRootReturnsEmptyResultWithoutThrowing() {

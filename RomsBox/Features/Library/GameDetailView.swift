@@ -53,6 +53,9 @@ struct GameDetailView: View {
                         if game.playCount > 0 {
                             detailRow("Play Count", "\(game.playCount)")
                         }
+                        if game.totalPlaytimeSeconds > 0 {
+                            detailRow("Total Playtime", formattedPlaytime(game.totalPlaytimeSeconds))
+                        }
                         if let lastPlayed = game.lastPlayedDate {
                             detailRow("Last Played", lastPlayed.formatted(date: .abbreviated, time: .shortened))
                         }
@@ -132,6 +135,13 @@ struct GameDetailView: View {
 
     private func resolvedTarget(for game: Game) -> LaunchTargetReference? {
         LaunchTargetResolution.resolve(gameOverride: game.launchOverride, systemDefault: game.system?.defaultLaunchTarget)
+    }
+
+    private func formattedPlaytime(_ seconds: Double) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = seconds >= 3600 ? [.hour, .minute] : [.minute, .second]
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: seconds) ?? "\(Int(seconds))s"
     }
 
     @ViewBuilder

@@ -96,9 +96,43 @@ import Testing
         #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
     }
 
-    @Test func detectReturnsFalseWhenNeitherGamelistNorMediaExists() throws {
+    /// Confirmed against a real ES-DE library: a system folder can be
+    /// entirely unscraped (no gamelist.xml or downloaded_media exist
+    /// anywhere for it) while still containing real ROM files — ES-DE
+    /// itself still lists those, so RomsBox should too rather than silently
+    /// hiding a populated system neither convention has positively claimed.
+    @Test func detectReturnsTrueForPopulatedButEntirelyUnscrapedFolder() throws {
         let folder = try makeESDERoot(includeGamelist: false, includeMedia: false)
-        #expect(ESDELibraryImporter().detect(systemFolderURL: folder) == false)
+        #expect(ESDELibraryImporter().detect(systemFolderURL: folder))
+    }
+
+    @Test func detectReturnsFalseForACompletelyEmptyFolder() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appending(path: "romsbox-esde-empty-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
+        #expect(ESDELibraryImporter().detect(systemFolderURL: root) == false)
+    }
+
+    @Test func detectReturnsFalseWhenOnlyASystemInfoFileIsPresent() throws {
+        // ES-DE auto-generates systeminfo.txt in every system folder,
+        // scraped or not — its mere presence must not count as "has ROMs".
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appending(path: "romsbox-esde-systeminfo-only-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
+        try Data().write(to: root.appending(path: "systeminfo.txt"))
+        #expect(ESDELibraryImporter().detect(systemFolderURL: root) == false)
+    }
+
+    @Test func systemInfoFileIsNotImportedAsABareGame() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appending(path: "romsbox-esde-systeminfo-plus-rom-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
+        try Data().write(to: root.appending(path: "systeminfo.txt"))
+        try Data().write(to: root.appending(path: "Sonic the Hedgehog.md"))
+
+        let data = try ESDELibraryImporter().importSystem(systemFolderURL: root, canonicalID: .genesis)
+        #expect(data.games.count == 1)
+        #expect(data.games.first?.romRelativePath == "Sonic the Hedgehog.md")
     }
 
     @Test func importParsesScrapedGameFromGamelist() throws {

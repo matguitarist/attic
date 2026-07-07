@@ -10,15 +10,19 @@ struct GameGridView: View {
     private let columns = [GridItem(.adaptive(minimum: 140, maximum: 180), spacing: 16)]
 
     init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, selectedGame: Binding<Game?>) {
+        // Recently Played always shows most-recent-first, regardless of the
+        // toolbar's sort picker — that's the one thing that view is for.
+        let effectiveSortOrder: GameSortOrder = selection == .recentlyPlayed ? .lastPlayed : sortOrder
+
         // `Bool` isn't `Comparable`, so SwiftData's SortDescriptor can't sort
         // by `favorite` directly — fetch title-sorted and, for
         // `.favoriteFirst`, stably reorder in memory instead.
         _games = Query(
             filter: Self.predicate(selection: selection, searchText: searchText),
-            sort: Self.sortDescriptors(for: sortOrder)
+            sort: Self.sortDescriptors(for: effectiveSortOrder)
         )
         _selectedGame = selectedGame
-        self.sortOrder = sortOrder
+        self.sortOrder = effectiveSortOrder
     }
 
     private var displayedGames: [Game] {
