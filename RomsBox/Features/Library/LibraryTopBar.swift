@@ -40,6 +40,10 @@ struct LibraryTopBar: View {
         .frame(maxWidth: 280)
     }
 
+    /// Built with the exact same padding/shape/glass treatment as
+    /// `searchField` (rather than `.buttonStyle(.glass)`, whose own
+    /// built-in padding and corner radius don't match a `Capsule()`) so
+    /// the two pills in this bar are visually identical.
     private var sortMenu: some View {
         Menu {
             ForEach(GameSortOrder.allCases) { order in
@@ -54,10 +58,17 @@ struct LibraryTopBar: View {
                 }
             }
         } label: {
-            Text(sortOrder.label)
-                .frame(minWidth: 110)
-                .multilineTextAlignment(.center)
+            HStack(spacing: 4) {
+                Text(sortOrder.label)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(minWidth: 100)
         }
-        .buttonStyle(.glass)
+        .menuStyle(.borderlessButton)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .glassEffect(.regular, in: Capsule())
     }
 }

@@ -18,17 +18,6 @@ struct GameDetailView: View {
         if let game {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Fixed card size regardless of the system — real box art
-                    // proportions vary wildly (NES portrait, SNES landscape,
-                    // GBA near-square), so GameCoverArtView fits the whole
-                    // image inside this frame rather than cropping.
-                    GameCoverArtView(url: game.coverArtURL, title: game.title)
-                        .frame(width: 220, height: 220 / (3.0 / 4.0))
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-                    Text(game.title)
-                        .font(.title2.bold())
-
                     HStack(spacing: 10) {
                         Button {
                             game.favorite.toggle()
@@ -48,6 +37,17 @@ struct GameDetailView: View {
                     if case .failed(let message) = scrapeCoordinator.state {
                         Text(message).foregroundStyle(.red).font(.callout)
                     }
+
+                    // Fixed card size regardless of the system — real box art
+                    // proportions vary wildly (NES portrait, SNES landscape,
+                    // GBA near-square), so GameCoverArtView fits the whole
+                    // image inside this frame rather than cropping.
+                    GameCoverArtView(url: game.coverArtURL, title: game.title)
+                        .frame(width: 220, height: 220 / (3.0 / 4.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                    Text(game.title)
+                        .font(.title2.bold())
 
                     if let description = game.gameDescription, !description.isEmpty {
                         VStack(alignment: .leading, spacing: 4) {
