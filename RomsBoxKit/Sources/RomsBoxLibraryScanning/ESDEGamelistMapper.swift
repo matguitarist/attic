@@ -15,7 +15,7 @@ enum ESDEGamelistMapper {
         guard let rawPath = fields.nonEmpty("path") else { return nil }
         let relativePath = normalizeRelativePath(rawPath)
         let nameNoExt = (relativePath as NSString).deletingPathExtension
-        let title = fields.nonEmpty("name") ?? (relativePath as NSString).lastPathComponent
+        let title = fields.nonEmpty("name") ?? ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: relativePath)
 
         return ImportedGameRecord(
             romRelativePath: relativePath,

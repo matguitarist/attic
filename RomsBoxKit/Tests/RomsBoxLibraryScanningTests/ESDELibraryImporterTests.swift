@@ -201,6 +201,30 @@ import Testing
         #expect(chrono.description == nil)
     }
 
+    /// Confirmed against real data: unscraped ROMs (no gamelist.xml entry)
+    /// fell back to the raw filename as their title, region tags and all —
+    /// e.g. "Castlevania - Symphony of the Night (USA)" — rather than the
+    /// same clean title a scraped game would show.
+    @Test func bareFallbackTitleStripsRegionTagsButMediaLookupUsesRawFilename() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appending(path: "romsbox-esde-region-tag-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let romsSystemFolder = root.appending(path: "ROMs/psx")
+        try fm.createDirectory(at: romsSystemFolder, withIntermediateDirectories: true)
+        try Data().write(to: romsSystemFolder.appending(path: "Castlevania - Symphony of the Night (USA).chd"))
+
+        let mediaRoot = root.appending(path: "ES-DE/downloaded_media/psx/covers")
+        try fm.createDirectory(at: mediaRoot, withIntermediateDirectories: true)
+        // Media filenames match the raw ROM filename, tag included.
+        try Data().write(to: mediaRoot.appending(path: "Castlevania - Symphony of the Night (USA).png"))
+
+        let data = try ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
+            .importSystem(systemFolderURL: romsSystemFolder, canonicalID: .psx)
+
+        let game = try #require(data.games.first)
+        #expect(game.title == "Castlevania - Symphony of the Night")
+        #expect(game.coverArtURL?.lastPathComponent == "Castlevania - Symphony of the Night (USA).png")
+    }
+
     /// Confirmed against a real gamelist.xml left truncated mid-write (no
     /// leading `<?xml?>`/`<gameList>` at all — an interrupted save,
     /// apparently) — the whole system must not disappear just because its

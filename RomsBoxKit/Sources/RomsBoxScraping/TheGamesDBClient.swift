@@ -1,4 +1,5 @@
 import Foundation
+import RomsBoxModels
 
 /// Abstracted so `ScrapeCoordinator` and tests can substitute a fake
 /// implementation instead of hitting the real network.
@@ -80,13 +81,10 @@ public struct TheGamesDBClient: TheGamesDBClientProtocol {
         return components.url
     }
 
-    /// Strips the file extension and any parenthesized/bracketed release
-    /// tags (`(USA)`, `[!]`, `(Europe) (En,Fr,De)`, …) common in
-    /// No-Intro/Redump-style filenames, since TheGamesDB matches by plain
-    /// title text rather than filename conventions.
+    /// TheGamesDB matches by plain title text rather than filename
+    /// conventions, so search with the same cleaned-up title shown in the
+    /// library rather than the raw filename.
     static func searchName(fromROMFilename filename: String) -> String {
-        let nameNoExt = (filename as NSString).deletingPathExtension
-        let withoutTags = nameNoExt.replacingOccurrences(of: #"\s*[\(\[][^\)\]]*[\)\]]"#, with: "", options: .regularExpression)
-        return withoutTags.trimmingCharacters(in: .whitespaces)
+        ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: filename)
     }
 }

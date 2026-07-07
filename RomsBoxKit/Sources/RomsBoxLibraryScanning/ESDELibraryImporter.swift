@@ -144,10 +144,12 @@ public struct ESDELibraryImporter: LibraryImporter {
     }
 
     private static func bareGameRecord(romRelativePath: String, mediaResolver: ESDEMediaResolver) -> ImportedGameRecord {
+        // Media filenames match the *raw* ROM filename, so nameNoExt stays
+        // untouched for lookups — only the displayed title gets cleaned up.
         let nameNoExt = (romRelativePath as NSString).deletingPathExtension
         return ImportedGameRecord(
             romRelativePath: romRelativePath,
-            title: nameNoExt,
+            title: ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: romRelativePath),
             coverArtURL: mediaResolver.resolveCoverArt(romNameNoExt: nameNoExt),
             titleScreenURL: mediaResolver.resolveTitleScreen(romNameNoExt: nameNoExt),
             videoURL: mediaResolver.resolveVideo(romNameNoExt: nameNoExt)

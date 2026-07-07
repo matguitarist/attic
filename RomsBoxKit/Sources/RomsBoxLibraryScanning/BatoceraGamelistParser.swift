@@ -16,7 +16,7 @@ enum BatoceraGamelistParser {
     private static func makeRecord(from fields: [String: String], systemFolderURL: URL) -> ImportedGameRecord? {
         guard let rawPath = fields.nonEmpty("path") else { return nil }
         let relativePath = normalizeRelativePath(rawPath)
-        let title = fields.nonEmpty("name") ?? (relativePath as NSString).lastPathComponent
+        let title = fields.nonEmpty("name") ?? ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: relativePath)
 
         return ImportedGameRecord(
             romRelativePath: relativePath,
