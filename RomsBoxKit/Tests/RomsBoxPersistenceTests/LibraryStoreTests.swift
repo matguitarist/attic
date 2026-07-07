@@ -112,6 +112,49 @@ import Testing
         #expect(refetched.playCount == 5)
     }
 
+    @Test func rescanDoesNotOverwriteManuallyEditedMetadataButStillRefreshesArt() async throws {
+        let container = try RomsBoxModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+
+        let original = ImportedSystemData(
+            canonicalID: .snes,
+            libraryFormat: .esde,
+            romsRootURL: URL(fileURLWithPath: "/tmp/roms/snes"),
+            games: [ImportedGameRecord(romRelativePath: "a.sfc", title: "Game A (USA)", developer: "Old Dev")]
+        )
+        _ = try await store.upsertSystem(original, displayName: "SNES")
+
+        // Simulate the user hand-correcting the title/developer in the
+        // detail panel — this is what GameDetailView's editable bindings do.
+        let context = ModelContext(container)
+        let descriptor = FetchDescriptor<Game>()
+        let game = try #require(try context.fetch(descriptor).first)
+        game.title = "Game A"
+        game.developer = "Corrected Dev"
+        game.metadataManuallyEdited = true
+        try context.save()
+
+        let rescan = ImportedSystemData(
+            canonicalID: .snes,
+            libraryFormat: .esde,
+            romsRootURL: URL(fileURLWithPath: "/tmp/roms/snes"),
+            games: [ImportedGameRecord(
+                romRelativePath: "a.sfc",
+                title: "Game A (USA)",
+                developer: "Old Dev",
+                coverArtURL: URL(fileURLWithPath: "/tmp/media/a.png")
+            )]
+        )
+        _ = try await store.upsertSystem(rescan, displayName: "SNES")
+
+        let refetched = try #require(try context.fetch(descriptor).first)
+        #expect(refetched.title == "Game A")
+        #expect(refetched.developer == "Corrected Dev")
+        // Art isn't a hand-typed field — it should still track the ROM's
+        // actual matched media rather than being frozen by the edit flag.
+        #expect(refetched.coverArtPath == "/tmp/media/a.png")
+    }
+
     @Test func upsertSystemUpdatesDisplayNameAndFormatOnRescan() async throws {
         let store = try makeStore()
         _ = try await store.upsertSystem(sampleSystemData(games: []), displayName: "SNES")

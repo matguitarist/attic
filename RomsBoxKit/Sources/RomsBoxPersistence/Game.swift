@@ -26,6 +26,14 @@ public final class Game {
     /// by the next rescan.
     public var favorite: Bool
 
+    /// Set the moment the user edits title/description/developer/publisher/
+    /// genre/players in the detail panel — once true, `applyRescannedMetadata`
+    /// stops overwriting those fields from gamelist.xml on future rescans,
+    /// same as `favorite` already does. Without this, a corrected title (or
+    /// any other hand-edited field) would silently revert the next time the
+    /// library gets rescanned.
+    public var metadataManuallyEdited: Bool = false
+
     public var coverArtPath: String?
     public var titleScreenPath: String?
     public var videoPath: String?
@@ -105,17 +113,23 @@ public final class Game {
 
     /// Refreshes metadata from a rescanned record. Deliberately leaves
     /// `favorite`, play tracking, and `launchOverride` untouched — those are
-    /// app/user state, not source-of-truth metadata.
+    /// app/user state, not source-of-truth metadata. Also skips the
+    /// user-editable text fields once `metadataManuallyEdited` is set, so a
+    /// hand-corrected title/description/etc. survives future rescans
+    /// instead of getting silently overwritten back to whatever
+    /// gamelist.xml still says.
     public func applyRescannedMetadata(_ record: ImportedGameRecord, romsRootURL: URL) {
         romAbsolutePath = romsRootURL.appending(path: record.romRelativePath).path
-        title = record.title
-        sortTitle = record.sortTitle ?? record.title
-        gameDescription = record.description
+        if !metadataManuallyEdited {
+            title = record.title
+            sortTitle = record.sortTitle ?? record.title
+            gameDescription = record.description
+            developer = record.developer
+            publisher = record.publisher
+            genre = record.genre
+            players = record.players
+        }
         releaseDate = record.releaseDate
-        developer = record.developer
-        publisher = record.publisher
-        genre = record.genre
-        players = record.players
         rating = record.rating
         coverArtPath = record.coverArtURL?.path
         titleScreenPath = record.titleScreenURL?.path

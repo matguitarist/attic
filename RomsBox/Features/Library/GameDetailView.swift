@@ -225,6 +225,7 @@ struct GameDetailView: View {
             set: { newValue in
                 game.title = newValue
                 game.sortTitle = newValue
+                game.metadataManuallyEdited = true
                 try? game.modelContext?.save()
             }
         )
@@ -238,6 +239,7 @@ struct GameDetailView: View {
             get: { game[keyPath: keyPath] ?? "" },
             set: { newValue in
                 game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
+                game.metadataManuallyEdited = true
                 try? game.modelContext?.save()
             }
         )
