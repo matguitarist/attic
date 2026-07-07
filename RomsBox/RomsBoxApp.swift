@@ -24,8 +24,14 @@ struct RomsBoxApp: App {
             ContentView()
                 .environment(scanCoordinator)
                 .environment(romsRootsStore)
+                .frame(minWidth: 800, minHeight: 500)
         }
-        .windowResizability(.contentSize)
         .modelContainer(modelContainer)
+
+        Settings {
+            GeneralSettingsView()
+                .environment(scanCoordinator)
+                .environment(romsRootsStore)
+        }
     }
 }
