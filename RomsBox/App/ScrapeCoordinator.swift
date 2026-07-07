@@ -18,7 +18,20 @@ final class ScrapeCoordinator {
         case failed(String)
     }
 
+    enum BatchState: Equatable {
+        case idle
+        case running(completed: Int, total: Int)
+        case finished(scraped: Int, alreadyPresent: Int, failed: Int)
+    }
+
+    enum ScraperSource {
+        case screenScraper(ScreenScraperCredentials)
+        case theGamesDB(TheGamesDBCredentials)
+    }
+
     private(set) var state: State = .idle
+    private(set) var batchState: BatchState = .idle
+    private var batchTask: Task<Void, Never>?
 
     private let screenScraperClient: ScreenScraperClientProtocol
     private let theGamesDBClient: TheGamesDBClientProtocol
@@ -92,6 +105,54 @@ final class ScrapeCoordinator {
         } catch {
             state = .failed(error.localizedDescription)
         }
+    }
+
+    /// Scrapes every game in `games` that's missing a description (the same
+    /// proxy the single-game path uses for "not yet scraped"), skipping
+    /// ones that already have one so a huge library doesn't re-request data
+    /// it already has. Runs sequentially with a small pause between
+    /// requests — free-tier accounts on both sources have tight rate/thread
+    /// limits, and hundreds of games hammered concurrently would just get
+    /// rejected.
+    func scrapeAllMissing(games: [Game], source: ScraperSource) {
+        batchTask?.cancel()
+        batchTask = Task { [weak self] in
+            await self?.runBatch(games: games, source: source)
+        }
+    }
+
+    func cancelBatch() {
+        batchTask?.cancel()
+        batchTask = nil
+        batchState = .idle
+    }
+
+    private func runBatch(games: [Game], source: ScraperSource) async {
+        let missing = games.filter { $0.gameDescription == nil }
+        guard !missing.isEmpty else {
+            batchState = .finished(scraped: 0, alreadyPresent: games.count, failed: 0)
+            return
+        }
+
+        var scraped = 0
+        var failed = 0
+        for (index, game) in missing.enumerated() {
+            if Task.isCancelled { return }
+            batchState = .running(completed: index, total: missing.count)
+
+            switch source {
+            case .screenScraper(let credentials):
+                await scrapeUsingScreenScraper(game: game, credentials: credentials)
+            case .theGamesDB(let credentials):
+                await scrapeUsingTheGamesDB(game: game, credentials: credentials)
+            }
+            if case .failed = state { failed += 1 } else { scraped += 1 }
+
+            if Task.isCancelled { return }
+            try? await Task.sleep(nanoseconds: 300_000_000)
+        }
+
+        batchState = .finished(scraped: scraped, alreadyPresent: games.count - missing.count, failed: failed)
     }
 
     private func apply(_ info: ScrapedGameInfo, to game: Game, force: Bool) async throws {

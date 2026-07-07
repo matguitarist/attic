@@ -15,7 +15,18 @@ struct LibraryBrowserView: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
         } content: {
             VStack(spacing: 0) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(selectionTitle)
+                        .font(.largeTitle.bold())
+                    Spacer()
+                    ScrapeMissingButton(selection: selection ?? .allGames)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 4)
+
                 LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder)
+                BatchScrapeStatusBar()
                 Divider()
                 GameGridView(
                     selection: selection ?? .allGames,
@@ -34,6 +45,16 @@ struct LibraryBrowserView: View {
                 // to fill any space beyond the sum of every column's ideal
                 // width, which left detail far wider than the grid.
                 .navigationSplitViewColumnWidth(min: 260, ideal: 320, max: 420)
+        }
+    }
+
+    private var selectionTitle: String {
+        switch selection ?? .allGames {
+        case .allGames: "All Games"
+        case .favorites: "Favorites"
+        case .recentlyPlayed: "Recently Played"
+        case .system(let canonicalID):
+            systems.first { $0.systemID == canonicalID }?.displayName ?? canonicalID.rawValue
         }
     }
 }

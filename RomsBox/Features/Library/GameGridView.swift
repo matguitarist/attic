@@ -7,6 +7,10 @@ struct GameGridView: View {
     @Binding var selectedGame: Game?
     private let sortOrder: GameSortOrder
 
+    @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
+    @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
+    @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+
     // Fixed (not ranged) min==max width so every column — and therefore
     // every row — lines up identically regardless of window width; the grid
     // just fits however many equal-width columns fit.
@@ -55,12 +59,53 @@ struct GameGridView: View {
                     ForEach(displayedGames) { game in
                         GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID)
                             .onTapGesture { selectedGame = game }
+                            .contextMenu { contextMenuContent(for: game) }
                     }
                 }
                 .padding()
             }
         }
         .navigationTitle("")
+    }
+
+    @ViewBuilder
+    private func contextMenuContent(for game: Game) -> some View {
+        Button(game.favorite ? "Remove from Favorites" : "Add to Favorites") {
+            game.favorite.toggle()
+            try? game.modelContext?.save()
+        }
+
+        Divider()
+
+        Menu("Scrape Info") {
+            Button("ScreenScraper") {
+                Task { await scrapeCoordinator.scrapeUsingScreenScraper(game: game, credentials: screenScraperCredentialsStore.credentials) }
+            }
+            .disabled(!screenScraperCredentialsStore.isConfigured)
+
+            Button("TheGamesDB") {
+                Task { await scrapeCoordinator.scrapeUsingTheGamesDB(game: game, credentials: theGamesDBCredentialsStore.credentials) }
+            }
+            .disabled(!theGamesDBCredentialsStore.isConfigured)
+        }
+    }
+
+    /// Games belonging to `selection` alone, ignoring the search box — used
+    /// where an action should apply to "everything currently shown by the
+    /// sidebar," like bulk-scraping, independent of whatever's typed in
+    /// search at that moment.
+    static func selectionPredicate(_ selection: LibrarySelection) -> Predicate<Game> {
+        switch selection {
+        case .allGames:
+            return #Predicate<Game> { _ in true }
+        case .favorites:
+            return #Predicate<Game> { $0.favorite }
+        case .recentlyPlayed:
+            return #Predicate<Game> { $0.lastPlayedDate != nil }
+        case .system(let canonicalID):
+            let systemID = canonicalID.rawValue
+            return #Predicate<Game> { $0.systemCanonicalID == systemID }
+        }
     }
 
     private static func predicate(selection: LibrarySelection, searchText: String) -> Predicate<Game> {
