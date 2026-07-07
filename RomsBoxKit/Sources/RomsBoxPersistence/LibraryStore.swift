@@ -16,7 +16,13 @@ public actor LibraryStore {
     /// Upserts one imported system and its games, keyed by
     /// (canonical system id, ROM relative path). Games present in a
     /// previous scan but absent from `data.games` are deleted, keeping
-    /// rescans an accurate reflection of what's on disk.
+    /// rescans in sync with what the importer reports. Note this is *not*
+    /// the same as "still present on disk": a game listed in gamelist.xml
+    /// is trusted even if its ROM file is temporarily missing (e.g. an
+    /// unmounted external drive) — only the unscraped/bare-file fallback
+    /// path (ES-DE games with no gamelist.xml entry) is driven by live
+    /// filesystem presence. This avoids silently deleting curated metadata
+    /// and user state (favorite, play history) over a transient I/O hiccup.
     @discardableResult
     public func upsertSystem(_ data: ImportedSystemData, displayName: String) throws -> UpsertResult {
         let canonicalIDString = data.canonicalID.rawValue
