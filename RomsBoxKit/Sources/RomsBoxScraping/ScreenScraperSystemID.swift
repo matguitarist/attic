@@ -11,7 +11,24 @@ public enum ScreenScraperSystemID {
         .snes: 4,
         .genesis: 1,
         .psx: 57,
-        .gba: 12
+        .gba: 12,
+        .mastersystem: 2,
+        .gamegear: 21,
+        .segacd: 20,
+        .saturn: 22,
+        .dreamcast: 23,
+        .sega32x: 19,
+        .atari2600: 26,
+        .atari5200: 40,
+        .atari7800: 41,
+        .atarilynx: 28,
+        .atarijaguar: 27,
+        .pcengine: 31,
+        .pcenginecd: 114,
+        .pcfx: 72,
+        .supergrafx: 105,
+        .threedo: 29,
+        .cdi: 133
     ]
 
     public static func systemeID(for canonicalID: CanonicalSystemID) -> Int? {

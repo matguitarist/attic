@@ -30,7 +30,7 @@ struct EmulatorProfileEditorView: View {
             }
 
             Section("Assigned Systems") {
-                ForEach(SystemTaxonomy.mvpSystems, id: \.canonicalID) { system in
+                ForEach(SystemTaxonomy.allSystems, id: \.canonicalID) { system in
                     Toggle(system.displayName, isOn: bindingFor(system.canonicalID))
                 }
             }

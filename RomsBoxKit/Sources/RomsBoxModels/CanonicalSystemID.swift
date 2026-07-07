@@ -33,4 +33,29 @@ public extension CanonicalSystemID {
     static let genesis = CanonicalSystemID("genesis")
     static let psx = CanonicalSystemID("psx")
     static let gba = CanonicalSystemID("gba")
+
+    // Sega
+    static let mastersystem = CanonicalSystemID("mastersystem")
+    static let gamegear = CanonicalSystemID("gamegear")
+    static let segacd = CanonicalSystemID("segacd")
+    static let saturn = CanonicalSystemID("saturn")
+    static let dreamcast = CanonicalSystemID("dreamcast")
+    static let sega32x = CanonicalSystemID("sega32x")
+
+    // Atari
+    static let atari2600 = CanonicalSystemID("atari2600")
+    static let atari5200 = CanonicalSystemID("atari5200")
+    static let atari7800 = CanonicalSystemID("atari7800")
+    static let atarilynx = CanonicalSystemID("atarilynx")
+    static let atarijaguar = CanonicalSystemID("atarijaguar")
+
+    // NEC
+    static let pcengine = CanonicalSystemID("pcengine")
+    static let pcenginecd = CanonicalSystemID("pcenginecd")
+    static let pcfx = CanonicalSystemID("pcfx")
+    static let supergrafx = CanonicalSystemID("supergrafx")
+
+    // Other
+    static let threedo = CanonicalSystemID("3do")
+    static let cdi = CanonicalSystemID("cdi")
 }

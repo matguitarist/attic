@@ -67,8 +67,21 @@ import Testing
         #expect(definition?.esdeShortName == "genesis")
     }
 
-    @Test func everyMVPSystemHasAUniqueCanonicalID() {
-        let ids = SystemTaxonomy.mvpSystems.map(\.canonicalID)
+    @Test func everySystemHasAUniqueCanonicalID() {
+        let ids = SystemTaxonomy.allSystems.map(\.canonicalID)
         #expect(ids.count == Set(ids).count)
+    }
+
+    @Test func everySystemHasUniqueBatoceraAndESDEShortNames() {
+        let batoceraNames = SystemTaxonomy.allSystems.map(\.batoceraShortName)
+        #expect(batoceraNames.count == Set(batoceraNames).count)
+
+        let esdeNames = SystemTaxonomy.allSystems.map(\.esdeShortName)
+        #expect(esdeNames.count == Set(esdeNames).count)
+    }
+
+    @Test func everySystemsRetroArchIDsAreGloballyUnique() {
+        let allIDs = SystemTaxonomy.allSystems.flatMap(\.retroArchSystemIDs)
+        #expect(allIDs.count == Set(allIDs).count)
     }
 }
