@@ -5,9 +5,9 @@ import RomsBoxModels
 import RomsBoxPersistence
 import RomsBoxEmulation
 
-/// Resolves a game's launch target and runs it. Only RetroArch cores exist
-/// as of Phase 7 — the per-game-override/per-system-default precedence and
-/// custom emulator profiles arrive in Phase 8's EmulatorResolver.
+/// Resolves a game's launch target (per-game override, else per-system
+/// default, via `LaunchTargetResolution`) and runs it through whichever
+/// launcher applies, then records the session.
 @Observable
 @MainActor
 final class LaunchCoordinator {
@@ -21,16 +21,24 @@ final class LaunchCoordinator {
     private(set) var state: State = .idle
     private var currentSession: RunningGameSession?
 
-    func playWithRetroArch(game: Game, core: RetroArchCoreInfo, retroArchBinaryURL: URL) {
+    func play(game: Game, retroArchStore: RetroArchSettingsStore) {
         guard state == .idle || isFailed else { return }
+
+        guard let target = LaunchTargetResolution.resolve(
+            gameOverride: game.launchOverride,
+            systemDefault: game.system?.defaultLaunchTarget
+        ) else {
+            state = .failed("No emulator configured for this game or its system.")
+            return
+        }
+
         state = .launching
 
-        let launcher = RetroArchLauncher(retroArchBinaryURL: retroArchBinaryURL)
         let session: RunningGameSession
         do {
-            session = try launcher.launch(coreDylibURL: core.dylibURL, romURL: game.romAbsoluteURL)
+            session = try launch(target, game: game, retroArchStore: retroArchStore)
         } catch {
-            state = .failed("Couldn't launch RetroArch: \(error.localizedDescription)")
+            state = .failed("Couldn't launch: \(error.localizedDescription)")
             return
         }
 
@@ -41,6 +49,52 @@ final class LaunchCoordinator {
             _ = await session.waitUntilExit()
             recordSessionEnded(game: game)
         }
+    }
+
+    private func launch(
+        _ target: LaunchTargetReference,
+        game: Game,
+        retroArchStore: RetroArchSettingsStore
+    ) throws -> RunningGameSession {
+        switch target {
+        case .retroArchCore(let identifier):
+            guard let core = retroArchStore.core(withIdentifier: identifier) else {
+                throw LaunchError.coreNotInstalled(identifier)
+            }
+            return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
+                .launch(coreDylibURL: core.dylibURL, romURL: game.romAbsoluteURL)
+
+        case .emulatorProfile(let id):
+            guard let profile = fetchEmulatorProfile(id: id, context: game.modelContext) else {
+                throw LaunchError.profileNotFound
+            }
+            return try CustomEmulatorLauncher().launch(
+                executableURL: profile.executableURL,
+                argumentTemplate: profile.argumentTemplate,
+                romURL: game.romAbsoluteURL,
+                workingDirectoryURL: profile.workingDirectoryURL
+            )
+        }
+    }
+
+    private enum LaunchError: LocalizedError {
+        case coreNotInstalled(String)
+        case profileNotFound
+
+        var errorDescription: String? {
+            switch self {
+            case .coreNotInstalled(let identifier):
+                "The core \"\(identifier)\" is no longer installed."
+            case .profileNotFound:
+                "The assigned custom emulator profile no longer exists."
+            }
+        }
+    }
+
+    private func fetchEmulatorProfile(id: UUID, context: ModelContext?) -> EmulatorProfile? {
+        guard let context else { return nil }
+        let descriptor = FetchDescriptor<EmulatorProfile>(predicate: #Predicate { $0.id == id })
+        return try? context.fetch(descriptor).first
     }
 
     private var isFailed: Bool {

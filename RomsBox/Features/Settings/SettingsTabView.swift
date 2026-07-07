@@ -7,6 +7,8 @@ struct SettingsTabView: View {
                 .tabItem { Label("General", systemImage: "gearshape") }
             RetroArchSettingsView()
                 .tabItem { Label("RetroArch", systemImage: "gamecontroller") }
+            EmulatorProfilesSettingsView()
+                .tabItem { Label("Custom Emulators", systemImage: "puzzlepiece.extension") }
         }
     }
 }

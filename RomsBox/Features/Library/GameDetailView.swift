@@ -1,4 +1,6 @@
 import SwiftUI
+import SwiftData
+import RomsBoxModels
 import RomsBoxPersistence
 import RomsBoxEmulation
 
@@ -7,6 +9,7 @@ struct GameDetailView: View {
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
+    @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
 
     var body: some View {
         if let game {
@@ -28,6 +31,7 @@ struct GameDetailView: View {
                         }
 
                         playButton(for: game)
+                        launchWithMenu(for: game)
                     }
 
                     if case .failed(let message) = launchCoordinator.state {
@@ -68,24 +72,66 @@ struct GameDetailView: View {
 
     @ViewBuilder
     private func playButton(for game: Game) -> some View {
-        let core = resolvedCore(for: game)
+        let target = resolvedTarget(for: game)
         let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
         let isBusy = launchCoordinator.state == .launching || isRunningThisGame
 
         Button {
-            guard let core else { return }
-            launchCoordinator.playWithRetroArch(game: game, core: core, retroArchBinaryURL: retroArchStore.binaryURL)
+            launchCoordinator.play(game: game, retroArchStore: retroArchStore)
         } label: {
             Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
         }
         .buttonStyle(.borderedProminent)
-        .disabled(core == nil || isBusy)
-        .help(core == nil ? "Set a default RetroArch core for this system in Settings \u{2192} RetroArch" : "")
+        .disabled(target == nil || isBusy)
+        .help(target == nil ? "Set a default emulator for this system in Settings, or choose one below." : "")
     }
 
-    private func resolvedCore(for game: Game) -> RetroArchCoreInfo? {
-        guard case .retroArchCore(let identifier) = game.system?.defaultLaunchTarget else { return nil }
-        return retroArchStore.core(withIdentifier: identifier)
+    @ViewBuilder
+    private func launchWithMenu(for game: Game) -> some View {
+        Menu {
+            if game.launchOverride != nil {
+                Button("Use System Default") {
+                    game.launchOverride = nil
+                    try? game.modelContext?.save()
+                }
+                Divider()
+            }
+
+            if let systemID = game.system?.systemID {
+                let cores = retroArchStore.cores(for: systemID)
+                if !cores.isEmpty {
+                    Section("RetroArch Cores") {
+                        ForEach(cores) { core in
+                            Button(core.displayName) {
+                                game.launchOverride = .retroArchCore(coreIdentifier: core.coreIdentifier)
+                                try? game.modelContext?.save()
+                            }
+                        }
+                    }
+                }
+
+                let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) }
+                if !matchingProfiles.isEmpty {
+                    Section("Custom Emulators") {
+                        ForEach(matchingProfiles) { profile in
+                            Button(profile.name) {
+                                game.launchOverride = .emulatorProfile(id: profile.id)
+                                try? game.modelContext?.save()
+                            }
+                        }
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: "chevron.down.circle")
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help("Launch with a specific core or emulator for just this game")
+    }
+
+    private func resolvedTarget(for game: Game) -> LaunchTargetReference? {
+        LaunchTargetResolution.resolve(gameOverride: game.launchOverride, systemDefault: game.system?.defaultLaunchTarget)
     }
 
     @ViewBuilder

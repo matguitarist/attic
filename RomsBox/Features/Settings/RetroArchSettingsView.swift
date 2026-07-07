@@ -1,11 +1,13 @@
 import SwiftUI
 import SwiftData
+import RomsBoxModels
 import RomsBoxPersistence
 import RomsBoxEmulation
 
 struct RetroArchSettingsView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
+    @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
     @State private var isChoosingApp = false
 
     var body: some View {
@@ -31,12 +33,29 @@ struct RetroArchSettingsView: View {
             }
 
             if !systems.isEmpty {
-                Section("Default Core Per System") {
+                Section("Default Launch Target Per System") {
                     ForEach(systems) { system in
-                        Picker(system.displayName, selection: coreBinding(for: system)) {
-                            Text("None").tag(Optional<String>.none)
-                            ForEach(retroArchStore.cores(for: system.systemID)) { core in
-                                Text(core.displayName).tag(Optional(core.coreIdentifier))
+                        Picker(system.displayName, selection: targetBinding(for: system)) {
+                            Text("None").tag(Optional<LaunchTargetReference>.none)
+
+                            let matchingCores = retroArchStore.cores(for: system.systemID)
+                            if !matchingCores.isEmpty {
+                                Section("RetroArch Cores") {
+                                    ForEach(matchingCores) { core in
+                                        Text(core.displayName)
+                                            .tag(Optional(LaunchTargetReference.retroArchCore(coreIdentifier: core.coreIdentifier)))
+                                    }
+                                }
+                            }
+
+                            let matchingProfiles = profiles.filter { $0.assignedSystemIDs.contains(system.systemID) }
+                            if !matchingProfiles.isEmpty {
+                                Section("Custom Emulators") {
+                                    ForEach(matchingProfiles) { profile in
+                                        Text(profile.name)
+                                            .tag(Optional(LaunchTargetReference.emulatorProfile(id: profile.id)))
+                                    }
+                                }
                             }
                         }
                     }
@@ -53,16 +72,11 @@ struct RetroArchSettingsView: View {
         }
     }
 
-    private func coreBinding(for system: GameSystem) -> Binding<String?> {
+    private func targetBinding(for system: GameSystem) -> Binding<LaunchTargetReference?> {
         Binding(
-            get: {
-                if case .retroArchCore(let identifier) = system.defaultLaunchTarget {
-                    return identifier
-                }
-                return nil
-            },
+            get: { system.defaultLaunchTarget },
             set: { newValue in
-                system.defaultLaunchTarget = newValue.map { .retroArchCore(coreIdentifier: $0) }
+                system.defaultLaunchTarget = newValue
                 try? system.modelContext?.save()
             }
         )
