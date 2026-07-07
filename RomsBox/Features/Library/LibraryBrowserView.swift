@@ -24,7 +24,12 @@ struct LibraryBrowserView: View {
         } detail: {
             VStack(spacing: 0) {
                 header
-                LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder, cellScale: $cellScale)
+                LibraryTopBar(
+                    selection: selection ?? .allGames,
+                    searchText: $searchText,
+                    sortOrder: $sortOrder,
+                    cellScale: $cellScale
+                )
                 BatchScrapeStatusBar()
                 Divider()
                 ResizableHSplit(initialTrailingWidth: 320, minTrailingWidth: 260, maxTrailingWidth: 480) {
@@ -43,15 +48,12 @@ struct LibraryBrowserView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(selectionTitle)
-                .font(.largeTitle.bold())
-            Spacer()
-            ScrapeMissingButton(selection: selection ?? .allGames)
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 0)
-        .padding(.bottom, 2)
+        Text(selectionTitle)
+            .font(.largeTitle.bold())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.top, 0)
+            .padding(.bottom, 2)
     }
 
     private var selectionTitle: String {

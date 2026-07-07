@@ -43,8 +43,14 @@ struct ScrapeMissingButton: View {
                 Label("Scrape Missing (\(missingCount))", systemImage: "photo.stack")
             }
         }
-        .buttonStyle(.glass)
-        .menuStyle(.button)
+        // Same manual Capsule/glassEffect treatment as the search field,
+        // sort menu, and zoom slider (instead of .buttonStyle(.glass),
+        // whose padding/corner radius don't match those) so every pill in
+        // the top bar reads as one consistent family of controls.
+        .menuStyle(.borderlessButton)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .glassEffect(.regular, in: Capsule())
         .disabled(missingCount == 0 || isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
         .help("Scrape missing info for every game in this list")
     }

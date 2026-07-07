@@ -75,13 +75,16 @@ struct LibrarySidebarView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
+        // Same Capsule shape as the search/sort/zoom/scrape pills in the
+        // top bar, so the sidebar's selection style reads as the same
+        // control family rather than a differently-shaped one-off.
         .glassEffect(
             isSelected ? .regular.tint(.accentColor.opacity(0.35)).interactive() : .clear,
-            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            in: Capsule()
         )
     }
 }

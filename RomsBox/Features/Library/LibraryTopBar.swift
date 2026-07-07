@@ -1,10 +1,12 @@
 import SwiftUI
 
-/// A dedicated top bar for the library grid — search on the left, sort on
-/// the right — kept as its own strip above the grid rather than relying on
-/// the window's automatic toolbar/`.searchable` placement, so it stays in
-/// one consistent place regardless of selection or window state.
+/// A dedicated top bar for the library grid — search, zoom, sort, and bulk
+/// scrape all live here as one row of matching glass pills, kept as its
+/// own strip above the grid rather than relying on the window's automatic
+/// toolbar/`.searchable` placement, so it stays in one consistent place
+/// regardless of selection or window state.
 struct LibraryTopBar: View {
+    let selection: LibrarySelection
     @Binding var searchText: String
     @Binding var sortOrder: GameSortOrder
     @Binding var cellScale: Double
@@ -12,11 +14,14 @@ struct LibraryTopBar: View {
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
     var body: some View {
-        HStack(spacing: 12) {
-            searchField
-            Spacer(minLength: 12)
-            zoomSlider
-            sortMenu
+        GlassEffectContainer(spacing: 12) {
+            HStack(spacing: 12) {
+                searchField
+                Spacer(minLength: 12)
+                zoomSlider
+                sortMenu
+                ScrapeMissingButton(selection: selection)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
@@ -66,7 +71,7 @@ struct LibraryTopBar: View {
     /// Built with the exact same padding/shape/glass treatment as
     /// `searchField` (rather than `.buttonStyle(.glass)`, whose own
     /// built-in padding and corner radius don't match a `Capsule()`) so
-    /// the two pills in this bar are visually identical.
+    /// every pill in this bar is visually identical.
     private var sortMenu: some View {
         Menu {
             ForEach(GameSortOrder.allCases) { order in
