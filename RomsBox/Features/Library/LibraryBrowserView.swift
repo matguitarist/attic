@@ -8,6 +8,7 @@ struct LibraryBrowserView: View {
     @State private var searchText = ""
     @State private var sortOrder: GameSortOrder = .title
     @State private var selectedGame: Game?
+    @AppStorage("gridCellScale") private var cellScale: Double = 1.0
 
     var body: some View {
         NavigationSplitView {
@@ -25,13 +26,14 @@ struct LibraryBrowserView: View {
                 .padding(.top, 14)
                 .padding(.bottom, 4)
 
-                LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder)
+                LibraryTopBar(searchText: $searchText, sortOrder: $sortOrder, cellScale: $cellScale)
                 BatchScrapeStatusBar()
                 Divider()
                 GameGridView(
                     selection: selection ?? .allGames,
                     searchText: searchText,
                     sortOrder: sortOrder,
+                    cellScale: CGFloat(cellScale),
                     selectedGame: $selectedGame
                 )
             }

@@ -11,13 +11,18 @@ struct GameGridView: View {
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
 
+    private let cellScale: CGFloat
+
     // Fixed (not ranged) min==max width so every column — and therefore
     // every row — lines up identically regardless of window width; the grid
-    // just fits however many equal-width columns fit.
-    private static let cellWidth: CGFloat = 160
-    private let columns = [GridItem(.adaptive(minimum: Self.cellWidth, maximum: Self.cellWidth), spacing: 20)]
+    // just fits however many equal-width columns fit. Scaled live by the
+    // zoom slider rather than fixed at one size.
+    static let baseCellWidth: CGFloat = 160
+    private var cellWidth: CGFloat { Self.baseCellWidth * cellScale }
+    private var columns: [GridItem] { [GridItem(.adaptive(minimum: cellWidth, maximum: cellWidth), spacing: 20)] }
 
-    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, selectedGame: Binding<Game?>) {
+    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>) {
+        self.cellScale = cellScale
         // Recently Played always shows most-recent-first, regardless of the
         // toolbar's sort picker — that's the one thing that view is for.
         let effectiveSortOrder: GameSortOrder = selection == .recentlyPlayed ? .lastPlayed : sortOrder
@@ -57,7 +62,7 @@ struct GameGridView: View {
             } else {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(displayedGames) { game in
-                        GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID)
+                        GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID, width: cellWidth)
                             .onTapGesture { selectedGame = game }
                             .contextMenu { contextMenuContent(for: game) }
                     }

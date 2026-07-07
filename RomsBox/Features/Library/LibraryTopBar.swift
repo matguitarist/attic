@@ -7,15 +7,37 @@ import SwiftUI
 struct LibraryTopBar: View {
     @Binding var searchText: String
     @Binding var sortOrder: GameSortOrder
+    @Binding var cellScale: Double
+
+    static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
     var body: some View {
         HStack(spacing: 12) {
             searchField
             Spacer(minLength: 12)
+            zoomSlider
             sortMenu
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+    }
+
+    private var zoomSlider: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "photo")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Slider(value: $cellScale, in: Self.cellScaleRange)
+                .tint(.accentColor)
+                .frame(width: 100)
+            Image(systemName: "photo")
+                .font(.body)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .glassEffect(.regular, in: Capsule())
+        .help("Cover art size")
     }
 
     private var searchField: some View {

@@ -206,7 +206,11 @@ struct GameDetailView: View {
     private func editableRow(_ label: String, _ value: Binding<String>) -> some View {
         GridRow {
             Text(label).foregroundStyle(.secondary)
-            TextField(label, text: value)
+            // Placeholder is deliberately generic rather than repeating
+            // `label` — an empty field showing e.g. "Developer" as its own
+            // placeholder reads exactly like a real (wrong) value at a
+            // glance, not like empty/unset.
+            TextField("Not set", text: value)
                 .textFieldStyle(.plain)
         }
     }
