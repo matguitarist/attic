@@ -1,12 +1,82 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Accurate ColecoVision core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur ColecoVision précis."
+          }
+        }
+      }
+    },
+    "Accurate Commodore 64.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commodore 64 précis."
+          }
+        }
+      }
+    },
+    "Accurate DS and DSi, no BIOS needed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DS et DSi précis, sans BIOS."
+          }
+        }
+      }
+    },
+    "Accurate MSX, MSX2 and MSX2+.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MSX, MSX2 et MSX2+ précis."
+          }
+        }
+      }
+    },
+    "Accurate Neo Geo Pocket and Pocket Color.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neo Geo Pocket et Pocket Color précis."
+          }
+        }
+      }
+    },
     "Accurate PC Engine, CD and SuperGrafx.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "PC Engine, CD et SuperGrafx avec précision."
+          }
+        }
+      }
+    },
+    "Accurate Sega 8-bit core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur Sega 8 bits précis."
+          }
+        }
+      }
+    },
+    "Accurate WonderSwan and WonderSwan Color.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WonderSwan et WonderSwan Color précis."
           }
         }
       }
@@ -31,6 +101,16 @@
         }
       }
     },
+    "Accurate and light — the usual Game Boy choice.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précis et léger — le choix habituel pour le Game Boy."
+          }
+        }
+      }
+    },
     "Accurate and lighter.": {
       "localizations": {
         "fr": {
@@ -41,12 +121,72 @@
         }
       }
     },
+    "Also runs ColecoVision.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait aussi tourner la ColecoVision."
+          }
+        }
+      }
+    },
+    "Alternative N64 core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur N64 alternatif."
+          }
+        }
+      }
+    },
+    "Amiga 500 to 1200, CD32 and CDTV.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De l’Amiga 500 au 1200, CD32 et CDTV."
+          }
+        }
+      }
+    },
+    "Atari 400/800, XL and XE.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atari 400/800, XL et XE."
+          }
+        }
+      }
+    },
     "Atari 8-bit family including 5200.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Famille Atari 8 bits, 5200 compris."
+          }
+        }
+      }
+    },
+    "Best compatibility, with upscaling.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meilleure compatibilité, avec mise à l’échelle."
+          }
+        }
+      }
+    },
+    "Citra's actively developed successor.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le successeur de Citra, activement développé."
           }
         }
       }
@@ -121,6 +261,16 @@
         }
       }
     },
+    "Dolphin as a RetroArch core; the standalone app is more complete.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dolphin en cœur RetroArch ; l’app autonome est plus complète."
+          }
+        }
+      }
+    },
     "Download failed (HTTP %lld): %@": {
       "localizations": {
         "en": {
@@ -137,6 +287,16 @@
         }
       }
     },
+    "Dreamcast, NAOMI and Atomiswave, with upscaling.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dreamcast, NAOMI et Atomiswave, avec mise à l’échelle."
+          }
+        }
+      }
+    },
     "DuckStation's engine as a RetroArch core.": {
       "localizations": {
         "fr": {
@@ -147,12 +307,32 @@
         }
       }
     },
+    "Famicom Disk System support built in.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prise en charge intégrée du Famicom Disk System."
+          }
+        }
+      }
+    },
     "Fast, broad mapper support.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Rapide, large prise en charge des mappers."
+          }
+        }
+      }
+    },
+    "Fast, with Super Game Boy support.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rapide, avec prise en charge du Super Game Boy."
           }
         }
       }
@@ -197,6 +377,26 @@
         }
       }
     },
+    "Lighter MSX core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur MSX plus léger."
+          }
+        }
+      }
+    },
+    "Lighter Neo Geo Pocket core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur Neo Geo Pocket plus léger."
+          }
+        }
+      }
+    },
     "Lighter PC Engine core.": {
       "localizations": {
         "fr": {
@@ -207,12 +407,32 @@
         }
       }
     },
+    "Lighter PS2 emulator; runs fewer games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateur PS2 plus léger ; fait tourner moins de jeux."
+          }
+        }
+      }
+    },
     "Mednafen's Lynx core.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Lynx de Mednafen."
+          }
+        }
+      }
+    },
+    "Most accurate NES core, with disk support.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur NES le plus précis, avec prise en charge des disquettes."
           }
         }
       }
@@ -247,12 +467,92 @@
         }
       }
     },
+    "Newer, lighter 3DS core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur 3DS plus récent et plus léger."
+          }
+        }
+      }
+    },
+    "Odyssey² and Videopac.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odyssey² et Videopac."
+          }
+        }
+      }
+    },
+    "Older, lighter MAME; needs 0.78 romsets.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MAME plus ancien et plus léger ; demande des romsets 0.78."
+          }
+        }
+      }
+    },
+    "Older, widely compatible DS core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur DS plus ancien, très compatible."
+          }
+        }
+      }
+    },
+    "Plays Game & Watch .mgw files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lit les fichiers Game & Watch .mgw."
+          }
+        }
+      }
+    },
+    "Plays zipped DOS games directly.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lance directement les jeux DOS zippés."
+          }
+        }
+      }
+    },
+    "RPCS3 as a RetroArch core; the standalone app is the reference.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RPCS3 en cœur RetroArch ; l’app autonome reste la référence."
+          }
+        }
+      }
+    },
     "The 3DO core.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur 3DO."
+          }
+        }
+      }
+    },
+    "The Amstrad CPC core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Amstrad CPC."
           }
         }
       }
@@ -267,12 +567,32 @@
         }
       }
     },
+    "The Atari ST, STE, TT and Falcon emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Atari ST, STE, TT et Falcon."
+          }
+        }
+      }
+    },
     "The CD-i core.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur CD-i."
+          }
+        }
+      }
+    },
+    "The Channel F core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Channel F."
           }
         }
       }
@@ -297,6 +617,76 @@
         }
       }
     },
+    "The Intellivision core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Intellivision."
+          }
+        }
+      }
+    },
+    "The Neo Geo CD core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Neo Geo CD."
+          }
+        }
+      }
+    },
+    "The PSP emulator, with upscaling.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PSP, avec mise à l’échelle."
+          }
+        }
+      }
+    },
+    "The PlayStation 3 emulator, native on Apple Silicon.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PlayStation 3, natif sur Apple Silicon."
+          }
+        }
+      }
+    },
+    "The Pokémon Mini core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Pokémon Mini."
+          }
+        }
+      }
+    },
+    "The Sega Model 3 emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Sega Model 3."
+          }
+        }
+      }
+    },
+    "The Vectrex core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Vectrex."
+          }
+        }
+      }
+    },
     "The Virtual Boy core.": {
       "localizations": {
         "fr": {
@@ -307,12 +697,42 @@
         }
       }
     },
+    "The Wii U emulator, as a RetroArch core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Wii U, en cœur RetroArch."
+          }
+        }
+      }
+    },
+    "The ZX Spectrum emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur ZX Spectrum."
+          }
+        }
+      }
+    },
     "The download didn't contain %@.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le téléchargement ne contenait pas %@."
+          }
+        }
+      }
+    },
+    "The most accurate Game Boy core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Game Boy le plus précis."
           }
         }
       }
@@ -347,6 +767,26 @@
         }
       }
     },
+    "The original 3DS core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur 3DS d’origine."
+          }
+        }
+      }
+    },
+    "The original Xbox emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur de la première Xbox."
+          }
+        }
+      }
+    },
     "The reference Atari 2600 emulator.": {
       "localizations": {
         "fr": {
@@ -373,6 +813,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur Neo Geo et arcade de référence."
+          }
+        }
+      }
+    },
+    "The reference PS2 emulator, as a RetroArch core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PS2 de référence, en cœur RetroArch."
           }
         }
       }

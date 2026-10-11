@@ -142,6 +142,28 @@ struct DolphinReleaseFeedTests {
     }
 }
 
+struct GitHubReleaseTests {
+    @Test func picksTheAssetBySuffixSkippingDebugBuilds() {
+        let json = """
+        {"tag_name": "v0.8.136", "assets": [
+          {"name": "xemu-0.8.136-dbg-macos-universal.zip", "browser_download_url": "https://example.com/dbg.zip"},
+          {"name": "xemu-0.8.136-macos-universal-unsigned.zip", "browser_download_url": "https://example.com/unsigned.zip"},
+          {"name": "xemu-0.8.136-macos-universal.zip", "browser_download_url": "https://example.com/release.zip"}
+        ]}
+        """
+        #expect(EmulatorInstaller.assetURL(inGitHubRelease: Data(json.utf8), suffix: "-macos-universal.zip")?.absoluteString
+            == "https://example.com/release.zip")
+    }
+
+    @Test func findsAnAppNestedInAFolder() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "findApp-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try FileManager.default.createDirectory(at: root.appending(path: "Emu 1.0/Emu.app/Contents"), withIntermediateDirectories: true)
+        #expect(EmulatorInstaller.findApp(named: "Emu.app", in: root)?.lastPathComponent == "Emu.app")
+        #expect(EmulatorInstaller.findApp(named: "Other.app", in: root) == nil)
+    }
+}
+
 struct EmulatorCatalogTests {
     @Test func everyTaxonomySystemHasAnEmulator() {
         for system in SystemTaxonomy.allSystems {
@@ -161,7 +183,7 @@ struct EmulatorCatalogTests {
 
     @Test func multiSystemCoreMapsToEverySystemItServes() {
         let systems = Set(EmulatorCatalog.systems(forCore: "genesis_plus_gx_libretro"))
-        #expect(systems == [.genesis, .mastersystem, .gamegear, .segacd])
+        #expect(systems == [.genesis, .mastersystem, .gamegear, .segacd, .sg1000])
     }
 
     @Test func preferredStandaloneSystemsActuallyHaveOne() {

@@ -39,11 +39,15 @@ public struct EmulatorInstaller: Sendable {
         public let coresDirectory: URL
         public let coreInfoDirectory: URL
         public let applicationsDirectory: URL
+        /// RetroArch's system (BIOS) folder, where some cores' support
+        /// files go.
+        public let systemDirectory: URL?
 
-        public init(coresDirectory: URL, coreInfoDirectory: URL, applicationsDirectory: URL) {
+        public init(coresDirectory: URL, coreInfoDirectory: URL, applicationsDirectory: URL, systemDirectory: URL? = nil) {
             self.coresDirectory = coresDirectory
             self.coreInfoDirectory = coreInfoDirectory
             self.applicationsDirectory = applicationsDirectory
+            self.systemDirectory = systemDirectory
         }
     }
 
@@ -95,7 +99,25 @@ public struct EmulatorInstaller: Sendable {
         guard FileManager.default.fileExists(atPath: extracted.path) else {
             throw InstallError.missingFileInArchive(fileName)
         }
-        return try moveIntoPlace(extracted, in: paths.coresDirectory)
+        let installed = try moveIntoPlace(extracted, in: paths.coresDirectory)
+        // Best-effort: the core is installed either way, and RetroArch's
+        // Online Updater can fetch these too.
+        try? await installSystemFiles(forCore: coreIdentifier)
+        return installed
+    }
+
+    /// The support files some cores need in RetroArch's system folder
+    /// (fonts and data for PPSSPP, Dolphin, PCSX2, blueMSX) — open-source
+    /// files libretro publishes for RetroArch's "Core System Files"
+    /// downloader. Never BIOS files. Only adds files that are missing.
+    @concurrent public func installSystemFiles(forCore coreIdentifier: String) async throws {
+        guard let systemDirectory = paths.systemDirectory,
+              let archiveName = EmulatorCatalog.coreSystemFiles[coreIdentifier] else { return }
+        let archive = try await downloader.download(from: EmulatorCatalog.systemFilesURL(archiveName))
+        defer { try? FileManager.default.removeItem(at: archive) }
+        let staging = try extractToStaging(archive, near: systemDirectory)
+        defer { try? FileManager.default.removeItem(at: staging) }
+        try EmulationFolder.copyMissingFiles(from: staging, to: systemDirectory)
     }
 
     /// Downloads every core's `.info` file. RomsBox reads these to learn
@@ -183,11 +205,22 @@ public struct EmulatorInstaller: Sendable {
             let dmg = try await downloader.download(from: dmgURL)
             defer { try? FileManager.default.removeItem(at: dmg) }
             staging = try Self.copyApp(named: emulator.appBundleName, fromDiskImage: dmg, near: destination)
+        case .githubRelease(let assetSuffix):
+            let release = try await downloader.download(from: emulator.downloadURL)
+            defer { try? FileManager.default.removeItem(at: release) }
+            guard let assetURL = Self.assetURL(inGitHubRelease: try Data(contentsOf: release), suffix: assetSuffix) else {
+                throw InstallError.releaseNotFound(emulator.name)
+            }
+            let asset = try await downloader.download(from: assetURL)
+            defer { try? FileManager.default.removeItem(at: asset) }
+            staging = try extractAnyArchive(asset, named: assetURL.lastPathComponent, appName: emulator.appBundleName, near: destination)
         }
         defer { try? FileManager.default.removeItem(at: staging) }
 
-        let app = staging.appending(path: emulator.appBundleName)
-        guard FileManager.default.fileExists(atPath: app.appending(path: emulator.executableRelativePath).path) else {
+        // Archives put the app at the top or inside a folder — look a few
+        // levels down rather than relying on each project's layout.
+        guard let app = Self.findApp(named: emulator.appBundleName, in: staging),
+              FileManager.default.fileExists(atPath: app.appending(path: emulator.executableRelativePath).path) else {
             throw InstallError.missingFileInArchive(emulator.appBundleName)
         }
         return try moveIntoPlace(app, in: destination)
@@ -239,6 +272,54 @@ public struct EmulatorInstaller: Sendable {
             throw error
         }
         return staging
+    }
+
+    /// The download in a GitHub "latest release" API response whose name
+    /// ends with `suffix`, skipping debug-symbol builds.
+    static func assetURL(inGitHubRelease data: Data, suffix: String) -> URL? {
+        struct Release: Decodable {
+            struct Asset: Decodable {
+                let name: String
+                let browser_download_url: URL
+            }
+            let assets: [Asset]
+        }
+        return (try? JSONDecoder().decode(Release.self, from: data))?.assets
+            .first { $0.name.hasSuffix(suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") }?
+            .browser_download_url
+    }
+
+    /// Unpacks a downloaded release into a new staging directory, by its
+    /// file name's extension.
+    private func extractAnyArchive(_ archive: URL, named name: String, appName: String, near destination: URL) throws -> URL {
+        let lowercased = name.lowercased()
+        if lowercased.hasSuffix(".zip") {
+            return try extractToStaging(archive, near: destination)
+        }
+        if lowercased.hasSuffix(".dmg") {
+            return try Self.copyApp(named: appName, fromDiskImage: archive, near: destination)
+        }
+        // .7z, .tar.xz, .tar.gz: macOS's bsdtar reads them all.
+        let staging = try Self.makeStagingDirectory(near: destination)
+        do {
+            try Self.run("/usr/bin/tar", ["-xf", archive.path, "-C", staging.path])
+        } catch {
+            try? FileManager.default.removeItem(at: staging)
+            throw error
+        }
+        return staging
+    }
+
+    static func findApp(named appName: String, in directory: URL, depth: Int = 3) -> URL? {
+        let direct = directory.appending(path: appName)
+        if FileManager.default.fileExists(atPath: direct.path) { return direct }
+        guard depth > 0,
+              let entries = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.isDirectoryKey]) else { return nil }
+        for entry in entries where entry.pathExtension != "app"
+            && (try? entry.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
+            if let found = findApp(named: appName, in: entry, depth: depth - 1) { return found }
+        }
+        return nil
     }
 
     /// The macOS download in Dolphin's release feed — the same JSON

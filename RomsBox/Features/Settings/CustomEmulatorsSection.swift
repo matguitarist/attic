@@ -3,7 +3,10 @@ import SwiftData
 import RomsBoxModels
 import RomsBoxPersistence
 
-struct EmulatorProfilesSettingsView: View {
+/// The Custom Emulators section of Settings › Emulators: standalone
+/// emulators the user set up by hand, to launch systems or single games
+/// with instead of RetroArch.
+struct CustomEmulatorsSection: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
 
@@ -11,17 +14,11 @@ struct EmulatorProfilesSettingsView: View {
     @State private var isPresentingNewProfile = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if profiles.isEmpty {
-                ContentUnavailableView(
-                    "No Custom Emulators",
-                    systemImage: "gamecontroller",
-                    description: Text("Add a standalone emulator to launch specific systems or games with instead of RetroArch.")
-                )
-            } else {
-                List(profiles) { profile in
+        Section {
+            ForEach(profiles) { profile in
+                HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(profile.name).font(.headline)
+                        Text(profile.name)
                         Text(profile.executablePath)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -33,23 +30,27 @@ struct EmulatorProfilesSettingsView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture { editingProfile = profile }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            modelContext.delete(profile)
-                            try? modelContext.save()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                    Spacer()
+                    Button("Edit…") { editingProfile = profile }
+                    Button(role: .destructive) {
+                        modelContext.delete(profile)
+                        try? modelContext.save()
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .labelStyle(.iconOnly)
                     }
+                    .buttonStyle(.borderless)
+                    .help("Delete")
                 }
             }
-
             Button("Add Custom Emulator…") { isPresentingNewProfile = true }
+        } header: {
+            Text("Custom Emulators")
+        } footer: {
+            Text("Add a standalone emulator to launch specific systems or games with instead of RetroArch.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .sheet(isPresented: $isPresentingNewProfile) {
             EmulatorProfileEditorView(
                 title: "New Custom Emulator",

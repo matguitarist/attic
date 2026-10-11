@@ -20,10 +20,10 @@ struct AvailableCoreIndexTests {
             systemid = "playstation"
             database = "Sony - PlayStation"
             """)
-        try write("pcsx2_libretro", """
+        try write("tic80_libretro", """
             corename = "LRPS2"
-            systemid = "playstation2"
-            database = "Sony - PlayStation 2"
+            systemid = "tic80"
+            database = "TIC-80"
             """)
         try write("x86only_libretro", """
             corename = "Not on arm64"
@@ -39,13 +39,13 @@ struct AvailableCoreIndexTests {
     @Test func databaseFieldMapsAMultiSystemCoreToEverySystem() throws {
         let cores = AvailableCoreIndex.scan(infoDirectory: infoDirectory)
         let genesisPlusGX = try #require(cores.first { $0.coreIdentifier == "genesis_plus_gx_libretro" })
-        #expect(Set(genesisPlusGX.systems) == [.genesis, .mastersystem, .gamegear, .segacd])
+        #expect(Set(genesisPlusGX.systems) == [.genesis, .mastersystem, .gamegear, .segacd, .sg1000])
         #expect(genesisPlusGX.systems.first == .genesis, "systemid's system stays first")
     }
 
     @Test func coresForSystemsRomsBoxDoesntKnowAreLeftOut() {
         let identifiers = AvailableCoreIndex.scan(infoDirectory: infoDirectory).map(\.coreIdentifier)
-        #expect(!identifiers.contains("pcsx2_libretro"))
+        #expect(!identifiers.contains("tic80_libretro"))
     }
 
     @Test func availabilityListFiltersToBuiltCores() throws {

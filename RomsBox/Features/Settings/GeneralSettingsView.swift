@@ -8,7 +8,6 @@ struct GeneralSettingsView: View {
     @State private var isChoosingFolder = false
     @State private var isChoosingEmulationFolder = false
     @AppStorage(BigBoxView.startInBigBoxKey) private var startsInBigBox = false
-    @AppStorage(LaunchCoordinator.quitComboEnabledKey) private var quitsWithSelectStart = true
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
 
@@ -36,11 +35,10 @@ struct GeneralSettingsView: View {
 
             Section {
                 Toggle("Open Big Box at launch", isOn: $startsInBigBox)
-                Toggle("Quit games with Select + Start", isOn: $quitsWithSelectStart)
             } header: {
-                Text("Big Box & Controllers")
+                Text("Big Box")
             } footer: {
-                Text("Select + Start closes the running game from the controller — set up in RetroArch and DuckStation when RomsBox launches them. Games save normally on the way out.")
+                Text("Full-screen couch mode (⌘⇧B, or Menu/Start on a controller)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

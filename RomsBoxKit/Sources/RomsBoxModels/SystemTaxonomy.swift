@@ -29,6 +29,9 @@ public struct SystemDefinition: Sendable, Hashable {
     /// fallback aliases in case a different installed core disagrees.
     public let retroArchSystemIDs: [String]
     public let category: SystemCategory
+    /// More ROM folder names that mean this system (e.g. msx2, amiga1200,
+    /// videopac), as Batocera, RetroBat and ES-DE variously name them.
+    public let otherShortNames: [String]
 
     public init(
         canonicalID: CanonicalSystemID,
@@ -36,7 +39,8 @@ public struct SystemDefinition: Sendable, Hashable {
         batoceraShortName: String,
         esdeShortName: String,
         retroArchSystemIDs: [String],
-        category: SystemCategory = .console
+        category: SystemCategory = .console,
+        otherShortNames: [String] = []
     ) {
         self.canonicalID = canonicalID
         self.displayName = displayName
@@ -44,6 +48,13 @@ public struct SystemDefinition: Sendable, Hashable {
         self.esdeShortName = esdeShortName
         self.retroArchSystemIDs = retroArchSystemIDs
         self.category = category
+        self.otherShortNames = otherShortNames
+    }
+
+    /// Every ROM folder name recognized for this system, most common first.
+    public var allShortNames: [String] {
+        ([batoceraShortName, esdeShortName] + otherShortNames)
+            .reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
     }
 }
 
@@ -265,6 +276,318 @@ public enum SystemTaxonomy {
             esdeShortName: "triforce",
             retroArchSystemIDs: [],
             category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .gb,
+            displayName: "Nintendo Game Boy",
+            batoceraShortName: "gb",
+            esdeShortName: "gb",
+            retroArchSystemIDs: ["game_boy", "gb"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gbc,
+            displayName: "Nintendo Game Boy Color",
+            batoceraShortName: "gbc",
+            esdeShortName: "gbc",
+            retroArchSystemIDs: ["game_boy_color", "gbc"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .n64,
+            displayName: "Nintendo 64",
+            batoceraShortName: "n64",
+            esdeShortName: "n64",
+            retroArchSystemIDs: ["nintendo_64", "n64"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .nds,
+            displayName: "Nintendo DS",
+            batoceraShortName: "nds",
+            esdeShortName: "nds",
+            retroArchSystemIDs: ["nds", "nintendo_ds"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .n3ds,
+            displayName: "Nintendo 3DS",
+            batoceraShortName: "3ds",
+            esdeShortName: "n3ds",
+            retroArchSystemIDs: ["3ds", "nintendo_3ds"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gamecube,
+            displayName: "Nintendo GameCube",
+            batoceraShortName: "gamecube",
+            esdeShortName: "gc",
+            retroArchSystemIDs: ["gamecube"],
+            category: .console, otherShortNames: ["ngc"]
+        ),
+        SystemDefinition(
+            canonicalID: .wii,
+            displayName: "Nintendo Wii",
+            batoceraShortName: "wii",
+            esdeShortName: "wii",
+            retroArchSystemIDs: ["wii"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .wiiu,
+            displayName: "Nintendo Wii U",
+            batoceraShortName: "wiiu",
+            esdeShortName: "wiiu",
+            retroArchSystemIDs: ["wiiu"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .fds,
+            displayName: "Famicom Disk System",
+            batoceraShortName: "fds",
+            esdeShortName: "fds",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .pokemini,
+            displayName: "Pokémon Mini",
+            batoceraShortName: "pokemini",
+            esdeShortName: "pokemini",
+            retroArchSystemIDs: ["pokemon_mini"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gameandwatch,
+            displayName: "Game & Watch",
+            batoceraShortName: "gameandwatch",
+            esdeShortName: "gameandwatch",
+            retroArchSystemIDs: ["handheld_electronic", "game_and_watch"],
+            category: .handheld, otherShortNames: ["gw"]
+        ),
+        SystemDefinition(
+            canonicalID: .sg1000,
+            displayName: "Sega SG-1000",
+            batoceraShortName: "sg1000",
+            esdeShortName: "sg-1000",
+            retroArchSystemIDs: ["sg_1000", "sg1000"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .naomi,
+            displayName: "Sega NAOMI",
+            batoceraShortName: "naomi",
+            esdeShortName: "naomi",
+            retroArchSystemIDs: ["naomi"],
+            category: .arcade, otherShortNames: ["naomi2", "naomigd"]
+        ),
+        SystemDefinition(
+            canonicalID: .atomiswave,
+            displayName: "Sammy Atomiswave",
+            batoceraShortName: "atomiswave",
+            esdeShortName: "atomiswave",
+            retroArchSystemIDs: ["atomiswave"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .model3,
+            displayName: "Sega Model 3",
+            batoceraShortName: "model3",
+            esdeShortName: "model3",
+            retroArchSystemIDs: ["model3"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .psp,
+            displayName: "Sony PlayStation Portable",
+            batoceraShortName: "psp",
+            esdeShortName: "psp",
+            retroArchSystemIDs: ["playstation_portable", "psp"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .ps2,
+            displayName: "Sony PlayStation 2",
+            batoceraShortName: "ps2",
+            esdeShortName: "ps2",
+            retroArchSystemIDs: ["playstation2", "ps2"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .ps3,
+            displayName: "Sony PlayStation 3",
+            batoceraShortName: "ps3",
+            esdeShortName: "ps3",
+            retroArchSystemIDs: ["playstation3", "ps3"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .xbox,
+            displayName: "Microsoft Xbox",
+            batoceraShortName: "xbox",
+            esdeShortName: "xbox",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .msx,
+            displayName: "MSX",
+            batoceraShortName: "msx1",
+            esdeShortName: "msx",
+            retroArchSystemIDs: ["msx"],
+            category: .computer, otherShortNames: ["msx2", "msx2+", "msxturbor"]
+        ),
+        SystemDefinition(
+            canonicalID: .dos,
+            displayName: "MS-DOS",
+            batoceraShortName: "dos",
+            esdeShortName: "dos",
+            retroArchSystemIDs: ["dos"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .wonderswan,
+            displayName: "Bandai WonderSwan",
+            batoceraShortName: "wswan",
+            esdeShortName: "wonderswan",
+            retroArchSystemIDs: ["wonderswan"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .wonderswancolor,
+            displayName: "Bandai WonderSwan Color",
+            batoceraShortName: "wswanc",
+            esdeShortName: "wonderswancolor",
+            retroArchSystemIDs: ["wonderswan_color"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .ngp,
+            displayName: "SNK Neo Geo Pocket",
+            batoceraShortName: "ngp",
+            esdeShortName: "ngp",
+            retroArchSystemIDs: ["neo_geo_pocket"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .ngpc,
+            displayName: "SNK Neo Geo Pocket Color",
+            batoceraShortName: "ngpc",
+            esdeShortName: "ngpc",
+            retroArchSystemIDs: ["neo_geo_pocket_color"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .neogeocd,
+            displayName: "SNK Neo Geo CD",
+            batoceraShortName: "neogeocd",
+            esdeShortName: "neogeocd",
+            retroArchSystemIDs: ["neo_geo_cd"],
+            category: .console, otherShortNames: ["neogeocdjp"]
+        ),
+        SystemDefinition(
+            canonicalID: .atarist,
+            displayName: "Atari ST",
+            batoceraShortName: "atarist",
+            esdeShortName: "atarist",
+            retroArchSystemIDs: ["atari_st"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .atari800,
+            displayName: "Atari 8-bit",
+            batoceraShortName: "atari800",
+            esdeShortName: "atari800",
+            retroArchSystemIDs: ["atari_8bit", "atari800"],
+            category: .computer, otherShortNames: ["atarixe"]
+        ),
+        SystemDefinition(
+            canonicalID: .colecovision,
+            displayName: "ColecoVision",
+            batoceraShortName: "colecovision",
+            esdeShortName: "colecovision",
+            retroArchSystemIDs: ["colecovision"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .intellivision,
+            displayName: "Mattel Intellivision",
+            batoceraShortName: "intellivision",
+            esdeShortName: "intellivision",
+            retroArchSystemIDs: ["intellivision"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .vectrex,
+            displayName: "Vectrex",
+            batoceraShortName: "vectrex",
+            esdeShortName: "vectrex",
+            retroArchSystemIDs: ["vectrex"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .odyssey2,
+            displayName: "Magnavox Odyssey²",
+            batoceraShortName: "o2em",
+            esdeShortName: "odyssey2",
+            retroArchSystemIDs: ["odyssey2"],
+            category: .console, otherShortNames: ["videopac"]
+        ),
+        SystemDefinition(
+            canonicalID: .channelf,
+            displayName: "Fairchild Channel F",
+            batoceraShortName: "channelf",
+            esdeShortName: "channelf",
+            retroArchSystemIDs: ["channel_f"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .c64,
+            displayName: "Commodore 64",
+            batoceraShortName: "c64",
+            esdeShortName: "c64",
+            retroArchSystemIDs: ["commodore_c64", "c64"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .amiga,
+            displayName: "Commodore Amiga",
+            batoceraShortName: "amiga500",
+            esdeShortName: "amiga",
+            retroArchSystemIDs: ["commodore_amiga", "amiga"],
+            category: .computer, otherShortNames: ["amiga600", "amiga1200"]
+        ),
+        SystemDefinition(
+            canonicalID: .zxspectrum,
+            displayName: "ZX Spectrum",
+            batoceraShortName: "zxspectrum",
+            esdeShortName: "zxspectrum",
+            retroArchSystemIDs: ["zx_spectrum"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .amstradcpc,
+            displayName: "Amstrad CPC",
+            batoceraShortName: "amstradcpc",
+            esdeShortName: "amstradcpc",
+            retroArchSystemIDs: ["cpc", "amstrad_cpc"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .mame,
+            displayName: "MAME",
+            batoceraShortName: "mame",
+            esdeShortName: "mame",
+            retroArchSystemIDs: ["mame"],
+            category: .arcade, otherShortNames: ["arcade"]
+        ),
+        SystemDefinition(
+            canonicalID: .fbneo,
+            displayName: "FinalBurn Neo",
+            batoceraShortName: "fbneo",
+            esdeShortName: "fbneo",
+            retroArchSystemIDs: ["fb_alpha", "fbneo"],
+            category: .arcade, otherShortNames: ["fba"]
         )
     ]
 
@@ -306,7 +629,15 @@ public enum SystemTaxonomy {
     /// Looks up a system folder short-name against both conventions' short-name
     /// tables, since the format hasn't necessarily been detected yet at the
     /// point a folder is first encountered.
+    private static let byOtherShortName: [String: SystemDefinition] = {
+        var map: [String: SystemDefinition] = [:]
+        for definition in allSystems {
+            for name in definition.otherShortNames { map[name] = definition }
+        }
+        return map
+    }()
+
     public static func system(forShortName name: String) -> SystemDefinition? {
-        byBatoceraShortName[name] ?? byESDEShortName[name]
+        byBatoceraShortName[name] ?? byESDEShortName[name] ?? byOtherShortName[name]
     }
 }

@@ -37,6 +37,8 @@ struct RetroArchSettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            CustomEmulatorsSection()
         }
         .formStyle(.grouped)
         .fileImporter(isPresented: $isChoosingApp, allowedContentTypes: [.application]) { result in
@@ -178,6 +180,8 @@ private struct SystemEmulatorRow: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(EmulatorSetupCoordinator.self) private var setup
     @Environment(\.modelContext) private var modelContext
+    @Environment(HelpNavigator.self) private var helpNavigator
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         let status = setup.status(of: system, retroArchStore: retroArchStore, profiles: profiles)
@@ -187,6 +191,14 @@ private struct SystemEmulatorRow: View {
             HStack(spacing: 8) {
                 defaultPicker
                 installMenu
+                Button {
+                    helpNavigator.open(.system(system.systemID), with: openWindow)
+                } label: {
+                    Label("About This System", systemImage: "info.circle")
+                        .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.borderless)
+                .help("Emulators, BIOS and tips for \(system.displayName)")
             }
         } label: {
             VStack(alignment: .leading, spacing: 2) {

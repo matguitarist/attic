@@ -168,26 +168,30 @@ struct LibraryBrowserView: View {
 /// toolbar's controller button.
 private struct ControllerHelpView: View {
     let controllerName: String
+    @Environment(GamepadInputMonitor.self) private var gamepad
+    @Environment(ControllerSettingsStore.self) private var controllerSettings
 
     var body: some View {
+        let _ = controllerSettings.settings.layout
         VStack(alignment: .leading, spacing: 12) {
             Label(controllerName, systemImage: "gamecontroller.fill")
                 .font(.headline)
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
-                row("D-pad / Left Stick", "Browse games")
-                row("A", "Play")
-                row("Y", "Add to / remove from Favorites")
-                row("LB / RB", "Previous / next system")
-                row("Menu / Start", "Big Box (full-screen mode)")
+                row(Text("D-pad / Left Stick"), "Browse games")
+                row(Text(Image(systemName: gamepad.confirmButtonSymbol)), "Play")
+                row(Text(Image(systemName: gamepad.backButtonSymbol)), "Exit Big Box")
+                row(Text(Image(systemName: gamepad.favoriteButtonSymbol)), "Add to / remove from Favorites")
+                row(Text("LB / RB"), "Previous / next system")
+                row(Text("Menu / Start"), "Big Box (full-screen mode)")
             }
             .font(.callout)
         }
         .padding()
     }
 
-    private func row(_ control: LocalizedStringKey, _ action: LocalizedStringKey) -> some View {
+    private func row(_ control: Text, _ action: LocalizedStringKey) -> some View {
         GridRow {
-            Text(control).foregroundStyle(.secondary)
+            control.foregroundStyle(.secondary)
             Text(action)
         }
     }

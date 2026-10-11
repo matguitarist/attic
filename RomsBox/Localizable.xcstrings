@@ -37,6 +37,17 @@
         }
       }
     },
+    "%@ — %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ — %2$@"
+          }
+        }
+      },
+      "shouldTranslate": false
+    },
     "%@ — Recommended": {
       "localizations": {
         "fr": {
@@ -183,6 +194,16 @@
         }
       }
     },
+    "%lld games in your library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jeux dans votre bibliothèque"
+          }
+        }
+      }
+    },
     "%lld of %lld systems need an emulator": {
       "localizations": {
         "en": {
@@ -239,12 +260,25 @@
         }
       }
     },
-    "A": {
+    "/": {
+      "shouldTranslate": false
+    },
+    "A Dolphin already in your Applications folder is used as is; otherwise RomsBox installs the latest release from dolphin-emu.org.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "A"
+            "value": "Un Dolphin déjà présent dans votre dossier Applications est utilisé tel quel ; sinon RomsBox installe la dernière version depuis dolphin-emu.org."
+          }
+        }
+      }
+    },
+    "A/B swapped in games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A/B inversés en jeu"
           }
         }
       }
@@ -265,6 +299,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "À propos"
+          }
+        }
+      }
+    },
+    "About This System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos de ce système"
           }
         }
       }
@@ -319,6 +363,16 @@
         }
       }
     },
+    "Add credentials in Settings › ScreenScraper or TheGamesDB, then use Scrape Missing in the toolbar, or Scrape Info on a single game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez vos identifiants dans Réglages › ScreenScraper ou TheGamesDB, puis utilisez Récupérer les manquants dans la barre d’outils, ou Récupérer les infos sur un seul jeu."
+          }
+        }
+      }
+    },
     "Add to / remove from Favorites": {
       "localizations": {
         "fr": {
@@ -345,6 +399,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter aux favoris (⌘D)"
+          }
+        }
+      }
+    },
+    "Add your folder in Settings › General, then choose Rescan Library. Rescan again whenever you add or remove games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez votre dossier dans Réglages › Général, puis choisissez Réanalyser la bibliothèque. Réanalysez chaque fois que vous ajoutez ou retirez des jeux."
           }
         }
       }
@@ -385,6 +449,16 @@
         }
       }
     },
+    "Any other emulator can be added in Settings › Emulators › Custom Emulators, with its command-line arguments, then chosen per system or per game (Launch With).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout autre émulateur peut être ajouté dans Réglages › Émulateurs › Émulateurs personnalisés, avec ses arguments de ligne de commande, puis choisi par système ou par jeu (Lancer avec)."
+          }
+        }
+      }
+    },
     "Arcade": {
       "localizations": {
         "fr": {
@@ -415,6 +489,36 @@
         }
       }
     },
+    "Assign…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attribuer…"
+          }
+        }
+      }
+    },
+    "BIOS": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS"
+          }
+        }
+      }
+    },
+    "BIOS files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers BIOS"
+          }
+        }
+      }
+    },
     "BIOS, saves, save states, RetroArch cores and settings, and emulators installed by RomsBox all live here — back up or move this one folder to take everything with you.": {
       "localizations": {
         "fr": {
@@ -435,22 +539,52 @@
         }
       }
     },
-    "Big Box & Controllers": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Big Box et manettes"
-          }
-        }
-      }
-    },
     "Big Box (full-screen mode)": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Big Box (mode plein écran)"
+          }
+        }
+      }
+    },
+    "Big Box is a full-screen view made for the TV and a controller. Open it with ⌘⇧B, the Big Box toolbar button, or Menu / Start on a controller; leave it with the back button.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big Box est une vue plein écran pensée pour la télé et une manette. Ouvrez-la avec ⌘⇧B, le bouton Big Box de la barre d’outils, ou Menu / Start sur une manette ; quittez-la avec le bouton retour."
+          }
+        }
+      }
+    },
+    "Bottom (A / Cross)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bas (A / Croix)"
+          }
+        }
+      }
+    },
+    "Bottom confirms": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valider en bas"
+          }
+        }
+      }
+    },
+    "Bottom — Xbox, PlayStation": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En bas — Xbox, PlayStation"
           }
         }
       }
@@ -471,6 +605,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Parcourir les jeux"
+          }
+        }
+      }
+    },
+    "Button Mapping": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attribution des boutons"
+          }
+        }
+      }
+    },
+    "Buttons are named like on a Super Nintendo pad, RetroArch's standard. By default games use buttons by position, like the console's own pad: on an Xbox-style pad, a Nintendo game's A is the right button. Applies to every player in RetroArch games, and to DuckStation. Changed buttons are shown in bold.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les boutons sont nommés comme sur une manette Super Nintendo, la référence de RetroArch. Par défaut, les jeux utilisent les boutons selon leur position, comme sur la manette d’origine : sur une manette de type Xbox, le A d’un jeu Nintendo est le bouton de droite. S’applique à tous les joueurs dans les jeux RetroArch, et à DuckStation. Les boutons modifiés sont en gras."
+          }
+        }
+      }
+    },
+    "By default games use buttons by position, like the console's own pad. Button mapping changes which of your controller's buttons does what in RetroArch games, for every player. Select + Start quits a game in RetroArch and DuckStation.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par défaut, les jeux utilisent les boutons selon leur position, comme sur la manette d’origine. L’attribution des boutons change le rôle de chaque bouton de votre manette dans les jeux RetroArch, pour tous les joueurs. Select + Start quitte un jeu dans RetroArch et DuckStation."
           }
         }
       }
@@ -555,12 +719,42 @@
         }
       }
     },
+    "Classic (Xbox, PlayStation)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classique (Xbox, PlayStation)"
+          }
+        }
+      }
+    },
     "Computers": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ordinateurs"
+          }
+        }
+      }
+    },
+    "Confirm / Back": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valider / Retour"
+          }
+        }
+      }
+    },
+    "Confirm Button": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bouton de validation"
           }
         }
       }
@@ -585,12 +779,42 @@
         }
       }
     },
+    "Controls": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commandes"
+          }
+        }
+      }
+    },
     "Copied %lld BIOS files from %@.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Fichiers BIOS copiés depuis %2$@ : %1$lld"
+          }
+        }
+      }
+    },
+    "Cores and emulators you installed yourself are detected too. Settings › Emulators also checks for core updates.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les cœurs et émulateurs que vous avez installés vous-même sont aussi détectés. Réglages › Émulateurs vérifie aussi les mises à jour des cœurs."
+          }
+        }
+      }
+    },
+    "Couch mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode canapé"
           }
         }
       }
@@ -631,6 +855,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lancement impossible : %@"
+          }
+        }
+      }
+    },
+    "Couldn't save controller profiles: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’enregistrer les profils de manette : %@"
           }
         }
       }
@@ -685,12 +919,82 @@
         }
       }
     },
+    "Custom buttons": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boutons personnalisés"
+          }
+        }
+      }
+    },
+    "Custom emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs personnalisés"
+          }
+        }
+      }
+    },
     "D-pad / Left Stick": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Croix / stick gauche"
+          }
+        }
+      }
+    },
+    "D-pad Down": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix bas"
+          }
+        }
+      }
+    },
+    "D-pad Left": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix gauche"
+          }
+        }
+      }
+    },
+    "D-pad Right": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix droite"
+          }
+        }
+      }
+    },
+    "D-pad Up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix haut"
+          }
+        }
+      }
+    },
+    "D-pad or left stick: browse. Confirm: play. Y / Triangle: favorite. LB / RB: previous or next system. Menu / Start: Big Box.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix ou stick gauche : parcourir. Valider : jouer. Y / Triangle : favori. LB / RB : système précédent ou suivant. Menu / Start : Big Box."
           }
         }
       }
@@ -765,12 +1069,52 @@
         }
       }
     },
+    "Disc images work best as .chd — one compressed file per disc. For .cue/.bin dumps, keep each .cue next to its .bin files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les images disque fonctionnent le mieux en .chd — un fichier compressé par disque. Pour les dumps .cue/.bin, gardez chaque .cue à côté de ses fichiers .bin."
+          }
+        }
+      }
+    },
     "Dismiss": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Fermer"
+          }
+        }
+      }
+    },
+    "Dolphin uses its own controller setup. Configure it once in Dolphin (Controllers › Triforce) — RomsBox's controller settings don't apply.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dolphin utilise sa propre configuration de manette. Réglez-la une fois dans Dolphin (Manettes › Triforce) — les réglages de manette de RomsBox ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "Dolphin uses its own controller setup. Configure it once in Dolphin (Controllers) — RomsBox's controller settings don't apply to the Dolphin app.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dolphin utilise sa propre configuration de manette. Réglez-la une fois dans Dolphin (Manettes) — les réglages de manette de RomsBox ne s’appliquent pas à l’app Dolphin."
+          }
+        }
+      }
+    },
+    "Double-click a game, press ⌘↩, or press the confirm button on a controller. The first time, set up emulators in Settings › Emulators — Set Up All Systems installs the recommended one for every system in your library.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double-cliquez sur un jeu, appuyez sur ⌘↩ ou sur le bouton de validation d’une manette. La première fois, configurez les émulateurs dans Réglages › Émulateurs — Configurer tous les systèmes installe l’émulateur recommandé pour chaque système de votre bibliothèque."
           }
         }
       }
@@ -785,12 +1129,52 @@
         }
       }
     },
+    "Dreamcast games work best as .chd or .gdi dumps. The BIOS files go in a dc folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Dreamcast fonctionnent le mieux en .chd ou .gdi. Les fichiers BIOS vont dans un dossier dc à l’intérieur du dossier BIOS."
+          }
+        }
+      }
+    },
+    "Dumps work best as .rvz (compressed, lossless) or .iso.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les dumps fonctionnent le mieux en .rvz (compressé, sans perte) ou .iso."
+          }
+        }
+      }
+    },
+    "Dumps work best as .rvz (compressed, lossless), .wbfs or .iso.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les dumps fonctionnent le mieux en .rvz (compressé, sans perte), .wbfs ou .iso."
+          }
+        }
+      }
+    },
     "Edit Custom Emulator": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Modifier l’émulateur personnalisé"
+          }
+        }
+      }
+    },
+    "Edit…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier…"
           }
         }
       }
@@ -811,6 +1195,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Émulateurs"
+          }
+        }
+      }
+    },
+    "Emulators & BIOS": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs et BIOS"
+          }
+        }
+      }
+    },
+    "Emulators, BIOS and tips for %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs, BIOS et conseils pour %@"
           }
         }
       }
@@ -845,6 +1249,16 @@
         }
       }
     },
+    "Everything emulation-related lives in one folder: BIOS files, saves and save states (per system), RetroArch's cores and settings, and the emulators RomsBox installs. Back it up or copy it to another Mac to take everything with you. Change its location in Settings › General.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce qui touche à l’émulation est dans un seul dossier : fichiers BIOS, sauvegardes et états (par système), cœurs et réglages de RetroArch, et les émulateurs installés par RomsBox. Sauvegardez-le ou copiez-le sur un autre Mac pour tout emporter. Changez son emplacement dans Réglages › Général."
+          }
+        }
+      }
+    },
     "Executable Path": {
       "localizations": {
         "fr": {
@@ -861,6 +1275,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quitter"
+          }
+        }
+      }
+    },
+    "Exit Big Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter Big Box"
           }
         }
       }
@@ -911,12 +1335,62 @@
         }
       }
     },
+    "File Types": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Types de fichiers"
+          }
+        }
+      }
+    },
     "Folder added. Ready to scan.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Dossier ajouté. Prêt pour l’analyse."
+          }
+        }
+      }
+    },
+    "For anything still missing, see Game Info & Art.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour ce qui manque encore, voir Infos et illustrations."
+          }
+        }
+      }
+    },
+    "For multi-disc games, list the discs in an .m3u playlist (one file name per line) and keep only the .m3u visible, so the emulator can swap discs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour les jeux sur plusieurs disques, listez les disques dans une playlist .m3u (un nom de fichier par ligne) et ne laissez visible que le .m3u, pour que l’émulateur puisse changer de disque."
+          }
+        }
+      }
+    },
+    "Found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trouvé"
+          }
+        }
+      }
+    },
+    "Free play is on by default (Settings › General › Arcade), so Start begins a game without coins. Games first show the Neo Geo boot screen for about 10 seconds.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le jeu libre est activé par défaut (Réglages › Général › Arcade) : Start lance une partie sans pièces. Les jeux affichent d’abord l’écran de démarrage Neo Geo pendant une dizaine de secondes."
           }
         }
       }
@@ -937,6 +1411,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeu"
+          }
+        }
+      }
+    },
+    "Game & Watch games are .mgw files, converted from MAME's artwork and romsets.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Game & Watch sont des fichiers .mgw, convertis depuis les illustrations et romsets de MAME."
+          }
+        }
+      }
+    },
+    "Game Info & Art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infos et illustrations"
+          }
+        }
+      }
+    },
+    "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in downloaded_media or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les noms, descriptions et illustrations déjà présents dans un gamelist.xml (d’ES-DE, Batocera ou RetroBat) et dans downloaded_media ou les dossiers images et videos d’un système sont repris automatiquement. Les jeux d’arcade reçoivent leur vrai titre depuis la liste de jeux de FinalBurn Neo."
+          }
+        }
+      }
+    },
+    "Games can be .iso files or game folders named like Game.ps3 (containing PS3_GAME).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux peuvent être des fichiers .iso ou des dossiers nommés comme Jeu.ps3 (contenant PS3_GAME)."
+          }
+        }
+      }
+    },
+    "Games must be xiso-format .iso dumps.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux doivent être des dumps .iso au format xiso."
+          }
+        }
+      }
+    },
+    "Games played vertically can be rotated in RetroArch's core options.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux qui se jouent à la verticale peuvent être pivotés dans les options du cœur de RetroArch."
+          }
+        }
+      }
+    },
+    "Games show in red and black on a flat screen. RomsBox turns off the core's VR mode, which needs a kind of OpenGL macOS doesn't offer.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux s’affichent en rouge et noir sur un écran plat. RomsBox désactive le mode VR du cœur, qui demande une forme d’OpenGL que macOS ne propose pas."
           }
         }
       }
@@ -971,12 +1515,32 @@
         }
       }
     },
+    "Getting Started": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premiers pas"
+          }
+        }
+      }
+    },
     "Handhelds": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Portables"
+          }
+        }
+      }
+    },
+    "Help": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aide"
           }
         }
       }
@@ -991,12 +1555,62 @@
         }
       }
     },
+    "In Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En jeu"
+          }
+        }
+      }
+    },
+    "In Use": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisé"
+          }
+        }
+      }
+    },
+    "In games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En jeu"
+          }
+        }
+      }
+    },
+    "In the library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans la bibliothèque"
+          }
+        }
+      }
+    },
     "Info": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Infos"
+          }
+        }
+      }
+    },
+    "Information": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Informations"
           }
         }
       }
@@ -1037,6 +1651,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Installer RetroArch"
+          }
+        }
+      }
+    },
+    "Install and choose emulators in Settings…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer et choisir les émulateurs dans les Réglages…"
+          }
+        }
+      }
+    },
+    "Install the PS3 system software once in RPCS3 (File › Install Firmware) with PS3UPDAT.PUP from Sony's website.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installez une fois le logiciel système PS3 dans RPCS3 (Fichier › Installer le firmware) avec PS3UPDAT.PUP depuis le site de Sony."
           }
         }
       }
@@ -1091,6 +1725,16 @@
         }
       }
     },
+    "Installing emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer des émulateurs"
+          }
+        }
+      }
+    },
     "Installing…": {
       "localizations": {
         "fr": {
@@ -1117,6 +1761,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Son émulateur personnalisé a été supprimé."
+          }
+        }
+      }
+    },
+    "Keep each game zipped (.zip or .dosz); DOSBox Pure runs it straight from the archive and asks which program to start the first time.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé (.zip ou .dosz) ; DOSBox Pure le lance directement depuis l’archive et demande quel programme démarrer la première fois."
+          }
+        }
+      }
+    },
+    "Keep each game zipped and named after its romset (for example mslug.zip). Don't unzip or rename them: arcade emulators find games by these names.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé et nommé d’après son romset (par exemple mslug.zip). Ne les décompressez pas et ne les renommez pas : les émulateurs d’arcade trouvent les jeux grâce à ces noms."
+          }
+        }
+      }
+    },
+    "Keep each game zipped with its MAME romset name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé avec le nom de son romset MAME."
+          }
+        }
+      }
+    },
+    "Keep each game zipped with its MAME romset name. The Atomiswave BIOS (awbios.zip) goes in a dc folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé avec le nom de son romset MAME. Le BIOS Atomiswave (awbios.zip) va dans un dossier dc à l’intérieur du dossier BIOS."
+          }
+        }
+      }
+    },
+    "Keep each game zipped with its MAME romset name. The NAOMI BIOS (naomi.zip) goes in a dc folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé avec le nom de son romset MAME. Le BIOS NAOMI (naomi.zip) va dans un dossier dc à l’intérieur du dossier BIOS."
+          }
+        }
+      }
+    },
+    "Keep each game zipped with its romset name. Romsets must match FinalBurn Neo's version (1.0.0.03).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé avec le nom de son romset. Les romsets doivent correspondre à la version de FinalBurn Neo (1.0.0.03)."
+          }
+        }
+      }
+    },
+    "Keep each game zipped with its romset name. Romsets must match the MAME version of the core you use.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé avec le nom de son romset. Les romsets doivent correspondre à la version de MAME du cœur utilisé."
           }
         }
       }
@@ -1181,6 +1895,46 @@
         }
       }
     },
+    "Layout": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disposition"
+          }
+        }
+      }
+    },
+    "Left (X / Square)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gauche (X / Carré)"
+          }
+        }
+      }
+    },
+    "Left Stick Click": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clic du stick gauche"
+          }
+        }
+      }
+    },
+    "Left stick also works as the D-pad": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le stick gauche sert aussi de croix directionnelle"
+          }
+        }
+      }
+    },
     "Library": {
       "localizations": {
         "fr": {
@@ -1191,12 +1945,32 @@
         }
       }
     },
+    "Load": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charger"
+          }
+        }
+      }
+    },
     "Menu / Start": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Menu / Start"
+          }
+        }
+      }
+    },
+    "Missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manquant"
           }
         }
       }
@@ -1241,12 +2015,32 @@
         }
       }
     },
+    "Names and artwork": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noms et illustrations"
+          }
+        }
+      }
+    },
     "Needs BIOS: %@": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "BIOS requis : %@"
+          }
+        }
+      }
+    },
+    "Neo Geo A, B, C and D are the bottom, right, left and top buttons.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les boutons A, B, C et D de la Neo Geo sont les boutons du bas, de droite, de gauche et du haut."
           }
         }
       }
@@ -1281,12 +2075,22 @@
         }
       }
     },
-    "No Custom Emulators": {
+    "Nintendo (Switch)": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun émulateur personnalisé"
+            "value": "Nintendo (Switch)"
+          }
+        }
+      }
+    },
+    "No BIOS needed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun BIOS nécessaire."
           }
         }
       }
@@ -1381,6 +2185,16 @@
         }
       }
     },
+    "No quit combo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans combo pour quitter"
+          }
+        }
+      }
+    },
     "None": {
       "localizations": {
         "fr": {
@@ -1421,6 +2235,16 @@
         }
       }
     },
+    "Notes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remarques"
+          }
+        }
+      }
+    },
     "OK": {
       "localizations": {
         "fr": {
@@ -1447,6 +2271,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Facultatif"
+          }
+        }
+      }
+    },
+    "PCSX2 needs a PS2 BIOS dump in the BIOS folder's pcsx2/bios folder (any region). Dumps work best as .chd or .iso.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PCSX2 a besoin d’un dump du BIOS PS2 dans le dossier pcsx2/bios du dossier BIOS (n’importe quelle région). Les dumps fonctionnent le mieux en .chd ou .iso."
           }
         }
       }
@@ -1551,6 +2385,36 @@
         }
       }
     },
+    "Playing Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer"
+          }
+        }
+      }
+    },
+    "Press Assign, then the button on your controller": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquez sur Attribuer, puis appuyez sur le bouton de votre manette"
+          }
+        }
+      }
+    },
+    "Press a button…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyez sur un bouton…"
+          }
+        }
+      }
+    },
     "Previous / next system": {
       "localizations": {
         "fr": {
@@ -1561,12 +2425,32 @@
         }
       }
     },
+    "Profiles": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profils"
+          }
+        }
+      }
+    },
     "Publisher": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Éditeur"
+          }
+        }
+      }
+    },
+    "Put BIOS files in %@. Dump them from hardware you own; RomsBox never downloads them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez les fichiers BIOS dans %@. Extrayez-les du matériel que vous possédez ; RomsBox ne les télécharge jamais."
           }
         }
       }
@@ -1591,12 +2475,32 @@
         }
       }
     },
+    "ROM Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier des ROMs"
+          }
+        }
+      }
+    },
     "ROMs Folders": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Dossiers de ROM"
+          }
+        }
+      }
+    },
+    "RPCS3 uses its own controller setup. Configure it once in RPCS3 (Pads) — RomsBox's controller settings don't apply.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RPCS3 utilise sa propre configuration de manette. Réglez-la une fois dans RPCS3 (Pads) — les réglages de manette de RomsBox ne s’appliquent pas."
           }
         }
       }
@@ -1627,6 +2531,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Recommandés"
+          }
+        }
+      }
+    },
+    "Recommended Emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateur recommandé"
           }
         }
       }
@@ -1711,6 +2625,16 @@
         }
       }
     },
+    "Reset to Default": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir par défaut"
+          }
+        }
+      }
+    },
     "Restart Now": {
       "localizations": {
         "fr": {
@@ -1771,6 +2695,106 @@
         }
       }
     },
+    "Right (B / Circle)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Droite (B / Rond)"
+          }
+        }
+      }
+    },
+    "Right Stick Click": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clic du stick droit"
+          }
+        }
+      }
+    },
+    "Right confirms": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valider à droite"
+          }
+        }
+      }
+    },
+    "Right — Nintendo, Switch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À droite — Nintendo, Switch"
+          }
+        }
+      }
+    },
+    "RomsBox Help": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aide RomsBox"
+          }
+        }
+      }
+    },
+    "RomsBox can fetch descriptions, release dates and artwork from ScreenScraper or TheGamesDB. ScreenScraper matches games exactly by file; TheGamesDB searches by title.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RomsBox peut récupérer descriptions, dates de sortie et illustrations depuis ScreenScraper ou TheGamesDB. ScreenScraper identifie les jeux exactement par fichier ; TheGamesDB cherche par titre."
+          }
+        }
+      }
+    },
+    "RomsBox downloads emulators from their official sources only: RetroArch and its cores from libretro's buildbot, standalone emulators from their own release pages. Each system's page lists the recommended emulator first.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RomsBox télécharge les émulateurs uniquement depuis leurs sources officielles : RetroArch et ses cœurs depuis le buildbot de libretro, les émulateurs autonomes depuis leur propre page de versions. La page de chaque système indique d’abord l’émulateur recommandé."
+          }
+        }
+      }
+    },
+    "RomsBox installs blueMSX's machine and database files into the BIOS folder with the core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RomsBox installe les fichiers de machines et de base de données de blueMSX dans le dossier BIOS avec le cœur."
+          }
+        }
+      }
+    },
+    "RomsBox reads ROMs folders organized the way Batocera, RetroBat and ES-DE do it: one subfolder per system, named after the system (snes, megadrive, neogeo…). Each system's help page lists the folder names it recognizes.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RomsBox lit les dossiers de ROMs organisés comme Batocera, RetroBat et ES-DE : un sous-dossier par système, nommé d’après le système (snes, megadrive, neogeo…). La page d’aide de chaque système indique les noms de dossier reconnus."
+          }
+        }
+      }
+    },
+    "Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les romsets doivent correspondre à la version de FinalBurn Neo (1.0.0.03). Ceux d’autres versions ou d’un autre émulateur peuvent ne pas se charger."
+          }
+        }
+      }
+    },
     "Running…": {
       "localizations": {
         "fr": {
@@ -1787,6 +2811,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enregistrer"
+          }
+        }
+      }
+    },
+    "Save Current Settings as Profile…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer les réglages actuels comme profil…"
+          }
+        }
+      }
+    },
+    "Save Profile": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer le profil"
+          }
+        }
+      }
+    },
+    "Save your setup as a profile to switch back to it later; profiles are kept in the Emulation folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrez votre configuration comme profil pour y revenir plus tard ; les profils sont conservés dans le dossier Emulation."
+          }
+        }
+      }
+    },
+    "Saved profiles are kept in the Emulation folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les profils enregistrés sont conservés dans le dossier Emulation."
+          }
+        }
+      }
+    },
+    "Saving with an existing profile's name replaces it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer sous le nom d’un profil existant le remplace."
           }
         }
       }
@@ -1881,6 +2955,16 @@
         }
       }
     },
+    "Scraping": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupération des infos"
+          }
+        }
+      }
+    },
     "Scraping %lld of %lld…": {
       "localizations": {
         "en": {
@@ -1957,12 +3041,12 @@
         }
       }
     },
-    "Select + Start closes the running game from the controller — set up in RetroArch and DuckStation when RomsBox launches them. Games save normally on the way out.": {
+    "Select a Topic": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Select + Start ferme le jeu en cours depuis la manette — configuré dans RetroArch et DuckStation quand RomsBox les lance. Les jeux sauvegardent normalement en quittant."
+            "value": "Choisissez un sujet"
           }
         }
       }
@@ -1973,6 +3057,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sélectionnez un jeu pour voir ses détails."
+          }
+        }
+      }
+    },
+    "Select inserts a coin, Start starts the game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select insère une pièce, Start lance la partie."
+          }
+        }
+      }
+    },
+    "Select switches the disk side in most games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select change de face de disquette dans la plupart des jeux."
           }
         }
       }
@@ -1997,6 +3101,16 @@
         }
       }
     },
+    "Settings › Controller sets which button confirms: the bottom one (Xbox, PlayStation) or the right one (Nintendo, Switch). It applies to RomsBox, Big Box and RetroArch's menus.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages › Manette choisit le bouton de validation : celui du bas (Xbox, PlayStation) ou celui de droite (Nintendo, Switch). Cela s’applique à RomsBox, Big Box et aux menus de RetroArch."
+          }
+        }
+      }
+    },
     "Show game details": {
       "localizations": {
         "fr": {
@@ -2013,6 +3127,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux de combat à six boutons utilisent les quatre boutons de face pour les attaques faibles et moyennes, et L et R pour les plus fortes."
+          }
+        }
+      }
+    },
+    "Six-button games use the four face buttons plus L and R.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux à six boutons utilisent les quatre boutons de face plus L et R."
+          }
+        }
+      }
+    },
+    "Some systems need the console's BIOS. These files are copyrighted, so RomsBox never downloads them: dump them from hardware you own and put them in the Emulation folder's BIOS folder. Each system's page shows which files it needs and whether they're there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains systèmes ont besoin du BIOS de la console. Ces fichiers sont protégés par le droit d’auteur, RomsBox ne les télécharge donc jamais : extrayez-les du matériel que vous possédez et placez-les dans le dossier BIOS du dossier Emulation. La page de chaque système indique les fichiers nécessaires et s’ils sont présents."
           }
         }
       }
@@ -2063,6 +3207,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lancez les parties sans insérer de pièces. S’applique aux jeux Neo Geo lancés avec FinalBurn Neo."
+          }
+        }
+      }
+    },
+    "Stick as D-pad": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stick comme croix"
+          }
+        }
+      }
+    },
+    "Swap A/B and X/Y": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inverser A/B et X/Y"
           }
         }
       }
@@ -2127,6 +3291,36 @@
         }
       }
     },
+    "The Emulation folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dossier Emulation"
+          }
+        }
+      }
+    },
+    "The Jaguar's number pad isn't on modern controllers; games that need it map its keys to spare buttons.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pavé numérique de la Jaguar n’existe pas sur les manettes modernes ; les jeux qui en ont besoin associent ses touches à des boutons libres."
+          }
+        }
+      }
+    },
+    "The Virtual Boy's second D-pad is on the right stick.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La deuxième croix directionnelle du Virtual Boy est sur le stick droit."
+          }
+        }
+      }
+    },
     "The assigned custom emulator profile no longer exists.": {
       "localizations": {
         "fr": {
@@ -2143,6 +3337,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur « %@ » n’est plus installé."
+          }
+        }
+      }
+    },
+    "The left stick option applies to RetroArch games; Select + Start also quits DuckStation. Games save normally on the way out.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’option du stick gauche s’applique aux jeux RetroArch ; Select + Start quitte aussi DuckStation. Les jeux sauvegardent normalement en quittant."
+          }
+        }
+      }
+    },
+    "The touch screen follows the mouse; click to touch.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’écran tactile suit la souris ; cliquez pour toucher."
           }
         }
       }
@@ -2217,12 +3431,42 @@
         }
       }
     },
+    "To always start in Big Box, turn on Open Big Box at launch in Settings › General.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour toujours démarrer en Big Box, activez Ouvrir Big Box au démarrage dans Réglages › Général."
+          }
+        }
+      }
+    },
+    "Top (Y / Triangle)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haut (Y / Triangle)"
+          }
+        }
+      }
+    },
     "Total Playtime": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Temps de jeu total"
+          }
+        }
+      }
+    },
+    "Triforce games run in Dolphin, the GameCube and Wii emulator, which now includes Triforce support. Use .iso, .gcz or .rvz dumps.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Triforce tournent dans Dolphin, l’émulateur GameCube et Wii, qui prend désormais en charge le Triforce. Utilisez des dumps .iso, .gcz ou .rvz."
           }
         }
       }
@@ -2307,12 +3551,72 @@
         }
       }
     },
+    "Use .adf disks, or .lha/WHDLoad packs for hard-disk installs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des disquettes .adf, ou des paquets .lha/WHDLoad pour les installations sur disque dur."
+          }
+        }
+      }
+    },
+    "Use .chd or .cue/.bin dumps. The Neo Geo CD BIOS goes in a neocd folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des dumps .chd ou .cue/.bin. Le BIOS Neo Geo CD va dans un dossier neocd à l’intérieur du dossier BIOS."
+          }
+        }
+      }
+    },
+    "Use .iso or .cso dumps. RomsBox also installs PPSSPP's support files (fonts and data) into the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des dumps .iso ou .cso. RomsBox installe aussi les fichiers de PPSSPP (polices et données) dans le dossier BIOS."
+          }
+        }
+      }
+    },
+    "Use .wua files (Cemu's compressed format), or .wud/.wux disc images.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des fichiers .wua (format compressé de Cemu), ou des images disque .wud/.wux."
+          }
+        }
+      }
+    },
     "Use System Default": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Utiliser le réglage du système"
+          }
+        }
+      }
+    },
+    "Use decrypted game dumps (.3ds, .cci or .cxi).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des dumps de jeux déchiffrés (.3ds, .cci ou .cxi)."
+          }
+        }
+      }
+    },
+    "Used in RomsBox, Big Box and RetroArch's menus.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisé dans RomsBox, Big Box et les menus de RetroArch."
           }
         }
       }
@@ -2337,12 +3641,12 @@
         }
       }
     },
-    "Y": {
+    "Wikipedia": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Y"
+            "value": "Wikipédia"
           }
         }
       }
@@ -2353,6 +3657,32 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre compte (facultatif)"
+          }
+        }
+      }
+    },
+    "Your ROMs folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre dossier de ROMs"
+          }
+        }
+      }
+    },
+    "help.badge.recommended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommended"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommandé"
           }
         }
       }
@@ -2373,6 +3703,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "libretro ne publie pas ce cœur pour Apple Silicon, il n’y a donc rien à comparer."
+          }
+        }
+      }
+    },
+    "neogeo.zip (the Neo Geo BIOS set) goes in the BIOS folder, still zipped.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "neogeo.zip (le BIOS de la Neo Geo) va dans le dossier BIOS, sans le décompresser."
+          }
+        }
+      }
+    },
+    "xemu needs the Xbox boot ROM (MCPX), a flash BIOS and a hard disk image. Set them once in xemu (Settings › System).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xemu a besoin de la ROM de démarrage Xbox (MCPX), d’un BIOS flash et d’une image de disque dur. Indiquez-les une fois dans xemu (Réglages › Système)."
+          }
+        }
+      }
+    },
+    "xemu uses its own controller setup — configure it once in xemu.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xemu utilise sa propre configuration de manette — réglez-la une fois dans xemu."
           }
         }
       }

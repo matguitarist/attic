@@ -31,6 +31,10 @@ public struct StandaloneEmulator: Sendable, Hashable, Identifiable {
         /// `downloadURL` is Dolphin's release feed (JSON); the macOS disk
         /// image it links to is downloaded and the .app copied off it.
         case dolphinReleaseFeed
+        /// `downloadURL` is a GitHub "latest release" API URL; the asset
+        /// whose name ends with the suffix is downloaded (.zip, .dmg, .7z
+        /// or .tar.xz).
+        case githubRelease(assetSuffix: String)
     }
 
     public let id: String
@@ -86,6 +90,16 @@ public struct PortableHome: Sendable, Hashable {
     /// Bound when "Quit games with Select + Start" is on; removed again
     /// (only if still RomsBox's value) when it's turned off.
     public var quitComboSettings: [Setting] = []
+
+    /// Where the emulator keeps player 1's button bindings, so RomsBox's
+    /// button mapping can be applied to it. Keys are named by
+    /// `RetroPadButton.duckStationName`; values are `prefix` + the SDL
+    /// button name.
+    public struct PadBindings: Sendable, Hashable {
+        public let section: String
+        public let prefix: String
+    }
+    public var padBindings: PadBindings?
 }
 
 /// A BIOS/firmware file a system needs. These are copyrighted and must be
@@ -134,6 +148,18 @@ public enum EmulatorCatalog {
     /// decide whether a core is current.
     public static let buildbotCoreChecksumsURL = buildbotCoresURL.appending(path: ".index-extended")
 
+    /// libretro's downloadable "core system files", by core.
+    public static let coreSystemFiles: [String: String] = [
+        "ppsspp_libretro": "PPSSPP.zip",
+        "dolphin_libretro": "Dolphin.zip",
+        "pcsx2_libretro": "LRPS2.zip",
+        "bluemsx_libretro": "blueMSX.zip"
+    ]
+
+    public static func systemFilesURL(_ archiveName: String) -> URL {
+        URL(string: "https://buildbot.libretro.com/assets/system/")!.appending(path: archiveName)
+    }
+
     public static func coreDownloadURL(for coreIdentifier: String) -> URL {
         buildbotCoresURL.appending(path: "\(coreIdentifier).dylib.zip")
     }
@@ -172,7 +198,8 @@ public enum EmulatorCatalog {
             quitComboSettings: [
                 // DuckStation chords use " & "; PowerOff in -batch mode exits.
                 .init("Hotkeys", "PowerOff", "SDL-0/Back & SDL-0/Start")
-            ]
+            ],
+            padBindings: .init(section: "Pad1", prefix: "SDL-0/")
         )
     )
 
@@ -216,16 +243,55 @@ public enum EmulatorCatalog {
         archive: .dolphinReleaseFeed,
         homepageURL: URL(string: "https://dolphin-emu.org")!,
         license: "GPL-2.0-or-later",
-        systems: [.triforce],
+        systems: [.gamecube, .wii, .triforce],
         portableHome: nil
     )
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin]
+    public static let xemu = StandaloneEmulator(
+        id: "xemu",
+        name: "xemu",
+        summary: String(localized: "The original Xbox emulator.", bundle: .module),
+        appBundleName: "xemu.app",
+        executableRelativePath: "Contents/MacOS/xemu",
+        argumentTemplate: "-full-screen -dvd_path {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/xemu-project/xemu/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos-universal.zip"),
+        homepageURL: URL(string: "https://xemu.app")!,
+        license: "GPL-2.0",
+        systems: [.xbox],
+        portableHome: nil
+    )
+
+    public static let rpcs3 = StandaloneEmulator(
+        id: "rpcs3",
+        name: "RPCS3",
+        summary: String(localized: "The PlayStation 3 emulator, native on Apple Silicon.", bundle: .module),
+        appBundleName: "RPCS3.app",
+        executableRelativePath: "Contents/MacOS/rpcs3",
+        argumentTemplate: "--no-gui --fullscreen {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/RPCS3/rpcs3-binaries-mac-arm64/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "_macos_aarch64.7z"),
+        homepageURL: URL(string: "https://rpcs3.net")!,
+        license: "GPL-2.0",
+        systems: [.ps3],
+        portableHome: nil
+    )
+
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3]
 
     // MARK: - Per-system table
 
     private static let genesisPlusGX = RecommendedCore("genesis_plus_gx_libretro", "Genesis Plus GX", String(localized: "Highly accurate Sega 8/16-bit and Sega CD.", bundle: .module))
     private static let picoDrive = RecommendedCore("picodrive_libretro", "PicoDrive", String(localized: "Fast; the only option with 32X support.", bundle: .module))
+    // Shared by several systems below.
+    private static let gambatte = RecommendedCore("gambatte_libretro", "Gambatte", String(localized: "Accurate and light — the usual Game Boy choice.", bundle: .module))
+    private static let sameBoy = RecommendedCore("sameboy_libretro", "SameBoy", String(localized: "The most accurate Game Boy core.", bundle: .module))
+    private static let gearboy = RecommendedCore("gearboy_libretro", "Gearboy", String(localized: "Fast, with Super Game Boy support.", bundle: .module))
+    private static let flycast = RecommendedCore("flycast_libretro", "Flycast", String(localized: "Dreamcast, NAOMI and Atomiswave, with upscaling.", bundle: .module))
+    private static let beetleWonderSwan = RecommendedCore("mednafen_wswan_libretro", "Beetle WonderSwan", String(localized: "Accurate WonderSwan and WonderSwan Color.", bundle: .module))
+    private static let beetleNGP = RecommendedCore("mednafen_ngp_libretro", "Beetle NeoPop", String(localized: "Accurate Neo Geo Pocket and Pocket Color.", bundle: .module))
+    private static let race = RecommendedCore("race_libretro", "RACE", String(localized: "Lighter Neo Geo Pocket core.", bundle: .module))
+    private static let dolphinCore = RecommendedCore("dolphin_libretro", "Dolphin", String(localized: "Dolphin as a RetroArch core; the standalone app is more complete.", bundle: .module))
     private static let fbneo = RecommendedCore("fbneo_libretro", "FinalBurn Neo", String(localized: "The reference Neo Geo and arcade emulator.", bundle: .module))
     private static let mameCurrent = RecommendedCore("mame_libretro", "MAME", String(localized: "Current MAME; needs romsets from the same MAME version.", bundle: .module))
     private static let beetlePCE = RecommendedCore("mednafen_pce_libretro", "Beetle PCE", String(localized: "Accurate PC Engine, CD and SuperGrafx.", bundle: .module))
@@ -338,6 +404,45 @@ public enum EmulatorCatalog {
         .init(systemID: .cps1, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .cps2, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .cps3, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .gb, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gb_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
+        .init(systemID: .gbc, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gbc_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
+        .init(systemID: .n64, cores: [RecommendedCore("mupen64plus_next_libretro", "Mupen64Plus-Next", String(localized: "Best compatibility, with upscaling.", bundle: .module)), RecommendedCore("parallel_n64_libretro", "ParaLLEl N64", String(localized: "Alternative N64 core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .nds, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Accurate DS and DSi, no BIOS needed.", bundle: .module)), RecommendedCore("desmume_libretro", "DeSmuME", String(localized: "Older, widely compatible DS core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios7.bin", required: false, note: "Optional; melonDS DS has a built-in replacement"), BIOSRequirement("bios9.bin", required: false, note: "Optional"), BIOSRequirement("firmware.bin", required: false, note: "Optional")], prefersStandalone: false),
+        .init(systemID: .n3ds, cores: [RecommendedCore("azahar_libretro", "Azahar", String(localized: "Citra's actively developed successor.", bundle: .module)), RecommendedCore("panda3ds_libretro", "Panda3DS", String(localized: "Newer, lighter 3DS core.", bundle: .module)), RecommendedCore("citra_libretro", "Citra", String(localized: "The original 3DS core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .gamecube, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
+        .init(systemID: .wii, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
+        .init(systemID: .wiiu, cores: [RecommendedCore("cemu_libretro", "Cemu", String(localized: "The Wii U emulator, as a RetroArch core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .fds, cores: [RecommendedCore("fceumm_libretro", "FCEUmm", String(localized: "Famicom Disk System support built in.", bundle: .module)), RecommendedCore("mesen_libretro", "Mesen", String(localized: "Most accurate NES core, with disk support.", bundle: .module))], standalone: [], bios: [BIOSRequirement("disksys.rom", note: "Famicom Disk System BIOS")], prefersStandalone: false),
+        .init(systemID: .pokemini, cores: [RecommendedCore("pokemini_libretro", "PokeMini", String(localized: "The Pokémon Mini core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios.min", required: false, note: "Optional; a free replacement is built in")], prefersStandalone: false),
+        .init(systemID: .gameandwatch, cores: [RecommendedCore("gw_libretro", "Game & Watch", String(localized: "Plays Game & Watch .mgw files.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .sg1000, cores: [genesisPlusGX, RecommendedCore("gearsystem_libretro", "Gearsystem", String(localized: "Accurate Sega 8-bit core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .naomi, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi.zip")], prefersStandalone: false),
+        .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
+        .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module)), RecommendedCore("play_libretro", "Play!", String(localized: "Lighter PS2 emulator; runs fewer games.", bundle: .module))], standalone: [], bios: [BIOSRequirement("pcsx2/bios/scph39001.bin", required: false, note: "Needed by PCSX2: any PS2 BIOS dump, in this folder")], prefersStandalone: false),
+        .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
+        .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
+        .init(systemID: .msx, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Accurate MSX, MSX2 and MSX2+.", bundle: .module)), RecommendedCore("fmsx_libretro", "fMSX", String(localized: "Lighter MSX core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .dos, cores: [RecommendedCore("dosbox_pure_libretro", "DOSBox Pure", String(localized: "Plays zipped DOS games directly.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .wonderswan, cores: [beetleWonderSwan], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .wonderswancolor, cores: [beetleWonderSwan], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .ngp, cores: [beetleNGP, race], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .ngpc, cores: [beetleNGP, race], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .neogeocd, cores: [RecommendedCore("neocd_libretro", "NeoCD", String(localized: "The Neo Geo CD core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("neocd/neocd.bin", note: "Neo Geo CD BIOS (front or top loader)")], prefersStandalone: false),
+        .init(systemID: .atarist, cores: [RecommendedCore("hatari_libretro", "Hatari", String(localized: "The Atari ST, STE, TT and Falcon emulator.", bundle: .module))], standalone: [], bios: [BIOSRequirement("tos.img", note: "Atari TOS ROM")], prefersStandalone: false),
+        .init(systemID: .atari800, cores: [RecommendedCore("atari800_libretro", "Atari800", String(localized: "Atari 400/800, XL and XE.", bundle: .module))], standalone: [], bios: [BIOSRequirement("ATARIXL.ROM", required: false, note: "Optional; needed by some XL/XE games"), BIOSRequirement("ATARIBAS.ROM", required: false, note: "Optional; Atari BASIC")], prefersStandalone: false),
+        .init(systemID: .colecovision, cores: [RecommendedCore("gearcoleco_libretro", "Gearcoleco", String(localized: "Accurate ColecoVision core.", bundle: .module)), RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Also runs ColecoVision.", bundle: .module))], standalone: [], bios: [BIOSRequirement("colecovision.rom")], prefersStandalone: false),
+        .init(systemID: .intellivision, cores: [RecommendedCore("freeintv_libretro", "FreeIntv", String(localized: "The Intellivision core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("exec.bin", note: "Executive ROM"), BIOSRequirement("grom.bin", note: "Graphics ROM")], prefersStandalone: false),
+        .init(systemID: .vectrex, cores: [RecommendedCore("vecx_libretro", "vecx", String(localized: "The Vectrex core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .odyssey2, cores: [RecommendedCore("o2em_libretro", "O2EM", String(localized: "Odyssey² and Videopac.", bundle: .module))], standalone: [], bios: [BIOSRequirement("o2rom.bin")], prefersStandalone: false),
+        .init(systemID: .channelf, cores: [RecommendedCore("freechaf_libretro", "FreeChaF", String(localized: "The Channel F core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("sl31253.bin"), BIOSRequirement("sl31254.bin")], prefersStandalone: false),
+        .init(systemID: .c64, cores: [RecommendedCore("vice_x64sc_libretro", "VICE x64sc", String(localized: "Accurate Commodore 64.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .amiga, cores: [RecommendedCore("puae_libretro", "PUAE", String(localized: "Amiga 500 to 1200, CD32 and CDTV.", bundle: .module))], standalone: [], bios: [BIOSRequirement("kick34005.A500", required: false, note: "Kickstart 1.3; without it a free replacement runs fewer games")], prefersStandalone: false),
+        .init(systemID: .zxspectrum, cores: [RecommendedCore("fuse_libretro", "Fuse", String(localized: "The ZX Spectrum emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .amstradcpc, cores: [RecommendedCore("cap32_libretro", "Caprice32", String(localized: "The Amstrad CPC core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .mame, cores: [mameCurrent, RecommendedCore("mame2003_plus_libretro", "MAME 2003-Plus", String(localized: "Older, lighter MAME; needs 0.78 romsets.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .fbneo, cores: [fbneo], standalone: [], bios: [], prefersStandalone: false),
         // No libretro core runs Triforce games; Dolphin's own app does.
         .init(systemID: .triforce, cores: [], standalone: [dolphin], bios: [], prefersStandalone: true),
 

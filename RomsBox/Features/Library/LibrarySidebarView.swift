@@ -12,6 +12,8 @@ import RomsBoxPersistence
 struct LibrarySidebarView: View {
     let systems: [GameSystem]
     @Binding var selection: LibrarySelection?
+    @Environment(HelpNavigator.self) private var helpNavigator
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         List(selection: $selection) {
@@ -33,6 +35,11 @@ struct LibrarySidebarView: View {
                             .lineLimit(1)
                             .badge(system.gameCount)
                             .tag(LibrarySelection.system(system.systemID))
+                            .contextMenu {
+                                Button("About This System") {
+                                    helpNavigator.open(.system(system.systemID), with: openWindow)
+                                }
+                            }
                     }
                 }
             }

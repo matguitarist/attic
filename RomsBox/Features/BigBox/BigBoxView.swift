@@ -392,12 +392,17 @@ private struct BigBoxSystemBar: View {
 }
 
 private struct BigBoxHintBar: View {
+    @Environment(GamepadInputMonitor.self) private var gamepad
+    // Read so the hints update as soon as the layout changes.
+    @Environment(ControllerSettingsStore.self) private var controllerSettings
+
     var body: some View {
+        let _ = controllerSettings.settings.layout
         HStack(spacing: 36) {
-            hint("a.circle.fill", "Play")
-            hint("y.circle.fill", "Favorite")
+            hint(gamepad.confirmButtonSymbol, "Play")
+            hint(gamepad.favoriteButtonSymbol, "Favorite")
             hint("dpad.fill", "Browse")
-            hint("b.circle.fill", "Exit")
+            hint(gamepad.backButtonSymbol, "Exit")
         }
         .font(.title3)
         .foregroundStyle(.secondary)

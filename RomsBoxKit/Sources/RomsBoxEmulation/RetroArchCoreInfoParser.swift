@@ -47,3 +47,14 @@ enum RetroArchCoreInfoParser {
         )
     }
 }
+
+extension RetroArchCoreInfo {
+    /// File extensions a core accepts, read from its `.info` file in
+    /// `infoDirectory` — works whether or not the core itself is installed,
+    /// since RomsBox keeps libretro's whole info set.
+    public static func supportedExtensions(ofCore coreIdentifier: String, infoDirectory: URL) -> [String] {
+        let infoURL = infoDirectory.appending(path: "\(coreIdentifier).info")
+        guard let contents = try? String(contentsOf: infoURL, encoding: .utf8) else { return [] }
+        return RetroArchCoreInfoParser.parse(contents: contents, coreIdentifier: coreIdentifier, dylibURL: infoURL).supportedExtensions
+    }
+}

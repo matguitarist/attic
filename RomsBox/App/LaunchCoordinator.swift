@@ -23,14 +23,13 @@ final class LaunchCoordinator {
     private var currentSession: RunningGameSession?
     private let zippedROMExtractor = ZippedROMExtractor()
 
-    /// "Quit games with Select + Start" (Settings › General). Applied by
-    /// configuring each emulator's own quit combo at launch — RetroArch's
-    /// `input_quit_gamepad_combo`, DuckStation's PowerOff hotkey — since
-    /// emulators own the controller while a game runs.
-    static let quitComboEnabledKey = "quitGameWithSelectStart"
+    /// Settings › Controller. Applied by configuring each emulator at
+    /// launch — RetroArch's binds and quit combo, DuckStation's PowerOff
+    /// hotkey — since emulators own the controller while a game runs.
+    private let controllerSettingsStore: ControllerSettingsStore
 
-    private var quitComboEnabled: Bool {
-        UserDefaults.standard.object(forKey: Self.quitComboEnabledKey) as? Bool ?? true
+    init(controllerSettingsStore: ControllerSettingsStore) {
+        self.controllerSettingsStore = controllerSettingsStore
     }
 
     /// "Neo Geo free play" (Settings › General) — see `CoreLaunchOptions`.
@@ -108,13 +107,14 @@ final class LaunchCoordinator {
             // Arcade ROMs are multi-file sets the core must receive as the
             // archive itself (FinalBurn Neo reads the zip) — never extract.
             let systemID = CanonicalSystemID(game.systemCanonicalID)
-            let romURL = SystemTaxonomy.definition(for: systemID)?.category == .arcade
+            // DOSBox Pure likewise runs zipped DOS games as they are.
+            let romURL = SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos
                 ? game.romAbsoluteURL
                 : zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let folder = retroArchStore.emulationFolderStore.folder
-            let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(for: systemID, quitCombo: quitComboEnabled)
+            let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(for: systemID, controller: controllerSettingsStore.settings)
             try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
                 system: systemID, coreIdentifier: identifier, romURL: game.romAbsoluteURL, neoGeoFreePlay: neoGeoFreePlay
             ))
@@ -132,7 +132,7 @@ final class LaunchCoordinator {
             if let catalogID = profile.catalogEmulatorID,
                let emulator = EmulatorCatalog.standaloneEmulators.first(where: { $0.id == catalogID }) {
                 environment = try retroArchStore.emulationFolderStore.folder
-                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID), quitCombo: quitComboEnabled)
+                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID), quitCombo: controllerSettingsStore.settings.quitWithSelectStart, buttonMapping: controllerSettingsStore.settings.buttonMapping)
             }
             return try CustomEmulatorLauncher().launch(
                 executableURL: profile.executableURL,

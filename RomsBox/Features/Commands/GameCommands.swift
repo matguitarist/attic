@@ -56,3 +56,27 @@ struct BigBoxCommands: Commands {
         }
     }
 }
+
+/// Help › RomsBox Help (⌘?) opens the help window instead of the system's
+/// "Help isn't available" placeholder.
+struct HelpCommands: Commands {
+    let navigator: HelpNavigator
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        CommandGroup(replacing: .help) {
+            Button("RomsBox Help") {
+                openWindow(id: HelpView.windowID)
+            }
+            .keyboardShortcut("?", modifiers: .command)
+        }
+    }
+}
+
+extension HelpNavigator {
+    /// Shows `page` in the help window, opening it if needed.
+    func open(_ page: HelpPage, with openWindow: OpenWindowAction) {
+        selection = page
+        openWindow(id: HelpView.windowID)
+    }
+}

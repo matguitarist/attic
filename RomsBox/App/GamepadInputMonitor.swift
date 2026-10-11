@@ -5,14 +5,15 @@ import RomsBoxModels
 
 enum GamepadCommand: Equatable {
     case move(GridMoveDirection)
-    /// A / Cross — play the selected game.
+    /// The confirm button (bottom or right, per Settings › Controller) —
+    /// play the selected game.
     case activate
     /// Y / Triangle.
     case toggleFavorite
     /// Shoulder buttons — step through the sidebar's sections and systems.
     case previousSection
     case nextSection
-    /// B / Circle — leave Big Box.
+    /// The other of bottom/right — leave Big Box.
     case back
     /// Menu / Start — open or close Big Box.
     case toggleBigBox
@@ -55,11 +56,19 @@ final class GamepadInputMonitor {
     }
 
     private var gameControllerName: String?
+    /// The GameController pad in use, for its button glyphs.
+    private var gamepad: GCExtendedGamepad?
+    private let controllerSettingsStore: ControllerSettingsStore
     private var usbPadNames: [UInt64: String] = [:]
     private var usbPadStates: [UInt64: XInputPadState] = [:]
     private var usbSource: XInputUSBGamepadSource?
 
     private var sequence = 0
+
+    /// While set, the next button press is handed here (for button mapping
+    /// in Settings) instead of becoming a library command.
+    private var buttonCapture: ((PhysicalButton) -> Void)?
+    private(set) var isCapturingButton = false
     /// Per input path, so a pad on one path releasing a direction doesn't
     /// cancel a hold on the other; the effective set is their union.
     private var heldDirectionsBySource: [InputSource: Set<GridMoveDirection>] = [:]
@@ -75,7 +84,8 @@ final class GamepadInputMonitor {
         case xinputUSB
     }
 
-    init() {
+    init(controllerSettingsStore: ControllerSettingsStore) {
+        self.controllerSettingsStore = controllerSettingsStore
         let center = NotificationCenter.default
         // Re-reads `GCController.controllers()` rather than taking the
         // notification's object, which can't be sent across into the main
@@ -122,15 +132,17 @@ final class GamepadInputMonitor {
         let previous = usbPadStates[id] ?? .neutral
         usbPadStates[id] = state
 
-        // Same mapping as the GameController path: A plays, Y favorites,
-        // shoulders switch sections. Edge-triggered, like `bind(_:to:)`.
+        // Same mapping as the GameController path; edge-triggered.
         let newlyPressed = state.buttons.subtracting(previous.buttons)
-        if newlyPressed.contains(.a) { send(.activate) }
-        if newlyPressed.contains(.y) { send(.toggleFavorite) }
-        if newlyPressed.contains(.leftShoulder) { send(.previousSection) }
-        if newlyPressed.contains(.rightShoulder) { send(.nextSection) }
-        if newlyPressed.contains(.b) { send(.back) }
-        if newlyPressed.contains(.start) { send(.toggleBigBox) }
+        let physical: [(XInputButtons, PhysicalButton)] = [
+            (.a, .bottom), (.b, .right), (.x, .left), (.y, .top),
+            (.leftShoulder, .l1), (.rightShoulder, .r1), (.leftThumb, .l3), (.rightThumb, .r3),
+            (.back, .select), (.start, .start),
+            (.dpadUp, .dpadUp), (.dpadDown, .dpadDown), (.dpadLeft, .dpadLeft), (.dpadRight, .dpadRight)
+        ]
+        for (button, position) in physical where newlyPressed.contains(button) {
+            handlePress(position)
+        }
 
         setHeldDirections(combinedUSBDirections, from: .xinputUSB)
     }
@@ -150,25 +162,130 @@ final class GamepadInputMonitor {
         gamepad.valueChangedHandler = { [weak self] gamepad, _ in
             MainActor.assumeIsolated { self?.updateDirections(from: gamepad) }
         }
-        bind(gamepad.buttonA, to: .activate)
-        bind(gamepad.buttonY, to: .toggleFavorite)
-        bind(gamepad.leftShoulder, to: .previousSection)
-        bind(gamepad.rightShoulder, to: .nextSection)
-        bind(gamepad.buttonB, to: .back)
-        bind(gamepad.buttonMenu, to: .toggleBigBox)
+        // GameController names buttons by position (buttonA is always the
+        // bottom one, whatever its label), which is what `PhysicalButton`
+        // means too; the layout decides at press time which confirms.
+        for physical in PhysicalButton.allCases {
+            guard let button = Self.element(physical, of: gamepad) else { continue }
+            button.pressedChangedHandler = { [weak self] _, _, pressed in
+                guard pressed else { return }
+                MainActor.assumeIsolated { self?.handlePress(physical) }
+            }
+        }
 
         refreshConnectedController()
     }
 
-    private func bind(_ button: GCControllerButtonInput, to command: GamepadCommand) {
-        button.pressedChangedHandler = { [weak self] _, _, pressed in
-            guard pressed else { return }
-            MainActor.assumeIsolated { self?.send(command) }
+    private static func element(_ physical: PhysicalButton, of gamepad: GCExtendedGamepad) -> GCControllerButtonInput? {
+        switch physical {
+        case .bottom: gamepad.buttonA
+        case .right: gamepad.buttonB
+        case .left: gamepad.buttonX
+        case .top: gamepad.buttonY
+        case .l1: gamepad.leftShoulder
+        case .r1: gamepad.rightShoulder
+        case .l2: gamepad.leftTrigger
+        case .r2: gamepad.rightTrigger
+        case .l3: gamepad.leftThumbstickButton
+        case .r3: gamepad.rightThumbstickButton
+        case .select: gamepad.buttonOptions
+        case .start: gamepad.buttonMenu
+        case .dpadUp: gamepad.dpad.up
+        case .dpadDown: gamepad.dpad.down
+        case .dpadLeft: gamepad.dpad.left
+        case .dpadRight: gamepad.dpad.right
         }
+    }
+
+    private func handlePress(_ physical: PhysicalButton) {
+        if let capture = buttonCapture {
+            guard NSApp.isActive else { return }
+            buttonCapture = nil
+            isCapturingButton = false
+            capture(physical)
+            return
+        }
+        if let command = command(for: physical) { send(command) }
+    }
+
+    /// Library commands. D-pad presses aren't here: directions come from
+    /// `updateDirections`, which merges the D-pad with the left stick.
+    private func command(for physical: PhysicalButton) -> GamepadCommand? {
+        switch (physical, controllerSettingsStore.settings.layout) {
+        case (.bottom, .classic), (.right, .nintendo): .activate
+        case (.right, .classic), (.bottom, .nintendo): .back
+        case (.top, _): .toggleFavorite
+        case (.l1, _): .previousSection
+        case (.r1, _): .nextSection
+        case (.start, _): .toggleBigBox
+        default: nil
+        }
+    }
+
+    // MARK: - Button capture
+
+    /// Hands the next button pressed on any controller to `handler`.
+    func captureNextButton(_ handler: @escaping (PhysicalButton) -> Void) {
+        releaseAllDirections()
+        buttonCapture = handler
+        isCapturingButton = true
+    }
+
+    func cancelButtonCapture() {
+        buttonCapture = nil
+        isCapturingButton = false
+    }
+
+    /// The connected pad's own glyph for `physical`, else a generic one.
+    func symbol(for physical: PhysicalButton) -> String {
+        let fallback = switch physical {
+        case .bottom: "a.circle"
+        case .right: "b.circle"
+        case .left: "x.circle"
+        case .top: "y.circle"
+        case .l1: "lb.rectangle.roundedbottom"
+        case .r1: "rb.rectangle.roundedbottom"
+        case .l2: "lt.rectangle.roundedtop"
+        case .r2: "rt.rectangle.roundedtop"
+        case .l3: "l.joystick.press.down"
+        case .r3: "r.joystick.press.down"
+        case .select: "rectangle.fill.on.rectangle.fill"
+        case .start: "line.3.horizontal.circle"
+        case .dpadUp: "dpad.up.filled"
+        case .dpadDown: "dpad.down.filled"
+        case .dpadLeft: "dpad.left.filled"
+        case .dpadRight: "dpad.right.filled"
+        }
+        let name = gamepad.flatMap { Self.element(physical, of: $0)?.sfSymbolsName } ?? fallback
+        return NSImage(systemSymbolName: name, accessibilityDescription: nil) != nil ? name : "circle"
+    }
+
+    /// SF Symbols for the confirm, back and favorite buttons as labeled on
+    /// the connected pad (A/B/Y on Xbox-style pads, Cross/Circle/Triangle on
+    /// PlayStation ones…), for on-screen hints.
+    var confirmButtonSymbol: String {
+        glyph(controllerSettingsStore.settings.layout == .classic ? \.buttonA : \.buttonB,
+              fallback: controllerSettingsStore.settings.layout == .classic ? "a.circle" : "b.circle")
+    }
+
+    var backButtonSymbol: String {
+        glyph(controllerSettingsStore.settings.layout == .classic ? \.buttonB : \.buttonA,
+              fallback: controllerSettingsStore.settings.layout == .classic ? "b.circle" : "a.circle")
+    }
+
+    var favoriteButtonSymbol: String {
+        glyph(\.buttonY, fallback: "y.circle")
+    }
+
+    private func glyph(_ button: KeyPath<GCExtendedGamepad, GCControllerButtonInput>, fallback: String) -> String {
+        let name = gamepad?[keyPath: button].sfSymbolsName ?? fallback
+        let filled = name + ".fill"
+        return NSImage(systemSymbolName: filled, accessibilityDescription: nil) != nil ? filled : name
     }
 
     private func refreshConnectedController() {
         let controller = GCController.controllers().first { $0.extendedGamepad != nil }
+        gamepad = controller?.extendedGamepad
         gameControllerName = controller.map { $0.vendorName ?? "Game Controller" }
         if controller == nil {
             setHeldDirections([], from: .gameController)
@@ -221,6 +338,8 @@ final class GamepadInputMonitor {
     }
 
     private func send(_ command: GamepadCommand) {
+        // Mapping a button in Settings: the pad shouldn't also drive the library.
+        guard !isCapturingButton else { return }
         // Belt and braces alongside GameController's own foreground-only
         // delivery: a held-direction repeat task could otherwise keep
         // firing after the app loses focus mid-hold.

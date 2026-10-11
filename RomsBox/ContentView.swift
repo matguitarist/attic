@@ -18,13 +18,15 @@ struct ContentView: View {
 
 #Preview {
     let container = try! RomsBoxModelContainer.makeInMemory()
+    let defaults = UserDefaults(suiteName: "preview")!
+    let emulationFolderStore = EmulationFolderStore(userDefaults: defaults, romsRoots: [])
+    let controllerSettingsStore = ControllerSettingsStore(userDefaults: defaults, emulationFolderStore: emulationFolderStore)
     ContentView()
         .modelContainer(container)
         .environment(ScanCoordinator(libraryStore: LibraryStore(modelContainer: container)))
-        .environment(LaunchCoordinator())
-        .environment(RomsRootsStore(userDefaults: UserDefaults(suiteName: "preview")!))
-        .environment(RetroArchSettingsStore(
-            userDefaults: UserDefaults(suiteName: "preview")!,
-            emulationFolderStore: EmulationFolderStore(userDefaults: UserDefaults(suiteName: "preview")!, romsRoots: [])
-        ))
+        .environment(LaunchCoordinator(controllerSettingsStore: controllerSettingsStore))
+        .environment(controllerSettingsStore)
+        .environment(HelpNavigator())
+        .environment(RomsRootsStore(userDefaults: defaults))
+        .environment(RetroArchSettingsStore(userDefaults: defaults, emulationFolderStore: emulationFolderStore))
 }

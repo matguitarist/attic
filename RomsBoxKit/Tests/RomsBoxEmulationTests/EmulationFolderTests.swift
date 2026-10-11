@@ -117,11 +117,93 @@ struct EmulationFolderTests {
     }
 
     @Test func retroArchQuitComboIsStartSelectWithoutConfirmation() {
-        let on = folder.retroArchPathsConfig(for: .snes, quitCombo: true)
+        let on = folder.retroArchPathsConfig(for: .snes, controller: .init(quitWithSelectStart: true))
         #expect(on.contains("input_quit_gamepad_combo = \"4\""))
         #expect(on.contains("quit_press_twice = \"false\""))
-        let off = folder.retroArchPathsConfig(for: .snes, quitCombo: false)
+        let off = folder.retroArchPathsConfig(for: .snes, controller: .init(quitWithSelectStart: false))
         #expect(!off.contains("input_quit_gamepad_combo"))
+        // RetroArch saved RomsBox's combo into its config: turning it off resets it.
+        let undo = folder.retroArchPathsConfig(
+            for: .snes, controller: .init(quitWithSelectStart: false),
+            savedConfig: ["input_quit_gamepad_combo": "4"], previouslyWritten: ["input_quit_gamepad_combo": "4"]
+        )
+        #expect(undo.contains("input_quit_gamepad_combo = \"0\""))
+    }
+
+    @Test func layoutPicksRetroArchMenuConfirmButton() {
+        #expect(folder.retroArchPathsConfig(for: .snes, controller: .init(layout: .classic)).contains("menu_swap_ok_cancel_buttons = \"true\""))
+        #expect(folder.retroArchPathsConfig(for: .snes, controller: .init(layout: .nintendo)).contains("menu_swap_ok_cancel_buttons = \"false\""))
+    }
+
+    @Test func defaultMappingWritesNoBinds() {
+        #expect(!folder.retroArchPathsConfig(for: .snes).contains("_btn"))
+    }
+
+    @Test func customMappingBindsEveryButtonOfEveryPort() {
+        var mapping = ButtonMapping.faceButtonsSwapped
+        mapping.set(.r1, for: .l2)
+        let config = folder.retroArchPathsConfig(for: .snes, controller: .init(buttonMapping: mapping))
+        for port in 1...4 {
+            #expect(config.contains("input_player\(port)_a_btn = \"0\""))
+            #expect(config.contains("input_player\(port)_b_btn = \"8\""))
+            #expect(config.contains("input_player\(port)_x_btn = \"1\""))
+            #expect(config.contains("input_player\(port)_y_btn = \"9\""))
+            #expect(config.contains("input_player\(port)_start_btn = \"3\""))
+            #expect(config.contains("input_player\(port)_l2_btn = \"11\""))
+            // Moved off its trigger, so the trigger's axis no longer presses it.
+            #expect(config.contains("input_player\(port)_l2_axis = \"+9\""))
+            #expect(!config.contains("input_player\(port)_r2_axis"))
+        }
+    }
+
+    @Test func backToDefaultMappingClearsOnlyRomsBoxBinds() {
+        let previous = ["input_player1_a_btn": "0", "input_player1_b_btn": "8"]
+        let saved = ["input_player1_a_btn": "0", "input_player1_b_btn": "3"]
+        let config = folder.retroArchPathsConfig(for: .snes, savedConfig: saved, previouslyWritten: previous)
+        #expect(config.contains("input_player1_a_btn = \"nul\""))
+        #expect(!config.contains("input_player1_b_btn"), "a bind the user changed in RetroArch stays")
+    }
+
+    @Test func mappingSkipsNonMFiDrivers() {
+        let config = folder.retroArchPathsConfig(
+            for: .snes, controller: .init(buttonMapping: .faceButtonsSwapped), savedConfig: ["input_joypad_driver": "hid"]
+        )
+        #expect(!config.contains("_btn"))
+    }
+
+    @Test func prepareRetroArchLaunchRemembersWhatItWrote() throws {
+        _ = try folder.prepareRetroArchLaunch(for: .snes, controller: .init(buttonMapping: .faceButtonsSwapped))
+        #expect(folder.readOwnedSettings("retroarch")?["input_player1_a_btn"] == "0")
+        _ = try folder.prepareRetroArchLaunch(for: .snes, controller: .init())
+        #expect(folder.readOwnedSettings("retroarch")?["input_player1_a_btn"] == nil)
+    }
+
+    @Test func leftStickAsDPadUsesAnalogDPadMode() {
+        let config = folder.retroArchPathsConfig(for: .snes, controller: .init(leftStickAsDPad: true))
+        #expect(config.contains("input_player1_analog_dpad_mode = \"1\""))
+        #expect(config.contains("input_player4_analog_dpad_mode = \"1\""))
+    }
+
+    @Test func duckStationFollowsTheMappingAndRestoresDefaults() throws {
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, buttonMapping: .faceButtonsSwapped)
+        var ini = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(ini.value(section: "Pad1", key: "Cross") == "SDL-0/B")
+        #expect(ini.value(section: "Pad1", key: "Circle") == "SDL-0/A")
+        #expect(ini.value(section: "Pad1", key: "Start") == "SDL-0/Start")
+
+        // The user rebinds Square in DuckStation; RomsBox's mapping goes back to default.
+        ini.set(section: "Pad1", key: "Square", value: "SDL-0/RightShoulder")
+        try ini.contents.write(to: duckStationSettingsFile, atomically: true, encoding: .utf8)
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, buttonMapping: .default)
+        ini = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(ini.value(section: "Pad1", key: "Cross") == "SDL-0/A")
+        #expect(ini.value(section: "Pad1", key: "Circle") == "SDL-0/B")
+        #expect(ini.value(section: "Pad1", key: "Square") == "SDL-0/RightShoulder")
+    }
+
+    @Test func retroArchConfigParserUnquotesValues() {
+        let parsed = EmulationFolder.parseRetroArchConfig("a = \"1\"\nb=\"two words\"\n# comment\n")
+        #expect(parsed == ["a": "1", "b": "two words"])
     }
 
     private var duckStationSettingsFile: URL {

@@ -6,9 +6,9 @@ struct SettingsTabView: View {
             GeneralSettingsView()
                 .tabItem { Label("General", systemImage: "gearshape") }
             RetroArchSettingsView()
-                .tabItem { Label("Emulators", systemImage: "gamecontroller") }
-            EmulatorProfilesSettingsView()
-                .tabItem { Label("Custom Emulators", systemImage: "puzzlepiece.extension") }
+                .tabItem { Label("Emulators", systemImage: "arcade.stick.console") }
+            ControllerSettingsView()
+                .tabItem { Label("Controller", systemImage: "gamecontroller") }
             ScreenScraperSettingsView()
                 .tabItem { Label("ScreenScraper", systemImage: "photo.on.rectangle.angled") }
             TheGamesDBSettingsView()
