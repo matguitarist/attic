@@ -5,25 +5,44 @@ enum TheGamesDBMapper {
     /// rather than showing nothing.
     private static let sidePreference = ["front"]
 
-    static func map(_ envelope: TheGamesDBResponseEnvelope) -> ScrapedGameInfo? {
-        guard let game = envelope.data?.games?.first else { return nil }
-
-        return ScrapedGameInfo(
+    static func map(_ game: TheGamesDBGame, include: TheGamesDBInclude?, names: TheGamesDBNames?) -> ScrapedGameInfo {
+        ScrapedGameInfo(
             title: game.gameTitle,
             description: game.overview,
-            genre: firstName(ids: game.genres, in: envelope.include?.genre),
+            genre: joinedNames(ids: game.genres, in: names?.genres),
             players: game.players.map(String.init),
-            developer: firstName(ids: game.developers, in: envelope.include?.developer),
-            publisher: firstName(ids: game.publishers, in: envelope.include?.publisher),
+            developer: joinedNames(ids: game.developers, in: names?.developers),
+            publisher: joinedNames(ids: game.publishers, in: names?.publishers),
             releaseDate: game.releaseDate.flatMap(parseDate),
-            rating: nil, // TheGamesDB doesn't provide a numeric rating.
-            coverArtURL: coverArtURL(forGameID: game.id, include: envelope.include?.boxart)
+            rating: nil, // TheGamesDB's `rating` is an age rating ("E - Everyone"), not a score.
+            coverArtURL: coverArtURL(forGameID: game.id, include: include?.boxart)
         )
     }
 
-    private static func firstName(ids: [Int]?, in lookup: TheGamesDBNameLookup?) -> String? {
-        guard let firstID = ids?.first, let lookup else { return nil }
-        return lookup.data[String(firstID)]?.name
+    /// The result whose title (or one of its alternate titles) matches the
+    /// search best: an exact match, then one starting with it, else the
+    /// search's own first result. Searching "Metroid" returns "Super
+    /// Metroid" and "Metroid II" too, not always in the right order.
+    static func bestMatch(in games: [TheGamesDBGame], for searchName: String) -> TheGamesDBGame? {
+        let wanted = normalized(searchName)
+        func titles(_ game: TheGamesDBGame) -> [String] {
+            ([game.gameTitle].compactMap { $0 } + (game.alternates ?? [])).map(normalized)
+        }
+        return games.first { titles($0).contains(wanted) }
+            ?? games.first { titles($0).contains { $0.hasPrefix(wanted) } }
+            ?? games.first
+    }
+
+    private static func normalized(_ title: String) -> String {
+        title.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+            .filter { $0.isLetter || $0.isNumber }
+    }
+
+    /// "Action, Platform" — every name the game lists, in its order.
+    private static func joinedNames(ids: [Int]?, in lookup: [Int: String]?) -> String? {
+        guard let ids, let lookup else { return nil }
+        let names = ids.compactMap { lookup[$0] }
+        return names.isEmpty ? nil : names.joined(separator: ", ")
     }
 
     private static func coverArtURL(forGameID gameID: Int, include: TheGamesDBBoxArtInclude?) -> URL? {

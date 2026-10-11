@@ -11,8 +11,12 @@ import Foundation
 /// need to get this right in one place.
 public enum ROMFilenameTitleCleaner {
     public static func cleanTitle(fromROMFilename filename: String) -> String {
-        let nameNoExt = (filename as NSString).deletingPathExtension
-        let withoutTags = nameNoExt.replacingOccurrences(
+        strippingTags(from: (filename as NSString).deletingPathExtension)
+    }
+
+    /// The same tag stripping for a title that has no file extension.
+    public static func strippingTags(from title: String) -> String {
+        let withoutTags = title.replacingOccurrences(
             of: #"\s*[\(\[][^\)\]]*[\)\]]"#,
             with: "",
             options: .regularExpression

@@ -64,13 +64,24 @@ struct ScrapeMenuItems: View {
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
 
     var body: some View {
+        sourceButtons(force: false)
+        Divider()
+        // Normal scrapes only fill empty fields, so anything already there
+        // (from gamelist.xml or an earlier scrape) stays as it is.
+        Menu("Replace Existing Info") {
+            sourceButtons(force: true)
+        }
+    }
+
+    @ViewBuilder
+    private func sourceButtons(force: Bool) -> some View {
         Button("ScreenScraper") {
-            Task { await scrapeCoordinator.scrapeUsingScreenScraper(game: game, credentials: screenScraperCredentialsStore.credentials) }
+            Task { await scrapeCoordinator.scrape(game, from: .screenScraper(screenScraperCredentialsStore.credentials), force: force) }
         }
         .disabled(!screenScraperCredentialsStore.isConfigured)
 
         Button("TheGamesDB") {
-            Task { await scrapeCoordinator.scrapeUsingTheGamesDB(game: game, credentials: theGamesDBCredentialsStore.credentials) }
+            Task { await scrapeCoordinator.scrape(game, from: .theGamesDB(theGamesDBCredentialsStore.credentials), force: force) }
         }
         .disabled(!theGamesDBCredentialsStore.isConfigured)
     }

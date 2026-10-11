@@ -383,12 +383,32 @@
         }
       }
     },
+    "Add games with “%@” in the title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter les jeux avec « %@ » dans le titre"
+          }
+        }
+      }
+    },
     "Add to / remove from Favorites": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter aux favoris / retirer des favoris"
+          }
+        }
+      }
+    },
+    "Add to Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter à une collection"
           }
         }
       }
@@ -409,6 +429,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter aux favoris (⌘D)"
+          }
+        }
+      }
+    },
+    "Add to New Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter à une nouvelle collection…"
           }
         }
       }
@@ -759,6 +789,26 @@
         }
       }
     },
+    "Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collection"
+          }
+        }
+      }
+    },
+    "Collections": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collections"
+          }
+        }
+      }
+    },
     "Computers": {
       "localizations": {
         "fr": {
@@ -899,6 +949,22 @@
         }
       }
     },
+    "Couldn't scrape “%@”: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Couldn't scrape “%1$@”: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de récupérer « %@ » : %@"
+          }
+        }
+      }
+    },
     "Couldn't set up the Emulation folder: %@": {
       "localizations": {
         "fr": {
@@ -945,6 +1011,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Taille des jaquettes"
+          }
+        }
+      }
+    },
+    "Create": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer"
           }
         }
       }
@@ -1055,6 +1131,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Supprimer"
+          }
+        }
+      }
+    },
+    "Delete Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer la collection"
+          }
+        }
+      }
+    },
+    "Delete Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer la collection…"
+          }
+        }
+      }
+    },
+    "Delete “%@”?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer « %@ » ?"
           }
         }
       }
@@ -2146,6 +2252,36 @@
         }
       }
     },
+    "New Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle collection"
+          }
+        }
+      }
+    },
+    "New Collection (⇧⌘N)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle collection (⇧⌘N)"
+          }
+        }
+      }
+    },
+    "New Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle collection…"
+          }
+        }
+      }
+    },
     "New Custom Emulator": {
       "localizations": {
         "fr": {
@@ -2322,6 +2458,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remarques"
+          }
+        }
+      }
+    },
+    "Nothing new for “%@”: it already has everything found. Use Scrape Info › Replace Existing Info to overwrite it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien de nouveau pour « %@ » : il a déjà tout ce qui a été trouvé. Utilisez Récupérer les infos › Remplacer les infos existantes pour les écraser."
           }
         }
       }
@@ -2702,6 +2848,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retirer des favoris (⌘D)"
+          }
+        }
+      }
+    },
+    "Remove from “%@”": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer de « %@ »"
+          }
+        }
+      }
+    },
+    "Rename": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer"
+          }
+        }
+      }
+    },
+    "Rename Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer la collection"
+          }
+        }
+      }
+    },
+    "Rename…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer…"
+          }
+        }
+      }
+    },
+    "Replace Existing Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer les infos existantes"
           }
         }
       }
@@ -3102,6 +3298,22 @@
         }
       }
     },
+    "Scraping “%@” from %@…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Scraping “%1$@” from %2$@…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupération de « %@ » depuis %@…"
+          }
+        }
+      }
+    },
     "ScreenScraper": {
       "localizations": {
         "fr": {
@@ -3472,6 +3684,16 @@
         }
       }
     },
+    "The games stay in your library.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux restent dans votre bibliothèque."
+          }
+        }
+      }
+    },
     "The left stick option applies to RetroArch games; Select + Start also quits DuckStation. Games save normally on the way out.": {
       "localizations": {
         "fr": {
@@ -3602,6 +3824,16 @@
         }
       }
     },
+    "Type a name to find matching games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisissez un nom pour trouver les jeux correspondants."
+          }
+        }
+      }
+    },
     "Unexpected response from ScreenScraper: %@": {
       "localizations": {
         "fr": {
@@ -3658,6 +3890,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tout mettre à jour (%lld)"
+          }
+        }
+      }
+    },
+    "Updated “%@”: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Updated “%1$@”: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %@ » mis à jour : %@"
           }
         }
       }
@@ -3812,6 +4060,56 @@
         }
       }
     },
+    "cover": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jaquette"
+          }
+        }
+      }
+    },
+    "description": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "description"
+          }
+        }
+      }
+    },
+    "developer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "développeur"
+          }
+        }
+      }
+    },
+    "e.g. Zelda": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "p. ex. Zelda"
+          }
+        }
+      }
+    },
+    "genre": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "genre"
+          }
+        }
+      }
+    },
     "help.badge.recommended": {
       "localizations": {
         "en": {
@@ -3854,6 +4152,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "neogeo.zip (le BIOS de la Neo Geo) va dans le dossier BIOS, sans le décompresser."
+          }
+        }
+      }
+    },
+    "players": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "joueurs"
+          }
+        }
+      }
+    },
+    "publisher": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "éditeur"
+          }
+        }
+      }
+    },
+    "rating": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "note"
+          }
+        }
+      }
+    },
+    "release date": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "date de sortie"
           }
         }
       }

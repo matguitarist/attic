@@ -25,8 +25,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.romsbox.app
         PRODUCT_NAME: RomsBox
-        MARKETING_VERSION: "1.6.0"
-        CURRENT_PROJECT_VERSION: "7"
+        MARKETING_VERSION: "1.7.0"
+        CURRENT_PROJECT_VERSION: "8"
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         ENABLE_HARDENED_RUNTIME: YES

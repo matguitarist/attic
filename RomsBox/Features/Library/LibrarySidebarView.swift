@@ -11,9 +11,11 @@ import RomsBoxPersistence
 /// rows to the binding — keep it that way when adding rows.
 struct LibrarySidebarView: View {
     let systems: [GameSystem]
+    let collections: [GameCollection]
     @Binding var selection: LibrarySelection?
     @Environment(HelpNavigator.self) private var helpNavigator
     @Environment(\.openWindow) private var openWindow
+    @Environment(CollectionCoordinator.self) private var collectionCoordinator
 
     var body: some View {
         List(selection: $selection) {
@@ -24,6 +26,41 @@ struct LibrarySidebarView: View {
                     .tag(LibrarySelection.favorites)
                 Label("Recently Played", systemImage: "clock")
                     .tag(LibrarySelection.recentlyPlayed)
+            }
+
+            Section {
+                ForEach(collections) { collection in
+                    Label(collection.name, systemImage: "rectangle.stack")
+                        .lineLimit(1)
+                        .badge(collection.games.count)
+                        .tag(LibrarySelection.collection(collection.collectionID))
+                        .contextMenu {
+                            Button("Rename…") { collectionCoordinator.rename(collection) }
+                            Button("Delete Collection…", role: .destructive) { collectionCoordinator.pendingDeletion = collection }
+                        }
+                }
+                if collections.isEmpty {
+                    Button {
+                        collectionCoordinator.newCollection()
+                    } label: {
+                        Label("New Collection…", systemImage: "plus")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                HStack {
+                    Text("Collections")
+                    Spacer()
+                    Button {
+                        collectionCoordinator.newCollection()
+                    } label: {
+                        Label("New Collection…", systemImage: "plus")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.borderless)
+                    .help("New Collection (⇧⌘N)")
+                }
             }
 
             // One section per kind of machine (Consoles, Handhelds, Arcade,

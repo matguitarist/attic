@@ -118,9 +118,6 @@ struct GameDetailView: View {
             if case .failed(let message) = launchCoordinator.state {
                 Text(message).foregroundStyle(.red).font(.callout)
             }
-            if case .failed(let message) = scrapeCoordinator.state {
-                Text(message).foregroundStyle(.red).font(.callout)
-            }
         }
         .frame(maxWidth: .infinity)
     }
@@ -171,6 +168,7 @@ struct GameDetailView: View {
                     ScrapeMenuItems(game: game)
                 }
                 .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+                AddToCollectionMenu(game: game)
                 Button("Edit Info…") {
                     infoEditor.game = game
                 }

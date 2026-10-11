@@ -1,16 +1,9 @@
 import Foundation
 
-/// Mirrors TheGamesDB API v1's `Games/ByGameName` JSON shape closely enough
-/// to decode it. Unlike ScreenScraper, genres/developers/publishers come
-/// back as bare numeric ID arrays — resolved via the `include` object
-/// (requested with `include=genres,developers,publishers,boxart`), which
-/// embeds an id-to-name lookup table directly in the same response rather
-/// than needing a separate request or a locally maintained static mapping.
-///
-/// Field names/nesting are based on publicly documented usage in existing
-/// open-source TheGamesDB clients (no official machine-readable schema is
-/// published) — verify against a real response once a real API key is
-/// available, since there's no versioned contract guarantee.
+/// Mirrors TheGamesDB API v1's `Games/ByGameName` JSON shape, as described
+/// by its OpenAPI spec (https://api.thegamesdb.net/spec.yaml). Unlike
+/// ScreenScraper, genres/developers/publishers come back as bare numeric
+/// id arrays; `TheGamesDBNames` resolves them.
 struct TheGamesDBResponseEnvelope: Decodable {
     let data: TheGamesDBData?
     let include: TheGamesDBInclude?
@@ -29,6 +22,7 @@ struct TheGamesDBGame: Decodable {
     let genres: [Int]?
     let developers: [Int]?
     let publishers: [Int]?
+    let alternates: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -39,22 +33,12 @@ struct TheGamesDBGame: Decodable {
         case genres
         case developers
         case publishers
+        case alternates
     }
 }
 
 struct TheGamesDBInclude: Decodable {
     let boxart: TheGamesDBBoxArtInclude?
-    let genre: TheGamesDBNameLookup?
-    let developer: TheGamesDBNameLookup?
-    let publisher: TheGamesDBNameLookup?
-}
-
-struct TheGamesDBNameLookup: Decodable {
-    let data: [String: TheGamesDBNamedEntry]
-}
-
-struct TheGamesDBNamedEntry: Decodable {
-    let name: String
 }
 
 struct TheGamesDBBoxArtInclude: Decodable {

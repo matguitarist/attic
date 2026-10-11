@@ -16,8 +16,17 @@ struct GameCommands: Commands {
 
     @FocusedValue(\.selectedGame) private var game
     @FocusedValue(\.gameInfoEditor) private var infoEditor
+    @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
 
     var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("New Collection…") {
+                collectionCoordinator?.newCollection()
+            }
+            .keyboardShortcut("n", modifiers: [.command, .shift])
+            .disabled(collectionCoordinator == nil)
+        }
+
         CommandMenu("Game") {
             Button("Play") {
                 if let game { launchCoordinator.play(game: game, retroArchStore: retroArchStore) }
@@ -37,6 +46,11 @@ struct GameCommands: Commands {
                 infoEditor?.game = game
             }
             .keyboardShortcut("i")
+
+            Button("Add to New Collection…") {
+                if let game { collectionCoordinator?.newCollection(with: [game]) }
+            }
+            .disabled(game == nil || collectionCoordinator == nil)
             .disabled(game == nil || infoEditor == nil)
 
             Divider()

@@ -27,10 +27,28 @@ final class ScrapeCoordinator {
     enum ScraperSource {
         case screenScraper(ScreenScraperCredentials)
         case theGamesDB(TheGamesDBCredentials)
+
+        var name: String {
+            switch self {
+            case .screenScraper: "ScreenScraper"
+            case .theGamesDB: "TheGamesDB"
+            }
+        }
+    }
+
+    /// A single game's scrape (from a menu), for the status bar: running,
+    /// then what it changed. Batch scrapes report through `batchState`.
+    enum Activity: Equatable {
+        case scraping(title: String, source: String)
+        case updated(title: String, fields: [String])
+        case nothingNew(title: String)
+        case failed(title: String, message: String)
     }
 
     private(set) var state: State = .idle
     private(set) var batchState: BatchState = .idle
+    private(set) var activity: Activity?
+    private var activityClearTask: Task<Void, Never>?
     private var batchTask: Task<Void, Never>?
 
     private let screenScraperClient: ScreenScraperClientProtocol
@@ -39,7 +57,7 @@ final class ScrapeCoordinator {
 
     init(
         screenScraperClient: ScreenScraperClientProtocol = ScreenScraperClient(),
-        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(),
+        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(namesCacheURL: ScrapeCoordinator.theGamesDBNamesCacheURL),
         mediaCacheDirectory: URL = ScrapeCoordinator.defaultMediaCacheDirectory
     ) {
         self.screenScraperClient = screenScraperClient
@@ -47,9 +65,47 @@ final class ScrapeCoordinator {
         self.mediaCacheDirectory = mediaCacheDirectory
     }
 
+    static var theGamesDBNamesCacheURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return appSupport.appending(path: "RomsBox/TheGamesDBNames.json")
+    }
+
     static var defaultMediaCacheDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return appSupport.appending(path: "RomsBox/ScrapedMedia", directoryHint: .isDirectory)
+    }
+
+    /// Scrapes one game, reporting progress and the outcome in the status
+    /// bar. A success message clears itself after a few seconds; a failure
+    /// stays until dismissed.
+    func scrape(_ game: Game, from source: ScraperSource, force: Bool = false) async {
+        activityClearTask?.cancel()
+        let title = game.title
+        activity = .scraping(title: title, source: source.name)
+        let fields: [String]?
+        switch source {
+        case .screenScraper(let credentials):
+            fields = await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
+        case .theGamesDB(let credentials):
+            fields = await scrapeUsingTheGamesDB(game: game, credentials: credentials, force: force)
+        }
+        if let fields {
+            activity = fields.isEmpty ? .nothingNew(title: title) : .updated(title: title, fields: fields)
+            activityClearTask = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(6))
+                guard !Task.isCancelled else { return }
+                self?.activity = nil
+            }
+        } else if case .failed(let message) = state {
+            activity = .failed(title: title, message: message)
+        } else {
+            activity = nil
+        }
+    }
+
+    func dismissActivity() {
+        activityClearTask?.cancel()
+        activity = nil
     }
 
     /// Fills in only the fields currently missing on `game`, unless
@@ -57,10 +113,12 @@ final class ScrapeCoordinator {
     /// shouldn't silently get overwritten by a scrape, and re-scraping
     /// the same game repeatedly shouldn't keep re-downloading art it
     /// already has.
-    func scrapeUsingScreenScraper(game: Game, credentials: ScreenScraperCredentials, force: Bool = false) async {
+    /// Returns the names of the fields it filled in, or `nil` if it failed.
+    @discardableResult
+    func scrapeUsingScreenScraper(game: Game, credentials: ScreenScraperCredentials, force: Bool = false) async -> [String]? {
         guard let systemeID = ScreenScraperSystemID.systemeID(for: CanonicalSystemID(game.systemCanonicalID)) else {
             state = .failed(String(localized: "ScreenScraper doesn't support this system yet."))
-            return
+            return nil
         }
 
         state = .scraping
@@ -74,37 +132,41 @@ final class ScrapeCoordinator {
                 systemeID: systemeID,
                 credentials: credentials
             )
-            try await apply(info, to: game, force: force)
+            let fields = try await apply(info, to: game, force: force)
             state = .idle
+            return fields
         } catch let error as ScreenScraperError {
             state = .failed(Self.message(for: error))
         } catch {
             state = .failed(error.localizedDescription)
         }
+        return nil
     }
 
-    func scrapeUsingTheGamesDB(game: Game, credentials: TheGamesDBCredentials, force: Bool = false) async {
+    @discardableResult
+    func scrapeUsingTheGamesDB(game: Game, credentials: TheGamesDBCredentials, force: Bool = false) async -> [String]? {
         guard let platformID = TheGamesDBSystemID.platformID(for: CanonicalSystemID(game.systemCanonicalID)) else {
             state = .failed(String(localized: "TheGamesDB doesn't support this system yet."))
-            return
+            return nil
         }
 
         state = .scraping
-        let romURL = game.romAbsoluteURL
 
         do {
             let info = try await theGamesDBClient.fetchGameInfo(
-                romFilename: romURL.lastPathComponent,
+                title: game.title,
                 platformID: platformID,
                 credentials: credentials
             )
-            try await apply(info, to: game, force: force)
+            let fields = try await apply(info, to: game, force: force)
             state = .idle
+            return fields
         } catch let error as TheGamesDBError {
             state = .failed(Self.message(for: error))
         } catch {
             state = .failed(error.localizedDescription)
         }
+        return nil
     }
 
     /// Scrapes every game in `games` that's missing a description (the same
@@ -161,30 +223,35 @@ final class ScrapeCoordinator {
     /// silently erase whatever a scrape just filled in. Setting the same
     /// `metadataManuallyEdited` flag GameDetailView's editable fields use
     /// covers both cases with one mechanism.
-    private func apply(_ info: ScrapedGameInfo, to game: Game, force: Bool) async throws {
+    /// Returns the (localized) names of the fields it changed.
+    private func apply(_ info: ScrapedGameInfo, to game: Game, force: Bool) async throws -> [String] {
+        var changed: [String] = []
         var changedProtectedField = false
-        if force || game.gameDescription == nil {
-            if info.description != nil { game.gameDescription = info.description; changedProtectedField = true }
-        }
-        if force || game.developer == nil {
-            if info.developer != nil { game.developer = info.developer; changedProtectedField = true }
-        }
-        if force || game.publisher == nil {
-            if info.publisher != nil { game.publisher = info.publisher; changedProtectedField = true }
-        }
-        if force || game.genre == nil {
-            if info.genre != nil { game.genre = info.genre; changedProtectedField = true }
-        }
-        if force || game.players == nil {
-            if info.players != nil { game.players = info.players; changedProtectedField = true }
-        }
-        if force || game.releaseDate == nil { game.releaseDate = info.releaseDate ?? game.releaseDate }
-        if force || game.rating == nil { game.rating = info.rating ?? game.rating }
 
+        // Every field counts as protected now that rescans keep hand-set
+        // release dates and ratings too.
+        func fill<Value: Equatable>(_ keyPath: ReferenceWritableKeyPath<Game, Value?>, with value: Value?, label: String) {
+            guard force || game[keyPath: keyPath] == nil, let value, game[keyPath: keyPath] != value else { return }
+            game[keyPath: keyPath] = value
+            changed.append(label)
+            changedProtectedField = true
+        }
+
+        fill(\.gameDescription, with: info.description, label: String(localized: "description"))
+        fill(\.developer, with: info.developer, label: String(localized: "developer"))
+        fill(\.publisher, with: info.publisher, label: String(localized: "publisher"))
+        fill(\.genre, with: info.genre, label: String(localized: "genre"))
+        fill(\.players, with: info.players, label: String(localized: "players"))
+        fill(\.releaseDate, with: info.releaseDate, label: String(localized: "release date"))
+        fill(\.rating, with: info.rating, label: String(localized: "rating"))
+
+        // A cover the user picked is only replaced on an explicit "Replace
+        // Existing Info".
         if (force || game.coverArtPath == nil), let remoteURL = info.coverArtURL {
             if let localURL = try? await downloadCoverArt(from: remoteURL, systemID: game.systemCanonicalID, romFilename: game.romAbsoluteURL.lastPathComponent) {
                 game.coverArtPath = localURL.path
                 game.coverArtManuallySet = false
+                changed.append(String(localized: "cover"))
             }
         }
 
@@ -193,6 +260,7 @@ final class ScrapeCoordinator {
         }
 
         try? game.modelContext?.save()
+        return changed
     }
 
     private func downloadCoverArt(from remoteURL: URL, systemID: String, romFilename: String) async throws -> URL {

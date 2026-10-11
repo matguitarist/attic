@@ -6,7 +6,7 @@ public enum RomsBoxSchemaV1: VersionedSchema {
     public static var versionIdentifier: Schema.Version { Schema.Version(1, 0, 0) }
 
     public static var models: [any PersistentModel.Type] {
-        [GameSystem.self, Game.self, EmulatorProfile.self, PlaySession.self]
+        [GameSystem.self, Game.self, EmulatorProfile.self, PlaySession.self, GameCollection.self]
     }
 }
 

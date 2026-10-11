@@ -29,17 +29,16 @@ import Testing
               {"type": "fanart", "side": null, "filename": "fanart/1001-1.jpg"}
             ]
           }
-        },
-        "genre": {"data": {"7": {"name": "Sports"}}},
-        "developer": {"data": {"55": {"name": "Irem"}}},
-        "publisher": {"data": {"3": {"name": "Nintendo"}}}
+        }
       }
     }
     """
 
     @Test func mapsAllFieldsAndPrefersFrontBoxart() throws {
         let envelope = try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fullFixture.utf8))
-        let info = try #require(TheGamesDBMapper.map(envelope))
+        let game = try #require(envelope.data?.games?.first)
+        let names = TheGamesDBNames(genres: [7: "Sports"], developers: [55: "Irem"], publishers: [3: "Nintendo"])
+        let info = TheGamesDBMapper.map(game, include: envelope.include, names: names)
 
         #expect(info.title == "10-Yard Fight")
         #expect(info.description == "A simple arcade game based on American football.")
@@ -69,20 +68,32 @@ import Testing
         }
         """
         let envelope = try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fixture.utf8))
-        let info = try #require(TheGamesDBMapper.map(envelope))
+        let info = TheGamesDBMapper.map(try #require(envelope.data?.games?.first), include: envelope.include, names: nil)
         #expect(info.coverArtURL == URL(string: "https://cdn.thegamesdb.net/images/original/back.jpg"))
     }
 
-    @Test func noGamesReturnsNil() throws {
-        let fixture = #"{"data": {"games": []}}"#
-        let envelope = try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fixture.utf8))
-        #expect(TheGamesDBMapper.map(envelope) == nil)
+    @Test func noGamesHasNoBestMatch() {
+        #expect(TheGamesDBMapper.bestMatch(in: [], for: "Anything") == nil)
     }
 
-    @Test func missingIncludeLeavesGenreDeveloperPublisherNil() throws {
-        let fixture = #"{"data": {"games": [{"id": 5, "game_title": "Bare"}]}}"#
+    @Test func bestMatchPrefersExactThenPrefixThenFirst() throws {
+        let fixture = #"{"data": {"games": [{"id": 1, "game_title": "Super Metroid"}, {"id": 2, "game_title": "Metroid II: Return of Samus"}, {"id": 3, "game_title": "Metroid"}]}}"#
+        let games = try #require(try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fixture.utf8)).data?.games)
+        #expect(TheGamesDBMapper.bestMatch(in: games, for: "Metroid")?.id == 3)
+        #expect(TheGamesDBMapper.bestMatch(in: games, for: "metroid ii")?.id == 2)
+        #expect(TheGamesDBMapper.bestMatch(in: games, for: "Samus")?.id == 1)
+    }
+
+    @Test func bestMatchUsesAlternateTitles() throws {
+        let fixture = #"{"data": {"games": [{"id": 1, "game_title": "Other"}, {"id": 2, "game_title": "Rockman", "alternates": ["Mega Man"]}]}}"#
+        let games = try #require(try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fixture.utf8)).data?.games)
+        #expect(TheGamesDBMapper.bestMatch(in: games, for: "Mega Man")?.id == 2)
+    }
+
+    @Test func missingNamesLeaveGenreDeveloperPublisherNil() throws {
+        let fixture = #"{"data": {"games": [{"id": 5, "game_title": "Bare", "genres": [1]}]}}"#
         let envelope = try JSONDecoder().decode(TheGamesDBResponseEnvelope.self, from: Data(fixture.utf8))
-        let info = try #require(TheGamesDBMapper.map(envelope))
+        let info = TheGamesDBMapper.map(try #require(envelope.data?.games?.first), include: envelope.include, names: nil)
         #expect(info.title == "Bare")
         #expect(info.genre == nil)
         #expect(info.developer == nil)

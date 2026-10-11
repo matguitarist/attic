@@ -6,6 +6,8 @@ enum LibrarySelection: Hashable {
     case favorites
     case recentlyPlayed
     case system(CanonicalSystemID)
+    /// A user collection, by `GameCollection.collectionID`.
+    case collection(UUID)
 }
 
 enum GameSortOrder: String, CaseIterable, Identifiable {

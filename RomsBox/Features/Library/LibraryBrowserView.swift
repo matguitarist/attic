@@ -22,12 +22,14 @@ struct LibraryBrowserView: View {
     private static var didAutoOpenBigBox = false
 
     @State private var infoEditor = GameInfoEditor()
+    @State private var collectionCoordinator = CollectionCoordinator()
+    @Query(sort: \GameCollection.name) private var collections: [GameCollection]
 
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
     var body: some View {
         NavigationSplitView {
-            LibrarySidebarView(systems: systems, selection: $selection)
+            LibrarySidebarView(systems: systems, collections: collections, selection: $selection)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } detail: {
             GameGridView(
@@ -54,6 +56,34 @@ struct LibraryBrowserView: View {
         .focusedSceneValue(\.selectedGame, selectedGame)
         .focusedSceneValue(\.gameInfoEditor, infoEditor)
         .environment(infoEditor)
+        .focusedSceneValue(\.collectionCoordinator, collectionCoordinator)
+        .environment(collectionCoordinator)
+        .sheet(item: $collectionCoordinator.draft) { draft in
+            CollectionEditorView(draft: draft) { created in
+                // A collection made from the sidebar starts empty unless it
+                // picked up matching games — show it either way.
+                if case .new(let games) = draft.mode, games.isEmpty {
+                    selection = .collection(created.collectionID)
+                }
+            }
+        }
+        .confirmationDialog(
+            "Delete “\(collectionCoordinator.pendingDeletion?.name ?? "")”?",
+            isPresented: Binding(
+                get: { collectionCoordinator.pendingDeletion != nil },
+                set: { if !$0 { collectionCoordinator.pendingDeletion = nil } }
+            ),
+            presenting: collectionCoordinator.pendingDeletion
+        ) { collection in
+            Button("Delete Collection", role: .destructive) {
+                if selection == .collection(collection.collectionID) { selection = .allGames }
+                let context = collection.modelContext
+                context?.delete(collection)
+                try? context?.save()
+            }
+        } message: { _ in
+            Text("The games stay in your library.")
+        }
         .sheet(item: $infoEditor.game) { game in
             EditGameInfoView(game: game)
         }
@@ -157,7 +187,9 @@ struct LibraryBrowserView: View {
     /// Same order the sidebar lists them in, wrapping at either end so a
     /// shoulder button can cycle through everything without a dead stop.
     private func stepSection(by offset: Int) {
-        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed] + systems.orderedByCategory().map { .system($0.systemID) }
+        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed]
+            + collections.map { .collection($0.collectionID) }
+            + systems.orderedByCategory().map { .system($0.systemID) }
         let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
         let count = sections.count
         selection = sections[((currentIndex + offset) % count + count) % count]
@@ -170,6 +202,8 @@ struct LibraryBrowserView: View {
         case .recentlyPlayed: String(localized: "Recently Played")
         case .system(let canonicalID):
             systems.first { $0.systemID == canonicalID }?.displayName ?? canonicalID.rawValue
+        case .collection(let collectionID):
+            collections.first { $0.collectionID == collectionID }?.name ?? String(localized: "Collection")
         }
     }
 }

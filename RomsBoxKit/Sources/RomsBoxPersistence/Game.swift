@@ -52,6 +52,10 @@ public final class Game {
     @Relationship(deleteRule: .cascade, inverse: \PlaySession.game)
     public var playSessions: [PlaySession] = []
 
+    /// The user's collections this game is in (inverse of
+    /// `GameCollection.games`).
+    public var collections: [GameCollection] = []
+
     public init(
         system: GameSystem?,
         systemCanonicalID: CanonicalSystemID,

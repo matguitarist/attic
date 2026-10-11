@@ -13,6 +13,8 @@ struct GameGridView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(GameInfoEditor.self) private var infoEditor
+    @Environment(CollectionCoordinator.self) private var collectionCoordinator
+    @Query private var shownCollection: [GameCollection]
 
     private let cellScale: CGFloat
 
@@ -57,6 +59,9 @@ struct GameGridView: View {
         )
         _selectedGame = selectedGame
         self.sortOrder = effectiveSortOrder
+        // Only matches when a collection is showing, for "Remove from…".
+        let collectionID: UUID = if case .collection(let id) = selection { id } else { UUID() }
+        _shownCollection = Query(filter: #Predicate<GameCollection> { $0.collectionID == collectionID })
     }
 
     private var displayedGames: [Game] {
@@ -203,6 +208,15 @@ struct GameGridView: View {
             infoEditor.game = game
         }
 
+        AddToCollectionMenu(game: game)
+
+        if let collection = shownCollection.first {
+            Button("Remove from “\(collection.name)”") {
+                collection.setContains(game, false)
+                try? game.modelContext?.save()
+            }
+        }
+
         Divider()
 
         Menu("Scrape Info") {
@@ -235,6 +249,8 @@ struct GameGridView: View {
         case .system(let canonicalID):
             let systemID = canonicalID.rawValue
             return #Predicate<Game> { $0.systemCanonicalID == systemID }
+        case .collection(let collectionID):
+            return #Predicate<Game> { game in game.collections.contains { $0.collectionID == collectionID } }
         }
     }
 
@@ -263,6 +279,13 @@ struct GameGridView: View {
                 return #Predicate<Game> { $0.systemCanonicalID == systemID }
             }
             return #Predicate<Game> { $0.systemCanonicalID == systemID && $0.title.localizedStandardContains(query) }
+        case .collection(let collectionID):
+            if query.isEmpty {
+                return #Predicate<Game> { game in game.collections.contains { $0.collectionID == collectionID } }
+            }
+            return #Predicate<Game> { game in
+                game.collections.contains { $0.collectionID == collectionID } && game.title.localizedStandardContains(query)
+            }
         }
     }
 

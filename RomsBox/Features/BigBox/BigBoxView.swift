@@ -29,6 +29,7 @@ struct BigBoxView: View {
     static let startInBigBoxKey = "startInBigBox"
 
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
+    @Query(sort: \GameCollection.name) private var collections: [GameCollection]
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(\.dismissWindow) private var dismissWindow
 
@@ -103,13 +104,17 @@ struct BigBoxView: View {
         }
     }
 
-    /// Library shortcuts first, then every system that actually has games.
+    /// Library shortcuts first, then non-empty collections, then every
+    /// system that actually has games.
     private var sections: [BigBoxSection] {
         [
             BigBoxSection(selection: .allGames, title: String(localized: "All Games")),
             BigBoxSection(selection: .favorites, title: String(localized: "Favorites")),
             BigBoxSection(selection: .recentlyPlayed, title: String(localized: "Recently Played"))
-        ] + systems
+        ] + collections
+            .filter { !$0.games.isEmpty }
+            .map { BigBoxSection(selection: .collection($0.collectionID), title: $0.name) }
+        + systems
             .filter { $0.gameCount > 0 }
             .orderedByCategory()
             .map { BigBoxSection(selection: .system($0.systemID), title: $0.displayName) }
