@@ -12,6 +12,10 @@ public final class EmulatorProfile {
     public var argumentTemplate: String
     public var workingDirectoryPath: String?
     public var assignedSystemIDRawValues: [String]
+    /// Set when RomsBox installed this emulator from `EmulatorCatalog`
+    /// (e.g. "duckstation"), so launches can apply that emulator's
+    /// portable setup. `nil` for profiles the user made by hand.
+    public var catalogEmulatorID: String? = nil
 
     public init(
         id: UUID = UUID(),

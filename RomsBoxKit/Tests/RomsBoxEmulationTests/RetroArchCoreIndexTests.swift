@@ -86,3 +86,30 @@ import Testing
         #expect(resolvedResults.first?.coreIdentifier == "nestopia_libretro")
     }
 }
+
+struct RetroArchCoreIndexMultiDirectoryTests {
+    @Test func firstCoresDirectoryWinsAndInfoFallsBackAcrossDirectories() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "CoreIndexMulti-\(UUID().uuidString)")
+        let romsBoxCores = root.appending(path: "RomsBoxCores")
+        let retroArchCores = root.appending(path: "RetroArchCores")
+        let emptyRetroArchInfo = root.appending(path: "RetroArchInfo")
+        let romsBoxInfo = root.appending(path: "RomsBoxInfo")
+        for directory in [romsBoxCores, retroArchCores, emptyRetroArchInfo, romsBoxInfo] {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        try Data().write(to: romsBoxCores.appending(path: "snes9x_libretro.dylib"))
+        try Data().write(to: retroArchCores.appending(path: "snes9x_libretro.dylib"))
+        try Data().write(to: retroArchCores.appending(path: "mgba_libretro.dylib"))
+        try "display_name = \"Snes9x\"\nsystemid = \"super_nes\"".write(to: romsBoxInfo.appending(path: "snes9x_libretro.info"), atomically: true, encoding: .utf8)
+        try "display_name = \"mGBA\"\nsystemid = \"game_boy_advance\"".write(to: romsBoxInfo.appending(path: "mgba_libretro.info"), atomically: true, encoding: .utf8)
+
+        let cores = RetroArchCoreIndex.scan(
+            coresDirectories: [romsBoxCores, retroArchCores],
+            infoDirectories: [emptyRetroArchInfo, romsBoxInfo]
+        )
+
+        #expect(cores.map(\.coreIdentifier) == ["mgba_libretro", "snes9x_libretro"])
+        let snes9x = try #require(cores.first { $0.coreIdentifier == "snes9x_libretro" })
+        #expect(snes9x.dylibURL.deletingLastPathComponent().lastPathComponent == "RomsBoxCores")
+    }
+}

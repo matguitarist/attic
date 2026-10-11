@@ -7,6 +7,7 @@ import RomsBoxModels
 /// supported_extensions = "smc|sfc|swc|fig|bs|st"
 /// systemname = "Super Nintendo Entertainment System"
 /// systemid = "super_nes"
+/// database = "Nintendo - Super Nintendo Entertainment System"
 /// ```
 enum RetroArchCoreInfoParser {
     static func parse(contents: String, coreIdentifier: String, dylibURL: URL) -> RetroArchCoreInfo {
@@ -25,6 +26,15 @@ enum RetroArchCoreInfoParser {
             .split(separator: "|")
             .map(String.init)
         let systemID = fields["systemid"]
+        let canonicalSystemID = systemID.flatMap { SystemTaxonomy.system(forRetroArchSystemID: $0)?.canonicalID }
+
+        // `systemid` names one system; `database` lists all of them.
+        var systems: [CanonicalSystemID] = canonicalSystemID.map { [$0] } ?? []
+        for name in (fields["database"] ?? "").split(separator: "|") {
+            if let system = LibretroDatabase.system(forDatabaseName: String(name)), !systems.contains(system) {
+                systems.append(system)
+            }
+        }
 
         return RetroArchCoreInfo(
             coreIdentifier: coreIdentifier,
@@ -32,7 +42,8 @@ enum RetroArchCoreInfoParser {
             dylibURL: dylibURL,
             supportedExtensions: extensions,
             systemID: systemID,
-            canonicalSystemID: systemID.flatMap { SystemTaxonomy.system(forRetroArchSystemID: $0)?.canonicalID }
+            canonicalSystemID: canonicalSystemID,
+            systems: systems
         )
     }
 }

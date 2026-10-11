@@ -89,7 +89,11 @@ struct GameDetailView: View {
                 isValid: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
                 onCommit: { commitTitle($0, for: game) }
             ) { text, focus in
+                // Inside a Form, a TextField renders its title as a leading
+                // row label ("Title  3 Ninjas…"); the header wants just the
+                // centered name.
                 TextField("Title", text: text, axis: .vertical)
+                    .labelsHidden()
                     .textFieldStyle(.plain)
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
@@ -97,6 +101,12 @@ struct GameDetailView: View {
             }
 
             actions(for: game)
+
+            // A per-game override means the user already picked something
+            // for this game specifically; only suggest installs otherwise.
+            if game.launchOverride == nil, let system = game.system {
+                EmulatorSuggestionView(system: system)
+            }
 
             if case .failed(let message) = launchCoordinator.state {
                 Text(message).foregroundStyle(.red).font(.callout)

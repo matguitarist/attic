@@ -67,18 +67,32 @@ final class LaunchCoordinator {
             // see ZippedROMExtractor for why passing the zip straight to
             // RetroArch's command line is unreliable.
             let romURL = zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
+            // Config, BIOS, saves and states all come from the Emulation
+            // folder; the user's global retroarch.cfg is never touched.
+            let (configURL, appendConfigURL) = try retroArchStore.emulationFolderStore.folder
+                .prepareRetroArchLaunch(for: CanonicalSystemID(game.systemCanonicalID))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
-                .launch(coreDylibURL: core.dylibURL, romURL: romURL)
+                .launch(coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL)
 
         case .emulatorProfile(let id):
             guard let profile = fetchEmulatorProfile(id: id, context: game.modelContext) else {
                 throw LaunchError.profileNotFound
             }
+            // Emulators RomsBox installed get their portable setup applied
+            // (data in Emulation/Config, BIOS/saves/states shared); profiles
+            // the user made by hand launch exactly as configured.
+            var environment: [String: String] = [:]
+            if let catalogID = profile.catalogEmulatorID,
+               let emulator = EmulatorCatalog.standaloneEmulators.first(where: { $0.id == catalogID }) {
+                environment = try retroArchStore.emulationFolderStore.folder
+                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID))
+            }
             return try CustomEmulatorLauncher().launch(
                 executableURL: profile.executableURL,
                 argumentTemplate: profile.argumentTemplate,
                 romURL: game.romAbsoluteURL,
-                workingDirectoryURL: profile.workingDirectoryURL
+                workingDirectoryURL: profile.workingDirectoryURL,
+                environmentOverrides: environment
             )
         }
     }

@@ -12,17 +12,23 @@ public struct RetroArchLauncher: Sendable {
         self.retroArchBinaryURL = retroArchBinaryURL
     }
 
-    public func launch(coreDylibURL: URL, romURL: URL) throws -> RunningGameSession {
+    /// `configURL`/`appendConfigURL` come from `EmulationFolder`, keeping
+    /// RetroArch's config, saves and states in the Emulation folder without
+    /// touching the user's global retroarch.cfg.
+    public func launch(coreDylibURL: URL, romURL: URL, configURL: URL? = nil, appendConfigURL: URL? = nil) throws -> RunningGameSession {
         let process = Process()
         process.executableURL = retroArchBinaryURL
-        process.arguments = Self.buildArguments(coreDylibURL: coreDylibURL, romURL: romURL)
+        process.arguments = Self.buildArguments(coreDylibURL: coreDylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL)
         try process.run()
         return RunningGameSession(process: process)
     }
 
     /// Pure argv construction, split out so it's testable without spawning
     /// a process.
-    static func buildArguments(coreDylibURL: URL, romURL: URL) -> [String] {
-        ["-L", coreDylibURL.path, romURL.path]
+    static func buildArguments(coreDylibURL: URL, romURL: URL, configURL: URL? = nil, appendConfigURL: URL? = nil) -> [String] {
+        var arguments: [String] = []
+        if let configURL { arguments += ["--config", configURL.path] }
+        if let appendConfigURL { arguments += ["--appendconfig", appendConfigURL.path] }
+        return arguments + ["-L", coreDylibURL.path, romURL.path]
     }
 }

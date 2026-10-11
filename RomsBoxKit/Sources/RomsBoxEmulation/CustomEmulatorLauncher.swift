@@ -10,11 +10,15 @@ public struct CustomEmulatorLauncher: Sendable {
         executableURL: URL,
         argumentTemplate: String,
         romURL: URL,
-        workingDirectoryURL: URL? = nil
+        workingDirectoryURL: URL? = nil,
+        environmentOverrides: [String: String] = [:]
     ) throws -> RunningGameSession {
         let process = Process()
         process.executableURL = executableURL
         process.arguments = ArgumentTemplate.substitute(argumentTemplate, romURL: romURL)
+        if !environmentOverrides.isEmpty {
+            process.environment = ProcessInfo.processInfo.environment.merging(environmentOverrides) { _, override in override }
+        }
         if let workingDirectoryURL {
             process.currentDirectoryURL = workingDirectoryURL
         }

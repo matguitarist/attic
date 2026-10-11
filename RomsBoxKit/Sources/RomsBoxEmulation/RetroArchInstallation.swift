@@ -34,4 +34,34 @@ public enum RetroArchInstallation {
     public static var infoDirectoryURL: URL {
         applicationSupportURL.appending(path: "info").resolvingSymlinksInPath()
     }
+
+    public static var configFileURL: URL {
+        applicationSupportURL.appending(path: "config/retroarch.cfg").resolvingSymlinksInPath()
+    }
+
+    /// RetroArch's BIOS/"system" directory — where cores look for firmware.
+    /// Read from `system_directory` in retroarch.cfg; falls back to
+    /// RetroArch's macOS default when unset or set to "default".
+    public static func systemDirectoryURL(configContents: String? = try? String(contentsOf: configFileURL, encoding: .utf8)) -> URL {
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        let fallback = home.appending(path: "Documents/RetroArch/system", directoryHint: .isDirectory)
+        guard let value = configContents.flatMap({ configValue(for: "system_directory", in: $0) }),
+              !value.isEmpty, value != "default" else {
+            return fallback
+        }
+        if value.hasPrefix("~/") {
+            return home.appending(path: String(value.dropFirst(2)), directoryHint: .isDirectory)
+        }
+        return URL(fileURLWithPath: value, isDirectory: true)
+    }
+
+    /// `key = "value"` lines, RetroArch's config format.
+    static func configValue(for key: String, in contents: String) -> String? {
+        for line in contents.split(whereSeparator: \.isNewline) {
+            let parts = line.split(separator: "=", maxSplits: 1)
+            guard parts.count == 2, parts[0].trimmingCharacters(in: .whitespaces) == key else { continue }
+            return parts[1].trimmingCharacters(in: .whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+        }
+        return nil
+    }
 }

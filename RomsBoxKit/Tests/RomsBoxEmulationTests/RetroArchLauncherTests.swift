@@ -39,3 +39,20 @@ import Testing
         }
     }
 }
+
+struct RetroArchLauncherPortableArgumentsTests {
+    @Test func configArgumentsComeBeforeCoreAndContent() {
+        let arguments = RetroArchLauncher.buildArguments(
+            coreDylibURL: URL(fileURLWithPath: "/E/Cores/snes9x_libretro.dylib"),
+            romURL: URL(fileURLWithPath: "/E/ROMs/snes/Game.sfc"),
+            configURL: URL(fileURLWithPath: "/E/Config/RetroArch/retroarch.cfg"),
+            appendConfigURL: URL(fileURLWithPath: "/E/Config/RetroArch/romsbox-paths.cfg")
+        )
+        #expect(arguments == [
+            "--config", "/E/Config/RetroArch/retroarch.cfg",
+            "--appendconfig", "/E/Config/RetroArch/romsbox-paths.cfg",
+            "-L", "/E/Cores/snes9x_libretro.dylib",
+            "/E/ROMs/snes/Game.sfc"
+        ])
+    }
+}
