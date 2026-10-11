@@ -56,13 +56,13 @@ public struct EmulatorInstaller: Sendable {
         public var errorDescription: String? {
             switch self {
             case .downloadFailed(let url, let statusCode):
-                "Download failed (HTTP \(statusCode)): \(url.lastPathComponent)"
+                String(localized: "Download failed (HTTP \(statusCode)): \(url.lastPathComponent)", bundle: .module)
             case .extractionFailed(let detail):
-                "Couldn't unpack the download: \(detail)"
+                String(localized: "Couldn't unpack the download: \(detail)", bundle: .module)
             case .missingFileInArchive(let name):
-                "The download didn't contain \(name)."
+                String(localized: "The download didn't contain \(name).", bundle: .module)
             case .retroArchVersionNotFound:
-                "Couldn't find the latest RetroArch release on libretro's site."
+                String(localized: "Couldn't find the latest RetroArch release on libretro's site.", bundle: .module)
             }
         }
     }

@@ -18,6 +18,7 @@ xcodebuild \
     -configuration Release \
     -destination 'platform=macOS' \
     -derivedDataPath "$DERIVED" \
+    -allowProvisioningUpdates \
     -quiet \
     build
 

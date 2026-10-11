@@ -57,12 +57,12 @@ final class EmulationFolderStore {
                 let copied = try EmulationFolder.copyMissingFiles(from: source, to: folder.bios)
                 userDefaults.set(true, forKey: Self.importedRetroArchBIOSKey)
                 if !copied.isEmpty {
-                    lastImportSummary = "Copied \(copied.count) BIOS file(s) from \((source.path as NSString).abbreviatingWithTildeInPath)."
+                    lastImportSummary = String(localized: "Copied \(copied.count) BIOS files from \((source.path as NSString).abbreviatingWithTildeInPath).")
                 }
             }
             lastError = nil
         } catch {
-            lastError = "Couldn't set up the Emulation folder: \(error.localizedDescription)"
+            lastError = String(localized: "Couldn't set up the Emulation folder: \(error.localizedDescription)")
         }
     }
 

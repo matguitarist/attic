@@ -81,7 +81,7 @@ struct RetroArchSettingsView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 2) {
                     Label(
-                        retroArchStore.isInstalled ? "Installed\(retroArchVersion.map { " — \($0)" } ?? "")" : "Not installed",
+                        retroArchStatusText,
                         systemImage: retroArchStore.isInstalled ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
                     )
                     .foregroundStyle(retroArchStore.isInstalled ? .green : .orange)
@@ -100,7 +100,7 @@ struct RetroArchSettingsView: View {
         let needing = setup.systemsNeedingSetup(systems, retroArchStore: retroArchStore, profiles: profiles)
         Section {
             LabeledContent {
-                Button(setup.isBusy ? "Installing…" : "Set Up All Systems") {
+                Button(setup.isBusy ? String(localized: "Installing…") : String(localized: "Set Up All Systems")) {
                     Task {
                         await setup.setUpAllSystems(systems, retroArchStore: retroArchStore, profiles: profiles, modelContext: modelContext)
                     }
@@ -109,8 +109,8 @@ struct RetroArchSettingsView: View {
                 .disabled(needing.isEmpty || setup.isBusy)
             } label: {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(needing.isEmpty ? "Every system has an emulator" : "\(needing.count) of \(systems.count) systems need an emulator")
-                    Text(needing.isEmpty ? "Change any system's choice below." : "Installs the recommended emulator for each, and RetroArch if needed.")
+                    Text(needing.isEmpty ? String(localized: "Every system has an emulator") : String(localized: "\(needing.count) of \(systems.count) systems need an emulator"))
+                    Text(needing.isEmpty ? String(localized: "Change any system's choice below.") : String(localized: "Installs the recommended emulator for each, and RetroArch if needed."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -157,6 +157,12 @@ struct RetroArchSettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    private var retroArchStatusText: String {
+        guard retroArchStore.isInstalled else { return String(localized: "Not installed") }
+        if let retroArchVersion { return String(localized: "Installed — \(retroArchVersion)") }
+        return String(localized: "Installed")
     }
 
     private var retroArchVersion: String? {
@@ -278,8 +284,7 @@ private struct SystemEmulatorRow: View {
     }
 
     private func menuTitle(for option: EmulatorSetupCoordinator.InstallOption, isRecommended: Bool) -> String {
-        var title = option.name
-        if isRecommended { title += " (Recommended)" }
+        var title = isRecommended ? String(localized: "\(option.name) (Recommended)") : option.name
         if setup.isInstalled(option, retroArchStore: retroArchStore) { title += " ✓" }
         return title
     }
@@ -348,7 +353,7 @@ private struct InstalledCoreRow: View {
             .compactMap { SystemTaxonomy.definition(for: $0)?.displayName }
             .joined(separator: ", ")
         let inRetroArchFolder = !core.dylibURL.path.hasPrefix(retroArchStore.emulationFolderStore.folder.cores.path)
-        return [systems.isEmpty ? nil : systems, inRetroArchFolder ? "in RetroArch's folder" : nil]
+        return [systems.isEmpty ? nil : systems, inRetroArchFolder ? String(localized: "in RetroArch's folder") : nil]
             .compactMap { $0 }
             .joined(separator: " · ")
     }

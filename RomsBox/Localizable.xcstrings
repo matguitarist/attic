@@ -1,0 +1,2302 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ (Recommended)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (recommandé)"
+          }
+        }
+      }
+    },
+    "%@ connected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ connectée"
+          }
+        }
+      }
+    },
+    "%@ · %lld cores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ · %2$lld cores"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %lld cœurs"
+          }
+        }
+      }
+    },
+    "%@ — Recommended": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — Recommandé"
+          }
+        }
+      }
+    },
+    "%@. %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@. %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@. %@"
+          }
+        }
+      }
+    },
+    "%lld already had info": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld already had info"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld already had info"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld avait déjà des infos"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld avaient déjà des infos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld failed": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld failed"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld failed"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld échec"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld échecs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld games": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld of %lld systems need an emulator": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld systems need an emulator"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systèmes sans émulateur : %lld sur %lld"
+          }
+        }
+      }
+    },
+    "%lld scraped": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld scraped"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld scraped"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld récupéré"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld récupérés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "A": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A"
+          }
+        }
+      }
+    },
+    "API Key": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clé d’API"
+          }
+        }
+      }
+    },
+    "About": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos"
+          }
+        }
+      }
+    },
+    "Add Custom Emulator…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un émulateur personnalisé…"
+          }
+        }
+      }
+    },
+    "Add Folder…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un dossier…"
+          }
+        }
+      }
+    },
+    "Add a devID/devPassword to enable scraping.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez un devID/devPassword pour activer la récupération des infos."
+          }
+        }
+      }
+    },
+    "Add a standalone emulator to launch specific systems or games with instead of RetroArch.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez un émulateur autonome pour lancer certains systèmes ou jeux à la place de RetroArch."
+          }
+        }
+      }
+    },
+    "Add an API key to enable scraping.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez une clé d’API pour activer la récupération des infos."
+          }
+        }
+      }
+    },
+    "Add to / remove from Favorites": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter aux favoris / retirer des favoris"
+          }
+        }
+      }
+    },
+    "Add to Favorites": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter aux favoris"
+          }
+        }
+      }
+    },
+    "Add to Favorites (⌘D)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter aux favoris (⌘D)"
+          }
+        }
+      }
+    },
+    "Adding your own ScreenScraper member login raises your scrape quota and concurrent-thread limit.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter votre compte membre ScreenScraper augmente votre quota de requêtes et le nombre de requêtes simultanées."
+          }
+        }
+      }
+    },
+    "All Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux"
+          }
+        }
+      }
+    },
+    "Also needs BIOS %@ in %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Also needs BIOS %1$@ in %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nécessite aussi le BIOS %@ dans %@"
+          }
+        }
+      }
+    },
+    "Arguments": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arguments"
+          }
+        }
+      }
+    },
+    "Assigned Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systèmes attribués"
+          }
+        }
+      }
+    },
+    "BIOS, saves, save states, RetroArch cores and settings, and emulators installed by RomsBox all live here — back up or move this one folder to take everything with you.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les BIOS, sauvegardes, sauvegardes d’état, cœurs et réglages de RetroArch et les émulateurs installés par RomsBox sont tous ici — sauvegardez ou déplacez ce seul dossier pour tout emporter."
+          }
+        }
+      }
+    },
+    "Big Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big Box"
+          }
+        }
+      }
+    },
+    "Big Box & Controllers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big Box et manettes"
+          }
+        }
+      }
+    },
+    "Big Box (full-screen mode)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big Box (mode plein écran)"
+          }
+        }
+      }
+    },
+    "Browse": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parcourir"
+          }
+        }
+      }
+    },
+    "Browse games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parcourir les jeux"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annuler"
+          }
+        }
+      }
+    },
+    "Change any system's choice below.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifiez le choix de chaque système ci-dessous."
+          }
+        }
+      }
+    },
+    "Change…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier…"
+          }
+        }
+      }
+    },
+    "Check for Updates": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher des mises à jour"
+          }
+        }
+      }
+    },
+    "Choose ROMs Folder…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir le dossier des ROM…"
+          }
+        }
+      }
+    },
+    "Choose RetroArch.app…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir RetroArch.app…"
+          }
+        }
+      }
+    },
+    "Choose a ROMs folder to get started. RomsBox recognizes libraries organized the way Batocera, RetroBat, or ES-DE organize them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un dossier de ROM pour commencer. RomsBox reconnaît les bibliothèques organisées comme celles de Batocera, RetroBat ou ES-DE."
+          }
+        }
+      }
+    },
+    "Choose…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir…"
+          }
+        }
+      }
+    },
+    "Controller": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manette"
+          }
+        }
+      }
+    },
+    "Copied %lld BIOS files from %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers BIOS copiés depuis %2$@ : %1$lld"
+          }
+        }
+      }
+    },
+    "Couldn't check for core updates: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de rechercher les mises à jour des cœurs : %@"
+          }
+        }
+      }
+    },
+    "Couldn't install %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’installer %@"
+          }
+        }
+      }
+    },
+    "Couldn't install RetroArch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’installer RetroArch"
+          }
+        }
+      }
+    },
+    "Couldn't launch: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancement impossible : %@"
+          }
+        }
+      }
+    },
+    "Couldn't set up the Emulation folder: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de préparer le dossier Emulation : %@"
+          }
+        }
+      }
+    },
+    "Couldn't update %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de mettre à jour %@"
+          }
+        }
+      }
+    },
+    "Cover Size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille des jaquettes"
+          }
+        }
+      }
+    },
+    "Cover art size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille des jaquettes"
+          }
+        }
+      }
+    },
+    "Custom Emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs personnalisés"
+          }
+        }
+      }
+    },
+    "D-pad / Left Stick": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Croix / stick gauche"
+          }
+        }
+      }
+    },
+    "Default": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par défaut"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer"
+          }
+        }
+      }
+    },
+    "Description": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        }
+      }
+    },
+    "Dev ID": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dev ID"
+          }
+        }
+      }
+    },
+    "Dev Password": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dev Password"
+          }
+        }
+      }
+    },
+    "Developer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Développeur"
+          }
+        }
+      }
+    },
+    "Developer Credentials": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identifiants développeur"
+          }
+        }
+      }
+    },
+    "Dismiss": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fermer"
+          }
+        }
+      }
+    },
+    "Downloads come straight from each project's official source — libretro's buildbot for RetroArch and its cores, GitHub releases for standalone emulators. BIOS files are never included: dump them from hardware you own and put them in %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les téléchargements proviennent directement de la source officielle de chaque projet — le buildbot de libretro pour RetroArch et ses cœurs, les versions GitHub pour les émulateurs autonomes. Les BIOS ne sont jamais fournis : extrayez-les du matériel que vous possédez et placez-les dans %@."
+          }
+        }
+      }
+    },
+    "Edit Custom Emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier l’émulateur personnalisé"
+          }
+        }
+      }
+    },
+    "Emulation Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier Emulation"
+          }
+        }
+      }
+    },
+    "Emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs"
+          }
+        }
+      }
+    },
+    "Enter Big Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Big Box"
+          }
+        }
+      }
+    },
+    "Every game in this list already has info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux de cette liste ont déjà des infos"
+          }
+        }
+      }
+    },
+    "Every system has an emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque système a un émulateur"
+          }
+        }
+      }
+    },
+    "Executable Path": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chemin de l’exécutable"
+          }
+        }
+      }
+    },
+    "Exit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter"
+          }
+        }
+      }
+    },
+    "Failed to save %@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Failed to save %1$@: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec de l’enregistrement de %@ : %@"
+          }
+        }
+      }
+    },
+    "Favorite": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favori"
+          }
+        }
+      }
+    },
+    "Favorites": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favoris"
+          }
+        }
+      }
+    },
+    "Favorites First": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favoris en premier"
+          }
+        }
+      }
+    },
+    "Folder added. Ready to scan.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier ajouté. Prêt pour l’analyse."
+          }
+        }
+      }
+    },
+    "Full-screen couch mode (⌘⇧B, or Menu/Start on a controller)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette)"
+          }
+        }
+      }
+    },
+    "Game": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Général"
+          }
+        }
+      }
+    },
+    "Genre": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genre"
+          }
+        }
+      }
+    },
+    "Get an API key on thegamesdb.net": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir une clé d’API sur thegamesdb.net"
+          }
+        }
+      }
+    },
+    "Hide game details": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer les détails du jeu"
+          }
+        }
+      }
+    },
+    "Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infos"
+          }
+        }
+      }
+    },
+    "Inspector": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inspecteur"
+          }
+        }
+      }
+    },
+    "Install": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer"
+          }
+        }
+      }
+    },
+    "Install Failed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec de l’installation"
+          }
+        }
+      }
+    },
+    "Install RetroArch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer RetroArch"
+          }
+        }
+      }
+    },
+    "Installed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installé"
+          }
+        }
+      }
+    },
+    "Installed Cores": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœurs installés"
+          }
+        }
+      }
+    },
+    "Installed — %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installé — %@"
+          }
+        }
+      }
+    },
+    "Installing %@…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation de %@…"
+          }
+        }
+      }
+    },
+    "Installing RetroArch…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation de RetroArch…"
+          }
+        }
+      }
+    },
+    "Installing…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation…"
+          }
+        }
+      }
+    },
+    "Installs the recommended emulator for each, and RetroArch if needed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installe l’émulateur recommandé pour chacun, et RetroArch si nécessaire."
+          }
+        }
+      }
+    },
+    "Its custom emulator was deleted.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son émulateur personnalisé a été supprimé."
+          }
+        }
+      }
+    },
+    "LB / RB": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LB / RB"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langue"
+          }
+        }
+      }
+    },
+    "Last Played": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joué récemment"
+          }
+        }
+      }
+    },
+    "Last checked %@. Updates come from the same nightly builds RetroArch's Online Updater uses, compared by checksum — a core only shows an update when its code actually changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière vérification %@. Les mises à jour proviennent des mêmes versions nocturnes que le Online Updater de RetroArch, comparées par somme de contrôle — un cœur n’affiche une mise à jour que si son code a vraiment changé."
+          }
+        }
+      }
+    },
+    "Launch With": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer avec"
+          }
+        }
+      }
+    },
+    "Launch with a specific emulator, scrape info, or reveal the ROM": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer avec un émulateur précis, récupérer les infos ou afficher la ROM"
+          }
+        }
+      }
+    },
+    "Library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothèque"
+          }
+        }
+      }
+    },
+    "Menu / Start": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu / Start"
+          }
+        }
+      }
+    },
+    "More": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus"
+          }
+        }
+      }
+    },
+    "More Cores (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autres cœurs (%lld)"
+          }
+        }
+      }
+    },
+    "More options…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus d’options…"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom"
+          }
+        }
+      }
+    },
+    "Needs BIOS: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS requis : %@"
+          }
+        }
+      }
+    },
+    "Network error: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreur réseau : %@"
+          }
+        }
+      }
+    },
+    "New Custom Emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvel émulateur personnalisé"
+          }
+        }
+      }
+    },
+    "No Custom Emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun émulateur personnalisé"
+          }
+        }
+      }
+    },
+    "No Game Selected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu sélectionné"
+          }
+        }
+      }
+    },
+    "No Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu"
+          }
+        }
+      }
+    },
+    "No Games Here": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu ici"
+          }
+        }
+      }
+    },
+    "No emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun émulateur"
+          }
+        }
+      }
+    },
+    "No emulator configured for this game or its system.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun émulateur configuré pour ce jeu ou son système."
+          }
+        }
+      }
+    },
+    "No folders configured.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun dossier configuré."
+          }
+        }
+      }
+    },
+    "No games match this selection.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu ne correspond à cette sélection."
+          }
+        }
+      }
+    },
+    "No match found on ScreenScraper for this ROM.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune correspondance trouvée sur ScreenScraper pour cette ROM."
+          }
+        }
+      }
+    },
+    "No match found on TheGamesDB for this ROM.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune correspondance trouvée sur TheGamesDB pour cette ROM."
+          }
+        }
+      }
+    },
+    "None": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun"
+          }
+        }
+      }
+    },
+    "Not installed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non installé"
+          }
+        }
+      }
+    },
+    "Not on buildbot": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absent du buildbot"
+          }
+        }
+      }
+    },
+    "Not set": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non renseigné"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Open Big Box at launch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Big Box au démarrage"
+          }
+        }
+      }
+    },
+    "Password": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mot de passe"
+          }
+        }
+      }
+    },
+    "Placeholders: {romPath}, {romDir}, {romName}, {romNameNoExt}": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variables : {romPath}, {romDir}, {romName}, {romNameNoExt}"
+          }
+        }
+      }
+    },
+    "Play": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer"
+          }
+        }
+      }
+    },
+    "Play (⌘↩)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer (⌘↩)"
+          }
+        }
+      }
+    },
+    "Play Count": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de parties"
+          }
+        }
+      }
+    },
+    "Play History": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historique de jeu"
+          }
+        }
+      }
+    },
+    "Played %lld×": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joué %lld×"
+          }
+        }
+      }
+    },
+    "Players": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joueurs"
+          }
+        }
+      }
+    },
+    "Players: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joueurs : %@"
+          }
+        }
+      }
+    },
+    "Playing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En cours"
+          }
+        }
+      }
+    },
+    "Previous / next system": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système précédent / suivant"
+          }
+        }
+      }
+    },
+    "Publisher": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Éditeur"
+          }
+        }
+      }
+    },
+    "Put these in %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez-les dans %@"
+          }
+        }
+      }
+    },
+    "Quit games with Select + Start": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter les jeux avec Select + Start"
+          }
+        }
+      }
+    },
+    "ROMs Folders": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossiers de ROM"
+          }
+        }
+      }
+    },
+    "Ready to scrape.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt à récupérer les infos."
+          }
+        }
+      }
+    },
+    "Recently Played": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joués récemment"
+          }
+        }
+      }
+    },
+    "Recommended": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommandés"
+          }
+        }
+      }
+    },
+    "Refresh Cores": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiser les cœurs"
+          }
+        }
+      }
+    },
+    "Reinstall Latest Version": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinstaller la dernière version"
+          }
+        }
+      }
+    },
+    "Released": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortie"
+          }
+        }
+      }
+    },
+    "Remove from Favorites": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer des favoris"
+          }
+        }
+      }
+    },
+    "Remove from Favorites (⌘D)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer des favoris (⌘D)"
+          }
+        }
+      }
+    },
+    "Request API access on screenscraper.fr": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demander un accès à l’API sur screenscraper.fr"
+          }
+        }
+      }
+    },
+    "Rescan Library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réanalyser la bibliothèque"
+          }
+        }
+      }
+    },
+    "Restart Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrer maintenant"
+          }
+        }
+      }
+    },
+    "RetroArch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetroArch"
+          }
+        }
+      }
+    },
+    "RetroArch Cores": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœurs RetroArch"
+          }
+        }
+      }
+    },
+    "RetroArch core": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur RetroArch"
+          }
+        }
+      }
+    },
+    "RetroArch isn't installed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetroArch n’est pas installé."
+          }
+        }
+      }
+    },
+    "Reveal in Finder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Running…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En cours…"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer"
+          }
+        }
+      }
+    },
+    "Scan Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyser maintenant"
+          }
+        }
+      }
+    },
+    "Scanning…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyse…"
+          }
+        }
+      }
+    },
+    "Scrape %lld Missing From": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer les %lld manquants depuis"
+          }
+        }
+      }
+    },
+    "Scrape Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer les infos"
+          }
+        }
+      }
+    },
+    "Scrape Missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer les manquants"
+          }
+        }
+      }
+    },
+    "Scrape info for the %lld games in this list missing it": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Scrape info for the game in this list missing it"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Scrape info for the %lld games in this list missing it"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Récupérer les infos du jeu de cette liste qui n’en a pas"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Récupérer les infos des %lld jeux de cette liste qui n’en ont pas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Scraping %lld of %lld…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Scraping %1$lld of %2$lld…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupération %lld sur %lld…"
+          }
+        }
+      }
+    },
+    "ScreenScraper": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ScreenScraper"
+          }
+        }
+      }
+    },
+    "ScreenScraper doesn't support this system yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ScreenScraper ne prend pas encore en charge ce système."
+          }
+        }
+      }
+    },
+    "ScreenScraper isn't configured yet — add your devID/devPassword in Settings.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ScreenScraper n’est pas encore configuré — ajoutez votre devID/devPassword dans les Réglages."
+          }
+        }
+      }
+    },
+    "ScreenScraper rejected the request (bad credentials or quota exceeded): %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ScreenScraper a refusé la requête (identifiants incorrects ou quota dépassé) : %@"
+          }
+        }
+      }
+    },
+    "ScreenScraper's API requires a devID/devPassword issued to registered client software — separate from your personal account. Request one on their developer forum, then paste it in below.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’API de ScreenScraper exige un devID/devPassword attribué aux logiciels clients enregistrés — distinct de votre compte personnel. Demandez-en un sur leur forum développeurs, puis collez-le ci-dessous."
+          }
+        }
+      }
+    },
+    "Search Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher des jeux"
+          }
+        }
+      }
+    },
+    "Select + Start closes the running game from the controller — set up in RetroArch and DuckStation when RomsBox launches them. Games save normally on the way out.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select + Start ferme le jeu en cours depuis la manette — configuré dans RetroArch et DuckStation quand RomsBox les lance. Les jeux sauvegardent normalement en quittant."
+          }
+        }
+      }
+    },
+    "Select a game to see its details.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionnez un jeu pour voir ses détails."
+          }
+        }
+      }
+    },
+    "Set Up All Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configurer tous les systèmes"
+          }
+        }
+      }
+    },
+    "Set a default emulator for this system in Settings, or choose one from Launch With.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un émulateur par défaut pour ce système dans les Réglages, ou choisissez-en un dans « Lancer avec »."
+          }
+        }
+      }
+    },
+    "Show game details": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les détails du jeu"
+          }
+        }
+      }
+    },
+    "Show in Finder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Sort By": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier par"
+          }
+        }
+      }
+    },
+    "Sort by": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier par"
+          }
+        }
+      }
+    },
+    "Standalone Emulators": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateurs autonomes"
+          }
+        }
+      }
+    },
+    "Standalone app": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Application autonome"
+          }
+        }
+      }
+    },
+    "Switch systems with LB / RB.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changez de système avec LB / RB."
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système"
+          }
+        }
+      }
+    },
+    "System Default": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langue du système"
+          }
+        }
+      }
+    },
+    "Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systèmes"
+          }
+        }
+      }
+    },
+    "Takes effect when RomsBox restarts.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prend effet au prochain démarrage de RomsBox."
+          }
+        }
+      }
+    },
+    "The %@ core isn't installed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur %@ n’est pas installé."
+          }
+        }
+      }
+    },
+    "The assigned custom emulator profile no longer exists.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le profil d’émulateur personnalisé attribué n’existe plus."
+          }
+        }
+      }
+    },
+    "The core “%@” is no longer installed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur « %@ » n’est plus installé."
+          }
+        }
+      }
+    },
+    "TheGamesDB": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB"
+          }
+        }
+      }
+    },
+    "TheGamesDB doesn't support this system yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB ne prend pas encore en charge ce système."
+          }
+        }
+      }
+    },
+    "TheGamesDB isn't configured yet — add your API key in Settings.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB n’est pas encore configuré — ajoutez votre clé d’API dans les Réglages."
+          }
+        }
+      }
+    },
+    "TheGamesDB matches by searching the ROM's title text rather than an exact filename/CRC match like ScreenScraper, so results can be a bit fuzzier — useful as a fallback while you wait on a ScreenScraper devID, or anytime ScreenScraper has no match.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB recherche d’après le titre de la ROM plutôt qu’une correspondance exacte de nom de fichier/CRC comme ScreenScraper, les résultats peuvent donc être un peu moins précis — pratique en solution de repli en attendant un devID ScreenScraper, ou quand ScreenScraper ne trouve rien."
+          }
+        }
+      }
+    },
+    "TheGamesDB only needs a self-serve API key — create a free account and generate one from your account page, no separate software-registration review needed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB n’a besoin que d’une clé d’API en libre-service — créez un compte gratuit et générez-la depuis votre page de compte, sans validation préalable du logiciel."
+          }
+        }
+      }
+    },
+    "TheGamesDB rejected the request (bad API key or quota exceeded): %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TheGamesDB a refusé la requête (clé d’API incorrecte ou quota dépassé) : %@"
+          }
+        }
+      }
+    },
+    "Title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titre"
+          }
+        }
+      }
+    },
+    "Total Playtime": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temps de jeu total"
+          }
+        }
+      }
+    },
+    "Unexpected response from ScreenScraper: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réponse inattendue de ScreenScraper : %@"
+          }
+        }
+      }
+    },
+    "Unexpected response from TheGamesDB: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réponse inattendue de TheGamesDB : %@"
+          }
+        }
+      }
+    },
+    "Unfavorite": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer des favoris"
+          }
+        }
+      }
+    },
+    "Up to date": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À jour"
+          }
+        }
+      }
+    },
+    "Update": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettre à jour"
+          }
+        }
+      }
+    },
+    "Update All (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout mettre à jour (%lld)"
+          }
+        }
+      }
+    },
+    "Updating %@…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise à jour de %@…"
+          }
+        }
+      }
+    },
+    "Use": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser"
+          }
+        }
+      }
+    },
+    "Use System Default": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser le réglage du système"
+          }
+        }
+      }
+    },
+    "Username": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom d’utilisateur"
+          }
+        }
+      }
+    },
+    "Welcome to RomsBox": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenue dans RomsBox"
+          }
+        }
+      }
+    },
+    "Y": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Y"
+          }
+        }
+      }
+    },
+    "Your Account (optional)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre compte (facultatif)"
+          }
+        }
+      }
+    },
+    "in RetroArch's folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dans le dossier de RetroArch"
+          }
+        }
+      }
+    },
+    "libretro doesn't publish this core for Apple Silicon, so there's nothing to compare it with.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "libretro ne publie pas ce cœur pour Apple Silicon, il n’y a donc rien à comparer."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

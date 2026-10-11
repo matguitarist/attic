@@ -1,5 +1,6 @@
 import Foundation
 import IOKit
+import OSLog
 import IOUSBHost
 import RomsBoxModels
 
@@ -18,6 +19,9 @@ import RomsBoxModels
 /// ties those to app activation, so the interface is only held while
 /// RomsBox is frontmost and is free for anything else the rest of the time.
 final class XInputUSBGamepadSource: @unchecked Sendable {
+    /// `log stream --predicate 'subsystem == "com.romsbox.app" && category == "XInputUSB"'`
+    private static let log = Logger(subsystem: "com.romsbox.app", category: "XInputUSB")
+
     typealias StateHandler = @MainActor (_ deviceID: UInt64, _ state: XInputPadState) -> Void
     typealias ConnectionHandler = @MainActor (_ deviceID: UInt64, _ name: String?) -> Void
 
@@ -26,7 +30,7 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
     private static let interfaceProtocol = 0x01
     /// "Set LED: player 1". Standard first message to an Xbox 360 pad;
     /// the probe confirmed the Luna answers it with its current state.
-    private static let ledPlayerOneMessage: [UInt8] = [0x01, 0x03, 0x06]
+    fileprivate static let ledPlayerOneMessage: [UInt8] = [0x01, 0x03, 0x06]
 
     private let onState: StateHandler
     private let onConnectionChange: ConnectionHandler
@@ -46,7 +50,11 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
 
     func start() {
         queue.async { [self] in
-            guard notificationPort == nil, let port = IONotificationPortCreate(kIOMainPortDefault) else { return }
+            guard notificationPort == nil, let port = IONotificationPortCreate(kIOMainPortDefault) else {
+                Self.log.debug("start: already watching")
+                return
+            }
+            Self.log.info("start: watching for XInput pads")
             notificationPort = port
             IONotificationPortSetDispatchQueue(port, queue)
 
@@ -69,6 +77,7 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
 
     func stop() {
         queue.async { [self] in
+            Self.log.info("stop: releasing \(self.devices.count) pad(s)")
             if matchIterator != 0 {
                 IOObjectRelease(matchIterator)
                 matchIterator = 0
@@ -124,12 +133,14 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
 
         let device: Device
         do {
-            device = try Device(service: service, id: registryID, queue: queue)
+            device = try Device(service: service, id: registryID)
         } catch {
             // Most likely claimed by a third-party driver, which then
             // presumably exposes the pad to GameController itself.
+            Self.log.error("open failed for \(registryID): \(error.localizedDescription, privacy: .public)")
             return
         }
+        Self.log.info("opened pad \(registryID)")
         let name = Self.productName(of: service) ?? "USB Controller"
 
         lock.lock()
@@ -156,6 +167,7 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
                 lastState = state
                 DispatchQueue.main.async { MainActor.assumeIsolated { onState(device.id, state) } }
             }
+            Self.log.info("read loop ended for pad \(device.id)")
             self?.deviceDidEnd(device)
         }
     }
@@ -181,11 +193,21 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
         private let outPipe: IOUSBHostPipe?
         // IOUSBHost requires buffers it allocated itself — a plain
         // NSMutableData fails every request with kIOReturnBadArgument.
+        private let writeBuffer: NSMutableData
         private let readBuffer: NSMutableData
 
-        init(service: io_service_t, id: UInt64, queue: DispatchQueue) throws {
+        /// Each interface gets its own callback queue — never the source's
+        /// management queue. `close()` runs on that management queue and
+        /// aborts synchronously, which waits for IOUSBHost to deliver the
+        /// abort on the interface's queue; when both were the same queue
+        /// that wait could never finish, deadlocking the queue and leaving
+        /// the pad held (and dead) after the first time RomsBox lost focus.
+        private let callbackQueue: DispatchQueue
+
+        init(service: io_service_t, id: UInt64) throws {
             self.id = id
-            interface = try IOUSBHostInterface(__ioService: service, options: [], queue: queue, interestHandler: nil)
+            callbackQueue = DispatchQueue(label: "com.romsbox.xinput.device.\(id)")
+            interface = try IOUSBHostInterface(__ioService: service, options: [], queue: callbackQueue, interestHandler: nil)
             var inPipe: IOUSBHostPipe?
             var outPipe: IOUSBHostPipe?
             for endpoint in 1...15 {
@@ -199,6 +221,9 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
             self.inPipe = inPipe
             self.outPipe = outPipe
             readBuffer = try interface.ioData(withCapacity: 32)
+            // IOUSBHost buffers can't change length, and a write sends the
+            // whole buffer — so it's sized for the one message RomsBox sends.
+            writeBuffer = try interface.ioData(withCapacity: XInputUSBGamepadSource.ledPlayerOneMessage.count)
         }
 
         /// Interrupt pipes reject any completion timeout other than 0
@@ -214,11 +239,16 @@ final class XInputUSBGamepadSource: @unchecked Sendable {
             return [UInt8](UnsafeRawBufferPointer(start: readBuffer.bytes, count: count))
         }
 
+        /// Writes through the long-lived `writeBuffer`. A buffer allocated
+        /// per call got freed (unmapped) while the blocking read was in
+        /// flight, and that unmap waits on the same busy connection — it
+        /// hung the source's queue for good, so pads were never released
+        /// or reopened again.
         func sendOutput(_ bytes: [UInt8]) {
-            guard let outPipe, let buffer = try? interface.ioData(withCapacity: bytes.count) else { return }
-            buffer.replaceBytes(in: NSRange(location: 0, length: bytes.count), withBytes: bytes)
+            guard let outPipe, bytes.count == writeBuffer.length else { return }
+            writeBuffer.replaceBytes(in: NSRange(location: 0, length: bytes.count), withBytes: bytes)
             var sent = 0
-            try? outPipe.__sendIORequest(with: buffer, bytesTransferred: &sent, completionTimeout: 0)
+            try? outPipe.__sendIORequest(with: writeBuffer, bytesTransferred: &sent, completionTimeout: 0)
         }
 
         func close() {

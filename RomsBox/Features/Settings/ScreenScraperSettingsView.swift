@@ -28,7 +28,7 @@ struct ScreenScraperSettingsView: View {
                 HStack {
                     Image(systemName: credentialsStore.isConfigured ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundStyle(credentialsStore.isConfigured ? .green : .orange)
-                    Text(credentialsStore.isConfigured ? "Ready to scrape." : "Add a devID/devPassword to enable scraping.")
+                    Text(credentialsStore.isConfigured ? String(localized: "Ready to scrape.") : String(localized: "Add a devID/devPassword to enable scraping."))
                         .foregroundStyle(.secondary)
                 }
             }

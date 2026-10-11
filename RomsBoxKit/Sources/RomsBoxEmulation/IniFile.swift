@@ -37,6 +37,12 @@ public struct IniFile: Sendable, Equatable {
         }
     }
 
+    public mutating func remove(section: String, key: String) {
+        if let index = keyLineIndex(section: section, key: key) {
+            lines.remove(at: index)
+        }
+    }
+
     // MARK: - Helpers
 
     /// Lines from the header up to (not including) the next header.

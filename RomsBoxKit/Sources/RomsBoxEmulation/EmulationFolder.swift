@@ -76,8 +76,11 @@ public struct EmulationFolder: Sendable, Hashable {
     /// every directory RetroArch reads or writes, pointed into this folder,
     /// with saves and states split per system the same way standalone
     /// emulators' are.
-    public func retroArchPathsConfig(for system: CanonicalSystemID) -> String {
-        let settings: [(String, String)] = [
+    /// With `quitCombo`, Start + Select quits immediately — RetroArch's own
+    /// `input_quit_gamepad_combo` (4 = Start + Select in its option list),
+    /// with the "press twice to confirm" step turned off.
+    public func retroArchPathsConfig(for system: CanonicalSystemID, quitCombo: Bool = true) -> String {
+        var settings: [(String, String)] = [
             ("system_directory", bios.path),
             ("libretro_directory", cores.path),
             ("libretro_info_path", coreInfo.path),
@@ -94,18 +97,21 @@ public struct EmulationFolder: Sendable, Hashable {
             ("global_core_options", "true"),
             ("core_options_path", retroArchConfigDirectory.appending(path: "retroarch-core-options.cfg").path)
         ]
+        if quitCombo {
+            settings += [("input_quit_gamepad_combo", "4"), ("quit_press_twice", "false")]
+        }
         return "# Written by RomsBox before every launch — edits here are overwritten.\n"
             + settings.map { "\($0.0) = \"\($0.1)\"" }.joined(separator: "\n") + "\n"
     }
 
     /// Writes the per-launch paths config and makes sure the per-system
     /// save/state folders exist. Returns (main config, paths config).
-    public func prepareRetroArchLaunch(for system: CanonicalSystemID) throws -> (config: URL, appendConfig: URL) {
+    public func prepareRetroArchLaunch(for system: CanonicalSystemID, quitCombo: Bool = true) throws -> (config: URL, appendConfig: URL) {
         try createStructure()
         for directory in [saves(for: system), states(for: system)] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         }
-        try retroArchPathsConfig(for: system).write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
+        try retroArchPathsConfig(for: system, quitCombo: quitCombo).write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
         return (retroArchConfigFile, retroArchPathsConfigFile)
     }
 
@@ -125,7 +131,7 @@ public struct EmulationFolder: Sendable, Hashable {
     /// Points a standalone emulator's own settings file at this folder's
     /// BIOS/save/state directories, and returns the environment to launch
     /// it with. Re-run before every launch so the paths follow the folder.
-    public func prepareStandaloneLaunch(of emulator: StandaloneEmulator, for system: CanonicalSystemID) throws -> [String: String] {
+    public func prepareStandaloneLaunch(of emulator: StandaloneEmulator, for system: CanonicalSystemID, quitCombo: Bool = true) throws -> [String: String] {
         guard let portable = emulator.portableHome else { return [:] }
         let home = configHome(for: emulator)
         let settingsFile = home.appending(path: portable.settingsRelativePath)
@@ -136,7 +142,16 @@ public struct EmulationFolder: Sendable, Hashable {
 
         var ini = IniFile(contents: (try? String(contentsOf: settingsFile, encoding: .utf8)) ?? "")
         for setting in portable.settings {
+            if setting.onlyIfMissing, ini.value(section: setting.section, key: setting.key) != nil { continue }
             ini.set(section: setting.section, key: setting.key, value: expand(setting.value, system: system))
+        }
+        for setting in portable.quitComboSettings {
+            if quitCombo {
+                ini.set(section: setting.section, key: setting.key, value: setting.value)
+            } else if ini.value(section: setting.section, key: setting.key) == setting.value {
+                // Only undo our own binding, never one the user set.
+                ini.remove(section: setting.section, key: setting.key)
+            }
         }
         try ini.contents.write(to: settingsFile, atomically: true, encoding: .utf8)
         return ["HOME": home.path]

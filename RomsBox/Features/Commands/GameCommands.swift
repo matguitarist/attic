@@ -24,7 +24,7 @@ struct GameCommands: Commands {
             .keyboardShortcut(.return, modifiers: .command)
             .disabled(game == nil)
 
-            Button(game?.favorite == true ? "Remove from Favorites" : "Add to Favorites") {
+            Button(game?.favorite == true ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")) {
                 guard let game else { return }
                 game.favorite.toggle()
                 try? game.modelContext?.save()
@@ -39,6 +39,20 @@ struct GameCommands: Commands {
             }
             .keyboardShortcut("r", modifiers: [.command, .shift])
             .disabled(game == nil)
+        }
+    }
+}
+
+/// View › Enter Big Box.
+struct BigBoxCommands: Commands {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        CommandGroup(after: .sidebar) {
+            Button("Enter Big Box") {
+                openWindow(id: BigBoxView.windowID)
+            }
+            .keyboardShortcut("b", modifiers: [.command, .shift])
         }
     }
 }

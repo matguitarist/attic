@@ -1,0 +1,332 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Accurate PC Engine, CD and SuperGrafx.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PC Engine, CD et SuperGrafx avec précision."
+          }
+        }
+      }
+    },
+    "Accurate and fast — the standard GBA core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précis et rapide — le cœur GBA de référence."
+          }
+        }
+      }
+    },
+    "Accurate and fast — the usual choice.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précis et rapide — le choix habituel."
+          }
+        }
+      }
+    },
+    "Accurate and lighter.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précis et plus léger."
+          }
+        }
+      }
+    },
+    "Atari 8-bit family including 5200.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Famille Atari 8 bits, 5200 compris."
+          }
+        }
+      }
+    },
+    "Couldn't find the latest RetroArch release on libretro's site.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de trouver la dernière version de RetroArch sur le site de libretro."
+          }
+        }
+      }
+    },
+    "Couldn't unpack the download: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de décompresser le téléchargement : %@"
+          }
+        }
+      }
+    },
+    "Cycle-accurate; heavier.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précis au cycle près ; plus exigeant."
+          }
+        }
+      }
+    },
+    "Dedicated 5200 core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur dédié à la 5200."
+          }
+        }
+      }
+    },
+    "Dedicated SuperGrafx core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur dédié à la SuperGrafx."
+          }
+        }
+      }
+    },
+    "Download failed (HTTP %lld): %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Download failed (HTTP %1$lld): %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec du téléchargement (HTTP %lld) : %@"
+          }
+        }
+      }
+    },
+    "DuckStation's engine as a RetroArch core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le moteur de DuckStation en cœur RetroArch."
+          }
+        }
+      }
+    },
+    "Fast, broad mapper support.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rapide, large prise en charge des mappers."
+          }
+        }
+      }
+    },
+    "Fast; can run without a BIOS.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rapide ; fonctionne sans BIOS."
+          }
+        }
+      }
+    },
+    "Fast; the only option with 32X support.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rapide ; la seule option qui gère la 32X."
+          }
+        }
+      }
+    },
+    "Faster, less accurate.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus rapide, moins précis."
+          }
+        }
+      }
+    },
+    "Highly accurate Sega 8/16-bit and Sega CD.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sega 8/16 bits et Sega CD avec une grande précision."
+          }
+        }
+      }
+    },
+    "Lighter PC Engine core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur PC Engine plus léger."
+          }
+        }
+      }
+    },
+    "Mednafen's Lynx core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Lynx de Mednafen."
+          }
+        }
+      }
+    },
+    "Most accurate NES core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur NES le plus précis."
+          }
+        }
+      }
+    },
+    "Most accurate Saturn core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Saturn le plus précis."
+          }
+        }
+      }
+    },
+    "The 3DO core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur 3DO."
+          }
+        }
+      }
+    },
+    "The Atari 7800 core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Atari 7800."
+          }
+        }
+      }
+    },
+    "The CD-i core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur CD-i."
+          }
+        }
+      }
+    },
+    "The Dreamcast core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Dreamcast."
+          }
+        }
+      }
+    },
+    "The download didn't contain %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le téléchargement ne contenait pas %@."
+          }
+        }
+      }
+    },
+    "The most accurate and polished PlayStation emulator, with upscaling and per-game fixes.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PlayStation le plus précis et le plus abouti, avec mise à l’échelle et correctifs par jeu."
+          }
+        }
+      }
+    },
+    "The only Jaguar core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le seul cœur Jaguar."
+          }
+        }
+      }
+    },
+    "The only PC-FX core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le seul cœur PC-FX."
+          }
+        }
+      }
+    },
+    "The reference Atari 2600 emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Atari 2600 de référence."
+          }
+        }
+      }
+    },
+    "The reference Lynx emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Lynx de référence."
+          }
+        }
+      }
+    },
+    "Very accurate, with upscaling.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Très précis, avec mise à l’échelle."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

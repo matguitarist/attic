@@ -16,6 +16,10 @@ struct LibraryBrowserView: View {
     @AppStorage("showsGameInspector") private var showsInspector = true
     @State private var showsControllerHelp = false
     @Environment(GamepadInputMonitor.self) private var gamepad
+    @Environment(\.openWindow) private var openWindow
+    @AppStorage(BigBoxView.startInBigBoxKey) private var startsInBigBox = false
+    /// Once per launch — not every time a library window appears.
+    private static var didAutoOpenBigBox = false
 
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
@@ -44,10 +48,18 @@ struct LibraryBrowserView: View {
             }
         }
         .focusedSceneValue(\.selectedGame, selectedGame)
+        .onAppear {
+            if startsInBigBox, !Self.didAutoOpenBigBox {
+                Self.didAutoOpenBigBox = true
+                openWindow(id: BigBoxView.windowID)
+            }
+        }
         .onChange(of: gamepad.lastEvent) { _, event in
+            guard !gamepad.isBigBoxActive else { return }
             switch event?.command {
             case .previousSection: stepSection(by: -1)
             case .nextSection: stepSection(by: 1)
+            case .toggleBigBox: openWindow(id: BigBoxView.windowID)
             default: break
             }
         }
@@ -115,11 +127,20 @@ struct LibraryBrowserView: View {
 
         ToolbarItem {
             Button {
+                openWindow(id: BigBoxView.windowID)
+            } label: {
+                Label("Big Box", systemImage: "tv")
+            }
+            .help("Full-screen couch mode (⌘⇧B, or Menu/Start on a controller)")
+        }
+
+        ToolbarItem {
+            Button {
                 showsInspector.toggle()
             } label: {
                 Label("Inspector", systemImage: "info.circle")
             }
-            .help(showsInspector ? "Hide game details" : "Show game details")
+            .help(showsInspector ? String(localized: "Hide game details") : String(localized: "Show game details"))
         }
     }
 
@@ -134,9 +155,9 @@ struct LibraryBrowserView: View {
 
     private var selectionTitle: String {
         switch currentSelection {
-        case .allGames: "All Games"
-        case .favorites: "Favorites"
-        case .recentlyPlayed: "Recently Played"
+        case .allGames: String(localized: "All Games")
+        case .favorites: String(localized: "Favorites")
+        case .recentlyPlayed: String(localized: "Recently Played")
         case .system(let canonicalID):
             systems.first { $0.systemID == canonicalID }?.displayName ?? canonicalID.rawValue
         }
@@ -157,13 +178,14 @@ private struct ControllerHelpView: View {
                 row("A", "Play")
                 row("Y", "Add to / remove from Favorites")
                 row("LB / RB", "Previous / next system")
+                row("Menu / Start", "Big Box (full-screen mode)")
             }
             .font(.callout)
         }
         .padding()
     }
 
-    private func row(_ control: String, _ action: String) -> some View {
+    private func row(_ control: LocalizedStringKey, _ action: LocalizedStringKey) -> some View {
         GridRow {
             Text(control).foregroundStyle(.secondary)
             Text(action)

@@ -19,7 +19,7 @@ struct TheGamesDBSettingsView: View {
                 HStack {
                     Image(systemName: credentialsStore.isConfigured ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundStyle(credentialsStore.isConfigured ? .green : .orange)
-                    Text(credentialsStore.isConfigured ? "Ready to scrape." : "Add an API key to enable scraping.")
+                    Text(credentialsStore.isConfigured ? String(localized: "Ready to scrape.") : String(localized: "Add an API key to enable scraping."))
                         .foregroundStyle(.secondary)
                 }
             }

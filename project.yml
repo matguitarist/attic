@@ -1,6 +1,7 @@
 name: RomsBox
 options:
   bundleIdPrefix: com.romsbox
+  developmentLanguage: en
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
@@ -17,21 +18,27 @@ targets:
       - path: RomsBox
         excludes:
           - "RomsBox.entitlements"
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.romsbox.app
         PRODUCT_NAME: RomsBox
-        MARKETING_VERSION: "1.2.0"
-        CURRENT_PROJECT_VERSION: "3"
+        MARKETING_VERSION: "1.3.0"
+        CURRENT_PROJECT_VERSION: "4"
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: RomsBox/RomsBox.entitlements
-        CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.entertainment
         ENABLE_PREVIEWS: YES
+        # Text is extracted into Localizable.xcstrings at build time, so
+        # translators only ever edit the catalog.
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     dependencies:
       - package: RomsBoxKit
         product: RomsBoxModels

@@ -129,23 +129,23 @@ struct GameDetailView: View {
             Button {
                 launchCoordinator.play(game: game, retroArchStore: retroArchStore)
             } label: {
-                Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
+                Label(isRunningThisGame ? String(localized: "Running…") : String(localized: "Play"), systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
                     .frame(minWidth: 70)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .disabled(target == nil || isBusy)
-            .help(target == nil ? "Set a default emulator for this system in Settings, or choose one from Launch With." : "Play (⌘↩)")
+            .help(target == nil ? String(localized: "Set a default emulator for this system in Settings, or choose one from Launch With.") : String(localized: "Play (⌘↩)"))
 
             Button {
                 game.favorite.toggle()
                 try? game.modelContext?.save()
             } label: {
-                Label(game.favorite ? "Unfavorite" : "Favorite", systemImage: game.favorite ? "star.fill" : "star")
+                Label(game.favorite ? String(localized: "Unfavorite") : String(localized: "Favorite"), systemImage: game.favorite ? "star.fill" : "star")
                     .labelStyle(.iconOnly)
             }
             .controlSize(.large)
-            .help(game.favorite ? "Remove from Favorites (⌘D)" : "Add to Favorites (⌘D)")
+            .help(game.favorite ? String(localized: "Remove from Favorites (⌘D)") : String(localized: "Add to Favorites (⌘D)"))
 
             Menu {
                 Menu("Launch With") {
@@ -185,7 +185,7 @@ struct GameDetailView: View {
     /// editable value on the trailing side. The prompt is deliberately
     /// generic rather than repeating the label — an empty field showing
     /// e.g. "Developer" reads like a real (wrong) value, not like unset.
-    private func editableRow(_ label: String, _ keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) -> some View {
+    private func editableRow(_ label: LocalizedStringKey, _ keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) -> some View {
         CommitOnBlurField(
             value: game[keyPath: keyPath] ?? "",
             onCommit: { commitOptionalText($0, to: keyPath, for: game) }

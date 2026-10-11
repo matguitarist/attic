@@ -43,9 +43,9 @@ struct BatchScrapeStatusBar: View {
     }
 
     private func summary(scraped: Int, alreadyPresent: Int, failed: Int) -> String {
-        var parts = ["\(scraped) scraped"]
-        if failed > 0 { parts.append("\(failed) failed") }
-        if alreadyPresent > 0 { parts.append("\(alreadyPresent) already had info") }
+        var parts = [String(localized: "\(scraped) scraped")]
+        if failed > 0 { parts.append(String(localized: "\(failed) failed")) }
+        if alreadyPresent > 0 { parts.append(String(localized: "\(alreadyPresent) already had info")) }
         return parts.joined(separator: ", ")
     }
 }

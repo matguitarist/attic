@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 import SwiftData
@@ -22,6 +23,16 @@ final class LaunchCoordinator {
     private var currentSession: RunningGameSession?
     private let zippedROMExtractor = ZippedROMExtractor()
 
+    /// "Quit games with Select + Start" (Settings › General). Applied by
+    /// configuring each emulator's own quit combo at launch — RetroArch's
+    /// `input_quit_gamepad_combo`, DuckStation's PowerOff hotkey — since
+    /// emulators own the controller while a game runs.
+    static let quitComboEnabledKey = "quitGameWithSelectStart"
+
+    private var quitComboEnabled: Bool {
+        UserDefaults.standard.object(forKey: Self.quitComboEnabledKey) as? Bool ?? true
+    }
+
     func play(game: Game, retroArchStore: RetroArchSettingsStore) {
         guard state == .idle || isFailed else { return }
 
@@ -29,7 +40,7 @@ final class LaunchCoordinator {
             gameOverride: game.launchOverride,
             systemDefault: game.system?.defaultLaunchTarget
         ) else {
-            state = .failed("No emulator configured for this game or its system.")
+            state = .failed(String(localized: "No emulator configured for this game or its system."))
             return
         }
 
@@ -39,7 +50,7 @@ final class LaunchCoordinator {
         do {
             session = try launch(target, game: game, retroArchStore: retroArchStore)
         } catch {
-            state = .failed("Couldn't launch: \(error.localizedDescription)")
+            state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
             return
         }
 
@@ -70,7 +81,7 @@ final class LaunchCoordinator {
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let (configURL, appendConfigURL) = try retroArchStore.emulationFolderStore.folder
-                .prepareRetroArchLaunch(for: CanonicalSystemID(game.systemCanonicalID))
+                .prepareRetroArchLaunch(for: CanonicalSystemID(game.systemCanonicalID), quitCombo: quitComboEnabled)
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
                 .launch(coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL)
 
@@ -85,7 +96,7 @@ final class LaunchCoordinator {
             if let catalogID = profile.catalogEmulatorID,
                let emulator = EmulatorCatalog.standaloneEmulators.first(where: { $0.id == catalogID }) {
                 environment = try retroArchStore.emulationFolderStore.folder
-                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID))
+                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID), quitCombo: quitComboEnabled)
             }
             return try CustomEmulatorLauncher().launch(
                 executableURL: profile.executableURL,
@@ -104,9 +115,9 @@ final class LaunchCoordinator {
         var errorDescription: String? {
             switch self {
             case .coreNotInstalled(let identifier):
-                "The core \"\(identifier)\" is no longer installed."
+                String(localized: "The core “\(identifier)” is no longer installed.")
             case .profileNotFound:
-                "The assigned custom emulator profile no longer exists."
+                String(localized: "The assigned custom emulator profile no longer exists.")
             }
         }
     }
@@ -145,5 +156,8 @@ final class LaunchCoordinator {
         try? game.modelContext?.save()
         currentSession = nil
         state = .idle
+        // Back to the library (or Big Box) instead of leaving the user on
+        // whatever app happens to be behind the emulator.
+        NSApp.activate()
     }
 }

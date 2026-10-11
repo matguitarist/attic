@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "RomsBoxKit",
+    defaultLocalization: "en",
     platforms: [
         .macOS(.v15)
     ],
@@ -17,7 +18,9 @@ let package = Package(
         .target(name: "RomsBoxModels"),
         .target(name: "RomsBoxPersistence", dependencies: ["RomsBoxModels"]),
         .target(name: "RomsBoxLibraryScanning", dependencies: ["RomsBoxModels"]),
-        .target(name: "RomsBoxEmulation", dependencies: ["RomsBoxModels"]),
+        // Resources holds the String Catalog for user-visible text
+        // (emulator descriptions, install errors).
+        .target(name: "RomsBoxEmulation", dependencies: ["RomsBoxModels"], resources: [.process("Resources")]),
         .target(name: "RomsBoxScraping", dependencies: ["RomsBoxModels"]),
 
         .testTarget(name: "RomsBoxModelsTests", dependencies: ["RomsBoxModels"]),

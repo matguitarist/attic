@@ -24,3 +24,7 @@ RomsBoxKit/.swiftpm/
 # Local release builds (scripts/build.sh)
 dist/
 .build-xcode/
+
+# Personal code-signing team (see Config/Signing.xcconfig)
+Config/Signing.local.xcconfig
+.build-xcode-strings/

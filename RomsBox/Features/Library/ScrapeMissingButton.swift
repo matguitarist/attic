@@ -42,6 +42,6 @@ struct ScrapeMissingButton: View {
             Label("Scrape Missing", systemImage: "photo.badge.arrow.down")
         }
         .disabled(missingCount == 0 || isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
-        .help(missingCount == 0 ? "Every game in this list already has info" : "Scrape info for the \(missingCount) game(s) in this list missing it")
+        .help(missingCount == 0 ? String(localized: "Every game in this list already has info") : String(localized: "Scrape info for the \(missingCount) games in this list missing it"))
     }
 }

@@ -6,14 +6,14 @@ import RomsBoxPersistence
 struct RomsBoxApp: App {
     let modelContainer: ModelContainer
     @State private var scanCoordinator: ScanCoordinator
-    @State private var launchCoordinator = LaunchCoordinator()
+    @State private var launchCoordinator: LaunchCoordinator
     @State private var romsRootsStore: RomsRootsStore
     @State private var emulationFolderStore: EmulationFolderStore
     @State private var retroArchSettingsStore: RetroArchSettingsStore
     @State private var screenScraperCredentialsStore = ScreenScraperCredentialsStore()
     @State private var theGamesDBCredentialsStore = TheGamesDBCredentialsStore()
     @State private var scrapeCoordinator = ScrapeCoordinator()
-    @State private var gamepadInputMonitor = GamepadInputMonitor()
+    @State private var gamepadInputMonitor: GamepadInputMonitor
     @State private var emulatorSetupCoordinator: EmulatorSetupCoordinator
 
     init() {
@@ -25,6 +25,11 @@ struct RomsBoxApp: App {
         }
         modelContainer = container
         _scanCoordinator = State(initialValue: ScanCoordinator(libraryStore: LibraryStore(modelContainer: container)))
+
+        let launchCoordinator = LaunchCoordinator()
+        let gamepadInputMonitor = GamepadInputMonitor()
+        _launchCoordinator = State(initialValue: launchCoordinator)
+        _gamepadInputMonitor = State(initialValue: gamepadInputMonitor)
 
         let romsRootsStore = RomsRootsStore()
         let emulationFolderStore = EmulationFolderStore(romsRoots: romsRootsStore.rootURLs)
@@ -47,17 +52,7 @@ struct RomsBoxApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(scanCoordinator)
-                .environment(launchCoordinator)
-                .environment(romsRootsStore)
-                .environment(retroArchSettingsStore)
-                .environment(screenScraperCredentialsStore)
-                .environment(theGamesDBCredentialsStore)
-                .environment(scrapeCoordinator)
-                .environment(gamepadInputMonitor)
-                .environment(emulatorSetupCoordinator)
-                .environment(emulationFolderStore)
+            withAppEnvironment(ContentView())
                 .frame(minWidth: 800, minHeight: 500)
                 .task { await scanCoordinator.refreshGameCounts() }
                 // Re-runs when the first ROMs folder is chosen, since the
@@ -71,21 +66,43 @@ struct RomsBoxApp: App {
         .commands {
             SidebarCommands()
             InspectorCommands()
+            BigBoxCommands()
             GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
         }
 
+        // Its own window so the library keeps its state underneath; it
+        // only ever opens on request — never at launch or via restoration.
+        Window("Big Box", id: BigBoxView.windowID) {
+            withAppEnvironment(BigBoxView())
+                .frame(minWidth: 960, minHeight: 600)
+        }
+        .windowStyle(.hiddenTitleBar)
+        // Full screen requires a resizable window; a Window scene sized to
+        // its content alone isn't one.
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 1280, height: 800)
+        .defaultLaunchBehavior(.suppressed)
+        .restorationBehavior(.disabled)
+        .modelContainer(modelContainer)
+
         Settings {
-            SettingsTabView()
-                .environment(scanCoordinator)
-                .environment(launchCoordinator)
-                .environment(romsRootsStore)
-                .environment(retroArchSettingsStore)
-                .environment(screenScraperCredentialsStore)
-                .environment(theGamesDBCredentialsStore)
-                .environment(scrapeCoordinator)
-                .environment(emulatorSetupCoordinator)
-                .environment(emulationFolderStore)
+            withAppEnvironment(SettingsTabView())
                 .modelContainer(modelContainer)
         }
+    }
+
+    /// Every scene sees the same shared app state.
+    private func withAppEnvironment<Content: View>(_ content: Content) -> some View {
+        content
+            .environment(scanCoordinator)
+            .environment(launchCoordinator)
+            .environment(romsRootsStore)
+            .environment(retroArchSettingsStore)
+            .environment(screenScraperCredentialsStore)
+            .environment(theGamesDBCredentialsStore)
+            .environment(scrapeCoordinator)
+            .environment(gamepadInputMonitor)
+            .environment(emulatorSetupCoordinator)
+            .environment(emulationFolderStore)
     }
 }

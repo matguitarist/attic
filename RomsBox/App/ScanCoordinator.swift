@@ -57,7 +57,7 @@ final class ScanCoordinator {
                 gamesUpdated += upsertResult.gamesUpdated
                 gamesRemoved += upsertResult.gamesRemoved
             } catch {
-                state = .failed("Failed to save \(displayName): \(error.localizedDescription)")
+                state = .failed(String(localized: "Failed to save \(displayName): \(error.localizedDescription)"))
                 return
             }
         }

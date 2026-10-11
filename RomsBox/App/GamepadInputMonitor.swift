@@ -12,6 +12,10 @@ enum GamepadCommand: Equatable {
     /// Shoulder buttons — step through the sidebar's sections and systems.
     case previousSection
     case nextSection
+    /// B / Circle — leave Big Box.
+    case back
+    /// Menu / Start — open or close Big Box.
+    case toggleBigBox
 }
 
 /// Wraps each command with a sequence number so pressing the same button
@@ -43,6 +47,9 @@ struct GamepadEvent: Equatable {
 @MainActor
 final class GamepadInputMonitor {
     private(set) var lastEvent: GamepadEvent?
+    /// While Big Box is open it owns the controller; the library window
+    /// behind it must ignore events, or one press would act in both.
+    var isBigBoxActive = false
     var connectedControllerName: String? {
         gameControllerName ?? usbPadNames.values.sorted().first
     }
@@ -122,6 +129,8 @@ final class GamepadInputMonitor {
         if newlyPressed.contains(.y) { send(.toggleFavorite) }
         if newlyPressed.contains(.leftShoulder) { send(.previousSection) }
         if newlyPressed.contains(.rightShoulder) { send(.nextSection) }
+        if newlyPressed.contains(.b) { send(.back) }
+        if newlyPressed.contains(.start) { send(.toggleBigBox) }
 
         setHeldDirections(combinedUSBDirections, from: .xinputUSB)
     }
@@ -145,6 +154,8 @@ final class GamepadInputMonitor {
         bind(gamepad.buttonY, to: .toggleFavorite)
         bind(gamepad.leftShoulder, to: .previousSection)
         bind(gamepad.rightShoulder, to: .nextSection)
+        bind(gamepad.buttonB, to: .back)
+        bind(gamepad.buttonMenu, to: .toggleBigBox)
 
         refreshConnectedController()
     }

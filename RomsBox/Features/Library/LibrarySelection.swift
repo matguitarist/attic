@@ -17,9 +17,9 @@ enum GameSortOrder: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .title: "Title"
-        case .lastPlayed: "Last Played"
-        case .favoriteFirst: "Favorites First"
+        case .title: String(localized: "Title")
+        case .lastPlayed: String(localized: "Last Played")
+        case .favoriteFirst: String(localized: "Favorites First")
         }
     }
 }

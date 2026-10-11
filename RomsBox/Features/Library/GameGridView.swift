@@ -93,7 +93,7 @@ struct GameGridView: View {
                     return .handled
                 }
                 .onChange(of: gamepad.lastEvent) { _, event in
-                    guard let event else { return }
+                    guard let event, !gamepad.isBigBoxActive else { return }
                     handle(event.command, proxy: proxy)
                 }
         }
@@ -128,7 +128,9 @@ struct GameGridView: View {
                 .padding(Self.padding)
             }
         }
-        .navigationSubtitle(games.count == 1 ? "1 game" : "\(games.count) games")
+        // One key with plural variants in the String Catalog, rather than an
+        // English-only singular/plural ternary.
+        .navigationSubtitle(String(localized: "\(games.count) games"))
     }
 
     private func handle(_ command: GamepadCommand, proxy: ScrollViewProxy) {
@@ -142,7 +144,7 @@ struct GameGridView: View {
                 selectedGame.favorite.toggle()
                 try? selectedGame.modelContext?.save()
             }
-        case .previousSection, .nextSection:
+        case .previousSection, .nextSection, .back, .toggleBigBox:
             break // Owned by LibraryBrowserView.
         }
     }
@@ -179,7 +181,7 @@ struct GameGridView: View {
         let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
         let isBusy = launchCoordinator.state == .launching || isRunningThisGame
 
-        Button(isRunningThisGame ? "Running…" : "Play") {
+        Button(isRunningThisGame ? String(localized: "Running…") : String(localized: "Play")) {
             play(game)
         }
         .disabled(target == nil || isBusy)
@@ -190,7 +192,7 @@ struct GameGridView: View {
 
         Divider()
 
-        Button(game.favorite ? "Remove from Favorites" : "Add to Favorites") {
+        Button(game.favorite ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")) {
             game.favorite.toggle()
             try? game.modelContext?.save()
         }

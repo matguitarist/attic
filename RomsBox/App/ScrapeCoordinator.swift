@@ -59,7 +59,7 @@ final class ScrapeCoordinator {
     /// already has.
     func scrapeUsingScreenScraper(game: Game, credentials: ScreenScraperCredentials, force: Bool = false) async {
         guard let systemeID = ScreenScraperSystemID.systemeID(for: CanonicalSystemID(game.systemCanonicalID)) else {
-            state = .failed("ScreenScraper doesn't support this system yet.")
+            state = .failed(String(localized: "ScreenScraper doesn't support this system yet."))
             return
         }
 
@@ -85,7 +85,7 @@ final class ScrapeCoordinator {
 
     func scrapeUsingTheGamesDB(game: Game, credentials: TheGamesDBCredentials, force: Bool = false) async {
         guard let platformID = TheGamesDBSystemID.platformID(for: CanonicalSystemID(game.systemCanonicalID)) else {
-            state = .failed("TheGamesDB doesn't support this system yet.")
+            state = .failed(String(localized: "TheGamesDB doesn't support this system yet."))
             return
         }
 
@@ -210,30 +210,30 @@ final class ScrapeCoordinator {
     private static func message(for error: ScreenScraperError) -> String {
         switch error {
         case .notConfigured:
-            "ScreenScraper isn't configured yet — add your devID/devPassword in Settings."
+            String(localized: "ScreenScraper isn't configured yet — add your devID/devPassword in Settings.")
         case .noMatch:
-            "No match found on ScreenScraper for this ROM."
+            String(localized: "No match found on ScreenScraper for this ROM.")
         case .credentialsRejectedOrQuotaExceeded(let detail):
-            "ScreenScraper rejected the request (bad credentials or quota exceeded): \(detail)"
+            String(localized: "ScreenScraper rejected the request (bad credentials or quota exceeded): \(detail)")
         case .network(let detail):
-            "Network error: \(detail)"
+            String(localized: "Network error: \(detail)")
         case .malformedResponse(let detail):
-            "Unexpected response from ScreenScraper: \(detail)"
+            String(localized: "Unexpected response from ScreenScraper: \(detail)")
         }
     }
 
     private static func message(for error: TheGamesDBError) -> String {
         switch error {
         case .notConfigured:
-            "TheGamesDB isn't configured yet — add your API key in Settings."
+            String(localized: "TheGamesDB isn't configured yet — add your API key in Settings.")
         case .noMatch:
-            "No match found on TheGamesDB for this ROM."
+            String(localized: "No match found on TheGamesDB for this ROM.")
         case .credentialsRejectedOrQuotaExceeded(let detail):
-            "TheGamesDB rejected the request (bad API key or quota exceeded): \(detail)"
+            String(localized: "TheGamesDB rejected the request (bad API key or quota exceeded): \(detail)")
         case .network(let detail):
-            "Network error: \(detail)"
+            String(localized: "Network error: \(detail)")
         case .malformedResponse(let detail):
-            "Unexpected response from TheGamesDB: \(detail)"
+            String(localized: "Unexpected response from TheGamesDB: \(detail)")
         }
     }
 }

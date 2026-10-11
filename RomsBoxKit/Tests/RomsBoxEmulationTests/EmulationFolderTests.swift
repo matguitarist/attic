@@ -77,6 +77,50 @@ struct EmulationFolderTests {
         #expect(ini.value(section: "BIOS", key: "SearchDirectory") == folder.bios.path)
     }
 
+    @Test func retroArchQuitComboIsStartSelectWithoutConfirmation() {
+        let on = folder.retroArchPathsConfig(for: .snes, quitCombo: true)
+        #expect(on.contains("input_quit_gamepad_combo = \"4\""))
+        #expect(on.contains("quit_press_twice = \"false\""))
+        let off = folder.retroArchPathsConfig(for: .snes, quitCombo: false)
+        #expect(!off.contains("input_quit_gamepad_combo"))
+    }
+
+    private var duckStationSettingsFile: URL {
+        folder.root.appending(path: "Config/DuckStation/Library/Application Support/DuckStation/settings.ini")
+    }
+
+    @Test func duckStationGetsControllerMappingAndQuitHotkey() throws {
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx)
+        let ini = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(ini.value(section: "Pad1", key: "Cross") == "SDL-0/A")
+        #expect(ini.value(section: "Pad1", key: "Select") == "SDL-0/Back")
+        #expect(ini.value(section: "InputSources", key: "SDL") == "true")
+        #expect(ini.value(section: "Hotkeys", key: "PowerOff") == "SDL-0/Back & SDL-0/Start")
+    }
+
+    @Test func duckStationControllerDefaultsNeverOverwriteUserMapping() throws {
+        try FileManager.default.createDirectory(at: duckStationSettingsFile.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try "[Pad1]\nCross = SDL-0/B\n".write(to: duckStationSettingsFile, atomically: true, encoding: .utf8)
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx)
+        let ini = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(ini.value(section: "Pad1", key: "Cross") == "SDL-0/B")
+        #expect(ini.value(section: "Pad1", key: "Circle") == "SDL-0/B", "missing keys still get filled in")
+    }
+
+    @Test func disablingQuitComboRemovesOnlyRomsBoxsBinding() throws {
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, quitCombo: true)
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, quitCombo: false)
+        var ini = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(ini.value(section: "Hotkeys", key: "PowerOff") == nil)
+
+        // A binding the user chose themselves survives turning it off.
+        ini.set(section: "Hotkeys", key: "PowerOff", value: "Keyboard/F12")
+        try ini.contents.write(to: duckStationSettingsFile, atomically: true, encoding: .utf8)
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, quitCombo: false)
+        let after = IniFile(contents: try String(contentsOf: duckStationSettingsFile, encoding: .utf8))
+        #expect(after.value(section: "Hotkeys", key: "PowerOff") == "Keyboard/F12")
+    }
+
     @Test func emulatorWithoutPortableHomeGetsNoEnvironment() throws {
         let nonPortable = StandaloneEmulator(
             id: "example",

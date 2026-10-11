@@ -64,17 +64,25 @@ public struct PortableHome: Sendable, Hashable {
         /// May contain `{bios}`, `{saves}` and `{states}` — the latter two
         /// resolve to the launched game's per-system folders.
         public let value: String
+        /// Defaults (e.g. controller mappings) are only filled in when
+        /// absent, so changes the user makes in the emulator stick; paths
+        /// are rewritten every launch to follow the Emulation folder.
+        public let onlyIfMissing: Bool
 
-        public init(_ section: String, _ key: String, _ value: String) {
+        public init(_ section: String, _ key: String, _ value: String, onlyIfMissing: Bool = false) {
             self.section = section
             self.key = key
             self.value = value
+            self.onlyIfMissing = onlyIfMissing
         }
     }
 
     /// The settings file, relative to the redirected HOME.
     public let settingsRelativePath: String
     public let settings: [Setting]
+    /// Bound when "Quit games with Select + Start" is on; removed again
+    /// (only if still RomsBox's value) when it's turned off.
+    public var quitComboSettings: [Setting] = []
 }
 
 /// A BIOS/firmware file a system needs. These are copyrighted and must be
@@ -137,7 +145,7 @@ public enum EmulatorCatalog {
     public static let duckStation = StandaloneEmulator(
         id: "duckstation",
         name: "DuckStation",
-        summary: "The most accurate and polished PlayStation emulator, with upscaling and per-game fixes.",
+        summary: String(localized: "The most accurate and polished PlayStation emulator, with upscaling and per-game fixes.", bundle: .module),
         appBundleName: "DuckStation.app",
         executableRelativePath: "Contents/MacOS/DuckStation",
         argumentTemplate: "-batch -nogui -fullscreen {romPath}",
@@ -157,6 +165,10 @@ public enum EmulatorCatalog {
                 .init("BIOS", "SearchDirectory", "{bios}"),
                 .init("MemoryCards", "Directory", "{saves}"),
                 .init("Folders", "SaveStates", "{states}")
+            ] + duckStationControllerDefaults,
+            quitComboSettings: [
+                // DuckStation chords use " & "; PowerOff in -batch mode exits.
+                .init("Hotkeys", "PowerOff", "SDL-0/Back & SDL-0/Start")
             ]
         )
     )
@@ -165,25 +177,44 @@ public enum EmulatorCatalog {
     // the same emulator, and as a core its config, saves and states live in
     // the Emulation folder like every other RetroArch system — the
     // standalone app keeps its settings in ~/Library.
+    /// What DuckStation's setup wizard would map automatically for the
+    /// first SDL game controller (copied from a wizard-configured install).
+    /// RomsBox skips the wizard, and without these the controller does
+    /// nothing in game.
+    private static let duckStationControllerDefaults: [PortableHome.Setting] = [
+        .init("InputSources", "SDL", "true", onlyIfMissing: true),
+        .init("Pad1", "Type", "AnalogController", onlyIfMissing: true)
+    ] + [
+        ("Up", "DPadUp"), ("Down", "DPadDown"), ("Left", "DPadLeft"), ("Right", "DPadRight"),
+        ("Cross", "A"), ("Circle", "B"), ("Square", "X"), ("Triangle", "Y"),
+        ("Select", "Back"), ("Start", "Start"), ("Analog", "Guide"),
+        ("L1", "LeftShoulder"), ("R1", "RightShoulder"),
+        ("L2", "+LeftTrigger"), ("R2", "+RightTrigger"),
+        ("L3", "LeftStick"), ("R3", "RightStick"),
+        ("LUp", "-LeftY"), ("LDown", "+LeftY"), ("LLeft", "-LeftX"), ("LRight", "+LeftX"),
+        ("RUp", "-RightY"), ("RDown", "+RightY"), ("RLeft", "-RightX"), ("RRight", "+RightX"),
+        ("LargeMotor", "LargeMotor"), ("SmallMotor", "SmallMotor")
+    ].map { PortableHome.Setting("Pad1", $0.0, "SDL-0/\($0.1)", onlyIfMissing: true) }
+
     public static let standaloneEmulators: [StandaloneEmulator] = [duckStation]
 
     // MARK: - Per-system table
 
-    private static let genesisPlusGX = RecommendedCore("genesis_plus_gx_libretro", "Genesis Plus GX", "Highly accurate Sega 8/16-bit and Sega CD.")
-    private static let picoDrive = RecommendedCore("picodrive_libretro", "PicoDrive", "Fast; the only option with 32X support.")
-    private static let beetlePCE = RecommendedCore("mednafen_pce_libretro", "Beetle PCE", "Accurate PC Engine, CD and SuperGrafx.")
-    private static let beetlePCEFast = RecommendedCore("mednafen_pce_fast_libretro", "Beetle PCE Fast", "Lighter PC Engine core.")
+    private static let genesisPlusGX = RecommendedCore("genesis_plus_gx_libretro", "Genesis Plus GX", String(localized: "Highly accurate Sega 8/16-bit and Sega CD.", bundle: .module))
+    private static let picoDrive = RecommendedCore("picodrive_libretro", "PicoDrive", String(localized: "Fast; the only option with 32X support.", bundle: .module))
+    private static let beetlePCE = RecommendedCore("mednafen_pce_libretro", "Beetle PCE", String(localized: "Accurate PC Engine, CD and SuperGrafx.", bundle: .module))
+    private static let beetlePCEFast = RecommendedCore("mednafen_pce_fast_libretro", "Beetle PCE Fast", String(localized: "Lighter PC Engine core.", bundle: .module))
 
     public static let recommendations: [SystemEmulatorRecommendation] = [
         .init(systemID: .nes, cores: [
-            RecommendedCore("mesen_libretro", "Mesen", "Most accurate NES core."),
-            RecommendedCore("nestopia_libretro", "Nestopia UE", "Accurate and lighter."),
-            RecommendedCore("fceumm_libretro", "FCEUmm", "Fast, broad mapper support.")
+            RecommendedCore("mesen_libretro", "Mesen", String(localized: "Most accurate NES core.", bundle: .module)),
+            RecommendedCore("nestopia_libretro", "Nestopia UE", String(localized: "Accurate and lighter.", bundle: .module)),
+            RecommendedCore("fceumm_libretro", "FCEUmm", String(localized: "Fast, broad mapper support.", bundle: .module))
         ], standalone: [], bios: [], prefersStandalone: false),
 
         .init(systemID: .snes, cores: [
-            RecommendedCore("snes9x_libretro", "Snes9x", "Accurate and fast — the usual choice."),
-            RecommendedCore("bsnes_libretro", "bsnes", "Cycle-accurate; heavier.")
+            RecommendedCore("snes9x_libretro", "Snes9x", String(localized: "Accurate and fast — the usual choice.", bundle: .module)),
+            RecommendedCore("bsnes_libretro", "bsnes", String(localized: "Cycle-accurate; heavier.", bundle: .module))
         ], standalone: [], bios: [], prefersStandalone: false),
 
         .init(systemID: .genesis, cores: [genesisPlusGX, picoDrive], standalone: [], bios: [], prefersStandalone: false),
@@ -197,9 +228,9 @@ public enum EmulatorCatalog {
         .init(systemID: .sega32x, cores: [picoDrive], standalone: [], bios: [], prefersStandalone: false),
 
         .init(systemID: .psx, cores: [
-            RecommendedCore("swanstation_libretro", "SwanStation", "DuckStation's engine as a RetroArch core."),
-            RecommendedCore("mednafen_psx_hw_libretro", "Beetle PSX HW", "Very accurate, with upscaling."),
-            RecommendedCore("pcsx_rearmed_libretro", "PCSX ReARMed", "Fast; can run without a BIOS.")
+            RecommendedCore("swanstation_libretro", "SwanStation", String(localized: "DuckStation's engine as a RetroArch core.", bundle: .module)),
+            RecommendedCore("mednafen_psx_hw_libretro", "Beetle PSX HW", String(localized: "Very accurate, with upscaling.", bundle: .module)),
+            RecommendedCore("pcsx_rearmed_libretro", "PCSX ReARMed", String(localized: "Fast; can run without a BIOS.", bundle: .module))
         ], standalone: [duckStation], bios: [
             BIOSRequirement("scph5501.bin", note: "US"),
             BIOSRequirement("scph5502.bin", required: false, note: "Europe"),
@@ -207,43 +238,43 @@ public enum EmulatorCatalog {
         ], prefersStandalone: true),
 
         .init(systemID: .gba, cores: [
-            RecommendedCore("mgba_libretro", "mGBA", "Accurate and fast — the standard GBA core.")
+            RecommendedCore("mgba_libretro", "mGBA", String(localized: "Accurate and fast — the standard GBA core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("gba_bios.bin", required: false, note: "Optional; improves accuracy")
         ], prefersStandalone: false),
 
         .init(systemID: .saturn, cores: [
-            RecommendedCore("mednafen_saturn_libretro", "Beetle Saturn", "Most accurate Saturn core."),
-            RecommendedCore("yabasanshiro_libretro", "YabaSanshiro", "Faster, less accurate.")
+            RecommendedCore("mednafen_saturn_libretro", "Beetle Saturn", String(localized: "Most accurate Saturn core.", bundle: .module)),
+            RecommendedCore("yabasanshiro_libretro", "YabaSanshiro", String(localized: "Faster, less accurate.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("sega_101.bin", note: "Japan"),
             BIOSRequirement("mpr-17933.bin", note: "US/Europe")
         ], prefersStandalone: false),
 
         .init(systemID: .dreamcast, cores: [
-            RecommendedCore("flycast_libretro", "Flycast", "The Dreamcast core.")
+            RecommendedCore("flycast_libretro", "Flycast", String(localized: "The Dreamcast core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("dc/dc_boot.bin", required: false, note: "Optional; Flycast can boot most games without it")
         ], prefersStandalone: false),
 
         .init(systemID: .atari2600, cores: [
-            RecommendedCore("stella_libretro", "Stella", "The reference Atari 2600 emulator.")
+            RecommendedCore("stella_libretro", "Stella", String(localized: "The reference Atari 2600 emulator.", bundle: .module))
         ], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .atari5200, cores: [
-            RecommendedCore("a5200_libretro", "a5200", "Dedicated 5200 core."),
-            RecommendedCore("atari800_libretro", "Atari800", "Atari 8-bit family including 5200.")
+            RecommendedCore("a5200_libretro", "a5200", String(localized: "Dedicated 5200 core.", bundle: .module)),
+            RecommendedCore("atari800_libretro", "Atari800", String(localized: "Atari 8-bit family including 5200.", bundle: .module))
         ], standalone: [], bios: [BIOSRequirement("5200.rom")], prefersStandalone: false),
         .init(systemID: .atari7800, cores: [
-            RecommendedCore("prosystem_libretro", "ProSystem", "The Atari 7800 core.")
+            RecommendedCore("prosystem_libretro", "ProSystem", String(localized: "The Atari 7800 core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("7800 BIOS (U).rom", required: false, note: "Optional")
         ], prefersStandalone: false),
         .init(systemID: .atarilynx, cores: [
-            RecommendedCore("handy_libretro", "Handy", "The reference Lynx emulator."),
-            RecommendedCore("mednafen_lynx_libretro", "Beetle Lynx", "Mednafen's Lynx core.")
+            RecommendedCore("handy_libretro", "Handy", String(localized: "The reference Lynx emulator.", bundle: .module)),
+            RecommendedCore("mednafen_lynx_libretro", "Beetle Lynx", String(localized: "Mednafen's Lynx core.", bundle: .module))
         ], standalone: [], bios: [BIOSRequirement("lynxboot.img")], prefersStandalone: false),
         .init(systemID: .atarijaguar, cores: [
-            RecommendedCore("virtualjaguar_libretro", "Virtual Jaguar", "The only Jaguar core.")
+            RecommendedCore("virtualjaguar_libretro", "Virtual Jaguar", String(localized: "The only Jaguar core.", bundle: .module))
         ], standalone: [], bios: [], prefersStandalone: false),
 
         .init(systemID: .pcengine, cores: [beetlePCE, beetlePCEFast], standalone: [], bios: [], prefersStandalone: false),
@@ -251,20 +282,20 @@ public enum EmulatorCatalog {
             BIOSRequirement("syscard3.pce", note: "System Card 3.0")
         ], prefersStandalone: false),
         .init(systemID: .supergrafx, cores: [
-            RecommendedCore("mednafen_supergrafx_libretro", "Beetle SuperGrafx", "Dedicated SuperGrafx core."),
+            RecommendedCore("mednafen_supergrafx_libretro", "Beetle SuperGrafx", String(localized: "Dedicated SuperGrafx core.", bundle: .module)),
             beetlePCE
         ], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .pcfx, cores: [
-            RecommendedCore("mednafen_pcfx_libretro", "Beetle PC-FX", "The only PC-FX core.")
+            RecommendedCore("mednafen_pcfx_libretro", "Beetle PC-FX", String(localized: "The only PC-FX core.", bundle: .module))
         ], standalone: [], bios: [BIOSRequirement("pcfx.rom")], prefersStandalone: false),
 
         .init(systemID: .threedo, cores: [
-            RecommendedCore("opera_libretro", "Opera", "The 3DO core.")
+            RecommendedCore("opera_libretro", "Opera", String(localized: "The 3DO core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("panafz10.bin", note: "Panasonic FZ-10; other 3DO BIOS revisions also work")
         ], prefersStandalone: false),
         .init(systemID: .cdi, cores: [
-            RecommendedCore("same_cdi_libretro", "SAME CDi", "The CD-i core.")
+            RecommendedCore("same_cdi_libretro", "SAME CDi", String(localized: "The CD-i core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("same_cdi/bios/cdimono1.zip")
         ], prefersStandalone: false)

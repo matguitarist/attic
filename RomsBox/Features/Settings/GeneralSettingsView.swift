@@ -7,6 +7,9 @@ struct GeneralSettingsView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @State private var isChoosingFolder = false
     @State private var isChoosingEmulationFolder = false
+    @AppStorage(BigBoxView.startInBigBoxKey) private var startsInBigBox = false
+    @AppStorage(LaunchCoordinator.quitComboEnabledKey) private var quitsWithSelectStart = true
+    @State private var language = AppLanguage.current
 
     var body: some View {
         Form {
@@ -28,6 +31,38 @@ struct GeneralSettingsView: View {
                     }
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
+            }
+
+            Section {
+                Toggle("Open Big Box at launch", isOn: $startsInBigBox)
+                Toggle("Quit games with Select + Start", isOn: $quitsWithSelectStart)
+            } header: {
+                Text("Big Box & Controllers")
+            } footer: {
+                Text("Select + Start closes the running game from the controller — set up in RetroArch and DuckStation when RomsBox launches them. Games save normally on the way out.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Picker("Language", selection: $language) {
+                    Text("System Default").tag(AppLanguage.systemDefault)
+                    ForEach(AppLanguage.available, id: \.self) { language in
+                        Text(language.displayName).tag(language)
+                    }
+                }
+                .onChange(of: language) { _, newValue in newValue.apply() }
+
+                if language != AppLanguage.atLaunch {
+                    HStack {
+                        Text("Takes effect when RomsBox restarts.")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Restart Now") { AppLanguage.relaunch() }
+                    }
+                }
+            } header: {
+                Text("Language")
             }
 
             Section {
@@ -80,8 +115,8 @@ struct GeneralSettingsView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(width: 520)
+        .formStyle(.grouped)
+        .frame(width: 620, height: 560)
         .fileImporter(isPresented: $isChoosingFolder, allowedContentTypes: [.folder]) { result in
             if case .success(let url) = result {
                 romsRootsStore.addRoot(url)

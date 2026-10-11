@@ -57,7 +57,7 @@ struct EmulatorSuggestionView: View {
 
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(option.name + (isRecommended ? " — Recommended" : ""))
+                Text(isRecommended ? String(localized: "\(option.name) — Recommended") : option.name)
                     .font(.callout)
                 Text("\(option.kindLabel). \(option.summary)")
                     .font(.caption)
@@ -68,7 +68,7 @@ struct EmulatorSuggestionView: View {
             if isInstalling {
                 ProgressView().controlSize(.small)
             } else {
-                let button = Button(setup.isInstalled(option, retroArchStore: retroArchStore) ? "Use" : "Install") {
+                let button = Button(setup.isInstalled(option, retroArchStore: retroArchStore) ? String(localized: "Use") : String(localized: "Install")) {
                     Task {
                         await setup.install(option, for: [system], makeDefault: true, retroArchStore: retroArchStore, profiles: profiles, modelContext: modelContext)
                     }

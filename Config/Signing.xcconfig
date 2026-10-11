@@ -1,0 +1,12 @@
+// Code signing. The team is personal, so it isn't committed: put
+//
+//     DEVELOPMENT_TEAM = <your team ID>
+//
+// in Config/Signing.local.xcconfig (gitignored). Your team ID is in Xcode ›
+// Settings › Accounts, or in the output of `scripts/build.sh` when it's
+// missing. Without one, builds fall back to ad-hoc signing ("Sign to Run
+// Locally"), which works but re-prompts for Keychain access on every build.
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = Apple Development
+
+#include? "Signing.local.xcconfig"

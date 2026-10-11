@@ -65,8 +65,8 @@ final class EmulatorSetupCoordinator {
 
         var kindLabel: String {
             switch self {
-            case .core: "RetroArch core"
-            case .standalone: "Standalone app"
+            case .core: String(localized: "RetroArch core")
+            case .standalone: String(localized: "Standalone app")
             }
         }
 
@@ -169,13 +169,13 @@ final class EmulatorSetupCoordinator {
             return .notSetUp
         case .retroArchCore(let identifier)?:
             guard let core = retroArchStore.core(withIdentifier: identifier) else {
-                return .broken("The \(identifier) core isn't installed.")
+                return .broken(String(localized: "The \(identifier) core isn't installed."))
             }
-            guard retroArchStore.isInstalled else { return .broken("RetroArch isn't installed.") }
+            guard retroArchStore.isInstalled else { return .broken(String(localized: "RetroArch isn't installed.")) }
             return .ready(core.displayName)
         case .emulatorProfile(let id)?:
             guard let profile = profiles.first(where: { $0.id == id }) else {
-                return .broken("Its custom emulator was deleted.")
+                return .broken(String(localized: "Its custom emulator was deleted."))
             }
             guard FileManager.default.fileExists(atPath: profile.executablePath) else {
                 return .broken("\(profile.name) isn't installed anymore.")
@@ -202,7 +202,7 @@ final class EmulatorSetupCoordinator {
     // MARK: - Installs
 
     func installRetroArch(retroArchStore: RetroArchSettingsStore) async {
-        await run(Self.retroArchKey, label: "Installing RetroArch…") {
+        await run(Self.retroArchKey, label: String(localized: "Installing RetroArch…"), failure: String(localized: "Couldn't install RetroArch")) {
             let appURL = try await self.installer.installRetroArch()
             retroArchStore.installURL = appURL
             retroArchStore.refresh()
@@ -223,7 +223,7 @@ final class EmulatorSetupCoordinator {
             await installRetroArch(retroArchStore: retroArchStore)
             guard retroArchStore.isInstalled else { return }
         }
-        await run(Self.key(forCore: core.coreIdentifier), label: "Installing \(core.displayName)…") {
+        await run(Self.key(forCore: core.coreIdentifier), label: String(localized: "Installing \(core.displayName)…"), failure: String(localized: "Couldn't install \(core.displayName)")) {
             try await self.ensureCoreInfoFiles()
             try await self.installer.installCore(core.coreIdentifier)
             retroArchStore.refresh()
@@ -244,7 +244,7 @@ final class EmulatorSetupCoordinator {
         profiles: [EmulatorProfile],
         modelContext: ModelContext
     ) async {
-        await run(Self.key(forStandalone: emulator), label: "Installing \(emulator.name)…") {
+        await run(Self.key(forStandalone: emulator), label: String(localized: "Installing \(emulator.name)…"), failure: String(localized: "Couldn't install \(emulator.name)")) {
             let appURL = try await self.installer.installStandalone(emulator)
             let profile = self.profile(for: emulator, appURL: appURL, existing: profiles, modelContext: modelContext)
             for system in systems where makeDefault || !self.hasWorkingDefault(system, retroArchStore: retroArchStore, profiles: profiles) {
@@ -309,7 +309,7 @@ final class EmulatorSetupCoordinator {
         do {
             remoteCoreChecksums = try await installer.fetchRemoteCoreChecksums()
         } catch {
-            if !quiet { lastError = "Couldn't check for core updates: \(error.localizedDescription)" }
+            if !quiet { lastError = String(localized: "Couldn't check for core updates: \(error.localizedDescription)") }
             return
         }
         await recomputeStatuses(for: retroArchStore.cores)
@@ -335,7 +335,7 @@ final class EmulatorSetupCoordinator {
     /// old one (RomsBox's folder is indexed first) — RetroArch's folder is
     /// often inside its sandbox container, which RomsBox doesn't write to.
     func updateCore(_ core: RetroArchCoreInfo, retroArchStore: RetroArchSettingsStore) async {
-        await run(Self.key(forCore: core.coreIdentifier), label: "Updating \(core.displayName)…") {
+        await run(Self.key(forCore: core.coreIdentifier), label: String(localized: "Updating \(core.displayName)…"), failure: String(localized: "Couldn't update \(core.displayName)")) {
             try await self.installer.installCore(core.coreIdentifier)
             retroArchStore.refresh()
             if let updated = retroArchStore.core(withIdentifier: core.coreIdentifier) {
@@ -416,7 +416,7 @@ final class EmulatorSetupCoordinator {
         return profile
     }
 
-    private func run(_ key: String, label: String, _ work: @MainActor () async throws -> Void) async {
+    private func run(_ key: String, label: String, failure: String, _ work: @MainActor () async throws -> Void) async {
         guard activeInstalls[key] == nil else { return }
         activeInstalls[key] = label
         defer { activeInstalls.removeValue(forKey: key) }
@@ -424,7 +424,7 @@ final class EmulatorSetupCoordinator {
             try await work()
             lastError = nil
         } catch {
-            lastError = "\(label.replacingOccurrences(of: "…", with: "")) failed: \(error.localizedDescription)"
+            lastError = "\(failure): \(error.localizedDescription)"
         }
     }
 }

@@ -4,7 +4,7 @@ import RomsBoxModels
 /// Create/edit form for one `EmulatorProfile`, used as a sheet from
 /// `EmulatorProfilesSettingsView`.
 struct EmulatorProfileEditorView: View {
-    let title: String
+    let title: LocalizedStringKey
     @State var name: String
     @State var executablePath: String
     @State var argumentTemplate: String
