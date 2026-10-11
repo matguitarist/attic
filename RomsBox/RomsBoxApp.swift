@@ -12,6 +12,7 @@ struct RomsBoxApp: App {
     @State private var screenScraperCredentialsStore = ScreenScraperCredentialsStore()
     @State private var theGamesDBCredentialsStore = TheGamesDBCredentialsStore()
     @State private var scrapeCoordinator = ScrapeCoordinator()
+    @State private var gamepadInputMonitor = GamepadInputMonitor()
 
     init() {
         let container: ModelContainer
@@ -34,9 +35,16 @@ struct RomsBoxApp: App {
                 .environment(screenScraperCredentialsStore)
                 .environment(theGamesDBCredentialsStore)
                 .environment(scrapeCoordinator)
+                .environment(gamepadInputMonitor)
                 .frame(minWidth: 800, minHeight: 500)
+                .task { await scanCoordinator.refreshGameCounts() }
         }
         .modelContainer(modelContainer)
+        .commands {
+            SidebarCommands()
+            InspectorCommands()
+            GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
+        }
 
         Settings {
             SettingsTabView()

@@ -11,20 +11,35 @@ struct GameGridView: View {
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
-    @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
-    @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
-    @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
-    @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
+    @Environment(GamepadInputMonitor.self) private var gamepad
 
     private let cellScale: CGFloat
+
+    @State private var availableWidth: CGFloat = 0
+    @FocusState private var isGridFocused: Bool
 
     // Fixed (not ranged) min==max width so every column — and therefore
     // every row — lines up identically regardless of window width; the grid
     // just fits however many equal-width columns fit. Scaled live by the
     // zoom slider rather than fixed at one size.
+    //
+    // The layout itself must stay `.adaptive`: an earlier version built N
+    // `.fixed` columns from the measured width, which made the grid's ideal
+    // width depend on that measurement — inside the inspector's split view
+    // that fed back into the width and crashed AppKit with an endless
+    // update-constraints loop. `columnCount` below only *mirrors* the
+    // adaptive layout's own arithmetic, for arrow-key/gamepad up/down moves,
+    // and never drives layout.
     static let baseCellWidth: CGFloat = 160
+    private static let spacing: CGFloat = 20
+    private static let padding: CGFloat = 16
     private var cellWidth: CGFloat { Self.baseCellWidth * cellScale }
-    private var columns: [GridItem] { [GridItem(.adaptive(minimum: cellWidth, maximum: cellWidth), spacing: 20)] }
+    private var columns: [GridItem] {
+        [GridItem(.adaptive(minimum: cellWidth, maximum: cellWidth), spacing: Self.spacing)]
+    }
+    private var columnCount: Int {
+        GridNavigation.columnCount(availableWidth: availableWidth - Self.padding * 2, cellWidth: cellWidth, spacing: Self.spacing)
+    }
 
     init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>) {
         self.cellScale = cellScale
@@ -56,6 +71,35 @@ struct GameGridView: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
+            grid
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
+                .focusable()
+                .focusEffectDisabled()
+                .focused($isGridFocused)
+                .onAppear { isGridFocused = true }
+                .onMoveCommand { direction in
+                    switch direction {
+                    case .up: move(.up, proxy: proxy)
+                    case .down: move(.down, proxy: proxy)
+                    case .left: move(.left, proxy: proxy)
+                    case .right: move(.right, proxy: proxy)
+                    @unknown default: break
+                    }
+                }
+                .onKeyPress(.return) {
+                    guard let selectedGame else { return .ignored }
+                    play(selectedGame)
+                    return .handled
+                }
+                .onChange(of: gamepad.lastEvent) { _, event in
+                    guard let event else { return }
+                    handle(event.command, proxy: proxy)
+                }
+        }
+    }
+
+    private var grid: some View {
         ScrollView {
             if games.isEmpty {
                 ContentUnavailableView(
@@ -65,7 +109,7 @@ struct GameGridView: View {
                 )
                 .padding(.top, 80)
             } else {
-                LazyVGrid(columns: columns, spacing: 20) {
+                LazyVGrid(columns: columns, spacing: Self.spacing) {
                     ForEach(displayedGames) { game in
                         GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID, width: cellWidth)
                             // Both gestures attached together let SwiftUI
@@ -73,14 +117,55 @@ struct GameGridView: View {
                             // briefly after one tap to see if a second
                             // arrives) rather than needing to do that by hand.
                             .onTapGesture(count: 2) { play(game) }
-                            .onTapGesture(count: 1) { selectedGame = game }
+                            .onTapGesture(count: 1) {
+                                selectedGame = game
+                                isGridFocused = true
+                            }
                             .contextMenu { contextMenuContent(for: game) }
+                            .id(game.persistentModelID)
                     }
                 }
-                .padding()
+                .padding(Self.padding)
             }
         }
-        .navigationTitle("")
+        .navigationSubtitle(games.count == 1 ? "1 game" : "\(games.count) games")
+    }
+
+    private func handle(_ command: GamepadCommand, proxy: ScrollViewProxy) {
+        switch command {
+        case .move(let direction):
+            move(direction, proxy: proxy)
+        case .activate:
+            if let selectedGame { play(selectedGame) }
+        case .toggleFavorite:
+            if let selectedGame {
+                selectedGame.favorite.toggle()
+                try? selectedGame.modelContext?.save()
+            }
+        case .previousSection, .nextSection:
+            break // Owned by LibraryBrowserView.
+        }
+    }
+
+    private func move(_ direction: GridMoveDirection, proxy: ScrollViewProxy) {
+        let items = displayedGames
+        let currentIndex = selectedGame.flatMap { selected in
+            items.firstIndex { $0.persistentModelID == selected.persistentModelID }
+        }
+        guard let newIndex = GridNavigation.index(
+            movingFrom: currentIndex,
+            direction: direction,
+            itemCount: items.count,
+            columns: columnCount
+        ) else { return }
+
+        let game = items[newIndex]
+        selectedGame = game
+        // `anchor: nil` scrolls only as far as needed to reveal the cell,
+        // rather than snapping every move to the top or center.
+        withAnimation(.easeOut(duration: 0.15)) {
+            proxy.scrollTo(game.persistentModelID, anchor: nil)
+        }
     }
 
     private func play(_ game: Game) {
@@ -99,7 +184,9 @@ struct GameGridView: View {
         }
         .disabled(target == nil || isBusy)
 
-        launchWithMenu(for: game)
+        Menu("Launch With") {
+            LaunchWithMenuItems(game: game)
+        }
 
         Divider()
 
@@ -111,60 +198,13 @@ struct GameGridView: View {
         Divider()
 
         Menu("Scrape Info") {
-            Button("ScreenScraper") {
-                Task { await scrapeCoordinator.scrapeUsingScreenScraper(game: game, credentials: screenScraperCredentialsStore.credentials) }
-            }
-            .disabled(!screenScraperCredentialsStore.isConfigured)
-
-            Button("TheGamesDB") {
-                Task { await scrapeCoordinator.scrapeUsingTheGamesDB(game: game, credentials: theGamesDBCredentialsStore.credentials) }
-            }
-            .disabled(!theGamesDBCredentialsStore.isConfigured)
+            ScrapeMenuItems(game: game)
         }
 
         Divider()
 
         Button("Reveal in Finder") {
             NSWorkspace.shared.activateFileViewerSelecting([game.romAbsoluteURL])
-        }
-    }
-
-    @ViewBuilder
-    private func launchWithMenu(for game: Game) -> some View {
-        Menu("Launch With") {
-            if game.launchOverride != nil {
-                Button("Use System Default") {
-                    game.launchOverride = nil
-                    try? game.modelContext?.save()
-                }
-                Divider()
-            }
-
-            if let systemID = game.system?.systemID {
-                let cores = retroArchStore.cores(for: systemID)
-                if !cores.isEmpty {
-                    Section("RetroArch Cores") {
-                        ForEach(cores) { core in
-                            Button(core.displayName) {
-                                game.launchOverride = .retroArchCore(coreIdentifier: core.coreIdentifier)
-                                try? game.modelContext?.save()
-                            }
-                        }
-                    }
-                }
-
-                let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) }
-                if !matchingProfiles.isEmpty {
-                    Section("Custom Emulators") {
-                        ForEach(matchingProfiles) { profile in
-                            Button(profile.name) {
-                                game.launchOverride = .emulatorProfile(id: profile.id)
-                                try? game.modelContext?.save()
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

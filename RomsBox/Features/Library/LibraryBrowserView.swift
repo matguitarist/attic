@@ -2,6 +2,10 @@ import SwiftUI
 import SwiftData
 import RomsBoxPersistence
 
+/// Native macOS layout throughout: a `NavigationSplitView` sidebar, the
+/// window's own toolbar (title, search, sort, zoom, scrape), and an
+/// `.inspector` for game details — so the OS draws all the chrome and it
+/// keeps up with each release's look instead of us re-skinning it by hand.
 struct LibraryBrowserView: View {
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @State private var selection: LibrarySelection? = .allGames
@@ -9,60 +13,160 @@ struct LibraryBrowserView: View {
     @State private var sortOrder: GameSortOrder = .title
     @State private var selectedGame: Game?
     @AppStorage("gridCellScale") private var cellScale: Double = 1.0
+    @AppStorage("showsGameInspector") private var showsInspector = true
+    @State private var showsControllerHelp = false
+    @Environment(GamepadInputMonitor.self) private var gamepad
+
+    static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
     var body: some View {
-        // Two columns, not three — the title/search/sort header needs to
-        // span the full width above *both* the grid and the detail panel,
-        // which a three-column NavigationSplitView (sidebar/content/detail)
-        // can't express since each column owns its own top-to-bottom
-        // content independently. Grid and detail are instead a manual
-        // resizable split living below one shared header, so they start at
-        // exactly the same height.
         NavigationSplitView {
             LibrarySidebarView(systems: systems, selection: $selection)
-                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
+                .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } detail: {
-            VStack(spacing: 0) {
-                header
-                LibraryTopBar(
-                    selection: selection ?? .allGames,
-                    searchText: $searchText,
-                    sortOrder: $sortOrder,
-                    cellScale: $cellScale
-                )
+            GameGridView(
+                selection: currentSelection,
+                searchText: searchText,
+                sortOrder: sortOrder,
+                cellScale: CGFloat(cellScale),
+                selectedGame: $selectedGame
+            )
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 BatchScrapeStatusBar()
-                Divider()
-                ResizableHSplit(initialTrailingWidth: 320, minTrailingWidth: 260, maxTrailingWidth: 480) {
-                    GameGridView(
-                        selection: selection ?? .allGames,
-                        searchText: searchText,
-                        sortOrder: sortOrder,
-                        cellScale: CGFloat(cellScale),
-                        selectedGame: $selectedGame
-                    )
-                } trailing: {
-                    GameDetailView(game: selectedGame)
-                }
+                    .background(.bar)
+            }
+            .navigationTitle(selectionTitle)
+            .searchable(text: $searchText, placement: .toolbar, prompt: "Search Games")
+            .toolbar { toolbarContent }
+            .inspector(isPresented: $showsInspector) {
+                GameDetailView(game: selectedGame)
+                    .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
+            }
+        }
+        .focusedSceneValue(\.selectedGame, selectedGame)
+        .onChange(of: gamepad.lastEvent) { _, event in
+            switch event?.command {
+            case .previousSection: stepSection(by: -1)
+            case .nextSection: stepSection(by: 1)
+            default: break
             }
         }
     }
 
-    private var header: some View {
-        Text(selectionTitle)
-            .font(.largeTitle.bold())
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
-            .padding(.top, 0)
-            .padding(.bottom, 2)
+    private var currentSelection: LibrarySelection { selection ?? .allGames }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem {
+            Slider(value: $cellScale, in: Self.cellScaleRange) {
+                Text("Cover Size")
+            } minimumValueLabel: {
+                Image(systemName: "photo").imageScale(.small)
+            } maximumValueLabel: {
+                Image(systemName: "photo").imageScale(.large)
+            }
+            .labelsHidden()
+            .frame(width: 140)
+            // A custom view gets no inset of its own inside the toolbar's
+            // glass capsule (unlike buttons), so without this the small/
+            // large picture labels sit flush against its rounded ends.
+            .padding(.horizontal, 8)
+            .help("Cover art size")
+        }
+
+        ToolbarSpacer(.fixed)
+
+        ToolbarItem {
+            Menu {
+                Picker("Sort By", selection: $sortOrder) {
+                    ForEach(GameSortOrder.allCases) { order in
+                        Text(order.label).tag(order)
+                    }
+                }
+                .pickerStyle(.inline)
+            } label: {
+                Label("Sort By", systemImage: "arrow.up.arrow.down")
+            }
+            .help("Sort by")
+        }
+
+        ToolbarItem {
+            ScrapeMissingButton(selection: currentSelection)
+        }
+
+        ToolbarSpacer(.fixed)
+
+        // A real Button (not a bare Image) so it gets the same padding and
+        // hit target as every other toolbar item — and clicking it explains
+        // the controls instead of just sitting there as a status glyph.
+        if let controllerName = gamepad.connectedControllerName {
+            ToolbarItem {
+                Button {
+                    showsControllerHelp.toggle()
+                } label: {
+                    Label("Controller", systemImage: "gamecontroller.fill")
+                }
+                .help("\(controllerName) connected")
+                .popover(isPresented: $showsControllerHelp, arrowEdge: .bottom) {
+                    ControllerHelpView(controllerName: controllerName)
+                }
+            }
+        }
+
+        ToolbarItem {
+            Button {
+                showsInspector.toggle()
+            } label: {
+                Label("Inspector", systemImage: "info.circle")
+            }
+            .help(showsInspector ? "Hide game details" : "Show game details")
+        }
+    }
+
+    /// Same order the sidebar lists them in, wrapping at either end so a
+    /// shoulder button can cycle through everything without a dead stop.
+    private func stepSection(by offset: Int) {
+        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed] + systems.map { .system($0.systemID) }
+        let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
+        let count = sections.count
+        selection = sections[((currentIndex + offset) % count + count) % count]
     }
 
     private var selectionTitle: String {
-        switch selection ?? .allGames {
+        switch currentSelection {
         case .allGames: "All Games"
         case .favorites: "Favorites"
         case .recentlyPlayed: "Recently Played"
         case .system(let canonicalID):
             systems.first { $0.systemID == canonicalID }?.displayName ?? canonicalID.rawValue
+        }
+    }
+}
+
+/// What each controller button does in the library — shown from the
+/// toolbar's controller button.
+private struct ControllerHelpView: View {
+    let controllerName: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label(controllerName, systemImage: "gamecontroller.fill")
+                .font(.headline)
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
+                row("D-pad / Left Stick", "Browse games")
+                row("A", "Play")
+                row("Y", "Add to / remove from Favorites")
+                row("LB / RB", "Previous / next system")
+            }
+            .font(.callout)
+        }
+        .padding()
+    }
+
+    private func row(_ control: String, _ action: String) -> some View {
+        GridRow {
+            Text(control).foregroundStyle(.secondary)
+            Text(action)
         }
     }
 }

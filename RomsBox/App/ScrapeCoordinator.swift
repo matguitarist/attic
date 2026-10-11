@@ -203,6 +203,7 @@ final class ScrapeCoordinator {
         let ext = remoteURL.pathExtension.isEmpty ? "png" : remoteURL.pathExtension
         let destination = systemDirectory.appending(path: "\(baseName).\(ext)")
         try data.write(to: destination, options: .atomic)
+        CoverArtThumbnailCache.shared.invalidate(destination)
         return destination
     }
 

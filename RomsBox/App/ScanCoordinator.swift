@@ -27,6 +27,12 @@ final class ScanCoordinator {
         self.scanner = scanner
     }
 
+    /// Backfills `GameSystem.gameCount` for libraries scanned before that
+    /// field existed — see `LibraryStore.refreshGameCounts()`.
+    func refreshGameCounts() async {
+        try? await libraryStore.refreshGameCounts()
+    }
+
     func scan(romsRootURLs: [URL]) async {
         guard !romsRootURLs.isEmpty else { return }
         state = .scanning

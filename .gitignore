@@ -20,3 +20,7 @@ RomsBoxKit/.swiftpm/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Local release builds (scripts/build.sh)
+dist/
+.build-xcode/

@@ -2,8 +2,10 @@ import SwiftUI
 import SwiftData
 import RomsBoxModels
 import RomsBoxPersistence
-import RomsBoxEmulation
 
+/// Inspector contents for the selected game: a header (art, editable title,
+/// actions) above a native grouped `Form`, so labels, fields and section
+/// styling all come from the system.
 struct GameDetailView: View {
     let game: Game?
 
@@ -12,81 +14,56 @@ struct GameDetailView: View {
     @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
-    @Query(sort: \EmulatorProfile.name) private var customEmulatorProfiles: [EmulatorProfile]
 
     var body: some View {
         if let game {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack(spacing: 10) {
-                        Button {
-                            game.favorite.toggle()
-                        } label: {
-                            Label(game.favorite ? "Favorited" : "Favorite", systemImage: game.favorite ? "star.fill" : "star")
-                        }
-                        .buttonStyle(.glass)
+            Form {
+                Section {
+                    header(for: game)
+                }
 
-                        playButton(for: game)
-                        launchWithMenu(for: game)
-                        scrapeMenu(for: game)
-                    }
-
-                    if case .failed(let message) = launchCoordinator.state {
-                        Text(message).foregroundStyle(.red).font(.callout)
-                    }
-                    if case .failed(let message) = scrapeCoordinator.state {
-                        Text(message).foregroundStyle(.red).font(.callout)
-                    }
-
-                    // Fixed frame regardless of the system — real box art
-                    // proportions vary wildly (NES portrait, SNES landscape,
-                    // GBA near-square), so GameCoverArtView fits the whole
-                    // image inside this frame rather than cropping. No card
-                    // background here (unlike the grid) since at this size
-                    // it just reads as an unnecessary border around the art.
-                    GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
-                        .frame(width: 260, height: 260 / (3.0 / 4.0))
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .frame(maxWidth: .infinity, alignment: .center)
-
-                    TextField("Title", text: titleBinding(for: game))
-                        .textFieldStyle(.plain)
-                        .font(.title2.bold())
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Description")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        TextEditor(text: optionalTextBinding(\.gameDescription, for: game))
+                Section("Description") {
+                    // TextEditor has no Return-to-submit (Return is a
+                    // newline), so this one commits on focus loss only.
+                    CommitOnBlurField(
+                        value: game.gameDescription ?? "",
+                        onCommit: { commitOptionalText($0, to: \.gameDescription, for: game) }
+                    ) { text, focus in
+                        TextEditor(text: text)
                             .font(.callout)
-                            .frame(minHeight: 90, maxHeight: 180)
+                            .frame(minHeight: 90, maxHeight: 200)
                             .scrollContentBackground(.hidden)
-                            .padding(6)
-                            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .focused(focus)
                     }
+                    .labelsHidden()
+                }
 
-                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
-                        editableRow("Developer", optionalTextBinding(\.developer, for: game))
-                        editableRow("Publisher", optionalTextBinding(\.publisher, for: game))
-                        editableRow("Genre", optionalTextBinding(\.genre, for: game))
-                        editableRow("Players", optionalTextBinding(\.players, for: game))
-                        if let releaseDate = game.releaseDate {
-                            detailRow("Released", releaseDate.formatted(date: .abbreviated, time: .omitted))
-                        }
-                        if game.playCount > 0 {
-                            detailRow("Play Count", "\(game.playCount)")
-                        }
+                Section("Info") {
+                    editableRow("Developer", \.developer, for: game)
+                    editableRow("Publisher", \.publisher, for: game)
+                    editableRow("Genre", \.genre, for: game)
+                    editableRow("Players", \.players, for: game)
+                    if let releaseDate = game.releaseDate {
+                        LabeledContent("Released", value: releaseDate.formatted(date: .abbreviated, time: .omitted))
+                    }
+                    LabeledContent("System", value: game.system?.displayName ?? game.systemCanonicalID)
+                }
+
+                if game.playCount > 0 || game.lastPlayedDate != nil {
+                    Section("Play History") {
+                        LabeledContent("Play Count", value: "\(game.playCount)")
                         if game.totalPlaytimeSeconds > 0 {
-                            detailRow("Total Playtime", formattedPlaytime(game.totalPlaytimeSeconds))
+                            LabeledContent("Total Playtime", value: formattedPlaytime(game.totalPlaytimeSeconds))
                         }
                         if let lastPlayed = game.lastPlayedDate {
-                            detailRow("Last Played", lastPlayed.formatted(date: .abbreviated, time: .shortened))
+                            LabeledContent("Last Played", value: lastPlayed.formatted(date: .abbreviated, time: .shortened))
                         }
                     }
-                    .font(.callout)
                 }
-                .padding()
             }
+            .formStyle(.grouped)
+            // Fresh field state per game — see CommitOnBlurField.
+            .id(game.persistentModelID)
         } else {
             ContentUnavailableView(
                 "No Game Selected",
@@ -97,96 +74,94 @@ struct GameDetailView: View {
     }
 
     @ViewBuilder
-    private func playButton(for game: Game) -> some View {
-        let target = resolvedTarget(for: game)
+    private func header(for game: Game) -> some View {
+        VStack(spacing: 12) {
+            // Fixed frame regardless of the system — real box art
+            // proportions vary wildly (NES portrait, SNES landscape, GBA
+            // near-square), so GameCoverArtView fits the whole image inside
+            // this frame rather than cropping.
+            GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
+                .frame(width: 220, height: 220 / (3.0 / 4.0))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            CommitOnBlurField(
+                value: game.title,
+                isValid: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
+                onCommit: { commitTitle($0, for: game) }
+            ) { text, focus in
+                TextField("Title", text: text, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .font(.title2.bold())
+                    .multilineTextAlignment(.center)
+                    .focused(focus)
+            }
+
+            actions(for: game)
+
+            if case .failed(let message) = launchCoordinator.state {
+                Text(message).foregroundStyle(.red).font(.callout)
+            }
+            if case .failed(let message) = scrapeCoordinator.state {
+                Text(message).foregroundStyle(.red).font(.callout)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func actions(for game: Game) -> some View {
+        let target = LaunchTargetResolution.resolve(gameOverride: game.launchOverride, systemDefault: game.system?.defaultLaunchTarget)
         let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
         let isBusy = launchCoordinator.state == .launching || isRunningThisGame
-
-        Button {
-            launchCoordinator.play(game: game, retroArchStore: retroArchStore)
-        } label: {
-            Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
-        }
-        .buttonStyle(.glassProminent)
-        .disabled(target == nil || isBusy)
-        .help(target == nil ? "Set a default emulator for this system in Settings, or choose one below." : "")
-    }
-
-    @ViewBuilder
-    private func launchWithMenu(for game: Game) -> some View {
-        Menu {
-            if game.launchOverride != nil {
-                Button("Use System Default") {
-                    game.launchOverride = nil
-                    try? game.modelContext?.save()
-                }
-                Divider()
-            }
-
-            if let systemID = game.system?.systemID {
-                let cores = retroArchStore.cores(for: systemID)
-                if !cores.isEmpty {
-                    Section("RetroArch Cores") {
-                        ForEach(cores) { core in
-                            Button(core.displayName) {
-                                game.launchOverride = .retroArchCore(coreIdentifier: core.coreIdentifier)
-                                try? game.modelContext?.save()
-                            }
-                        }
-                    }
-                }
-
-                let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) }
-                if !matchingProfiles.isEmpty {
-                    Section("Custom Emulators") {
-                        ForEach(matchingProfiles) { profile in
-                            Button(profile.name) {
-                                game.launchOverride = .emulatorProfile(id: profile.id)
-                                try? game.modelContext?.save()
-                            }
-                        }
-                    }
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-        }
-        .buttonStyle(.glass)
-        .menuStyle(.button)
-        .fixedSize()
-        .help("Launch with a specific core or emulator for just this game")
-    }
-
-    @ViewBuilder
-    private func scrapeMenu(for game: Game) -> some View {
         let isScraping = scrapeCoordinator.state == .scraping
 
-        Menu {
-            Button("ScreenScraper") {
-                Task { await scrapeCoordinator.scrapeUsingScreenScraper(game: game, credentials: screenScraperCredentialsStore.credentials) }
+        HStack(spacing: 8) {
+            Button {
+                launchCoordinator.play(game: game, retroArchStore: retroArchStore)
+            } label: {
+                Label(isRunningThisGame ? "Running…" : "Play", systemImage: isRunningThisGame ? "gamecontroller.fill" : "play.fill")
+                    .frame(minWidth: 70)
             }
-            .disabled(!screenScraperCredentialsStore.isConfigured)
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .disabled(target == nil || isBusy)
+            .help(target == nil ? "Set a default emulator for this system in Settings, or choose one from Launch With." : "Play (⌘↩)")
 
-            Button("TheGamesDB") {
-                Task { await scrapeCoordinator.scrapeUsingTheGamesDB(game: game, credentials: theGamesDBCredentialsStore.credentials) }
+            Button {
+                game.favorite.toggle()
+                try? game.modelContext?.save()
+            } label: {
+                Label(game.favorite ? "Unfavorite" : "Favorite", systemImage: game.favorite ? "star.fill" : "star")
+                    .labelStyle(.iconOnly)
             }
-            .disabled(!theGamesDBCredentialsStore.isConfigured)
-        } label: {
-            if isScraping {
-                ProgressView().controlSize(.small)
-            } else {
-                Image(systemName: "photo.badge.magnifyingglass")
+            .controlSize(.large)
+            .help(game.favorite ? "Remove from Favorites (⌘D)" : "Add to Favorites (⌘D)")
+
+            Menu {
+                Menu("Launch With") {
+                    LaunchWithMenuItems(game: game)
+                }
+                Menu("Scrape Info") {
+                    ScrapeMenuItems(game: game)
+                }
+                .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+                Divider()
+                Button("Reveal in Finder") {
+                    NSWorkspace.shared.activateFileViewerSelecting([game.romAbsoluteURL])
+                }
+            } label: {
+                if isScraping {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Label("More", systemImage: "ellipsis")
+                        .labelStyle(.iconOnly)
+                }
             }
+            .menuIndicator(.hidden)
+            .controlSize(.large)
+            .fixedSize()
+            .help("Launch with a specific emulator, scrape info, or reveal the ROM")
         }
-        .buttonStyle(.glass)
-        .menuStyle(.button)
-        .fixedSize()
-        .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
-        .help("Scrape missing info from ScreenScraper or TheGamesDB")
-    }
-
-    private func resolvedTarget(for game: Game) -> LaunchTargetReference? {
-        LaunchTargetResolution.resolve(gameOverride: game.launchOverride, systemDefault: game.system?.defaultLaunchTarget)
     }
 
     private func formattedPlaytime(_ seconds: Double) -> String {
@@ -196,25 +171,17 @@ struct GameDetailView: View {
         return formatter.string(from: seconds) ?? "\(Int(seconds))s"
     }
 
-    @ViewBuilder
-    private func detailRow(_ label: String, _ value: String?) -> some View {
-        if let value, !value.isEmpty {
-            GridRow {
-                Text(label).foregroundStyle(.secondary)
-                Text(value)
-            }
-        }
-    }
-
-    private func editableRow(_ label: String, _ value: Binding<String>) -> some View {
-        GridRow {
-            Text(label).foregroundStyle(.secondary)
-            // Placeholder is deliberately generic rather than repeating
-            // `label` — an empty field showing e.g. "Developer" as its own
-            // placeholder reads exactly like a real (wrong) value at a
-            // glance, not like empty/unset.
-            TextField("Not set", text: value)
-                .textFieldStyle(.plain)
+    /// A native Form row: the field's label shows on the leading side, the
+    /// editable value on the trailing side. The prompt is deliberately
+    /// generic rather than repeating the label — an empty field showing
+    /// e.g. "Developer" reads like a real (wrong) value, not like unset.
+    private func editableRow(_ label: String, _ keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) -> some View {
+        CommitOnBlurField(
+            value: game[keyPath: keyPath] ?? "",
+            onCommit: { commitOptionalText($0, to: keyPath, for: game) }
+        ) { text, focus in
+            TextField(label, text: text, prompt: Text("Not set"))
+                .focused(focus)
         }
     }
 
@@ -222,29 +189,19 @@ struct GameDetailView: View {
     /// edit matters — that's the field sort actually runs on, and it has
     /// no UI of its own, so a manually retitled game would otherwise sort
     /// under its old name.
-    private func titleBinding(for game: Game) -> Binding<String> {
-        Binding(
-            get: { game.title },
-            set: { newValue in
-                game.title = newValue
-                game.sortTitle = newValue
-                game.metadataManuallyEdited = true
-                try? game.modelContext?.save()
-            }
-        )
+    private func commitTitle(_ newValue: String, for game: Game) {
+        game.title = newValue
+        game.sortTitle = newValue
+        game.metadataManuallyEdited = true
+        try? game.modelContext?.save()
     }
 
     /// Empty text commits as `nil` rather than `""`, matching how scraped/
     /// imported data represents "no value" — an editable field cleared out
     /// by the user should look the same as one that was never populated.
-    private func optionalTextBinding(_ keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) -> Binding<String> {
-        Binding(
-            get: { game[keyPath: keyPath] ?? "" },
-            set: { newValue in
-                game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
-                game.metadataManuallyEdited = true
-                try? game.modelContext?.save()
-            }
-        )
+    private func commitOptionalText(_ newValue: String, to keyPath: ReferenceWritableKeyPath<Game, String?>, for game: Game) {
+        game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
+        game.metadataManuallyEdited = true
+        try? game.modelContext?.save()
     }
 }

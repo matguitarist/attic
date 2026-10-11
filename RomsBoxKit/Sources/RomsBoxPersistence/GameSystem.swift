@@ -15,6 +15,12 @@ public final class GameSystem {
     public var romsRootPath: String
     public var libraryFormatRaw: String
     private var defaultLaunchTargetData: Data?
+    /// Denormalized so the sidebar can show per-system counts without
+    /// faulting in every `Game` row through the `games` relationship just
+    /// to call `.count` on it. Kept current by `LibraryStore.upsertSystem`,
+    /// and backfilled for stores created before it existed by
+    /// `LibraryStore.refreshGameCounts()`.
+    public var gameCount: Int = 0
 
     @Relationship(deleteRule: .cascade, inverse: \Game.system)
     public var games: [Game] = []

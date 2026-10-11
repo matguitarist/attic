@@ -78,9 +78,27 @@ public actor LibraryStore {
             modelContext.delete(stale)
         }
         let removed = existingByPath.count
+        system.gameCount = inserted + updated
 
         try modelContext.save()
         return UpsertResult(gamesInserted: inserted, gamesUpdated: updated, gamesRemoved: removed)
+    }
+
+    /// Recomputes every system's stored `gameCount` from the actual rows.
+    /// Only really needed once, for libraries scanned before the field
+    /// existed (they'd otherwise show 0 until the next rescan), but cheap
+    /// enough — one COUNT query per system — to just run at launch.
+    public func refreshGameCounts() throws {
+        for system in try modelContext.fetch(FetchDescriptor<GameSystem>()) {
+            let idString = system.canonicalID
+            let count = try modelContext.fetchCount(FetchDescriptor<Game>(predicate: #Predicate { $0.systemCanonicalID == idString }))
+            if system.gameCount != count {
+                system.gameCount = count
+            }
+        }
+        if modelContext.hasChanges {
+            try modelContext.save()
+        }
     }
 
     public func systemCount() throws -> Int {

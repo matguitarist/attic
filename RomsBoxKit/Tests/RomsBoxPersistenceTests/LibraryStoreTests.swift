@@ -77,6 +77,45 @@ import Testing
         #expect(try await store.gameCount(forSystem: .snes) == 1)
     }
 
+    private func storedGameCount(in store: LibraryStore, for canonicalID: CanonicalSystemID) throws -> Int? {
+        let idString = canonicalID.rawValue
+        let context = ModelContext(store.modelContainer)
+        return try context.fetch(FetchDescriptor<GameSystem>(predicate: #Predicate { $0.canonicalID == idString })).first?.gameCount
+    }
+
+    @Test func upsertKeepsStoredGameCountInSyncAcrossRescans() async throws {
+        let store = try makeStore()
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "a.sfc", title: "Game A"),
+            sampleRecord(path: "b.sfc", title: "Game B")
+        ]), displayName: "SNES")
+        #expect(try storedGameCount(in: store, for: .snes) == 2)
+
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "a.sfc", title: "Game A"),
+            sampleRecord(path: "c.sfc", title: "Game C"),
+            sampleRecord(path: "d.sfc", title: "Game D")
+        ]), displayName: "SNES")
+        #expect(try storedGameCount(in: store, for: .snes) == 3)
+    }
+
+    @Test func refreshGameCountsBackfillsStaleCounts() async throws {
+        let store = try makeStore()
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "a.sfc", title: "Game A"),
+            sampleRecord(path: "b.sfc", title: "Game B")
+        ]), displayName: "SNES")
+
+        // Simulate a store written before `gameCount` existed.
+        let context = ModelContext(store.modelContainer)
+        let system = try #require(try context.fetch(FetchDescriptor<GameSystem>()).first)
+        system.gameCount = 0
+        try context.save()
+
+        try await store.refreshGameCounts()
+        #expect(try storedGameCount(in: store, for: .snes) == 2)
+    }
+
     @Test func rescanUpdatesMetadataButPreservesFavoriteAndPlayHistory() async throws {
         let container = try RomsBoxModelContainer.makeInMemory()
         let store = LibraryStore(modelContainer: container)

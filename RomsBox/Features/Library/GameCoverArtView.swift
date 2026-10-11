@@ -20,29 +20,63 @@ struct GameCoverArtView: View {
     /// differently-shaped art reads as clutter rather than alignment.
     var showBackground: Bool = true
 
+    @Environment(\.displayScale) private var displayScale
+    @State private var loadedImage: LoadedImage?
+
+    /// Remembers which request produced the image, so a recycled cell
+    /// showing a different game (or the same game at a new zoom level)
+    /// never briefly renders the previous art.
+    private struct LoadedImage {
+        let request: ThumbnailRequest
+        let image: CGImage
+    }
+
+    private struct ThumbnailRequest: Hashable {
+        let url: URL
+        let maxPixelSize: CGFloat
+    }
+
     var body: some View {
-        ZStack {
-            if showBackground {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(.quaternary.opacity(0.4))
+        GeometryReader { proxy in
+            let request = url.map {
+                ThumbnailRequest(url: $0, maxPixelSize: max(proxy.size.width, proxy.size.height) * displayScale)
             }
 
-            if let url {
-                AsyncImage(url: url) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding(showBackground ? 8 : 0)
-                    } else {
-                        placeholderGlyph
-                    }
+            ZStack {
+                if showBackground {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(.quaternary.opacity(0.4))
                 }
-            } else {
-                placeholderGlyph
+
+                if let request, let image = image(for: request) {
+                    Image(decorative: image, scale: displayScale)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(showBackground ? 8 : 0)
+                } else {
+                    placeholderGlyph
+                }
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .task(id: request) {
+                guard let request, request.maxPixelSize > 0 else { return }
+                if let image = await CoverArtThumbnailCache.shared.thumbnail(for: request.url, maxPixelSize: request.maxPixelSize),
+                   !Task.isCancelled {
+                    loadedImage = LoadedImage(request: request, image: image)
+                }
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    /// Prefers whatever's already in the shared cache (so cells scrolling
+    /// back into view render art on their first frame) over this view's
+    /// own `@State`, which only fills in after the async load completes.
+    private func image(for request: ThumbnailRequest) -> CGImage? {
+        if let loadedImage, loadedImage.request == request {
+            return loadedImage.image
+        }
+        return CoverArtThumbnailCache.shared.cachedThumbnail(for: request.url, maxPixelSize: request.maxPixelSize)
     }
 
     private var placeholderGlyph: some View {

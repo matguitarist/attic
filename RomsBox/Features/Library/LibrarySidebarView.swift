@@ -1,90 +1,40 @@
 import SwiftUI
 import RomsBoxPersistence
 
-/// Custom sidebar rows rather than `List(selection:)` — the latter proved
-/// unreliable at actually changing selection on click in this app (rows
-/// highlighted inconsistently and sometimes never updated the grid), and a
-/// plain-Button implementation both fixes that outright and gives full
-/// control over the Liquid Glass selection styling.
+/// A plain native `List(selection:)` sidebar, so macOS draws the selection,
+/// badges, section headers and vibrancy itself and they track whatever the
+/// current OS release's sidebar looks like.
+///
+/// An earlier version replaced this with hand-rolled Buttons because
+/// selection seemed not to stick. Every row's `.tag` must be exactly a
+/// `LibrarySelection` (the selection's wrapped type) for List to match
+/// rows to the binding — keep it that way when adding rows.
 struct LibrarySidebarView: View {
     let systems: [GameSystem]
     @Binding var selection: LibrarySelection?
 
     var body: some View {
-        ScrollView {
-            GlassEffectContainer(spacing: 4) {
-                VStack(alignment: .leading, spacing: 20) {
-                    sidebarSection(title: "Library") {
-                        row(icon: "square.grid.2x2", title: "All Games", value: .allGames)
-                        row(icon: "star.fill", title: "Favorites", value: .favorites)
-                        row(icon: "clock", title: "Recently Played", value: .recentlyPlayed)
-                    }
+        List(selection: $selection) {
+            Section("Library") {
+                Label("All Games", systemImage: "square.grid.2x2")
+                    .tag(LibrarySelection.allGames)
+                Label("Favorites", systemImage: "star")
+                    .tag(LibrarySelection.favorites)
+                Label("Recently Played", systemImage: "clock")
+                    .tag(LibrarySelection.recentlyPlayed)
+            }
 
-                    if !systems.isEmpty {
-                        sidebarSection(title: "Systems") {
-                            ForEach(systems) { system in
-                                row(
-                                    icon: "square.stack",
-                                    title: system.displayName,
-                                    value: .system(system.systemID),
-                                    count: system.games.count
-                                )
-                            }
-                        }
+            if !systems.isEmpty {
+                Section("Systems") {
+                    ForEach(systems) { system in
+                        Label(system.displayName, systemImage: "gamecontroller")
+                            .lineLimit(1)
+                            .badge(system.gameCount)
+                            .tag(LibrarySelection.system(system.systemID))
                     }
                 }
-                .padding(10)
             }
         }
-        .scrollContentBackground(.hidden)
-        .navigationTitle("RomsBox")
-        .frame(minWidth: 220)
-    }
-
-    @ViewBuilder
-    private func sidebarSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 10)
-            content()
-        }
-    }
-
-    private func row(icon: String, title: String, value: LibrarySelection, count: Int? = nil) -> some View {
-        let isSelected = selection == value
-
-        return Button {
-            selection = value
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .frame(width: 18)
-                Text(title)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                Spacer(minLength: 4)
-                if let count {
-                    Text("\(count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                }
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Capsule())
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
-        // Same Capsule shape as the search/sort/zoom/scrape pills in the
-        // top bar, so the sidebar's selection style reads as the same
-        // control family rather than a differently-shaped one-off.
-        .glassEffect(
-            isSelected ? .regular.tint(.accentColor.opacity(0.35)).interactive() : .clear,
-            in: Capsule()
-        )
+        .listStyle(.sidebar)
     }
 }
