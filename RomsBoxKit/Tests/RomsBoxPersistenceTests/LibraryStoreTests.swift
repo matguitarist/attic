@@ -194,6 +194,38 @@ import Testing
         #expect(refetched.coverArtPath == "/tmp/media/a.png")
     }
 
+    @Test func rescanKeepsHandSetDateRatingAndCustomCover() async throws {
+        let container = try RomsBoxModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        let record = ImportedGameRecord(
+            romRelativePath: "a.sfc",
+            title: "Game A",
+            releaseDate: Date(timeIntervalSince1970: 0),
+            rating: 0.4,
+            coverArtURL: URL(fileURLWithPath: "/tmp/media/a.png")
+        )
+        let data = ImportedSystemData(canonicalID: .snes, libraryFormat: .esde, romsRootURL: URL(fileURLWithPath: "/tmp/roms/snes"), games: [record])
+        _ = try await store.upsertSystem(data, displayName: "SNES")
+
+        let context = ModelContext(container)
+        let descriptor = FetchDescriptor<Game>()
+        let game = try #require(try context.fetch(descriptor).first)
+        let handSetDate = Date(timeIntervalSince1970: 86_400 * 365)
+        game.releaseDate = handSetDate
+        game.rating = 1
+        game.metadataManuallyEdited = true
+        game.coverArtPath = "/tmp/custom/a.jpg"
+        game.coverArtManuallySet = true
+        try context.save()
+
+        _ = try await store.upsertSystem(data, displayName: "SNES")
+
+        let refetched = try #require(try context.fetch(descriptor).first)
+        #expect(refetched.releaseDate == handSetDate)
+        #expect(refetched.rating == 1)
+        #expect(refetched.coverArtPath == "/tmp/custom/a.jpg")
+    }
+
     @Test func upsertSystemUpdatesDisplayNameAndFormatOnRescan() async throws {
         let store = try makeStore()
         _ = try await store.upsertSystem(sampleSystemData(games: []), displayName: "SNES")

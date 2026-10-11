@@ -21,6 +21,8 @@ struct LibraryBrowserView: View {
     /// Once per launch — not every time a library window appears.
     private static var didAutoOpenBigBox = false
 
+    @State private var infoEditor = GameInfoEditor()
+
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
 
     var body: some View {
@@ -40,14 +42,21 @@ struct LibraryBrowserView: View {
                     .background(.bar)
             }
             .navigationTitle(selectionTitle)
-            .searchable(text: $searchText, placement: .toolbar, prompt: "Search Games")
             .toolbar { toolbarContent }
             .inspector(isPresented: $showsInspector) {
                 GameDetailView(game: selectedGame)
                     .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
             }
         }
+        // In the sidebar rather than the toolbar: a toolbar search field
+        // always goes last, which puts it over the inspector column.
+        .searchable(text: $searchText, placement: .sidebar, prompt: "Search Games")
         .focusedSceneValue(\.selectedGame, selectedGame)
+        .focusedSceneValue(\.gameInfoEditor, infoEditor)
+        .environment(infoEditor)
+        .sheet(item: $infoEditor.game) { game in
+            EditGameInfoView(game: game)
+        }
         .onAppear {
             if startsInBigBox, !Self.didAutoOpenBigBox {
                 Self.didAutoOpenBigBox = true
@@ -66,6 +75,7 @@ struct LibraryBrowserView: View {
     }
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
+
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {

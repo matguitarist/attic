@@ -14,6 +14,7 @@ struct GameDetailView: View {
     @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+    @Environment(GameInfoEditor.self) private var infoEditor
 
     var body: some View {
         if let game {
@@ -44,7 +45,13 @@ struct GameDetailView: View {
                     editableRow("Genre", \.genre, for: game)
                     editableRow("Players", \.players, for: game)
                     if let releaseDate = game.releaseDate {
-                        LabeledContent("Released", value: releaseDate.formatted(date: .abbreviated, time: .omitted))
+                        LabeledContent("Released", value: releaseDate.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, timeZone: TimeZone(identifier: "UTC")!)))
+                    }
+                    if let rating = game.rating, rating > 0 {
+                        LabeledContent("Rating") {
+                            StarRatingPicker(rating: .constant(rating))
+                                .disabled(true)
+                        }
                     }
                     LabeledContent("System", value: game.system?.displayName ?? game.systemCanonicalID)
                 }
@@ -147,6 +154,15 @@ struct GameDetailView: View {
             .controlSize(.large)
             .help(game.favorite ? String(localized: "Remove from Favorites (⌘D)") : String(localized: "Add to Favorites (⌘D)"))
 
+            Button {
+                infoEditor.game = game
+            } label: {
+                Label("Edit Info…", systemImage: "pencil")
+                    .labelStyle(.iconOnly)
+            }
+            .controlSize(.large)
+            .help("Edit title, cover, release date, rating and more (⌘I)")
+
             Menu {
                 Menu("Launch With") {
                     LaunchWithMenuItems(game: game)
@@ -155,6 +171,9 @@ struct GameDetailView: View {
                     ScrapeMenuItems(game: game)
                 }
                 .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+                Button("Edit Info…") {
+                    infoEditor.game = game
+                }
                 Divider()
                 Button("Reveal in Finder") {
                     NSWorkspace.shared.activateFileViewerSelecting([game.romAbsoluteURL])
@@ -170,7 +189,7 @@ struct GameDetailView: View {
             .menuIndicator(.hidden)
             .controlSize(.large)
             .fixedSize()
-            .help("Launch with a specific emulator, scrape info, or reveal the ROM")
+            .help("Launch with a specific emulator, scrape info, edit info, or reveal the ROM")
         }
     }
 

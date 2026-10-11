@@ -184,6 +184,7 @@ final class ScrapeCoordinator {
         if (force || game.coverArtPath == nil), let remoteURL = info.coverArtURL {
             if let localURL = try? await downloadCoverArt(from: remoteURL, systemID: game.systemCanonicalID, romFilename: game.romAbsoluteURL.lastPathComponent) {
                 game.coverArtPath = localURL.path
+                game.coverArtManuallySet = false
             }
         }
 

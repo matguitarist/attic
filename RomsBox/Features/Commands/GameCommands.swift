@@ -15,6 +15,7 @@ struct GameCommands: Commands {
     let retroArchStore: RetroArchSettingsStore
 
     @FocusedValue(\.selectedGame) private var game
+    @FocusedValue(\.gameInfoEditor) private var infoEditor
 
     var body: some Commands {
         CommandMenu("Game") {
@@ -31,6 +32,12 @@ struct GameCommands: Commands {
             }
             .keyboardShortcut("d")
             .disabled(game == nil)
+
+            Button("Edit Info…") {
+                infoEditor?.game = game
+            }
+            .keyboardShortcut("i")
+            .disabled(game == nil || infoEditor == nil)
 
             Divider()
 

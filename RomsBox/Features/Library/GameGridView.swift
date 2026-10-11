@@ -12,6 +12,7 @@ struct GameGridView: View {
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(GamepadInputMonitor.self) private var gamepad
+    @Environment(GameInfoEditor.self) private var infoEditor
 
     private let cellScale: CGFloat
 
@@ -195,6 +196,11 @@ struct GameGridView: View {
         Button(game.favorite ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")) {
             game.favorite.toggle()
             try? game.modelContext?.save()
+        }
+
+        Button("Edit Info…") {
+            selectedGame = game
+            infoEditor.game = game
         }
 
         Divider()

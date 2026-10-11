@@ -260,6 +260,16 @@
         }
       }
     },
+    "%lld stars": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld étoiles"
+          }
+        }
+      }
+    },
     "/": {
       "shouldTranslate": false
     },
@@ -679,6 +689,16 @@
         }
       }
     },
+    "Choose Image…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir une image…"
+          }
+        }
+      }
+    },
     "Choose ROMs Folder…": {
       "localizations": {
         "fr": {
@@ -705,6 +725,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez un dossier de ROM pour commencer. RomsBox reconnaît les bibliothèques organisées comme celles de Batocera, RetroBat ou ES-DE."
+          }
+        }
+      }
+    },
+    "Choose an image or drag one onto the cover.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez une image ou faites-en glisser une sur la jaquette."
           }
         }
       }
@@ -885,6 +915,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de mettre à jour %@"
+          }
+        }
+      }
+    },
+    "Cover Art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jaquette"
           }
         }
       }
@@ -1165,6 +1205,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Modifier l’émulateur personnalisé"
+          }
+        }
+      }
+    },
+    "Edit Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier les infos"
+          }
+        }
+      }
+    },
+    "Edit Info…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier les infos…"
+          }
+        }
+      }
+    },
+    "Edit title, cover, release date, rating and more (⌘I)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier le titre, la jaquette, la date de sortie, la note et plus (⌘I)"
           }
         }
       }
@@ -1885,7 +1955,18 @@
         }
       }
     },
+    "Launch with a specific emulator, scrape info, edit info, or reveal the ROM": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer avec un émulateur précis, récupérer ou modifier les infos, ou afficher la ROM"
+          }
+        }
+      }
+    },
     "Launch with a specific emulator, scrape info, or reveal the ROM": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -2505,6 +2586,16 @@
         }
       }
     },
+    "Rating": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note"
+          }
+        }
+      }
+    },
     "Ready to scrape.": {
       "localizations": {
         "fr": {
@@ -2565,12 +2656,32 @@
         }
       }
     },
+    "Release Date": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date de sortie"
+          }
+        }
+      }
+    },
     "Released": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Sortie"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer"
           }
         }
       }
@@ -2801,6 +2912,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En cours…"
+          }
+        }
+      }
+    },
+    "Same as title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comme le titre"
           }
         }
       }
@@ -3157,6 +3278,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Certains systèmes ont besoin du BIOS de la console. Ces fichiers sont protégés par le droit d’auteur, RomsBox ne les télécharge donc jamais : extrayez-les du matériel que vous possédez et placez-les dans le dossier BIOS du dossier Emulation. La page de chaque système indique les fichiers nécessaires et s’ils sont présents."
+          }
+        }
+      }
+    },
+    "Sort As": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier comme"
           }
         }
       }
@@ -3637,6 +3768,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bienvenue dans RomsBox"
+          }
+        }
+      }
+    },
+    "Where the game sorts in the library, e.g. “Legend of Zelda, The”. Leave empty to sort by title.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position du jeu dans le tri de la bibliothèque, p. ex. « Legend of Zelda, The ». Laissez vide pour trier par titre."
           }
         }
       }
