@@ -41,13 +41,14 @@ final class ScanCoordinator {
         let result = await Task.detached(priority: .userInitiated) {
             scanner.scan(romsRootURLs: romsRootURLs)
         }.value
+        let systems = await Self.withArcadeNames(result.systems)
 
         var systemsSaved = 0
         var gamesInserted = 0
         var gamesUpdated = 0
         var gamesRemoved = 0
 
-        for systemData in result.systems {
+        for systemData in systems {
             let displayName = SystemTaxonomy.definition(for: systemData.canonicalID)?.displayName
                 ?? systemData.canonicalID.rawValue
             do {
@@ -71,5 +72,28 @@ final class ScanCoordinator {
         }
         lastScanSummary = summary
         state = .idle
+    }
+
+    /// Arcade games are files named after their romset (`mslug.zip`); this
+    /// swaps in their real titles from FinalBurn Neo's DAT unless a
+    /// gamelist.xml already named them. Only fetched when the library has
+    /// arcade systems, and a failed fetch just leaves the names as they are.
+    nonisolated private static func withArcadeNames(_ systems: [ImportedSystemData]) async -> [ImportedSystemData] {
+        let isArcade = { (system: ImportedSystemData) in
+            SystemTaxonomy.definition(for: system.canonicalID)?.category == .arcade
+        }
+        guard systems.contains(where: isArcade) else { return systems }
+        let index = await ArcadeNameIndex.load(cacheURL: arcadeNamesCacheURL) {
+            let (data, response) = try await URLSession.shared.data(from: ArcadeNameIndex.datURL)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+            return data
+        }
+        guard let index else { return systems }
+        return systems.map { isArcade($0) ? index.applying(to: $0) : $0 }
+    }
+
+    nonisolated private static var arcadeNamesCacheURL: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appending(path: "RomsBox/ArcadeNames.json")
     }
 }

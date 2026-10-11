@@ -385,6 +385,16 @@
         }
       }
     },
+    "Arcade": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arcade"
+          }
+        }
+      }
+    },
     "Arguments": {
       "localizations": {
         "fr": {
@@ -541,6 +551,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisir…"
+          }
+        }
+      }
+    },
+    "Computers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ordinateurs"
+          }
+        }
+      }
+    },
+    "Consoles": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consoles"
           }
         }
       }
@@ -941,6 +971,16 @@
         }
       }
     },
+    "Handhelds": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Portables"
+          }
+        }
+      }
+    },
     "Hide game details": {
       "localizations": {
         "fr": {
@@ -1211,6 +1251,16 @@
         }
       }
     },
+    "Neo Geo free play": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neo Geo en jeu libre"
+          }
+        }
+      }
+    },
     "Network error: %@": {
       "localizations": {
         "fr": {
@@ -1387,6 +1437,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ouvrir Big Box au démarrage"
+          }
+        }
+      }
+    },
+    "Optional": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facultatif"
           }
         }
       }
@@ -1627,6 +1687,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Demander un accès à l’API sur screenscraper.fr"
+          }
+        }
+      }
+    },
+    "Required": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obligatoire"
           }
         }
       }
@@ -1983,6 +2053,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Application autonome"
+          }
+        }
+      }
+    },
+    "Start games without inserting coins. Applies to Neo Geo games run with FinalBurn Neo.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancez les parties sans insérer de pièces. S’applique aux jeux Neo Geo lancés avec FinalBurn Neo."
           }
         }
       }

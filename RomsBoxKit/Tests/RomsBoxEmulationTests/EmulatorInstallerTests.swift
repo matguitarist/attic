@@ -127,11 +127,27 @@ struct EmulatorInstallerTests {
     }
 }
 
+struct DolphinReleaseFeedTests {
+    @Test func picksTheMacOSDiskImage() {
+        let json = """
+        {"shortrev": "2609a", "artifacts": [
+          {"system": "Linux x86_64 (Flatpak)", "url": "https://dl.dolphin-emu.org/releases/2609a/dolphin-2609a-x86_64.flatpak"},
+          {"system": "macOS (ARM/Intel Universal)", "url": "https://dl.dolphin-emu.org/releases/2609a/dolphin-2609a-universal.dmg"},
+          {"system": "Windows x64", "url": "https://dl.dolphin-emu.org/releases/2609a/dolphin-2609a-x64.7z"}
+        ]}
+        """
+        #expect(EmulatorInstaller.macOSDiskImageURL(inDolphinReleaseFeed: Data(json.utf8))?.absoluteString
+            == "https://dl.dolphin-emu.org/releases/2609a/dolphin-2609a-universal.dmg")
+        #expect(EmulatorInstaller.macOSDiskImageURL(inDolphinReleaseFeed: Data("<html>".utf8)) == nil)
+    }
+}
+
 struct EmulatorCatalogTests {
-    @Test func everyTaxonomySystemHasARecommendedCore() {
+    @Test func everyTaxonomySystemHasAnEmulator() {
         for system in SystemTaxonomy.allSystems {
             let recommendation = EmulatorCatalog.recommendation(for: system.canonicalID)
-            #expect(recommendation?.recommendedCore != nil, "No recommended core for \(system.canonicalID.rawValue)")
+            let hasEmulator = recommendation?.recommendedCore != nil || recommendation?.standalone.isEmpty == false
+            #expect(hasEmulator, "No emulator for \(system.canonicalID.rawValue)")
         }
     }
 

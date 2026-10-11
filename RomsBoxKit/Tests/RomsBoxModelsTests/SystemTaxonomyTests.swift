@@ -84,4 +84,18 @@ import Testing
         let allIDs = SystemTaxonomy.allSystems.flatMap(\.retroArchSystemIDs)
         #expect(allIDs.count == Set(allIDs).count)
     }
+
+    @Test func newFoldersAreRecognizedWithTheirCategory() {
+        #expect(SystemTaxonomy.system(forShortName: "triforce")?.category == .arcade)
+        #expect(SystemTaxonomy.system(forShortName: "neogeo")?.category == .arcade)
+        #expect(SystemTaxonomy.system(forShortName: "virtualboy")?.category == .handheld)
+    }
+
+    @Test func handheldsAndConsolesAreCategorized() {
+        #expect(SystemTaxonomy.definition(for: .gba)?.category == .handheld)
+        #expect(SystemTaxonomy.definition(for: .gamegear)?.category == .handheld)
+        #expect(SystemTaxonomy.definition(for: .atarilynx)?.category == .handheld)
+        #expect(SystemTaxonomy.definition(for: .snes)?.category == .console)
+        #expect(SystemTaxonomy.definition(for: .pcengine)?.category == .console)
+    }
 }

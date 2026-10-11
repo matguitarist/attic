@@ -12,16 +12,16 @@ struct ScreenScraperSettingsView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Link("Request API access on screenscraper.fr", destination: URL(string: "https://www.screenscraper.fr/forumsujets.php?frub=12")!)
-                TextField("Dev ID", text: $credentialsStore.devID)
-                SecureField("Dev Password", text: $credentialsStore.devPassword)
+                TextField("Dev ID", text: $credentialsStore.devID, prompt: Text("Required"))
+                SecureField("Dev Password", text: $credentialsStore.devPassword, prompt: Text("Required"))
             }
 
             Section("Your Account (optional)") {
                 Text("Adding your own ScreenScraper member login raises your scrape quota and concurrent-thread limit.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
-                TextField("Username", text: $credentialsStore.userID)
-                SecureField("Password", text: $credentialsStore.userPassword)
+                TextField("Username", text: $credentialsStore.userID, prompt: Text("Optional"))
+                SecureField("Password", text: $credentialsStore.userPassword, prompt: Text("Optional"))
             }
 
             Section {
@@ -33,7 +33,6 @@ struct ScreenScraperSettingsView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(width: 460)
+        .formStyle(.grouped)
     }
 }

@@ -111,6 +111,7 @@ struct BigBoxView: View {
             BigBoxSection(selection: .recentlyPlayed, title: String(localized: "Recently Played"))
         ] + systems
             .filter { $0.gameCount > 0 }
+            .orderedByCategory()
             .map { BigBoxSection(selection: .system($0.systemID), title: $0.displayName) }
     }
 

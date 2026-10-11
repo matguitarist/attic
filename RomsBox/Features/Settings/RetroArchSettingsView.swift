@@ -39,7 +39,6 @@ struct RetroArchSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 620, height: 560)
         .fileImporter(isPresented: $isChoosingApp, allowedContentTypes: [.application]) { result in
             if case .success(let url) = result {
                 retroArchStore.installURL = url

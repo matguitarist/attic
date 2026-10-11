@@ -57,7 +57,7 @@ public struct ESDELibraryImporter: LibraryImporter {
         let systemName = systemFolderURL.lastPathComponent
         let resolvedMediaRoot = mediaRoot(forSystemFolderURL: systemFolderURL)
             ?? candidateRoots(forSystemFolderURL: systemFolderURL)[0]
-        let mediaResolver = ESDEMediaResolver(esdeRoot: resolvedMediaRoot, systemName: systemName)
+        let mediaResolver = ESDEMediaResolver(esdeRoot: resolvedMediaRoot, systemName: systemName, systemFolder: systemFolderURL)
 
         var games: [ImportedGameRecord] = []
         if let gamelistURL = gamelistURL(forSystemFolderURL: systemFolderURL),

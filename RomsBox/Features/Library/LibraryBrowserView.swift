@@ -147,7 +147,7 @@ struct LibraryBrowserView: View {
     /// Same order the sidebar lists them in, wrapping at either end so a
     /// shoulder button can cycle through everything without a dead stop.
     private func stepSection(by offset: Int) {
-        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed] + systems.map { .system($0.systemID) }
+        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed] + systems.orderedByCategory().map { .system($0.systemID) }
         let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
         let count = sections.count
         selection = sections[((currentIndex + offset) % count + count) % count]

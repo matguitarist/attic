@@ -24,6 +24,45 @@ struct EmulationFolderTests {
         #expect(EmulationFolder.defaultRoot(romsRoots: [other]).path == expected)
     }
 
+    @Test func coreOptionsReplaceExistingKeysAndAppendNewOnes() throws {
+        try FileManager.default.createDirectory(at: folder.retroArchConfigDirectory, withIntermediateDirectories: true)
+        try "fbneo-neogeo-mode = \"DIPSWITCH\"\nfbneo-dipswitch-mslug-Free_play = \"Off\"\n"
+            .write(to: folder.retroArchCoreOptionsFile, atomically: true, encoding: .utf8)
+
+        try folder.setRetroArchCoreOptions(["fbneo-dipswitch-mslug-Free_play": "On", "fbneo-dipswitch-kof98-Free_play": "On"])
+
+        let contents = try String(contentsOf: folder.retroArchCoreOptionsFile, encoding: .utf8)
+        #expect(contents == """
+        fbneo-neogeo-mode = "DIPSWITCH"
+        fbneo-dipswitch-mslug-Free_play = "On"
+        fbneo-dipswitch-kof98-Free_play = "On"
+
+        """)
+    }
+
+    @Test func coreOptionsCreateTheFileWhenMissing() throws {
+        try folder.setRetroArchCoreOptions(["a": "1"])
+        #expect(try String(contentsOf: folder.retroArchCoreOptionsFile, encoding: .utf8) == "a = \"1\"\n")
+    }
+
+    @Test func neoGeoFreePlayTargetsTheRomsetWithFinalBurnNeoOnly() {
+        let rom = URL(fileURLWithPath: "/ROMs/neogeo/mslug.zip")
+        func options(_ system: CanonicalSystemID, _ core: String, freePlay: Bool = true) -> [String: String] {
+            CoreLaunchOptions.options(system: system, coreIdentifier: core, romURL: rom, neoGeoFreePlay: freePlay)
+        }
+        #expect(options(.neogeo, "fbneo_libretro") == ["fbneo-dipswitch-mslug-Free_play": "On"])
+        #expect(options(.neogeo, "fbneo_libretro", freePlay: false) == ["fbneo-dipswitch-mslug-Free_play": "Off"])
+        #expect(options(.neogeo, "geolith_libretro").isEmpty)
+        #expect(options(.snes, "fbneo_libretro").isEmpty)
+    }
+
+    @Test func virtualBoyAlwaysTurnsOffTheOpenGLOnlyVRMode() {
+        let options = CoreLaunchOptions.options(
+            system: .virtualboy, coreIdentifier: "mednafen_vb_libretro", romURL: URL(fileURLWithPath: "/g.vb"), neoGeoFreePlay: true
+        )
+        #expect(options == ["vb_vr": "disabled"])
+    }
+
     @Test func retroArchPathsConfigPointsEverythingIntoTheFolderPerSystem() {
         let config = folder.retroArchPathsConfig(for: .snes)
         #expect(config.contains("system_directory = \"\(folder.bios.path)\""))

@@ -51,6 +51,16 @@
         }
       }
     },
+    "Couldn't find the latest %@ release for macOS.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de trouver la dernière version de %@ pour macOS."
+          }
+        }
+      }
+    },
     "Couldn't find the latest RetroArch release on libretro's site.": {
       "localizations": {
         "fr": {
@@ -67,6 +77,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de décompresser le téléchargement : %@"
+          }
+        }
+      }
+    },
+    "Current MAME; needs romsets from the same MAME version.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MAME actuel ; demande des romsets de la même version de MAME."
           }
         }
       }
@@ -217,6 +237,16 @@
         }
       }
     },
+    "Neo Geo only, highly accurate.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neo Geo uniquement, très précis."
+          }
+        }
+      }
+    },
     "The 3DO core.": {
       "localizations": {
         "fr": {
@@ -253,6 +283,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Dreamcast."
+          }
+        }
+      }
+    },
+    "The GameCube and Wii emulator, which also runs Triforce arcade games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur GameCube et Wii, qui fait aussi tourner les jeux d’arcade Triforce."
+          }
+        }
+      }
+    },
+    "The Virtual Boy core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le cœur Virtual Boy."
           }
         }
       }
@@ -313,6 +363,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur Lynx de référence."
+          }
+        }
+      }
+    },
+    "The reference Neo Geo and arcade emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Neo Geo et arcade de référence."
           }
         }
       }

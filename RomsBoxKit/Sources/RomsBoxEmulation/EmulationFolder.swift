@@ -95,7 +95,7 @@ public struct EmulationFolder: Sendable, Hashable {
             ("rgui_config_directory", retroArchConfigDirectory.appending(path: "overrides").path),
             ("input_remapping_directory", retroArchConfigDirectory.appending(path: "remaps").path),
             ("global_core_options", "true"),
-            ("core_options_path", retroArchConfigDirectory.appending(path: "retroarch-core-options.cfg").path)
+            ("core_options_path", retroArchCoreOptionsFile.path)
         ]
         if quitCombo {
             settings += [("input_quit_gamepad_combo", "4"), ("quit_press_twice", "false")]
@@ -113,6 +113,29 @@ public struct EmulationFolder: Sendable, Hashable {
         }
         try retroArchPathsConfig(for: system, quitCombo: quitCombo).write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
         return (retroArchConfigFile, retroArchPathsConfigFile)
+    }
+
+    public var retroArchCoreOptionsFile: URL { retroArchConfigDirectory.appending(path: "retroarch-core-options.cfg") }
+
+    /// Sets keys in RetroArch's shared core options file (`key = "value"`
+    /// lines), adding any that are missing and leaving every other line as
+    /// it is. RetroArch reads the file when the core starts and writes the
+    /// values back on exit, so they stick.
+    public func setRetroArchCoreOptions(_ options: [String: String]) throws {
+        guard !options.isEmpty else { return }
+        let file = retroArchCoreOptionsFile
+        var lines = ((try? String(contentsOf: file, encoding: .utf8)) ?? "").components(separatedBy: "\n")
+        if lines.last == "" { lines.removeLast() }
+        for (key, value) in options.sorted(by: { $0.key < $1.key }) {
+            let line = "\(key) = \"\(value)\""
+            if let index = lines.firstIndex(where: { $0.split(separator: "=", maxSplits: 1).first?.trimmingCharacters(in: .whitespaces) == key }) {
+                lines[index] = line
+            } else {
+                lines.append(line)
+            }
+        }
+        try FileManager.default.createDirectory(at: retroArchConfigDirectory, withIntermediateDirectories: true)
+        try (lines.joined(separator: "\n") + "\n").write(to: file, atomically: true, encoding: .utf8)
     }
 
     /// Starts RomsBox's RetroArch config from the user's existing one, so

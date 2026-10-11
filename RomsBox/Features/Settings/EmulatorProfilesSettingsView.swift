@@ -49,7 +49,7 @@ struct EmulatorProfilesSettingsView: View {
             Button("Add Custom Emulator…") { isPresentingNewProfile = true }
         }
         .padding(20)
-        .frame(width: 460, height: 360)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .sheet(isPresented: $isPresentingNewProfile) {
             EmulatorProfileEditorView(
                 title: "New Custom Emulator",

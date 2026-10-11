@@ -4,9 +4,15 @@ import Foundation
 /// purely by filename against `<ES-DE root>/downloaded_media/<system>/<type>/`,
 /// so resolving art means probing the filesystem, unlike Batocera where the
 /// path comes straight out of the XML.
+///
+/// Falls back to Batocera-style media kept *inside* the ROM folder
+/// (`<system>/images/<rom>-boxart.png`, `<system>/videos/<rom>-video.mp4`),
+/// which libraries assembled from Batocera packs often carry even when the
+/// rest of the layout is ES-DE's.
 struct ESDEMediaResolver {
     let esdeRoot: URL
     let systemName: String
+    var systemFolder: URL? = nil
 
     private static let imageExtensions = ["png", "jpg", "jpeg"]
     private static let videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"]
@@ -14,10 +20,17 @@ struct ESDEMediaResolver {
     /// game: a generated `miximage` composite is preferred, falling back to
     /// progressively less-composed art.
     private static let coverArtPreferenceOrder = ["miximages", "covers", "titlescreens", "screenshots"]
+    /// Batocera's `-<suffix>` image names, box art first.
+    private static let inFolderCoverSuffixes = ["boxart", "thumb", "image", "mix"]
 
     func resolveCoverArt(romNameNoExt: String) -> URL? {
         for mediaType in Self.coverArtPreferenceOrder {
             if let url = firstExistingFile(mediaType: mediaType, nameNoExt: romNameNoExt, extensions: Self.imageExtensions) {
+                return url
+            }
+        }
+        for suffix in Self.inFolderCoverSuffixes {
+            if let url = firstInFolderFile(subfolder: "images", name: "\(romNameNoExt)-\(suffix)", extensions: Self.imageExtensions) {
                 return url
             }
         }
@@ -30,6 +43,19 @@ struct ESDEMediaResolver {
 
     func resolveVideo(romNameNoExt: String) -> URL? {
         firstExistingFile(mediaType: "videos", nameNoExt: romNameNoExt, extensions: Self.videoExtensions)
+            ?? firstInFolderFile(subfolder: "videos", name: "\(romNameNoExt)-video", extensions: Self.videoExtensions)
+    }
+
+    private func firstInFolderFile(subfolder: String, name: String, extensions: [String]) -> URL? {
+        guard let systemFolder else { return nil }
+        let directory = systemFolder.appending(path: subfolder)
+        for ext in extensions {
+            let candidate = directory.appending(path: "\(name).\(ext)")
+            if FileManager.default.fileExists(atPath: candidate.path) {
+                return candidate
+            }
+        }
+        return nil
     }
 
     private func firstExistingFile(mediaType: String, nameNoExt: String, extensions: [String]) -> URL? {

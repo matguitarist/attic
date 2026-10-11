@@ -33,6 +33,13 @@ final class LaunchCoordinator {
         UserDefaults.standard.object(forKey: Self.quitComboEnabledKey) as? Bool ?? true
     }
 
+    /// "Neo Geo free play" (Settings › General) — see `CoreLaunchOptions`.
+    static let neoGeoFreePlayKey = "neoGeoFreePlay"
+
+    private var neoGeoFreePlay: Bool {
+        UserDefaults.standard.object(forKey: Self.neoGeoFreePlayKey) as? Bool ?? true
+    }
+
     func play(game: Game, retroArchStore: RetroArchSettingsStore) {
         guard state == .idle || isFailed else { return }
 
@@ -62,6 +69,27 @@ final class LaunchCoordinator {
             _ = await session.waitUntilExit()
             recordSessionEnded(game: game, playSession: playSession)
         }
+        Task { await handFocus(to: session) }
+    }
+
+    /// Brings the emulator to the front once it's up. Emulators activate
+    /// themselves when their window opens, but macOS only allows that while
+    /// RomsBox is still the app the user last touched: on a slow start
+    /// (FinalBurn Neo spends seconds loading the Neo Geo BIOS) a click or
+    /// controller press in RomsBox meanwhile keeps RomsBox in front, and
+    /// RetroArch then sits paused in the background ("pause when not
+    /// focused") with no controller input. RomsBox yields activation
+    /// explicitly instead. Stops after the first success, so switching away
+    /// mid-game is never undone.
+    private func handFocus(to session: RunningGameSession) async {
+        for _ in 0..<60 {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard session.isRunning else { return }
+            guard let app = NSRunningApplication(processIdentifier: session.processIdentifier) else { continue }
+            if app.isActive { return }
+            NSApp.yieldActivation(to: app)
+            app.activate()
+        }
     }
 
     private func launch(
@@ -77,11 +105,19 @@ final class LaunchCoordinator {
             // Zipped ROMs need resolving to a real extracted file first —
             // see ZippedROMExtractor for why passing the zip straight to
             // RetroArch's command line is unreliable.
-            let romURL = zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
+            // Arcade ROMs are multi-file sets the core must receive as the
+            // archive itself (FinalBurn Neo reads the zip) — never extract.
+            let systemID = CanonicalSystemID(game.systemCanonicalID)
+            let romURL = SystemTaxonomy.definition(for: systemID)?.category == .arcade
+                ? game.romAbsoluteURL
+                : zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
-            let (configURL, appendConfigURL) = try retroArchStore.emulationFolderStore.folder
-                .prepareRetroArchLaunch(for: CanonicalSystemID(game.systemCanonicalID), quitCombo: quitComboEnabled)
+            let folder = retroArchStore.emulationFolderStore.folder
+            let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(for: systemID, quitCombo: quitComboEnabled)
+            try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
+                system: systemID, coreIdentifier: identifier, romURL: game.romAbsoluteURL, neoGeoFreePlay: neoGeoFreePlay
+            ))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
                 .launch(coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL)
 

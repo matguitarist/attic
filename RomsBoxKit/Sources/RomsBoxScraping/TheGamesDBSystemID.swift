@@ -23,6 +23,13 @@ public enum TheGamesDBSystemID {
         .atarilynx: 4924,
         .atarijaguar: 28,
         .pcengine: 34,
+        .virtualboy: 4918,
+        .neogeo: 24,
+        // TheGamesDB files every CPS game under its generic Arcade platform.
+        .cps1: 23, .cps2: 23, .cps3: 23,
+        // TheGamesDB has no Triforce platform; its generic Arcade one works
+        // since matching is by title.
+        .triforce: 23,
         .pcenginecd: 4955,
         .pcfx: 4930,
         // No SuperGrafx entry: confirmed TheGamesDB has no distinct

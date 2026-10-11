@@ -9,6 +9,7 @@ struct GeneralSettingsView: View {
     @State private var isChoosingEmulationFolder = false
     @AppStorage(BigBoxView.startInBigBoxKey) private var startsInBigBox = false
     @AppStorage(LaunchCoordinator.quitComboEnabledKey) private var quitsWithSelectStart = true
+    @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
 
     var body: some View {
@@ -40,6 +41,16 @@ struct GeneralSettingsView: View {
                 Text("Big Box & Controllers")
             } footer: {
                 Text("Select + Start closes the running game from the controller — set up in RetroArch and DuckStation when RomsBox launches them. Games save normally on the way out.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Toggle("Neo Geo free play", isOn: $neoGeoFreePlay)
+            } header: {
+                Text("Arcade")
+            } footer: {
+                Text("Start games without inserting coins. Applies to Neo Geo games run with FinalBurn Neo.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -116,7 +127,6 @@ struct GeneralSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 620, height: 560)
         .fileImporter(isPresented: $isChoosingFolder, allowedContentTypes: [.folder]) { result in
             if case .success(let url) = result {
                 romsRootsStore.addRoot(url)

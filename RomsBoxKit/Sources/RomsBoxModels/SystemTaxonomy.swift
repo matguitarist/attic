@@ -5,6 +5,15 @@ public enum LibraryFormat: String, Sendable, Codable, CaseIterable {
     case esde
 }
 
+/// What kind of machine a system is — groups the sidebar and Big Box.
+/// Declaration order is display order.
+public enum SystemCategory: String, Sendable, Hashable, CaseIterable {
+    case console
+    case handheld
+    case arcade
+    case computer
+}
+
 /// One MVP system's identity across the three vocabularies that need to be
 /// reconciled: Batocera/RetroBat's folder short-name, ES-DE's folder
 /// short-name, and RetroArch core `.info` files' `systemid` field.
@@ -19,19 +28,22 @@ public struct SystemDefinition: Sendable, Hashable {
     /// the first entry is the confirmed value, later entries are defensive
     /// fallback aliases in case a different installed core disagrees.
     public let retroArchSystemIDs: [String]
+    public let category: SystemCategory
 
     public init(
         canonicalID: CanonicalSystemID,
         displayName: String,
         batoceraShortName: String,
         esdeShortName: String,
-        retroArchSystemIDs: [String]
+        retroArchSystemIDs: [String],
+        category: SystemCategory = .console
     ) {
         self.canonicalID = canonicalID
         self.displayName = displayName
         self.batoceraShortName = batoceraShortName
         self.esdeShortName = esdeShortName
         self.retroArchSystemIDs = retroArchSystemIDs
+        self.category = category
     }
 }
 
@@ -80,7 +92,8 @@ public enum SystemTaxonomy {
             displayName: "Game Boy Advance",
             batoceraShortName: "gba",
             esdeShortName: "gba",
-            retroArchSystemIDs: ["game_boy_advance", "gba"]
+            retroArchSystemIDs: ["game_boy_advance", "gba"],
+            category: .handheld
         ),
         SystemDefinition(
             canonicalID: .mastersystem,
@@ -94,7 +107,8 @@ public enum SystemTaxonomy {
             displayName: "Sega Game Gear",
             batoceraShortName: "gamegear",
             esdeShortName: "gamegear",
-            retroArchSystemIDs: ["game_gear", "sega_game_gear"]
+            retroArchSystemIDs: ["game_gear", "sega_game_gear"],
+            category: .handheld
         ),
         SystemDefinition(
             canonicalID: .segacd,
@@ -150,7 +164,8 @@ public enum SystemTaxonomy {
             displayName: "Atari Lynx",
             batoceraShortName: "lynx",
             esdeShortName: "atarilynx",
-            retroArchSystemIDs: ["atari_lynx", "lynx"]
+            retroArchSystemIDs: ["atari_lynx", "lynx"],
+            category: .handheld
         ),
         SystemDefinition(
             canonicalID: .atarijaguar,
@@ -202,6 +217,54 @@ public enum SystemTaxonomy {
             batoceraShortName: "cdi",
             esdeShortName: "cdimono1",
             retroArchSystemIDs: ["cd_i", "cdi", "philips_cd_i"]
+        ),
+        SystemDefinition(
+            canonicalID: .virtualboy,
+            displayName: "Nintendo Virtual Boy",
+            batoceraShortName: "virtualboy",
+            esdeShortName: "virtualboy",
+            retroArchSystemIDs: ["virtual_boy", "virtualboy"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .neogeo,
+            displayName: "SNK Neo Geo",
+            batoceraShortName: "neogeo",
+            esdeShortName: "neogeo",
+            retroArchSystemIDs: ["neogeo", "neo_geo"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .cps1,
+            displayName: "Capcom CPS-1",
+            batoceraShortName: "cps1",
+            esdeShortName: "cps1",
+            retroArchSystemIDs: [],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .cps2,
+            displayName: "Capcom CPS-2",
+            batoceraShortName: "cps2",
+            esdeShortName: "cps2",
+            retroArchSystemIDs: [],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .cps3,
+            displayName: "Capcom CPS-3",
+            batoceraShortName: "cps3",
+            esdeShortName: "cps3",
+            retroArchSystemIDs: [],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .triforce,
+            displayName: "Triforce",
+            batoceraShortName: "triforce",
+            esdeShortName: "triforce",
+            retroArchSystemIDs: [],
+            category: .arcade
         )
     ]
 

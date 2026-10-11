@@ -52,6 +52,7 @@ public struct EmulatorInstaller: Sendable {
         case extractionFailed(String)
         case missingFileInArchive(String)
         case retroArchVersionNotFound
+        case releaseNotFound(String)
 
         public var errorDescription: String? {
             switch self {
@@ -63,6 +64,8 @@ public struct EmulatorInstaller: Sendable {
                 String(localized: "The download didn't contain \(name).", bundle: .module)
             case .retroArchVersionNotFound:
                 String(localized: "Couldn't find the latest RetroArch release on libretro's site.", bundle: .module)
+            case .releaseNotFound(let name):
+                String(localized: "Couldn't find the latest \(name) release for macOS.", bundle: .module)
             }
         }
     }
@@ -140,25 +143,47 @@ public struct EmulatorInstaller: Sendable {
     // MARK: - Standalone emulators
 
     /// Each standalone emulator gets its own folder (`Emulators/<Name>/`).
-    /// Only that copy counts as installed: a copy elsewhere (say, one the
-    /// user put in /Applications themselves) keeps its data in ~/Library and
-    /// isn't the portable install RomsBox manages.
     public func appDirectory(for emulator: StandaloneEmulator) -> URL {
         paths.applicationsDirectory.appending(path: emulator.name, directoryHint: .isDirectory)
     }
 
+    /// The copy in the Emulation folder, or — only for emulators without a
+    /// portable setup — one the user installed in /Applications or
+    /// ~/Applications. For portable emulators a copy elsewhere keeps its
+    /// data in ~/Library, so it isn't the install RomsBox manages; for the
+    /// others the data lives in ~/Library either way, so any copy will do.
     public func installedAppURL(for emulator: StandaloneEmulator) -> URL? {
-        let app = appDirectory(for: emulator).appending(path: emulator.appBundleName)
-        return FileManager.default.fileExists(atPath: app.appending(path: emulator.executableRelativePath).path) ? app : nil
+        var candidates = [appDirectory(for: emulator)]
+        if emulator.portableHome == nil {
+            candidates += [
+                URL(fileURLWithPath: "/Applications", isDirectory: true),
+                FileManager.default.homeDirectoryForCurrentUser.appending(path: "Applications", directoryHint: .isDirectory)
+            ]
+        }
+        return candidates
+            .map { $0.appending(path: emulator.appBundleName) }
+            .first { FileManager.default.fileExists(atPath: $0.appending(path: emulator.executableRelativePath).path) }
     }
 
     @discardableResult
     @concurrent public func installStandalone(_ emulator: StandaloneEmulator) async throws -> URL {
-        let archive = try await downloader.download(from: emulator.downloadURL)
-        defer { try? FileManager.default.removeItem(at: archive) }
-
         let destination = appDirectory(for: emulator)
-        let staging = try extractToStaging(archive, near: destination)
+        let staging: URL
+        switch emulator.archive {
+        case .zip:
+            let archive = try await downloader.download(from: emulator.downloadURL)
+            defer { try? FileManager.default.removeItem(at: archive) }
+            staging = try extractToStaging(archive, near: destination)
+        case .dolphinReleaseFeed:
+            let feed = try await downloader.download(from: emulator.downloadURL)
+            defer { try? FileManager.default.removeItem(at: feed) }
+            guard let dmgURL = Self.macOSDiskImageURL(inDolphinReleaseFeed: try Data(contentsOf: feed)) else {
+                throw InstallError.releaseNotFound(emulator.name)
+            }
+            let dmg = try await downloader.download(from: dmgURL)
+            defer { try? FileManager.default.removeItem(at: dmg) }
+            staging = try Self.copyApp(named: emulator.appBundleName, fromDiskImage: dmg, near: destination)
+        }
         defer { try? FileManager.default.removeItem(at: staging) }
 
         let app = staging.appending(path: emulator.appBundleName)
@@ -184,26 +209,48 @@ public struct EmulatorInstaller: Sendable {
         let dmg = try await downloader.download(from: EmulatorCatalog.retroArchDownloadURL(version: version))
         defer { try? FileManager.default.removeItem(at: dmg) }
 
-        let mountPoint = FileManager.default.temporaryDirectory.appending(path: "romsbox-retroarch-\(UUID().uuidString)")
+        let destination = Self.retroArchInstallDirectory
+        let staging = try Self.copyApp(named: "RetroArch.app", fromDiskImage: dmg, near: destination)
+        defer { try? FileManager.default.removeItem(at: staging) }
+        return try moveIntoPlace(staging.appending(path: "RetroArch.app"), in: destination)
+    }
+
+    /// Mounts `dmg` read-only and copies `appName` off it into a new
+    /// staging directory near `destination` (returned), so a failure never
+    /// leaves a half-copied app in place.
+    private static func copyApp(named appName: String, fromDiskImage dmg: URL, near destination: URL) throws -> URL {
+        let mountPoint = FileManager.default.temporaryDirectory.appending(path: "romsbox-dmg-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: mountPoint, withIntermediateDirectories: true)
-        try Self.run("/usr/bin/hdiutil", ["attach", dmg.path, "-nobrowse", "-readonly", "-noautoopen", "-mountpoint", mountPoint.path])
+        try run("/usr/bin/hdiutil", ["attach", dmg.path, "-nobrowse", "-readonly", "-noautoopen", "-mountpoint", mountPoint.path])
         defer {
-            try? Self.run("/usr/bin/hdiutil", ["detach", mountPoint.path, "-force"])
+            try? run("/usr/bin/hdiutil", ["detach", mountPoint.path, "-force"])
             try? FileManager.default.removeItem(at: mountPoint)
         }
 
-        let app = mountPoint.appending(path: "RetroArch.app")
+        let app = mountPoint.appending(path: appName)
         guard FileManager.default.fileExists(atPath: app.path) else {
-            throw InstallError.missingFileInArchive("RetroArch.app")
+            throw InstallError.missingFileInArchive(appName)
         }
-        // Copied (not moved) off the read-only image, via a staging copy so
-        // a failure never leaves a half-copied RetroArch.app in place.
-        let destination = Self.retroArchInstallDirectory
-        let staging = try Self.makeStagingDirectory(near: destination)
-        defer { try? FileManager.default.removeItem(at: staging) }
-        let stagedApp = staging.appending(path: "RetroArch.app")
-        try Self.run("/usr/bin/ditto", [app.path, stagedApp.path])
-        return try moveIntoPlace(stagedApp, in: destination)
+        let staging = try makeStagingDirectory(near: destination)
+        do {
+            try run("/usr/bin/ditto", [app.path, staging.appending(path: appName).path])
+        } catch {
+            try? FileManager.default.removeItem(at: staging)
+            throw error
+        }
+        return staging
+    }
+
+    /// The macOS download in Dolphin's release feed — the same JSON
+    /// Dolphin's own updater reads.
+    static func macOSDiskImageURL(inDolphinReleaseFeed data: Data) -> URL? {
+        struct Feed: Decodable {
+            struct Artifact: Decodable { let system: String; let url: URL }
+            let artifacts: [Artifact]
+        }
+        return (try? JSONDecoder().decode(Feed.self, from: data))?.artifacts
+            .first { $0.system.hasPrefix("macOS") && $0.url.pathExtension == "dmg" }?
+            .url
     }
 
     /// RetroArch is a regular app the user may also open on its own, so it

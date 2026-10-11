@@ -24,10 +24,12 @@ struct LibrarySidebarView: View {
                     .tag(LibrarySelection.recentlyPlayed)
             }
 
-            if !systems.isEmpty {
-                Section("Systems") {
-                    ForEach(systems) { system in
-                        Label(system.displayName, systemImage: "gamecontroller")
+            // One section per kind of machine (Consoles, Handhelds, Arcade,
+            // Computers), only for kinds the library actually has.
+            ForEach(systems.groupedByCategory(), id: \.category) { group in
+                Section(group.category.title) {
+                    ForEach(group.systems) { system in
+                        Label(system.displayName, systemImage: group.category.symbolName)
                             .lineLimit(1)
                             .badge(system.gameCount)
                             .tag(LibrarySelection.system(system.systemID))

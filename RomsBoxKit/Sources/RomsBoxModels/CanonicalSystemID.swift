@@ -55,6 +55,17 @@ public extension CanonicalSystemID {
     static let pcfx = CanonicalSystemID("pcfx")
     static let supergrafx = CanonicalSystemID("supergrafx")
 
+    // Nintendo
+    static let virtualboy = CanonicalSystemID("virtualboy")
+
+    // Arcade
+    static let neogeo = CanonicalSystemID("neogeo")
+    static let cps1 = CanonicalSystemID("cps1")
+    static let cps2 = CanonicalSystemID("cps2")
+    static let cps3 = CanonicalSystemID("cps3")
+    /// Sega / Namco / Nintendo's GameCube-based arcade board.
+    static let triforce = CanonicalSystemID("triforce")
+
     // Other
     static let threedo = CanonicalSystemID("3do")
     static let cdi = CanonicalSystemID("cdi")

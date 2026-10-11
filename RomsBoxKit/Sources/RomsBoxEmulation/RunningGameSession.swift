@@ -16,6 +16,7 @@ public final class RunningGameSession: @unchecked Sendable {
     }
 
     public var isRunning: Bool { process.isRunning }
+    public var processIdentifier: pid_t { process.processIdentifier }
 
     public func waitUntilExit() async -> Int32 {
         await withCheckedContinuation { continuation in

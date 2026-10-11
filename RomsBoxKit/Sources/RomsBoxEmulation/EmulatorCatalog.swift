@@ -28,6 +28,9 @@ public struct StandaloneEmulator: Sendable, Hashable, Identifiable {
     public enum Archive: Sendable, Hashable {
         /// A .zip containing the .app at its root.
         case zip
+        /// `downloadURL` is Dolphin's release feed (JSON); the macOS disk
+        /// image it links to is downloaded and the .app copied off it.
+        case dolphinReleaseFeed
     }
 
     public let id: String
@@ -196,12 +199,35 @@ public enum EmulatorCatalog {
         ("LargeMotor", "LargeMotor"), ("SmallMotor", "SmallMotor")
     ].map { PortableHome.Setting("Pad1", $0.0, "SDL-0/\($0.1)", onlyIfMissing: true) }
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation]
+    /// Triforce support was merged into mainline Dolphin, so the regular
+    /// release runs both GameCube and Triforce games. No `portableHome`:
+    /// Dolphin keeps its data in ~/Library/Application Support/Dolphin,
+    /// where any controller setup made in Dolphin itself already lives.
+    public static let dolphin = StandaloneEmulator(
+        id: "dolphin",
+        name: "Dolphin",
+        summary: String(localized: "The GameCube and Wii emulator, which also runs Triforce arcade games.", bundle: .module),
+        appBundleName: "Dolphin.app",
+        executableRelativePath: "Contents/MacOS/Dolphin",
+        // -b exits Dolphin when the game stops; -C overrides a setting for
+        // this run only, without saving it.
+        argumentTemplate: "-b -C Dolphin.Display.Fullscreen=True -e {romPath}",
+        downloadURL: URL(string: "https://dolphin-emu.org/update/latest/beta/")!,
+        archive: .dolphinReleaseFeed,
+        homepageURL: URL(string: "https://dolphin-emu.org")!,
+        license: "GPL-2.0-or-later",
+        systems: [.triforce],
+        portableHome: nil
+    )
+
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin]
 
     // MARK: - Per-system table
 
     private static let genesisPlusGX = RecommendedCore("genesis_plus_gx_libretro", "Genesis Plus GX", String(localized: "Highly accurate Sega 8/16-bit and Sega CD.", bundle: .module))
     private static let picoDrive = RecommendedCore("picodrive_libretro", "PicoDrive", String(localized: "Fast; the only option with 32X support.", bundle: .module))
+    private static let fbneo = RecommendedCore("fbneo_libretro", "FinalBurn Neo", String(localized: "The reference Neo Geo and arcade emulator.", bundle: .module))
+    private static let mameCurrent = RecommendedCore("mame_libretro", "MAME", String(localized: "Current MAME; needs romsets from the same MAME version.", bundle: .module))
     private static let beetlePCE = RecommendedCore("mednafen_pce_libretro", "Beetle PCE", String(localized: "Accurate PC Engine, CD and SuperGrafx.", bundle: .module))
     private static let beetlePCEFast = RecommendedCore("mednafen_pce_fast_libretro", "Beetle PCE Fast", String(localized: "Lighter PC Engine core.", bundle: .module))
 
@@ -294,6 +320,27 @@ public enum EmulatorCatalog {
         ], standalone: [], bios: [
             BIOSRequirement("panafz10.bin", note: "Panasonic FZ-10; other 3DO BIOS revisions also work")
         ], prefersStandalone: false),
+        .init(systemID: .virtualboy, cores: [
+            RecommendedCore("mednafen_vb_libretro", "Beetle VB", String(localized: "The Virtual Boy core.", bundle: .module))
+        ], standalone: [], bios: [], prefersStandalone: false),
+
+        // FinalBurn Neo's info file lists only its generic arcade database,
+        // so the Neo Geo mapping comes from this table.
+        .init(systemID: .neogeo, cores: [
+            fbneo,
+            RecommendedCore("geolith_libretro", "Geolith", String(localized: "Neo Geo only, highly accurate.", bundle: .module))
+        ], standalone: [], bios: [
+            BIOSRequirement("neogeo.zip")
+        ], prefersStandalone: false),
+        // FinalBurn Neo's info file names only its generic arcade database,
+        // so these mappings also come from this table. Its romsets track
+        // current MAME's for these boards, which is what most CPS sets are.
+        .init(systemID: .cps1, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .cps2, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .cps3, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        // No libretro core runs Triforce games; Dolphin's own app does.
+        .init(systemID: .triforce, cores: [], standalone: [dolphin], bios: [], prefersStandalone: true),
+
         .init(systemID: .cdi, cores: [
             RecommendedCore("same_cdi_libretro", "SAME CDi", String(localized: "The CD-i core.", bundle: .module))
         ], standalone: [], bios: [

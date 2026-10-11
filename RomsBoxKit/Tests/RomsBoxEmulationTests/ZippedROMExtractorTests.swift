@@ -33,6 +33,39 @@ import Testing
         return zipURL
     }
 
+    /// A real 7-Zip archive, written by macOS's bsdtar — the same tool the
+    /// extractor reads it back with.
+    private func makeSevenZip(named archiveName: String, containing entries: [String: Data]) throws -> URL {
+        let workDir = FileManager.default.temporaryDirectory.appending(path: "romsbox-7z-src-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: workDir, withIntermediateDirectories: true)
+        for (name, data) in entries {
+            try data.write(to: workDir.appending(path: name))
+        }
+        let archiveURL = workDir.appending(path: archiveName)
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        process.currentDirectoryURL = workDir
+        process.arguments = ["--format", "7zip", "-cf", archiveURL.path] + Array(entries.keys)
+        process.standardOutput = Pipe()
+        process.standardError = Pipe()
+        try process.run()
+        process.waitUntilExit()
+        return archiveURL
+    }
+
+    @Test func singleFileSevenZipExtractsToTheRealFile() throws {
+        let rom = Data("virtual boy rom".utf8)
+        let archive = try makeSevenZip(named: "Golf (USA).7z", containing: ["Golf (USA).vb": rom])
+        let resolved = makeExtractor(cacheDirectory: isolatedCacheDirectory()).resolvedROMURL(for: archive)
+        #expect(resolved.lastPathComponent == "Golf (USA).vb")
+        #expect(try Data(contentsOf: resolved) == rom)
+    }
+
+    @Test func multiFileSevenZipIsLeftUnresolved() throws {
+        let archive = try makeSevenZip(named: "Disc.7z", containing: ["a.bin": Data([1]), "a.cue": Data([2])])
+        #expect(makeExtractor(cacheDirectory: isolatedCacheDirectory()).resolvedROMURL(for: archive) == archive)
+    }
+
     @Test func nonZipURLIsReturnedUnchanged() {
         let extractor = makeExtractor(cacheDirectory: isolatedCacheDirectory())
         let rom = URL(fileURLWithPath: "/tmp/Super Metroid.sfc")

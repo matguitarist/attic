@@ -29,7 +29,9 @@ public enum LibretroDatabase {
         .supergrafx: ["NEC - PC Engine SuperGrafx"],
         .pcfx: ["NEC - PC-FX"],
         .threedo: ["The 3DO Company - 3DO"],
-        .cdi: ["Philips - CD-i"]
+        .cdi: ["Philips - CD-i"],
+        .virtualboy: ["Nintendo - Virtual Boy"],
+        .neogeo: ["SNK - Neo Geo"]
     ]
 
     private static let systemByName: [String: CanonicalSystemID] = {

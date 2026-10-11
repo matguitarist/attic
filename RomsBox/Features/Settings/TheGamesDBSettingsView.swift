@@ -12,7 +12,7 @@ struct TheGamesDBSettingsView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Link("Get an API key on thegamesdb.net", destination: URL(string: "https://thegamesdb.net/")!)
-                SecureField("API Key", text: $credentialsStore.apiKey)
+                SecureField("API Key", text: $credentialsStore.apiKey, prompt: Text("Required"))
             }
 
             Section {
@@ -30,7 +30,6 @@ struct TheGamesDBSettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(20)
-        .frame(width: 460)
+        .formStyle(.grouped)
     }
 }
