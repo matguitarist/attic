@@ -3,6 +3,28 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.9.0</title>
+            <pubDate>Mon, 12 Oct 2026 09:22:57 -0400</pubDate>
+            <sparkle:version>12</sparkle:version>
+            <sparkle:shortVersionString>1.9.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>Attic now has its own icon, and every system its logo.</p>
+<ul>
+<li>System Settings: right-click a system, or use the button in the right panel, to choose how its games look and play. &quot;Default&quot; shows what the emulator does when left alone.</li>
+<li>Looks: sharp pixels, CRT TV (flat or curved), handheld LCD, none, any preset from RetroArch&#x27;s shader library, or your own .slangp file.</li>
+<li>Retro look by default (Settings › Emulators › Shaders): CRT scanlines for 2D consoles and arcade, an LCD grid for handhelds.</li>
+<li>3D systems: internal resolution, widescreen, and PGXP geometry correction for PlayStation, in RetroArch cores, DuckStation and Dolphin.</li>
+<li>Integer scaling, run-ahead to cut input lag, rewind, resume where you left off, no more sprite flicker on 8- and 16-bit consoles, and Game Boy Advance screen colors.</li>
+<li>Attic can download libretro&#x27;s shader pack and tells you when there&#x27;s a newer one.</li>
+<li>The right panel shows the selected system: its logo, emulator, BIOS files (found or missing), play history, and buttons for System Settings and scraping.</li>
+<li>System logos by Dan Patrick, also in Cabinet Mode and above each game&#x27;s details.</li>
+<li>Clicking an empty spot in the grid, or picking another system, deselects the game.</li>
+<li>The toolbar no longer runs over the right panel.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.9.0/Attic-1.9.0.zip" length="10375459" type="application/octet-stream" sparkle:edSignature="Jyd9Dy+KXpn1u3MJV/cz3lJgnXJmwtTMYx1CSRWFGrmTm3T7/WK3RF5NAFK/JlJMDV9VKwgCtKTPuS0aUS89BQ=="/>
+        </item>
+        <item>
             <title>1.8.0</title>
             <pubDate>Mon, 12 Oct 2026 07:25:14 -0400</pubDate>
             <sparkle:version>11</sparkle:version>
