@@ -226,9 +226,7 @@ private struct SystemHelpView: View {
                 ForEach(requirements, id: \.fileName) { requirement in
                     HStack(alignment: .firstTextBaseline) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(requirement.fileName)
-                                .monospaced()
-                                .textSelection(.enabled)
+                            Tag(requirement.fileName)
                             Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
                                 .compactMap { $0 }
                                 .joined(separator: " · "))
@@ -313,7 +311,7 @@ enum SystemFacts {
         return seen
     }
 
-    /// "Any model works, for example SCPH-39001 (US), …" for a folder
+    /// "Any model works, for example scph39001.bin, …" for a folder
     /// requirement.
     static func supportedDumps(_ requirement: BIOSRequirement) -> String? {
         guard !requirement.supportedDumps.isEmpty else { return nil }

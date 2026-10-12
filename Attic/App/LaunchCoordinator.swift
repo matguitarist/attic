@@ -28,7 +28,7 @@ final class LaunchCoordinator {
         let game: Game
         let systemName: String
         let fileNames: [String]
-        /// "Any model works, for example SCPH-39001 (US), …", when Attic knows which dumps do.
+        /// "Any model works, for example scph39001.bin, …", when Attic knows which dumps do.
         let supportedDumps: String?
         /// Where the files go: the first missing one's folder.
         let folder: URL

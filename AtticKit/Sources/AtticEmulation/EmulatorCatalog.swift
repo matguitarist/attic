@@ -112,8 +112,8 @@ public struct BIOSRequirement: Sendable, Hashable {
     /// Cores that run without this file (they have a built-in replacement),
     /// for which a required file is only optional.
     public let notNeededBy: Set<String>
-    /// For a folder requirement: dumps known to work, by console model, so
-    /// the user knows what to look for.
+    /// For a folder requirement: dumps known to work, by their usual file
+    /// names, so the user knows what to look for.
     public let supportedDumps: [String]
 
     public init(_ fileName: String, required: Bool = true, note: String? = nil, notNeededBy: Set<String> = [], supportedDumps: [String] = []) {
@@ -509,7 +509,7 @@ public enum EmulatorCatalog {
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
-        .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["SCPH-39001 (US)", "SCPH-70012 (US)", "SCPH-77001 (US)", "SCPH-30004R (Europe)", "SCPH-70004 (Europe)", "SCPH-50000 (Japan)", "SCPH-77000 (Japan)"])], prefersStandalone: false),
+        .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
         .init(systemID: .msx, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Accurate MSX, MSX2 and MSX2+.", bundle: .module)), RecommendedCore("fmsx_libretro", "fMSX", String(localized: "Lighter MSX core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),

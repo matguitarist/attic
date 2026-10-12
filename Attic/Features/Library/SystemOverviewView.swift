@@ -161,9 +161,7 @@ struct SystemOverviewView: View {
                           systemImage: present ? "checkmark.circle.fill" : (requirement.required ? "exclamationmark.triangle.fill" : "circle"))
                         .foregroundStyle(present ? .green : (requirement.required ? .orange : .secondary))
                 } label: {
-                    Text(requirement.fileName)
-                        .monospaced()
-                        .textSelection(.enabled)
+                    Tag(requirement.fileName)
                     Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
                         .compactMap { $0 }
                         .joined(separator: " · "))
@@ -230,24 +228,33 @@ extension GameSystem {
     }
 }
 
-/// Short values (file types, console models) as small tags that wrap
+/// Short values (file types, BIOS file names) as small tags that wrap
 /// between each other, never inside one.
 struct TagList: View {
     let items: [String]
 
     var body: some View {
         FlowLayout(spacing: 4) {
-            ForEach(items, id: \.self) { item in
-                Text(verbatim: item)
-                    .monospaced()
-                    .font(.caption)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(.quaternary, in: .rect(cornerRadius: 4))
-                    .textSelection(.enabled)
-            }
+            ForEach(items, id: \.self) { Tag($0) }
         }
+    }
+}
+
+/// One file name, extension or model, set apart as a small tag.
+struct Tag: View {
+    let text: String
+
+    init(_ text: String) { self.text = text }
+
+    var body: some View {
+        Text(verbatim: text)
+            .monospaced()
+            .font(.caption)
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(.quaternary, in: .rect(cornerRadius: 4))
+            .textSelection(.enabled)
     }
 }
 
