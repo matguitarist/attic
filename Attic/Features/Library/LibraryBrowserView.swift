@@ -66,6 +66,19 @@ struct LibraryBrowserView: View {
             }
             .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
             .toolbar {
+                // The shown system's logo, bare: in a glass capsule it'd
+                // read as a button.
+                if let logo = selectedSystem?.systemID.logo {
+                    ToolbarSpacer(.flexible)
+                    ToolbarItem {
+                        logo
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: 220, maxHeight: 40)
+                            .accessibilityLabel(selectedSystem?.displayName ?? "")
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                }
                 ToolbarSpacer(.flexible)
                 ToolbarItem { inspectorToggle }
             }
@@ -148,20 +161,6 @@ struct LibraryBrowserView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        // The system's logo, bare: in a glass capsule it'd read as a button.
-        if let logo = selectedSystem?.systemID.logo {
-            ToolbarItem {
-                logo
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 220, maxHeight: 40)
-                    .accessibilityLabel(selectedSystem?.displayName ?? "")
-            }
-            .sharedBackgroundVisibility(.hidden)
-
-            ToolbarSpacer(.fixed)
-        }
-
         ToolbarItem {
             Slider(value: $cellScale, in: Self.cellScaleRange) {
                 Text("Cover Size")
