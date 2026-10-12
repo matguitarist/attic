@@ -3,6 +3,24 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.9.1</title>
+            <pubDate>Mon, 12 Oct 2026 13:33:35 -0400</pubDate>
+            <sparkle:version>13</sparkle:version>
+            <sparkle:shortVersionString>1.9.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Games no longer launch into a crash when a required BIOS is missing: Attic says which files are needed and opens the right folder (Play Anyway is there for dumps named differently).</li>
+<li>BIOS files show one Found/Missing row each on every system, and follow the emulator you chose (PCSX ReARMed and YabaSanshiro need fewer).</li>
+<li>PlayStation 2: PCSX2&#x27;s own Mac app replaces Play!, and PS2 BIOS dumps put straight in the BIOS folder are moved where PCSX2 looks for them.</li>
+<li>The system panel shows the ROM folder, file types, maker and year, and suggests an emulator to install when the system has none (in System Settings too).</li>
+<li>The sidebar groups systems by maker, with a sort menu next to the sidebar button (manufacturer, name, release year, number of games) and an option to hide systems with no games.</li>
+<li>Remove a system from the library (right-click, or System Settings); its files stay, and Settings › General can add it back.</li>
+<li>Each system&#x27;s ROMs folder gets a short _sysinfo.txt; Settings › General can move ES-DE&#x27;s and Batocera&#x27;s info files to the Trash.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.9.1/Attic-1.9.1.zip" length="10578406" type="application/octet-stream" sparkle:edSignature="wNjKi1eXbsE4jcZCdJu/4x33EKZ66EaJJJ3++Sq2aR8LMyS/300pDxim65WV5x2fnRvyqy0DR+dkursbJ6T/DA=="/>
+        </item>
+        <item>
             <title>1.9.0</title>
             <pubDate>Mon, 12 Oct 2026 09:22:57 -0400</pubDate>
             <sparkle:version>12</sparkle:version>
