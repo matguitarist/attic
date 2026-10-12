@@ -22,6 +22,12 @@ targets:
         excludes:
           - "Attic.entitlements"
           - "Info.plist"
+          - "Resources/AppIcon.icon"
+      # One file to Xcode (an Icon Composer document), not a folder of
+      # loose resources.
+      - path: Attic/Resources/AppIcon.icon
+        type: file
+        buildPhase: resources
     configFiles:
       Debug: Config/Signing.xcconfig
       Release: Config/Signing.xcconfig
@@ -29,11 +35,13 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.attic.app
         PRODUCT_NAME: Attic
-        MARKETING_VERSION: "1.8.0"
-        CURRENT_PROJECT_VERSION: "11"
+        MARKETING_VERSION: "1.9.0"
+        CURRENT_PROJECT_VERSION: "12"
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         ENABLE_HARDENED_RUNTIME: YES
+        # Attic/Resources/AppIcon.icon, made in the Icon Composer format.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Attic/Attic.entitlements
         GENERATE_INFOPLIST_FILE: YES
         # Merged into the generated one; holds the Sparkle keys.

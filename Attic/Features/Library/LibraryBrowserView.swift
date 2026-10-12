@@ -24,6 +24,7 @@ struct LibraryBrowserView: View {
 
     @State private var infoEditor = GameInfoEditor()
     @State private var collectionCoordinator = CollectionCoordinator()
+    @State private var systemSettingsEditor = SystemSettingsEditor()
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
 
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
@@ -94,6 +95,10 @@ struct LibraryBrowserView: View {
         }
         .sheet(item: $infoEditor.game) { game in
             EditGameInfoView(game: game)
+        }
+        .environment(systemSettingsEditor)
+        .sheet(item: $systemSettingsEditor.system) { system in
+            SystemSettingsView(system: system)
         }
         // A multi-selection belongs to what was showing when it was made.
         .onChange(of: selection) { multiSelection = [] }

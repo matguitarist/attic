@@ -82,6 +82,21 @@ public struct EmulatorInstaller: Sendable {
         self.downloader = downloader
     }
 
+    // MARK: - Shaders
+
+    /// Downloads libretro's slang shader pack into `directory`, replacing
+    /// any older copy.
+    @concurrent public func installShaderPack(into directory: URL) async throws {
+        let archive = try await downloader.download(from: EmulatorCatalog.slangShadersURL)
+        defer { try? FileManager.default.removeItem(at: archive) }
+        let staging = try extractToStaging(archive, near: directory)
+        defer { try? FileManager.default.removeItem(at: staging) }
+        guard FileManager.default.fileExists(atPath: staging.appending(path: "crt").path) else {
+            throw InstallError.missingFileInArchive("crt")
+        }
+        _ = try FileManager.default.replaceItemAt(directory, withItemAt: staging)
+    }
+
     // MARK: - RetroArch cores
 
     /// Downloads one core into Attic's cores directory, replacing any

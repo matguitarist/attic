@@ -21,6 +21,8 @@ public final class GameSystem {
     /// and backfilled for stores created before it existed by
     /// `LibraryStore.refreshGameCounts()`.
     public var gameCount: Int = 0
+    /// `SystemSettings`, JSON-encoded. `nil` until any is changed.
+    private var settingsData: Data? = nil
 
     @Relationship(deleteRule: .cascade, inverse: \Game.system)
     public var games: [Game] = []
@@ -44,6 +46,12 @@ extension GameSystem {
     public var systemID: CanonicalSystemID { CanonicalSystemID(canonicalID) }
     public var romsRootURL: URL { URL(fileURLWithPath: romsRootPath) }
     public var libraryFormat: LibraryFormat { LibraryFormat(rawValue: libraryFormatRaw) ?? .esde }
+
+    /// Per-system emulator settings (System Settings…).
+    public var settings: SystemSettings {
+        get { settingsData.flatMap { try? JSONDecoder().decode(SystemSettings.self, from: $0) } ?? SystemSettings() }
+        set { settingsData = newValue.isEmpty ? nil : try? JSONEncoder().encode(newValue) }
+    }
 
     public var defaultLaunchTarget: LaunchTargetReference? {
         get { defaultLaunchTargetData.flatMap { try? JSONDecoder().decode(LaunchTargetReference.self, from: $0) } }

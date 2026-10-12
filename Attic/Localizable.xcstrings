@@ -283,6 +283,26 @@
     "/": {
       "shouldTranslate": false
     },
+    "1 frame": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 image"
+          }
+        }
+      }
+    },
+    "2 frames": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 images"
+          }
+        }
+      }
+    },
     "A Dolphin already in your Applications folder is used as is; otherwise Attic installs the latest release from dolphin-emu.org.": {
       "localizations": {
         "fr": {
@@ -529,6 +549,22 @@
         }
       }
     },
+    "Applies when %@ games run in %@. “Default” leaves %@’s own setting as it is.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Applies when %1$@ games run in %2$@. “Default” leaves %3$@’s own setting as it is."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S’applique quand les jeux %1$@ tournent dans %2$@. « Par défaut » laisse le réglage de %3$@ tel quel."
+          }
+        }
+      }
+    },
     "Arcade": {
       "localizations": {
         "fr": {
@@ -585,6 +621,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Attic peut récupérer descriptions, dates de sortie et illustrations depuis ScreenScraper ou TheGamesDB. ScreenScraper identifie les jeux exactement par fichier ; TheGamesDB cherche par titre."
+          }
+        }
+      }
+    },
+    "Attic can’t change this emulator’s settings. Set them up in the emulator itself.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic ne peut pas modifier les réglages de cet émulateur. Configurez-les dans l’émulateur lui-même."
           }
         }
       }
@@ -729,6 +775,16 @@
         }
       }
     },
+    "CRT TV": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléviseur CRT"
+          }
+        }
+      }
+    },
     "Cabinet Mode": {
       "localizations": {
         "fr": {
@@ -865,6 +921,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez un dossier de ROM pour commencer. Attic reconnaît les bibliothèques organisées comme celles de Batocera, RetroBat ou ES-DE."
+          }
+        }
+      }
+    },
+    "Choose an emulator for %@ first, in Settings › Emulators.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez d’abord un émulateur pour %@, dans Réglages › Émulateurs."
           }
         }
       }
@@ -1145,6 +1211,16 @@
         }
       }
     },
+    "Curved CRT TV": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléviseur CRT bombé"
+          }
+        }
+      }
+    },
     "Custom Emulators": {
       "localizations": {
         "fr": {
@@ -1375,12 +1451,32 @@
         }
       }
     },
+    "Done": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
+          }
+        }
+      }
+    },
     "Double-click a game, press ⌘↩, or press the confirm button on a controller. The first time, set up emulators in Settings › Emulators — Set Up All Systems installs the recommended one for every system in your library.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Double-cliquez sur un jeu, appuyez sur ⌘↩ ou sur le bouton de validation d’une manette. La première fois, configurez les émulateurs dans Réglages › Émulateurs — Configurer tous les systèmes installe l’émulateur recommandé pour chaque système de votre bibliothèque."
+          }
+        }
+      }
+    },
+    "Download (54 MB)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharger (54 Mo)"
           }
         }
       }
@@ -1515,6 +1611,16 @@
         }
       }
     },
+    "Enhancements": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Améliorations"
+          }
+        }
+      }
+    },
     "Enter Cabinet Mode": {
       "localizations": {
         "fr": {
@@ -1641,6 +1747,16 @@
         }
       }
     },
+    "Fix wobbly polygons (PGXP)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corriger les polygones instables (PGXP)"
+          }
+        }
+      }
+    },
     "Folder added. Ready to scan.": {
       "localizations": {
         "fr": {
@@ -1741,6 +1857,16 @@
         }
       }
     },
+    "Gameplay": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu"
+          }
+        }
+      }
+    },
     "Games Missing Info": {
       "localizations": {
         "fr": {
@@ -1831,6 +1957,26 @@
         }
       }
     },
+    "Handheld LCD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écran LCD de console portable"
+          }
+        }
+      }
+    },
+    "Handheld screen colors": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleurs de l’écran portable"
+          }
+        }
+      }
+    },
     "Handhelds": {
       "localizations": {
         "fr": {
@@ -1857,6 +2003,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Masquer les détails du jeu"
+          }
+        }
+      }
+    },
+    "Higher resolutions are sharper and need a faster Mac.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une résolution plus élevée est plus nette et demande un Mac plus rapide."
           }
         }
       }
@@ -2057,6 +2213,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Installe l’émulateur recommandé pour chacun, et RetroArch si nécessaire."
+          }
+        }
+      }
+    },
+    "Integer scaling": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise à l’échelle entière"
+          }
+        }
+      }
+    },
+    "Integer scaling sizes the picture by whole multiples, so every pixel is the same size, with black bars around it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mise à l’échelle entière agrandit l’image par multiples entiers : tous les pixels ont la même taille, avec des bandes noires autour."
+          }
+        }
+      }
+    },
+    "Internal resolution": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résolution interne"
           }
         }
       }
@@ -2272,6 +2458,16 @@
         }
       }
     },
+    "Look": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendu"
+          }
+        }
+      }
+    },
     "Menu / Start": {
       "localizations": {
         "fr": {
@@ -2338,6 +2534,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Noms et illustrations"
+          }
+        }
+      }
+    },
+    "Native (1×)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native (1×)"
           }
         }
       }
@@ -2612,6 +2818,26 @@
         }
       }
     },
+    "Off": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désactivé"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activé"
+          }
+        }
+      }
+    },
     "Open Cabinet Mode at launch": {
       "localizations": {
         "fr": {
@@ -2652,12 +2878,32 @@
         }
       }
     },
+    "Picture": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image"
+          }
+        }
+      }
+    },
     "Placeholders: {romPath}, {romDir}, {romName}, {romNameNoExt}": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Variables : {romPath}, {romDir}, {romName}, {romNameNoExt}"
+          }
+        }
+      }
+    },
+    "Plain pixels": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixels bruts"
           }
         }
       }
@@ -2912,6 +3158,16 @@
         }
       }
     },
+    "Reduce input lag (run-ahead)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réduire la latence (run-ahead)"
+          }
+        }
+      }
+    },
     "Refresh Cores": {
       "localizations": {
         "fr": {
@@ -2988,6 +3244,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retirer de « %@ »"
+          }
+        }
+      }
+    },
+    "Remove sprite flicker": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer le scintillement des sprites"
+          }
+        }
+      }
+    },
+    "Removing sprite flicker draws more sprites per line than the console could.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer le scintillement affiche plus de sprites par ligne que la console ne le pouvait."
           }
         }
       }
@@ -3072,6 +3348,16 @@
         }
       }
     },
+    "Reset to Defaults": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir les réglages par défaut"
+          }
+        }
+      }
+    },
     "Restart Now": {
       "localizations": {
         "fr": {
@@ -3082,12 +3368,42 @@
         }
       }
     },
+    "Resume saves a state when you quit and loads it the next time.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre enregistre une sauvegarde d’état quand vous quittez et la charge la fois suivante."
+          }
+        }
+      }
+    },
+    "Resume where you left off": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre là où vous en étiez"
+          }
+        }
+      }
+    },
     "RetroArch": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "RetroArch"
+          }
+        }
+      }
+    },
+    "RetroArch (%@)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetroArch (%@)"
           }
         }
       }
@@ -3128,6 +3444,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Rewind": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour arrière"
+          }
+        }
+      }
+    },
+    "Rewind with the emulator’s rewind hotkey.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenez en arrière avec le raccourci de retour arrière de l’émulateur."
           }
         }
       }
@@ -3178,6 +3514,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les romsets doivent correspondre à la version de FinalBurn Neo (1.0.0.03). Ceux d’autres versions ou d’un autre émulateur peuvent ne pas se charger."
+          }
+        }
+      }
+    },
+    "Run-ahead hides the console’s own input lag; 1 frame suits most games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le run-ahead masque la latence propre à la console ; 1 image convient à la plupart des jeux."
           }
         }
       }
@@ -3544,6 +3890,16 @@
         }
       }
     },
+    "Sharp pixels": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixels nets"
+          }
+        }
+      }
+    },
     "Show game details": {
       "localizations": {
         "fr": {
@@ -3700,6 +4056,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Langue du système"
+          }
+        }
+      }
+    },
+    "System Settings…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages du système…"
           }
         }
       }
@@ -3870,6 +4236,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "TheGamesDB a refusé la requête (clé d’API incorrecte ou quota dépassé) : %@"
+          }
+        }
+      }
+    },
+    "This look needs RetroArch’s shader pack.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce rendu nécessite le pack de shaders de RetroArch."
           }
         }
       }
@@ -4136,6 +4512,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Position du jeu dans le tri de la bibliothèque, p. ex. « Legend of Zelda, The ». Laissez vide pour trier par titre."
+          }
+        }
+      }
+    },
+    "Widescreen (16:9)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écran large (16:9)"
+          }
+        }
+      }
+    },
+    "Widescreen shows more of the scene instead of stretching it; some games show glitches at the edges.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’écran large affiche une plus grande partie de la scène au lieu de l’étirer ; certains jeux présentent des défauts sur les bords."
           }
         }
       }

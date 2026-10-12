@@ -114,12 +114,18 @@ final class LaunchCoordinator {
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let folder = retroArchStore.emulationFolderStore.folder
-            let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(for: systemID, controller: controllerSettingsStore.settings)
+            let systemSettings = game.system?.settings ?? SystemSettings()
+            let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(
+                for: systemID, controller: controllerSettingsStore.settings, systemSettings: systemSettings
+            )
+            try folder.setSystemCoreOptions(systemSettings, core: identifier)
             try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
                 system: systemID, coreIdentifier: identifier, romURL: game.romAbsoluteURL, neoGeoFreePlay: neoGeoFreePlay
             ))
-            return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL)
-                .launch(coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL)
+            return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL).launch(
+                coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL,
+                extraArguments: folder.retroArchShaderArguments(for: systemSettings.look)
+            )
 
         case .emulatorProfile(let id):
             guard let profile = fetchEmulatorProfile(id: id, context: game.modelContext) else {
@@ -129,17 +135,27 @@ final class LaunchCoordinator {
             // (data in Emulation/Config, BIOS/saves/states shared); profiles
             // the user made by hand launch exactly as configured.
             var environment: [String: String] = [:]
+            var extraArguments: [String] = []
+            let systemSettings = game.system?.settings ?? SystemSettings()
             if let catalogID = profile.catalogEmulatorID,
                let emulator = EmulatorCatalog.standaloneEmulators.first(where: { $0.id == catalogID }) {
-                environment = try retroArchStore.emulationFolderStore.folder
-                    .prepareStandaloneLaunch(of: emulator, for: CanonicalSystemID(game.systemCanonicalID), quitCombo: controllerSettingsStore.settings.quitWithSelectStart, buttonMapping: controllerSettingsStore.settings.buttonMapping)
+                environment = try retroArchStore.emulationFolderStore.folder.prepareStandaloneLaunch(
+                    of: emulator, for: CanonicalSystemID(game.systemCanonicalID),
+                    quitCombo: controllerSettingsStore.settings.quitWithSelectStart,
+                    buttonMapping: controllerSettingsStore.settings.buttonMapping,
+                    systemSettings: systemSettings
+                )
+                if emulator.id == EmulatorCatalog.dolphin.id {
+                    extraArguments = SystemSettingsSupport.dolphinArguments(systemSettings)
+                }
             }
             return try CustomEmulatorLauncher().launch(
                 executableURL: profile.executableURL,
                 argumentTemplate: profile.argumentTemplate,
                 romURL: game.romAbsoluteURL,
                 workingDirectoryURL: profile.workingDirectoryURL,
-                environmentOverrides: environment
+                environmentOverrides: environment,
+                extraArguments: extraArguments
             )
         }
     }

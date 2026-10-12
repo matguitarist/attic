@@ -143,6 +143,9 @@ public enum EmulatorCatalog {
     public static let coreInfoArchiveURL = URL(string: "https://buildbot.libretro.com/assets/frontend/info.zip")!
     public static let retroArchStableIndexURL = URL(string: "https://buildbot.libretro.com/stable/")!
     public static let retroArchHomepageURL = URL(string: "https://www.retroarch.com")!
+    /// libretro's slang shader pack, the one RetroArch's Online Updater
+    /// installs, for System Settings' looks (Sharp, CRT, LCD).
+    public static let slangShadersURL = URL(string: "https://buildbot.libretro.com/assets/frontend/shaders_slang.zip")!
 
     /// CRC32 per core, the same file RetroArch's Online Updater reads to
     /// decide whether a core is current.

@@ -11,11 +11,14 @@ public struct CustomEmulatorLauncher: Sendable {
         argumentTemplate: String,
         romURL: URL,
         workingDirectoryURL: URL? = nil,
-        environmentOverrides: [String: String] = [:]
+        environmentOverrides: [String: String] = [:],
+        extraArguments: [String] = []
     ) throws -> RunningGameSession {
         let process = Process()
         process.executableURL = executableURL
-        process.arguments = ArgumentTemplate.substitute(argumentTemplate, romURL: romURL)
+        // Extra arguments (System Settings' Dolphin overrides) go first,
+        // ahead of the template's ROM path.
+        process.arguments = extraArguments + ArgumentTemplate.substitute(argumentTemplate, romURL: romURL)
         if !environmentOverrides.isEmpty {
             process.environment = ProcessInfo.processInfo.environment.merging(environmentOverrides) { _, override in override }
         }

@@ -80,18 +80,25 @@ public struct EmulationFolder: Sendable, Hashable {
     public func retroArchPathsConfig(
         for system: CanonicalSystemID,
         controller: ControllerSettings = .default,
+        systemSettings: SystemSettings = SystemSettings(),
         savedConfig: [String: String] = [:],
-        previouslyWritten: [String: String] = [:]
+        previouslyWritten: [String: String] = [:],
+        systemSettingsOwned: [String: OwnedValue] = [:]
     ) -> String {
-        retroArchLaunchConfig(for: system, controller: controller, savedConfig: savedConfig, previouslyWritten: previouslyWritten).text
+        retroArchLaunchConfig(
+            for: system, controller: controller, systemSettings: systemSettings, savedConfig: savedConfig,
+            previouslyWritten: previouslyWritten, systemSettingsOwned: systemSettingsOwned
+        ).text
     }
 
     func retroArchLaunchConfig(
         for system: CanonicalSystemID,
         controller: ControllerSettings,
+        systemSettings: SystemSettings = SystemSettings(),
         savedConfig: [String: String],
-        previouslyWritten: [String: String]
-    ) -> (text: String, controllerSettingsWritten: [String: String]) {
+        previouslyWritten: [String: String],
+        systemSettingsOwned: [String: OwnedValue] = [:]
+    ) -> (text: String, controllerSettingsWritten: [String: String], systemSettingsOwned: [String: OwnedValue]) {
         var settings: [(key: String, value: String)] = [
             ("system_directory", bios.path),
             ("libretro_directory", cores.path),
@@ -116,14 +123,28 @@ public struct EmulationFolder: Sendable, Hashable {
             resetValue: Self.retroArchResetValue
         )
         settings += controllerSettings.write
+        // System Settings. RetroArch saves these into retroarch.cfg on
+        // exit like anything else, so each one is put back to the user's
+        // own value once the launched system no longer sets it.
+        let systemResult = Self.reconcileKeepingOriginals(
+            desired: SystemSettingsSupport.retroArchConfig(systemSettings, system: system),
+            owned: systemSettingsOwned,
+            current: savedConfig,
+            fallback: { SystemSettingsSupport.retroArchDefaults[$0] }
+        )
+        settings += systemResult.write
         let text = "# Written by Attic before every launch — edits here are overwritten.\n"
             + settings.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n") + "\n"
-        return (text, controllerSettings.written)
+        return (text, controllerSettings.written, systemResult.owned)
     }
 
     /// Writes the per-launch paths config and makes sure the per-system
     /// save/state folders exist. Returns (main config, paths config).
-    public func prepareRetroArchLaunch(for system: CanonicalSystemID, controller: ControllerSettings = .default) throws -> (config: URL, appendConfig: URL) {
+    public func prepareRetroArchLaunch(
+        for system: CanonicalSystemID,
+        controller: ControllerSettings = .default,
+        systemSettings: SystemSettings = SystemSettings()
+    ) throws -> (config: URL, appendConfig: URL) {
         try createStructure()
         for directory in [saves(for: system), states(for: system)] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -131,10 +152,87 @@ public struct EmulationFolder: Sendable, Hashable {
         let saved = Self.parseRetroArchConfig((try? String(contentsOf: retroArchConfigFile, encoding: .utf8)) ?? "")
         // Before this record existed, Attic only ever set the quit combo.
         let previous = readOwnedSettings("retroarch") ?? ["input_quit_gamepad_combo": "4"]
-        let config = retroArchLaunchConfig(for: system, controller: controller, savedConfig: saved, previouslyWritten: previous)
+        let config = retroArchLaunchConfig(
+            for: system, controller: controller, systemSettings: systemSettings, savedConfig: saved,
+            previouslyWritten: previous, systemSettingsOwned: readOwned("retroarch-system") ?? [:]
+        )
         try config.text.write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
         try writeOwnedSettings(config.controllerSettingsWritten, for: "retroarch")
+        try writeOwned(config.systemSettingsOwned, for: "retroarch-system")
         return (retroArchConfigFile, retroArchPathsConfigFile)
+    }
+
+    /// Sets `core`'s options for `settings` (resolution, widescreen…) in
+    /// the shared core options file, and puts back any Attic set for
+    /// another system or core that this launch doesn't.
+    public func setSystemCoreOptions(_ settings: SystemSettings, core: String) throws {
+        let current = Self.parseRetroArchConfig((try? String(contentsOf: retroArchCoreOptionsFile, encoding: .utf8)) ?? "")
+        let result = Self.reconcileKeepingOriginals(
+            desired: SystemSettingsSupport.coreOptions(settings, core: core).sorted { $0.key < $1.key }.map { ($0.key, $0.value) },
+            owned: readOwned("retroarch-core-options") ?? [:],
+            current: current,
+            fallback: SystemSettingsSupport.coreOptionDefault
+        )
+        try setRetroArchCoreOptions(Dictionary(result.write.map { ($0.key, $0.value) }, uniquingKeysWith: { _, last in last }))
+        try writeOwned(result.owned, for: "retroarch-core-options")
+    }
+
+    // MARK: - Shaders
+
+    /// libretro's slang shader pack, which Attic downloads on request.
+    public var retroArchShadersDirectory: URL {
+        retroArchConfigDirectory.appending(path: "shaders/shaders_slang", directoryHint: .isDirectory)
+    }
+
+    /// The preset file for `look`: from Attic's own shader pack, else from
+    /// the one RetroArch's Online Updater installed. `nil` when neither has it.
+    public func shaderPresetURL(for look: SystemSettings.Look) -> URL? {
+        guard let preset = SystemSettingsSupport.shaderPreset(for: look) else { return nil }
+        var roots = [retroArchShadersDirectory]
+        let saved = Self.parseRetroArchConfig((try? String(contentsOf: retroArchConfigFile, encoding: .utf8)) ?? "")
+        if let directory = saved["video_shader_dir"], !directory.isEmpty, !directory.hasPrefix(":") {
+            let expanded = URL(fileURLWithPath: (directory as NSString).expandingTildeInPath, isDirectory: true)
+            roots += [expanded.appending(path: "shaders_slang", directoryHint: .isDirectory), expanded]
+        }
+        return roots.map { $0.appending(path: preset) }.first { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
+    /// RetroArch's `--set-shader` for `look`: an empty path turns
+    /// shaders off for the run. No arguments when there's no preset to
+    /// load, or nothing was chosen.
+    public func retroArchShaderArguments(for look: SystemSettings.Look?) -> [String] {
+        guard let look else { return [] }
+        if look == .none { return ["--set-shader", ""] }
+        return shaderPresetURL(for: look).map { ["--set-shader", $0.path] } ?? []
+    }
+
+    /// Settings Attic owns in an emulator's config: what it last wrote,
+    /// and the user's own value from before, to put back when it stops.
+    public struct OwnedValue: Codable, Hashable, Sendable {
+        public var written: String
+        public var original: String?
+    }
+
+    /// Like `OwnedSettings.reconcile`, but a key Attic stops setting goes
+    /// back to the user's own value instead of a fixed default.
+    static func reconcileKeepingOriginals(
+        desired: [(key: String, value: String)],
+        owned: [String: OwnedValue],
+        current: [String: String],
+        fallback: (String) -> String?
+    ) -> (write: [(key: String, value: String)], owned: [String: OwnedValue]) {
+        var write = desired
+        var newOwned: [String: OwnedValue] = [:]
+        for (key, value) in desired {
+            // The user's own value is what was there before Attic set it —
+            // unless they've changed it since, in the emulator.
+            let original = owned[key].map { current[key] == $0.written ? $0.original : current[key] } ?? current[key]
+            newOwned[key] = OwnedValue(written: value, original: original)
+        }
+        for (key, record) in owned.sorted(by: { $0.key < $1.key }) where newOwned[key] == nil && current[key] == record.written {
+            if let reset = record.original ?? fallback(key) { write.append((key, reset)) }
+        }
+        return (write, newOwned)
     }
 
     // MARK: - RetroArch controller settings
@@ -203,11 +301,19 @@ public struct EmulationFolder: Sendable, Hashable {
     }
 
     func writeOwnedSettings(_ settings: [String: String], for emulator: String) throws {
+        try writeOwned(settings, for: emulator)
+    }
+
+    func readOwned<Value: Decodable>(_ emulator: String) -> Value? {
+        (try? Data(contentsOf: ownedSettingsFile(emulator))).flatMap { try? JSONDecoder().decode(Value.self, from: $0) }
+    }
+
+    func writeOwned<Value: Encodable>(_ value: Value, for emulator: String) throws {
         let file = ownedSettingsFile(emulator)
         try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(settings).write(to: file, options: .atomic)
+        try encoder.encode(value).write(to: file, options: .atomic)
     }
 
     /// `key = "value"` lines of a RetroArch config.
@@ -269,7 +375,8 @@ public struct EmulationFolder: Sendable, Hashable {
         of emulator: StandaloneEmulator,
         for system: CanonicalSystemID,
         quitCombo: Bool = true,
-        buttonMapping: ButtonMapping = .default
+        buttonMapping: ButtonMapping = .default,
+        systemSettings: SystemSettings = SystemSettings()
     ) throws -> [String: String] {
         guard let portable = emulator.portableHome else { return [:] }
         let home = configHome(for: emulator)
@@ -294,6 +401,9 @@ public struct EmulationFolder: Sendable, Hashable {
         }
         if let pad = portable.padBindings {
             try applyButtonMapping(buttonMapping, to: &ini, pad: pad, emulatorID: emulator.id)
+        }
+        if emulator.id == EmulatorCatalog.duckStation.id {
+            try applyDuckStationSettings(systemSettings, to: &ini)
         }
         try ini.contents.write(to: settingsFile, atomically: true, encoding: .utf8)
         return ["HOME": home.path]
@@ -325,6 +435,23 @@ public struct EmulationFolder: Sendable, Hashable {
             ini.set(section: parts[0], key: parts[1], value: value)
         }
         try writeOwnedSettings(result.written, for: emulatorID)
+    }
+
+    /// System Settings for DuckStation. One it stops setting is removed
+    /// (back to DuckStation's default) if it still has Attic's value.
+    private func applyDuckStationSettings(_ settings: SystemSettings, to ini: inout IniFile) throws {
+        let previous = readOwnedSettings("duckstation-system") ?? [:]
+        var written: [String: String] = [:]
+        for setting in SystemSettingsSupport.duckStationSettings(settings) {
+            let id = "\(setting.section)/\(setting.key)"
+            if let value = setting.value {
+                ini.set(section: setting.section, key: setting.key, value: value)
+                written[id] = value
+            } else if let old = previous[id], ini.value(section: setting.section, key: setting.key) == old {
+                ini.remove(section: setting.section, key: setting.key)
+            }
+        }
+        try writeOwnedSettings(written, for: "duckstation-system")
     }
 
     private func expand(_ template: String, system: CanonicalSystemID) -> String {

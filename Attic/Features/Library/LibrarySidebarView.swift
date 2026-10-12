@@ -16,6 +16,7 @@ struct LibrarySidebarView: View {
     @Environment(HelpNavigator.self) private var helpNavigator
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
+    @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
 
     var body: some View {
         List(selection: $selection) {
@@ -75,6 +76,8 @@ struct LibrarySidebarView: View {
                             .badge(system.gameCount)
                             .tag(LibrarySelection.system(system.systemID))
                             .contextMenu {
+                                Button("System Settings…") { systemSettingsEditor.system = system }
+                                Divider()
                                 ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
                                 Divider()
                                 Button("About This System") {
