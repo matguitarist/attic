@@ -4266,6 +4266,16 @@
         }
       }
     },
+    "screenshot": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "capture d’écran"
+          }
+        }
+      }
+    },
     "xemu needs the Xbox boot ROM (MCPX), a flash BIOS and a hard disk image. Set them once in xemu (Settings › System).": {
       "localizations": {
         "fr": {

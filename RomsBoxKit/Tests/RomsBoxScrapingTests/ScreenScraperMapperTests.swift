@@ -78,6 +78,20 @@ import Testing
         #expect(info.description == "Description francaise seulement.")
     }
 
+    @Test func picksAnInGameScreenshotOverTheTitleScreen() throws {
+        let fixture = """
+        {"response": {"jeu": {"medias": [
+          {"type": "sstitle", "region": "us", "url": "https://example.com/title.png"},
+          {"type": "ss", "region": "jp", "url": "https://example.com/ss-jp.png"},
+          {"type": "ss", "region": "wor", "url": "https://example.com/ss-wor.png"}
+        ]}}}
+        """
+        let envelope = try JSONDecoder().decode(ScreenScraperResponseEnvelope.self, from: Data(fixture.utf8))
+        let info = try #require(ScreenScraperMapper.map(envelope))
+        #expect(info.screenshotURL == URL(string: "https://example.com/ss-wor.png"))
+        #expect(info.coverArtURL == nil)
+    }
+
     @Test func missingJeuReturnsNil() throws {
         let fixture = #"{"response": {}}"#
         let envelope = try JSONDecoder().decode(ScreenScraperResponseEnvelope.self, from: Data(fixture.utf8))

@@ -60,3 +60,18 @@ struct TheGamesDBBoxArtEntry: Decodable {
     let side: String?
     let filename: String
 }
+
+/// `/v1/Games/Images`: `data.images` keyed by game id.
+struct TheGamesDBImagesEnvelope: Decodable {
+    let data: TheGamesDBImagesData?
+}
+
+struct TheGamesDBImagesData: Decodable {
+    let baseURL: TheGamesDBBoxArtBaseURL
+    let images: [String: [TheGamesDBBoxArtEntry]]
+
+    enum CodingKeys: String, CodingKey {
+        case baseURL = "base_url"
+        case images
+    }
+}

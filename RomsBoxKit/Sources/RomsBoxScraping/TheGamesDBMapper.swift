@@ -45,6 +45,13 @@ enum TheGamesDBMapper {
         return names.isEmpty ? nil : names.joined(separator: ", ")
     }
 
+    /// A screenshot, else the title screen, from `/v1/Games/Images`.
+    static func screenshotURL(forGameID gameID: Int, in envelope: TheGamesDBImagesEnvelope) -> URL? {
+        guard let data = envelope.data, let images = data.images[String(gameID)] else { return nil }
+        let pick = images.first { $0.type == "screenshot" } ?? images.first { $0.type == "titlescreen" }
+        return pick.flatMap { URL(string: data.baseURL.original + $0.filename) }
+    }
+
     private static func coverArtURL(forGameID gameID: Int, include: TheGamesDBBoxArtInclude?) -> URL? {
         guard let include, let entries = include.data[String(gameID)] else { return nil }
         let boxartEntries = entries.filter { $0.type == "boxart" }

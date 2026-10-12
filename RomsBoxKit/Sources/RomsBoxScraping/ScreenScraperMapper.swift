@@ -11,6 +11,8 @@ enum ScreenScraperMapper {
     /// "mixrsdb"/"box-2D" families are the closest match to a single
     /// front-cover image; box-3D is a rendered 3D box, used as a fallback.
     private static let coverMediaTypePreference = ["box-2D", "box-2D-side", "mixrsdb", "box-3D"]
+    /// "ss" is an in-game screenshot, "sstitle" the title screen.
+    private static let screenshotMediaTypePreference = ["ss", "sstitle"]
 
     static func map(_ envelope: ScreenScraperResponseEnvelope) -> ScrapedGameInfo? {
         guard let jeu = envelope.response?.jeu else { return nil }
@@ -24,7 +26,8 @@ enum ScreenScraperMapper {
             publisher: jeu.editeur?.text,
             releaseDate: bestRegional(jeu.dates).flatMap { parseDate($0.text) },
             rating: (jeu.note?.text).flatMap { Double($0) }.map { $0 / 20.0 },
-            coverArtURL: bestCoverArt(jeu.medias)
+            coverArtURL: bestMedia(jeu.medias, types: coverMediaTypePreference),
+            screenshotURL: bestMedia(jeu.medias, types: screenshotMediaTypePreference)
         )
     }
 
@@ -44,9 +47,9 @@ enum ScreenScraperMapper {
         return items.first
     }
 
-    private static func bestCoverArt(_ media: [ScreenScraperMedia]?) -> URL? {
+    private static func bestMedia(_ media: [ScreenScraperMedia]?, types: [String]) -> URL? {
         guard let media, !media.isEmpty else { return nil }
-        for type in coverMediaTypePreference {
+        for type in types {
             let candidates = media.filter { $0.type == type }
             if let regional = bestRegionalMedia(candidates) { return URL(string: regional.url) }
         }

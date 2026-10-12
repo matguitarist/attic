@@ -99,3 +99,25 @@ import Testing
         #expect(SystemTaxonomy.definition(for: .pcengine)?.category == .console)
     }
 }
+
+struct SystemROMExtensionsTests {
+    @Test func acceptsTheSystemsFileTypesCaseInsensitively() {
+        #expect(SystemROMExtensions.accepts("Super Metroid (USA).SFC", for: .snes))
+        #expect(SystemROMExtensions.accepts("sub/Castlevania (USA).chd", for: .psx))
+        #expect(SystemROMExtensions.accepts("Demon's Souls.ps3", for: .ps3))
+        #expect(SystemROMExtensions.accepts("sf2.zip", for: .cps1))
+    }
+
+    @Test func rejectsStrayFiles() {
+        #expect(!SystemROMExtensions.accepts("test.8xp", for: .wiiu))
+        #expect(!SystemROMExtensions.accepts("readme.txt", for: .snes))
+        #expect(!SystemROMExtensions.accepts("Game.srm", for: .snes))
+        #expect(!SystemROMExtensions.accepts("noextension", for: .nes))
+    }
+
+    @Test func everySystemHasAList() {
+        for system in SystemTaxonomy.allSystems {
+            #expect(SystemROMExtensions.extensions(for: system.canonicalID)?.isEmpty == false, "\(system.canonicalID.rawValue)")
+        }
+    }
+}

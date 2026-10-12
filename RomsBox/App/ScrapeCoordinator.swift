@@ -156,7 +156,8 @@ final class ScrapeCoordinator {
             let info = try await theGamesDBClient.fetchGameInfo(
                 title: game.title,
                 platformID: platformID,
-                credentials: credentials
+                credentials: credentials,
+                wantsScreenshot: force || game.titleScreenPath == nil
             )
             let fields = try await apply(info, to: game, force: force)
             state = .idle
@@ -264,10 +265,19 @@ final class ScrapeCoordinator {
         // A cover the user picked is only replaced on an explicit "Replace
         // Existing Info".
         if (force || game.coverArtPath == nil), let remoteURL = info.coverArtURL {
-            if let localURL = try? await downloadCoverArt(from: remoteURL, systemID: game.systemCanonicalID, romFilename: game.romAbsoluteURL.lastPathComponent) {
+            if let localURL = try? await downloadMedia(from: remoteURL, systemID: game.systemCanonicalID, kind: nil, romFilename: game.romAbsoluteURL.lastPathComponent) {
                 game.coverArtPath = localURL.path
                 game.coverArtManuallySet = false
                 changed.append(String(localized: "cover"))
+            }
+        }
+
+        // Shown at the top of the detail panel; `titleScreenPath` holds a
+        // screenshot or title screen, whichever the game has.
+        if (force || game.titleScreenPath == nil), let remoteURL = info.screenshotURL {
+            if let localURL = try? await downloadMedia(from: remoteURL, systemID: game.systemCanonicalID, kind: "screenshots", romFilename: game.romAbsoluteURL.lastPathComponent) {
+                game.titleScreenPath = localURL.path
+                changed.append(String(localized: "screenshot"))
             }
         }
 
@@ -279,9 +289,12 @@ final class ScrapeCoordinator {
         return changed
     }
 
-    private func downloadCoverArt(from remoteURL: URL, systemID: String, romFilename: String) async throws -> URL {
+    /// Covers go straight in the system's folder (where earlier versions
+    /// put them), other kinds in a subfolder named after the kind.
+    private func downloadMedia(from remoteURL: URL, systemID: String, kind: String?, romFilename: String) async throws -> URL {
         let (data, _) = try await URLSession.shared.data(from: remoteURL)
-        let systemDirectory = mediaCacheDirectory.appending(path: systemID, directoryHint: .isDirectory)
+        var systemDirectory = mediaCacheDirectory.appending(path: systemID, directoryHint: .isDirectory)
+        if let kind { systemDirectory = systemDirectory.appending(path: kind, directoryHint: .isDirectory) }
         try FileManager.default.createDirectory(at: systemDirectory, withIntermediateDirectories: true)
 
         let baseName = (romFilename as NSString).deletingPathExtension

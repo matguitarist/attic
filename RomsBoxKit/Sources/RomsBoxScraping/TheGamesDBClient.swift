@@ -6,10 +6,13 @@ import RomsBoxModels
 public protocol TheGamesDBClientProtocol: Sendable {
     /// `title` is the game's title as the library shows it (already cleaned
     /// of release tags, and resolved from arcade DATs for romsets).
+    /// `wantsScreenshot` costs one more request (TheGamesDB's search
+    /// results carry box art only), so callers ask only when they need one.
     func fetchGameInfo(
         title: String,
         platformID: Int,
-        credentials: TheGamesDBCredentials
+        credentials: TheGamesDBCredentials,
+        wantsScreenshot: Bool
     ) async throws -> ScrapedGameInfo
 }
 
@@ -38,7 +41,8 @@ public struct TheGamesDBClient: TheGamesDBClientProtocol {
     public func fetchGameInfo(
         title: String,
         platformID: Int,
-        credentials: TheGamesDBCredentials
+        credentials: TheGamesDBCredentials,
+        wantsScreenshot: Bool = false
     ) async throws -> ScrapedGameInfo {
         guard credentials.isConfigured else { throw TheGamesDBError.notConfigured }
         let searchName = Self.searchName(fromTitle: title)
@@ -53,7 +57,24 @@ public struct TheGamesDBClient: TheGamesDBClientProtocol {
         let names = await nameCache.names(for: game) { [self] in
             try await fetchNames(credentials: credentials)
         }
-        return TheGamesDBMapper.map(game, include: envelope.include, names: names)
+        var info = TheGamesDBMapper.map(game, include: envelope.include, names: names)
+        if wantsScreenshot {
+            // Like the names, a nice-to-have: the scrape stands without it.
+            info.screenshotURL = try? await screenshotURL(forGameID: game.id, credentials: credentials)
+        }
+        return info
+    }
+
+    private func screenshotURL(forGameID gameID: Int, credentials: TheGamesDBCredentials) async throws -> URL? {
+        guard var components = URLComponents(url: apiRoot.appending(path: "Games/Images"), resolvingAgainstBaseURL: false) else { return nil }
+        components.queryItems = [
+            URLQueryItem(name: "apikey", value: credentials.apiKey),
+            URLQueryItem(name: "games_id", value: String(gameID)),
+            URLQueryItem(name: "filter[type]", value: "screenshot,titlescreen")
+        ]
+        guard let url = components.url else { return nil }
+        let envelope: TheGamesDBImagesEnvelope = try await get(url)
+        return TheGamesDBMapper.screenshotURL(forGameID: gameID, in: envelope)
     }
 
     private func fetchNames(credentials: TheGamesDBCredentials) async throws -> TheGamesDBNames {

@@ -226,6 +226,27 @@ import Testing
         #expect(refetched.coverArtPath == "/tmp/custom/a.jpg")
     }
 
+    @Test func rescanKeepsScrapedImagesTheGamelistLacks() async throws {
+        let container = try RomsBoxModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        let data = ImportedSystemData(canonicalID: .snes, libraryFormat: .esde, romsRootURL: URL(fileURLWithPath: "/tmp/roms/snes"), games: [ImportedGameRecord(romRelativePath: "a.sfc", title: "Game A")])
+        _ = try await store.upsertSystem(data, displayName: "SNES")
+
+        let scraped = FileManager.default.temporaryDirectory.appending(path: "scraped-\(UUID().uuidString).png")
+        try Data().write(to: scraped)
+        defer { try? FileManager.default.removeItem(at: scraped) }
+        let context = ModelContext(container)
+        let game = try #require(try context.fetch(FetchDescriptor<Game>()).first)
+        game.titleScreenPath = scraped.path
+        game.coverArtPath = "/tmp/no-such-file.png"
+        try context.save()
+
+        _ = try await store.upsertSystem(data, displayName: "SNES")
+        let refetched = try #require(try context.fetch(FetchDescriptor<Game>()).first)
+        #expect(refetched.titleScreenPath == scraped.path)
+        #expect(refetched.coverArtPath == nil)
+    }
+
     @Test func upsertSystemUpdatesDisplayNameAndFormatOnRescan() async throws {
         let store = try makeStore()
         _ = try await store.upsertSystem(sampleSystemData(games: []), displayName: "SNES")

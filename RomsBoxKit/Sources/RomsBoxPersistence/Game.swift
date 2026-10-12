@@ -141,14 +141,21 @@ public final class Game {
             rating = record.rating
         }
         if !coverArtManuallySet {
-            coverArtPath = record.coverArtURL?.path
+            coverArtPath = record.coverArtURL?.path ?? Self.stillExisting(coverArtPath)
         }
-        titleScreenPath = record.titleScreenURL?.path
+        // A scraped image the gamelist has no equivalent for (it's kept
+        // app-side, not in the ROM tree) stays as long as its file does.
+        titleScreenPath = record.titleScreenURL?.path ?? Self.stillExisting(titleScreenPath)
         videoPath = record.videoURL?.path
     }
 }
 
 extension Game {
+    static func stillExisting(_ path: String?) -> String? {
+        guard let path, FileManager.default.fileExists(atPath: path) else { return nil }
+        return path
+    }
+
     public var romAbsoluteURL: URL { URL(fileURLWithPath: romAbsolutePath) }
     public var coverArtURL: URL? { coverArtPath.map { URL(fileURLWithPath: $0) } }
     public var titleScreenURL: URL? { titleScreenPath.map { URL(fileURLWithPath: $0) } }

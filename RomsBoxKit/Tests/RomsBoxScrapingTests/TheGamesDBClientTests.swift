@@ -150,6 +150,21 @@ final class TheGamesDBStubURLProtocol: URLProtocol, @unchecked Sendable {
         #expect(info.developer == "Sega")
     }
 
+    @Test func screenshotIsFetchedOnlyWhenAskedFor() async throws {
+        TheGamesDBNamesStubURLProtocol.handler = { request in
+            let path = request.url?.path ?? ""
+            if path.hasSuffix("/Games/Images") {
+                return (200, #"{"data": {"count": 2, "base_url": {"original": "https://cdn.thegamesdb.net/images/original/"}, "images": {"1": [{"id": 9, "type": "titlescreen", "filename": "titlescreen/1-1.jpg"}, {"id": 10, "type": "screenshot", "filename": "screenshot/1-1.jpg"}]}}}"#)
+            }
+            return Self.respond(to: request)
+        }
+        let credentials = TheGamesDBCredentials(apiKey: "k")
+        let with = try await makeClient().fetchGameInfo(title: "Sonic the Hedgehog", platformID: 18, credentials: credentials, wantsScreenshot: true)
+        #expect(with.screenshotURL == URL(string: "https://cdn.thegamesdb.net/images/original/screenshot/1-1.jpg"))
+        let without = try await makeClient().fetchGameInfo(title: "Sonic the Hedgehog", platformID: 18, credentials: credentials, wantsScreenshot: false)
+        #expect(without.screenshotURL == nil)
+    }
+
     @Test func failingNameListsStillReturnTheGame() async throws {
         TheGamesDBNamesStubURLProtocol.handler = { request in
             (request.url?.path ?? "").hasSuffix("/ByGameName") ? (200, Self.gameResponse) : (500, "down")

@@ -65,7 +65,14 @@ public struct LibraryScanner: Sendable {
 
             do {
                 let data = try importer.importSystem(systemFolderURL: folderURL, canonicalID: definition.canonicalID)
-                systems.append(data)
+                // Only the system's own file types are games — gamelist
+                // entries included, since a gamelist can list anything.
+                systems.append(ImportedSystemData(
+                    canonicalID: data.canonicalID,
+                    libraryFormat: data.libraryFormat,
+                    romsRootURL: data.romsRootURL,
+                    games: data.games.filter { SystemROMExtensions.accepts($0.romRelativePath, for: definition.canonicalID) }
+                ))
             } catch {
                 issues.append(ScanIssue(folderURL: folderURL, reason: .importFailed(String(describing: error))))
             }

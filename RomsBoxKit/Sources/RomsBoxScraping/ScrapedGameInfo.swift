@@ -17,6 +17,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
     /// all, so its mapper always leaves this nil).
     public var rating: Double?
     public var coverArtURL: URL?
+    /// An in-game screenshot (or the title screen, if that's all there is).
+    public var screenshotURL: URL?
 
     public init(
         title: String? = nil,
@@ -27,7 +29,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         publisher: String? = nil,
         releaseDate: Date? = nil,
         rating: Double? = nil,
-        coverArtURL: URL? = nil
+        coverArtURL: URL? = nil,
+        screenshotURL: URL? = nil
     ) {
         self.title = title
         self.description = description
@@ -38,5 +41,6 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         self.releaseDate = releaseDate
         self.rating = rating
         self.coverArtURL = coverArtURL
+        self.screenshotURL = screenshotURL
     }
 }
