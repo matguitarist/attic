@@ -154,6 +154,16 @@
         }
       }
     },
+    "%lld covers, videos and manuals came along.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jaquettes, vidéos et manuels ont suivi."
+          }
+        }
+      }
+    },
     "%lld failed": {
       "localizations": {
         "en": {
@@ -190,6 +200,16 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld files that aren't games for their system were left where they are.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers qui ne sont pas des jeux pour leur système sont restés à leur place."
           }
         }
       }
