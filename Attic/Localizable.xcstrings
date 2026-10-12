@@ -2587,6 +2587,16 @@
         }
       }
     },
+    "Manufacturer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fabricant"
+          }
+        }
+      }
+    },
     "Menu / Start": {
       "localizations": {
         "fr": {
@@ -2993,6 +3003,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rien de nouveau pour « %@ » : il a déjà tout ce qui a été trouvé. Utilisez Récupérer les infos › Remplacer les infos existantes pour les écraser."
+          }
+        }
+      }
+    },
+    "Number of Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de jeux"
           }
         }
       }
@@ -3413,6 +3433,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Date de sortie"
+          }
+        }
+      }
+    },
+    "Release Year": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Année de sortie"
           }
         }
       }
@@ -4235,6 +4265,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Certains systèmes ont besoin du BIOS de la console. Ces fichiers sont protégés par le droit d’auteur, Attic ne les télécharge donc jamais : extrayez-les du matériel que vous possédez et placez-les dans le dossier BIOS du dossier Emulation. La page de chaque système indique les fichiers nécessaires et s’ils sont présents."
+          }
+        }
+      }
+    },
+    "Sort %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier : %@"
           }
         }
       }

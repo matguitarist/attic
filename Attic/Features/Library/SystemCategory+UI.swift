@@ -39,15 +39,15 @@ extension GameSystem {
 }
 
 extension Sequence where Element == GameSystem {
-    /// Non-empty categories in display order, each sorted by maker, then
-    /// by release year within a maker (NES, SNES, N64…). The one ordering
+    /// Non-empty categories in display order, each sorted the way the
+    /// user chose for it (by manufacturer unless changed). The one ordering
     /// the sidebar, Cabinet Mode's system bar and LB/RB stepping share, so
     /// moving "next system" always matches what's on screen.
     func groupedByCategory() -> [(category: SystemCategory, systems: [GameSystem])] {
         let byCategory = Dictionary(grouping: self, by: \.category)
         return SystemCategory.allCases.compactMap { category in
             guard let systems = byCategory[category], !systems.isEmpty else { return nil }
-            return (category, systems.sorted(by: GameSystem.displayOrder))
+            return (category, systems.sorted(by: category.sortOrder.areInIncreasingOrder))
         }
     }
 
@@ -56,20 +56,46 @@ extension Sequence where Element == GameSystem {
     }
 }
 
-extension Array where Element == GameSystem {
-    /// Consecutive runs of one maker, for the sidebar's maker headings.
-    /// Expects `groupedByCategory()`'s order.
-    func groupedByMaker() -> [(maker: String, systems: [GameSystem])] {
-        var groups: [(maker: String, systems: [GameSystem])] = []
-        for system in self {
-            let maker = system.systemID.maker
-            if groups.last?.maker == maker {
-                groups[groups.count - 1].systems.append(system)
-            } else {
-                groups.append((maker, [system]))
-            }
+/// How one kind of system (Consoles, Handhelds…) is sorted in the
+/// sidebar; chosen per kind from its section header.
+enum SystemSortOrder: String, CaseIterable, Identifiable {
+    /// By manufacturer, oldest first within one (NES, SNES, N64…).
+    case manufacturer
+    case name
+    case releaseYear
+    case gameCount
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .manufacturer: String(localized: "Manufacturer")
+        case .name: String(localized: "Name")
+        case .releaseYear: String(localized: "Release Year")
+        case .gameCount: String(localized: "Number of Games")
         }
-        return groups
+    }
+
+    func areInIncreasingOrder(_ a: GameSystem, _ b: GameSystem) -> Bool {
+        let byName = a.displayName.localizedStandardCompare(b.displayName) == .orderedAscending
+        switch self {
+        case .manufacturer: return GameSystem.displayOrder(a, b)
+        case .name: return byName
+        case .releaseYear:
+            let (yearA, yearB) = (a.systemID.releaseYear, b.systemID.releaseYear)
+            return yearA != yearB ? yearA < yearB : byName
+        case .gameCount:
+            return a.gameCount != b.gameCount ? a.gameCount > b.gameCount : byName
+        }
+    }
+}
+
+extension SystemCategory {
+    /// UserDefaults key for this kind's `SystemSortOrder`.
+    var sortOrderKey: String { "systemSortOrder.\(self)" }
+
+    var sortOrder: SystemSortOrder {
+        UserDefaults.standard.string(forKey: sortOrderKey).flatMap(SystemSortOrder.init(rawValue:)) ?? .manufacturer
     }
 }
 
@@ -103,22 +129,6 @@ extension CanonicalSystemID {
             guard let manufacturer = SystemHelpContent.info(for: self)?.manufacturer else { return Self.multiSystemMaker }
             return manufacturer.components(separatedBy: ",")[0]
         }
-    }
-
-    /// The name under its maker's heading, without repeating the maker
-    /// ("Sony PlayStation 2" → "PlayStation 2"). Names that would be left
-    /// meaningless keep the maker: "Nintendo 64", "Atari 2600", "Sega CD".
-    func shortName(displayName: String) -> String {
-        switch self {
-        case .nes: return "NES"
-        case .snes: return "Super Nintendo"
-        default: break
-        }
-        let prefix = maker + " "
-        guard displayName.hasPrefix(prefix) else { return displayName }
-        let rest = String(displayName.dropFirst(prefix.count))
-        if rest.count <= 2 || rest.first?.isNumber == true { return displayName }
-        return rest
     }
 
     var releaseYear: Int { SystemHelpContent.info(for: self)?.year ?? .max }

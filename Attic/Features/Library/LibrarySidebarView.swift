@@ -18,8 +18,12 @@ struct LibrarySidebarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
+    /// Bumped when a sort order changes (stored in UserDefaults, read by
+    /// `groupedByCategory()`), so the list redraws.
+    @State private var sortOrdersChanged = 0
 
     var body: some View {
+        let _ = sortOrdersChanged
         List(selection: $selection) {
             Section("Library") {
                 Label("All Games", systemImage: "square.grid.2x2")
@@ -68,36 +72,51 @@ struct LibrarySidebarView: View {
             }
 
             // One section per kind of machine (Consoles, Handhelds, Arcade,
-            // Computers), only for kinds the library actually has, with the
-            // systems under a small heading per maker (Nintendo, Sega…).
+            // Computers), only for kinds the library actually has, each
+            // sorted as chosen from its header.
             ForEach(systems.groupedByCategory(), id: \.category) { group in
                 Section {
-                    ForEach(group.systems.groupedByMaker(), id: \.maker) { makerGroup in
-                        // Untagged, so it can't be selected.
-                        Text(makerGroup.maker)
-                            .font(.caption2.weight(.semibold))
-                            .textCase(.uppercase)
-                            .tracking(0.5)
-                            .foregroundStyle(.tertiary)
-                            .padding(.bottom, -4)
-                        ForEach(makerGroup.systems) { system in
-                            systemRow(system, category: group.category)
-                        }
+                    ForEach(group.systems) { system in
+                        systemRow(system, category: group.category)
                     }
                 } header: {
-                    Text(group.category.title)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.primary)
+                    HStack {
+                        Text(group.category.title)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        sortMenu(for: group.category)
+                    }
                 }
             }
         }
         .listStyle(.sidebar)
     }
 
+    private func sortMenu(for category: SystemCategory) -> some View {
+        Menu {
+            Picker("Sort By", selection: Binding(
+                get: { category.sortOrder },
+                set: { order in
+                    UserDefaults.standard.set(order.rawValue, forKey: category.sortOrderKey)
+                    sortOrdersChanged += 1
+                }
+            )) {
+                ForEach(SystemSortOrder.allCases) { Text($0.label).tag($0) }
+            }
+            .pickerStyle(.inline)
+        } label: {
+            Label("Sort By", systemImage: "arrow.up.arrow.down")
+                .labelStyle(.iconOnly)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Sort \(category.title)")
+    }
+
     private func systemRow(_ system: GameSystem, category: SystemCategory) -> some View {
-        // The maker is in the heading above, so not repeated here.
-        Label(system.systemID.shortName(displayName: system.displayName), systemImage: category.symbolName)
-            .help(system.displayName)
+        Label(system.displayName, systemImage: category.symbolName)
             .lineLimit(1)
             .badge(system.gameCount)
             .tag(LibrarySelection.system(system.systemID))
