@@ -2540,6 +2540,7 @@
       }
     },
     "Logos by Dan Patrick. Systems without one show their name.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -4103,6 +4104,7 @@
       }
     },
     "Show system logos in the sidebar": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {

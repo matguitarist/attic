@@ -17,7 +17,6 @@ struct LibrarySidebarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
-    @AppStorage(SidebarStyle.showsLogosKey) private var showsLogos = true
 
     var body: some View {
         List(selection: $selection) {
@@ -72,7 +71,8 @@ struct LibrarySidebarView: View {
             ForEach(systems.groupedByCategory(), id: \.category) { group in
                 Section(group.category.title) {
                     ForEach(group.systems) { system in
-                        systemRow(system, symbolName: group.category.symbolName)
+                        Label(system.displayName, systemImage: group.category.symbolName)
+                            .lineLimit(1)
                             .badge(system.gameCount)
                             .tag(LibrarySelection.system(system.systemID))
                             .contextMenu {
@@ -91,22 +91,4 @@ struct LibrarySidebarView: View {
         .listStyle(.sidebar)
     }
 
-    /// The system's logo, or its name when it has none (or logos are
-    /// turned off in Settings › General).
-    @ViewBuilder
-    private func systemRow(_ system: GameSystem, symbolName: String) -> some View {
-        if showsLogos, let logo = system.systemID.logo {
-            logo
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 150, maxHeight: 22, alignment: .leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 3)
-                .help(system.displayName)
-                .accessibilityLabel(system.displayName)
-        } else {
-            Label(system.displayName, systemImage: symbolName)
-                .lineLimit(1)
-        }
-    }
 }

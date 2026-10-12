@@ -53,8 +53,3 @@ extension CanonicalSystemID {
         return NSImage(named: name) == nil ? nil : Image(name)
     }
 }
-
-/// Settings › General: show logos instead of names in the sidebar.
-enum SidebarStyle {
-    static let showsLogosKey = "sidebarShowsSystemLogos"
-}

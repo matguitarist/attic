@@ -53,7 +53,7 @@ struct LibraryBrowserView: View {
                     if multiSelection.count > 1 {
                         MultipleGamesSummaryView(games: multiSelection)
                     } else {
-                        GameDetailView(game: selectedGame)
+                        GameDetailView(game: selectedGame, system: selectedSystem)
                     }
                 }
                 .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
@@ -122,9 +122,29 @@ struct LibraryBrowserView: View {
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
 
+    /// The system shown, when the sidebar selection is one.
+    private var selectedSystem: GameSystem? {
+        guard case .system(let id) = currentSelection else { return nil }
+        return systems.first { $0.systemID == id }
+    }
+
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
+        // The system's logo, bare: in a glass capsule it'd read as a button.
+        if let logo = selectedSystem?.systemID.logo {
+            ToolbarItem {
+                logo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 150, maxHeight: 26)
+                    .accessibilityLabel(selectedSystem?.displayName ?? "")
+            }
+            .sharedBackgroundVisibility(.hidden)
+
+            ToolbarSpacer(.fixed)
+        }
+
         ToolbarItem {
             Slider(value: $cellScale, in: Self.cellScaleRange) {
                 Text("Cover Size")

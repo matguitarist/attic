@@ -8,6 +8,8 @@ import AtticPersistence
 /// styling all come from the system.
 struct GameDetailView: View {
     let game: Game?
+    /// The system being browsed, shown while no game is selected.
+    var system: GameSystem? = nil
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
@@ -89,6 +91,26 @@ struct GameDetailView: View {
             }
             // Fresh field state per game — see CommitOnBlurField.
             .id(game.persistentModelID)
+        } else if let system, let logo = system.systemID.logo {
+            VStack(spacing: 16) {
+                logo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 220, maxHeight: 110)
+                    .accessibilityLabel(system.displayName)
+                VStack(spacing: 4) {
+                    Text(system.displayName)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                    Text("\(system.gameCount) games")
+                        .foregroundStyle(.secondary)
+                }
+                Text("Select a game to see its details.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ContentUnavailableView(
                 "No Game Selected",
