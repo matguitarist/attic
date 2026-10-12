@@ -160,11 +160,9 @@ private struct SystemHelpView: View {
             }
             let extensions = fileExtensions
             if !extensions.isEmpty {
-                LabeledContent("File Types") {
-                    Text(extensions.map { ".\($0)" }.joined(separator: " "))
-                        .multilineTextAlignment(.trailing)
-                        .monospaced()
-                        .font(.callout)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("File Types")
+                    TagList(items: extensions.map { ".\($0)" })
                 }
             }
             if let recommendation {
@@ -236,11 +234,12 @@ private struct SystemHelpView: View {
                                 .joined(separator: " · "))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            if let dumps = SystemFacts.supportedDumps(requirement) {
-                                Text(dumps)
+                            if !requirement.supportedDumps.isEmpty {
+                                Text("Any model works, for example:")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
+                                TagList(items: requirement.supportedDumps)
+                                    .padding(.top, 2)
                             }
                         }
                         Spacer()

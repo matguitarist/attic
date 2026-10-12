@@ -131,16 +131,7 @@ struct SystemOverviewView: View {
                         Text("File Types")
                         // One tag per extension, so a line only ever breaks
                         // between two of them.
-                        FlowLayout(spacing: 4) {
-                            ForEach(extensions, id: \.self) { ext in
-                                Text(verbatim: ".\(ext)")
-                                    .monospaced()
-                                    .font(.caption)
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 2)
-                                    .background(.quaternary, in: .rect(cornerRadius: 4))
-                            }
-                        }
+                        TagList(items: extensions.map { ".\($0)" })
                     }
                 }
                 if let info {
@@ -176,8 +167,10 @@ struct SystemOverviewView: View {
                     Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
                         .compactMap { $0 }
                         .joined(separator: " · "))
-                    if let dumps = SystemFacts.supportedDumps(requirement) {
-                        Text(dumps)
+                    if !requirement.supportedDumps.isEmpty {
+                        Text("Any model works, for example:")
+                        TagList(items: requirement.supportedDumps)
+                            .padding(.top, 2)
                     }
                 }
             }
@@ -233,6 +226,27 @@ extension GameSystem {
             return (try? modelContext.fetch(descriptor).first)?.name
         case nil:
             return nil
+        }
+    }
+}
+
+/// Short values (file types, console models) as small tags that wrap
+/// between each other, never inside one.
+struct TagList: View {
+    let items: [String]
+
+    var body: some View {
+        FlowLayout(spacing: 4) {
+            ForEach(items, id: \.self) { item in
+                Text(verbatim: item)
+                    .monospaced()
+                    .font(.caption)
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(.quaternary, in: .rect(cornerRadius: 4))
+                    .textSelection(.enabled)
+            }
         }
     }
 }
