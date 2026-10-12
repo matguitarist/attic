@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 import AtticModels
 import AtticPersistence
 
@@ -43,4 +43,18 @@ extension Sequence where Element == GameSystem {
     func orderedByCategory() -> [GameSystem] {
         groupedByCategory().flatMap(\.systems)
     }
+}
+
+extension CanonicalSystemID {
+    /// The system's logo (Attic/Resources/SystemLogos.xcassets), in light
+    /// and dark versions; `nil` for systems without one.
+    var logo: Image? {
+        let name = "SystemLogo/\(rawValue)"
+        return NSImage(named: name) == nil ? nil : Image(name)
+    }
+}
+
+/// Settings › General: show logos instead of names in the sidebar.
+enum SidebarStyle {
+    static let showsLogosKey = "sidebarShowsSystemLogos"
 }

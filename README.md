@@ -54,3 +54,8 @@ release and adds it to the Sparkle appcast; its header lists what it needs.
 
 Attic is free and open source (MIT license). It isn't affiliated with
 RetroArch, libretro, ScreenScraper or TheGamesDB.
+
+System logos are by Dan Patrick
+([Console Logos Professionally Redrawn](https://archive.org/details/console-logos-professionally-redrawn-plus-official-versions)),
+not covered by the MIT license and never to be sold; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

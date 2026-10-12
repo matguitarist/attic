@@ -2539,6 +2539,16 @@
         }
       }
     },
+    "Logos by Dan Patrick. Systems without one show their name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logos de Dan Patrick. Les systèmes qui n’en ont pas affichent leur nom."
+          }
+        }
+      }
+    },
     "Look": {
       "localizations": {
         "fr": {
@@ -4088,6 +4098,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Show system logos in the sidebar": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les logos des systèmes dans la barre latérale"
           }
         }
       }

@@ -10,6 +10,7 @@ struct GeneralSettingsView: View {
     @State private var isChoosingEmulationFolder = false
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
+    @AppStorage(SidebarStyle.showsLogosKey) private var showsSystemLogos = true
     @State private var language = AppLanguage.current
 
     var body: some View {
@@ -32,6 +33,16 @@ struct GeneralSettingsView: View {
                     }
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
+            }
+
+            Section {
+                Toggle("Show system logos in the sidebar", isOn: $showsSystemLogos)
+            } header: {
+                Text("Library")
+            } footer: {
+                Text("Logos by Dan Patrick. Systems without one show their name.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section {

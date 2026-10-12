@@ -117,7 +117,7 @@ struct CabinetView: View {
         + systems
             .filter { $0.gameCount > 0 }
             .orderedByCategory()
-            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName) }
+            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.systemID.logo) }
     }
 
     private func send(_ command: CabinetEvent.Command) {
@@ -143,7 +143,12 @@ struct CabinetView: View {
 struct CabinetSection: Identifiable, Hashable {
     let selection: LibrarySelection
     let title: String
+    /// Systems show their logo instead of their name.
+    var logo: Image? = nil
     var id: LibrarySelection { selection }
+
+    static func == (lhs: Self, rhs: Self) -> Bool { lhs.selection == rhs.selection && lhs.title == rhs.title }
+    func hash(into hasher: inout Hasher) { hasher.combine(selection) }
 }
 
 // MARK: - Shelf (carousel + details)
@@ -369,9 +374,20 @@ private struct CabinetSystemBar: View {
                             Button {
                                 withAnimation(.snappy) { selection = section.selection }
                             } label: {
-                                Text(section.title)
-                                    .font(.title2.weight(isSelected ? .bold : .regular))
-                                    .foregroundStyle(isSelected ? .primary : .secondary)
+                                Group {
+                                    if let logo = section.logo {
+                                        logo
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(maxWidth: 220, maxHeight: 34)
+                                            .opacity(isSelected ? 1 : 0.55)
+                                            .accessibilityLabel(section.title)
+                                    } else {
+                                        Text(section.title)
+                                            .font(.title2.weight(isSelected ? .bold : .regular))
+                                            .foregroundStyle(isSelected ? .primary : .secondary)
+                                    }
+                                }
                                     .padding(.horizontal, 22)
                                     .padding(.vertical, 10)
                                     .glassEffect(isSelected ? .regular : .clear, in: Capsule())
