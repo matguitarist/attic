@@ -1652,6 +1652,16 @@
         }
       }
     },
+    "Emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateur"
+          }
+        }
+      }
+    },
     "Emulators": {
       "localizations": {
         "fr": {
@@ -1944,6 +1954,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeux sans infos"
+          }
+        }
+      }
+    },
+    "Games Played": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux joués"
           }
         }
       }
@@ -2856,6 +2876,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun"
+          }
+        }
+      }
+    },
+    "None chosen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun choisi"
           }
         }
       }

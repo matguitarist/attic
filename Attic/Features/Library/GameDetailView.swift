@@ -8,7 +8,7 @@ import AtticPersistence
 /// styling all come from the system.
 struct GameDetailView: View {
     let game: Game?
-    /// The system being browsed, named while no game is selected.
+    /// The system being browsed, summed up while no game is selected.
     var system: GameSystem? = nil
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
@@ -92,13 +92,7 @@ struct GameDetailView: View {
             // Fresh field state per game — see CommitOnBlurField.
             .id(game.persistentModelID)
         } else if let system {
-            // The system's logo is just above, in the inspector's toolbar.
-            ContentUnavailableView {
-                Text(system.displayName)
-            } description: {
-                Text("\(system.gameCount) games")
-                Text("Select a game to see its details.")
-            }
+            SystemOverviewView(system: system)
         } else {
             ContentUnavailableView(
                 "No Game Selected",
