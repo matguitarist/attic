@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticModels
 import AtticPersistence
 
 /// A plain native `List(selection:)` sidebar, so macOS draws the selection,
@@ -67,28 +68,44 @@ struct LibrarySidebarView: View {
             }
 
             // One section per kind of machine (Consoles, Handhelds, Arcade,
-            // Computers), only for kinds the library actually has.
+            // Computers), only for kinds the library actually has, with the
+            // systems under a small heading per maker (Nintendo, Sega…).
             ForEach(systems.groupedByCategory(), id: \.category) { group in
-                Section(group.category.title) {
-                    ForEach(group.systems) { system in
-                        Label(system.displayName, systemImage: group.category.symbolName)
-                            .lineLimit(1)
-                            .badge(system.gameCount)
-                            .tag(LibrarySelection.system(system.systemID))
-                            .contextMenu {
-                                Button("System Settings…") { systemSettingsEditor.system = system }
-                                Divider()
-                                ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
-                                Divider()
-                                Button("About This System") {
-                                    helpNavigator.open(.system(system.systemID), with: openWindow)
-                                }
-                            }
+                Section {
+                    ForEach(group.systems.groupedByMaker(), id: \.maker) { makerGroup in
+                        // Untagged, so it can't be selected.
+                        Text(makerGroup.maker)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 4)
+                        ForEach(makerGroup.systems) { system in
+                            systemRow(system, category: group.category)
+                        }
                     }
+                } header: {
+                    Text(group.category.title)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.primary)
                 }
             }
         }
         .listStyle(.sidebar)
+    }
+
+    private func systemRow(_ system: GameSystem, category: SystemCategory) -> some View {
+        Label(system.displayName, systemImage: category.symbolName)
+            .lineLimit(1)
+            .badge(system.gameCount)
+            .tag(LibrarySelection.system(system.systemID))
+            .contextMenu {
+                Button("System Settings…") { systemSettingsEditor.system = system }
+                Divider()
+                ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
+                Divider()
+                Button("About This System") {
+                    helpNavigator.open(.system(system.systemID), with: openWindow)
+                }
+            }
     }
 
 }

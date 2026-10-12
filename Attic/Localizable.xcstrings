@@ -2667,6 +2667,16 @@
         }
       }
     },
+    "Multi-System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multi-systèmes"
+          }
+        }
+      }
+    },
     "Name": {
       "localizations": {
         "fr": {
