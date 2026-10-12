@@ -129,7 +129,7 @@ private struct SystemHelpView: View {
                     Text(definition?.displayName ?? systemID.rawValue)
                         .font(.title2.bold())
                     if let info {
-                        Text(verbatim: "\(info.manufacturer) · \(info.year.formatted(.number.grouping(.never))) · \((definition?.category ?? .console).title)")
+                        Text(verbatim: SystemFacts.summary(for: systemID) ?? info.manufacturer)
                             .foregroundStyle(.secondary)
                     }
                     if let count = librarySystems.first(where: { $0.systemID == systemID })?.gameCount, count > 0 {
@@ -270,6 +270,22 @@ private struct SystemHelpView: View {
     // MARK: - Data
 
     private func romFolderNames(_ definition: SystemDefinition) -> String {
+        SystemFacts.romFolderNames(definition)
+    }
+
+    private var fileExtensions: [String] {
+        SystemFacts.fileExtensions(for: systemID, coreInfo: emulationFolderStore.folder.coreInfo)
+    }
+
+    private func biosIsPresent(_ requirement: BIOSRequirement) -> Bool {
+        FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
+    }
+}
+
+/// Facts about a system shown both on its help page and in the library's
+/// system overview.
+enum SystemFacts {
+    static func romFolderNames(_ definition: SystemDefinition) -> String {
         definition.allShortNames
             .map { "ROMs/\($0)" }
             .joined(separator: "  ")
@@ -277,12 +293,12 @@ private struct SystemHelpView: View {
 
     /// Everything the system's emulators accept, read from libretro's core
     /// info files; arcade boards take zipped romsets whatever the core says.
-    private var fileExtensions: [String] {
-        guard let recommendation else { return [] }
-        if definition?.category == .arcade, !recommendation.cores.isEmpty { return ["zip", "7z"] }
+    static func fileExtensions(for systemID: CanonicalSystemID, coreInfo: URL) -> [String] {
+        guard let recommendation = EmulatorCatalog.recommendation(for: systemID) else { return [] }
+        if SystemTaxonomy.definition(for: systemID)?.category == .arcade, !recommendation.cores.isEmpty { return ["zip", "7z"] }
         var seen: [String] = []
         for core in recommendation.cores {
-            for ext in RetroArchCoreInfo.supportedExtensions(ofCore: core.coreIdentifier, infoDirectory: emulationFolderStore.folder.coreInfo)
+            for ext in RetroArchCoreInfo.supportedExtensions(ofCore: core.coreIdentifier, infoDirectory: coreInfo)
             where !seen.contains(ext.lowercased()) {
                 seen.append(ext.lowercased())
             }
@@ -292,7 +308,10 @@ private struct SystemHelpView: View {
         return seen
     }
 
-    private func biosIsPresent(_ requirement: BIOSRequirement) -> Bool {
-        FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
+    /// "Nintendo · 1990 · Console".
+    static func summary(for systemID: CanonicalSystemID) -> String? {
+        guard let info = SystemHelpContent.info(for: systemID) else { return nil }
+        let category = (SystemTaxonomy.definition(for: systemID)?.category ?? .console).title
+        return "\(info.manufacturer) · \(info.year.formatted(.number.grouping(.never))) · \(category)"
     }
 }

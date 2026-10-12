@@ -34,6 +34,10 @@ struct SystemOverviewView: View {
                         Text(system.displayName)
                             .font(.headline)
                             .multilineTextAlignment(.center)
+                        if let summary = SystemFacts.summary(for: system.systemID) {
+                            Text(verbatim: summary)
+                                .foregroundStyle(.secondary)
+                        }
                         Text("\(system.gameCount) games")
                             .foregroundStyle(.secondary)
                     }
@@ -50,6 +54,8 @@ struct SystemOverviewView: View {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }
             }
+
+            informationSection
 
             if !biosRequirements.isEmpty {
                 biosSection
@@ -86,6 +92,41 @@ struct SystemOverviewView: View {
         .task {
             for await _ in NotificationCenter.default.notifications(named: NSApplication.didBecomeActiveNotification) {
                 biosCheck += 1
+            }
+        }
+    }
+
+    // MARK: - Information
+
+    @ViewBuilder
+    private var informationSection: some View {
+        let definition = SystemTaxonomy.definition(for: system.systemID)
+        let extensions = SystemFacts.fileExtensions(for: system.systemID, coreInfo: emulationFolderStore.folder.coreInfo)
+        let info = SystemHelpContent.info(for: system.systemID)
+        if definition != nil || !extensions.isEmpty || info != nil {
+            Section("Information") {
+                if let definition {
+                    LabeledContent("ROM Folder") {
+                        Text(SystemFacts.romFolderNames(definition))
+                            .textSelection(.enabled)
+                            .monospaced()
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                if !extensions.isEmpty {
+                    LabeledContent("File Types") {
+                        Text(extensions.map { ".\($0)" }.joined(separator: " "))
+                            .textSelection(.enabled)
+                            .monospaced()
+                            .font(.callout)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                if let info {
+                    Link(destination: info.wikipediaURL) {
+                        Label("Wikipedia", systemImage: "safari")
+                    }
+                }
             }
         }
     }
