@@ -14,6 +14,7 @@ struct SystemOverviewView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
     @Environment(HelpNavigator.self) private var helpNavigator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
 
     var body: some View {
         Form {
@@ -41,9 +42,14 @@ struct SystemOverviewView: View {
             Section {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
                 Button("System Settings…") { systemSettingsEditor.system = system }
+                ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }
+            }
+
+            if !biosRequirements.isEmpty {
+                biosSection
             }
 
             Section("Play History") {
@@ -74,6 +80,45 @@ struct SystemOverviewView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    // MARK: - BIOS
+
+    /// What the system's recommended emulator needs. Attic only checks for
+    /// these; they're dumped from hardware the user owns.
+    private var biosRequirements: [BIOSRequirement] {
+        EmulatorCatalog.recommendation(for: system.systemID)?.bios ?? []
+    }
+
+    private var biosSection: some View {
+        Section {
+            ForEach(biosRequirements, id: \.fileName) { requirement in
+                let present = FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
+                LabeledContent {
+                    Label(present ? "Found" : "Missing",
+                          systemImage: present ? "checkmark.circle.fill" : (requirement.required ? "exclamationmark.triangle.fill" : "circle"))
+                        .foregroundStyle(present ? .green : (requirement.required ? .orange : .secondary))
+                } label: {
+                    Text(requirement.fileName)
+                        .monospaced()
+                        .textSelection(.enabled)
+                    Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
+                        .compactMap { $0 }
+                        .joined(separator: " · "))
+                }
+            }
+            Button("Show BIOS Folder") {
+                let folder = emulationFolderStore.folder.bios
+                try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+                NSWorkspace.shared.open(folder)
+            }
+        } header: {
+            Text("BIOS")
+        } footer: {
+            Text("Dump BIOS files from hardware you own; Attic never downloads them.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 
     private var history: (played: Int, favorites: Int, playtime: Double, lastPlayed: Game?) {

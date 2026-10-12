@@ -1572,6 +1572,16 @@
         }
       }
     },
+    "Dump BIOS files from hardware you own; Attic never downloads them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extrayez les fichiers BIOS de consoles que vous possédez ; Attic ne les télécharge jamais."
+          }
+        }
+      }
+    },
     "Dumps work best as .rvz (compressed, lossless) or .iso.": {
       "localizations": {
         "fr": {
@@ -4109,6 +4119,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pixels nets"
+          }
+        }
+      }
+    },
+    "Show BIOS Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le dossier BIOS"
           }
         }
       }
