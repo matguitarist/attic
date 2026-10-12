@@ -27,6 +27,8 @@ struct SystemSettingsView: View {
     @State private var settings = SystemSettings()
     @State private var isBrowsingShaders = false
     @State private var isChoosingShaderFile = false
+    /// What each setting is on Default, read from the emulator.
+    @State private var emulatorDefaults = SystemSettings()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -82,7 +84,10 @@ struct SystemSettingsView: View {
                 settings.look = nil
             }
         }
-        .onAppear { settings = system.settings }
+        .onAppear {
+            settings = system.settings
+            emulatorDefaults = emulationFolderStore.folder.currentDefaults(for: backend)
+        }
         .onChange(of: settings) { _, newValue in
             system.settings = newValue
             try? modelContext.save()
@@ -111,7 +116,7 @@ struct SystemSettingsView: View {
                 shaderStatus
             }
             if offered.contains(.integerScaling) {
-                defaultablePicker("Integer scaling", selection: $settings.integerScaling)
+                defaultablePicker("Integer scaling", selection: $settings.integerScaling, default: emulatorDefaults.integerScaling)
             }
         } header: {
             Text("Picture")
@@ -129,7 +134,7 @@ struct SystemSettingsView: View {
         Section {
             if offered.contains(.internalResolution) {
                 Picker("Internal resolution", selection: $settings.internalResolution) {
-                    Text("Default").tag(Int?.none)
+                    Text(defaultTitle(emulatorDefaults.internalResolution.map(resolutionTitle))).tag(Int?.none)
                     Divider()
                     ForEach(SystemSettingsSupport.resolutionChoices(for: backend), id: \.self) { scale in
                         Text(resolutionTitle(scale)).tag(Optional(scale))
@@ -137,16 +142,16 @@ struct SystemSettingsView: View {
                 }
             }
             if offered.contains(.widescreen) {
-                defaultablePicker("Widescreen (16:9)", selection: $settings.widescreen)
+                defaultablePicker("Widescreen (16:9)", selection: $settings.widescreen, default: emulatorDefaults.widescreen)
             }
             if offered.contains(.geometryCorrection) {
-                defaultablePicker("Fix wobbly polygons (PGXP)", selection: $settings.geometryCorrection)
+                defaultablePicker("Fix wobbly polygons (PGXP)", selection: $settings.geometryCorrection, default: emulatorDefaults.geometryCorrection)
             }
             if offered.contains(.unlimitedSprites) {
-                defaultablePicker("Remove sprite flicker", selection: $settings.unlimitedSprites)
+                defaultablePicker("Remove sprite flicker", selection: $settings.unlimitedSprites, default: emulatorDefaults.unlimitedSprites)
             }
             if offered.contains(.lcdColors) {
-                defaultablePicker("Handheld screen colors", selection: $settings.lcdColors)
+                defaultablePicker("Handheld screen colors", selection: $settings.lcdColors, default: emulatorDefaults.lcdColors)
             }
         } header: {
             Text("Enhancements")
@@ -160,18 +165,18 @@ struct SystemSettingsView: View {
         Section {
             if offered.contains(.runAhead) {
                 Picker("Reduce input lag (run-ahead)", selection: $settings.runAheadFrames) {
-                    Text("Default").tag(Int?.none)
+                    Text(defaultTitle(emulatorDefaults.runAheadFrames.map(runAheadTitle))).tag(Int?.none)
                     Divider()
-                    Text("Off").tag(Optional(0))
-                    Text("1 frame").tag(Optional(1))
-                    Text("2 frames").tag(Optional(2))
+                    ForEach([0, 1, 2], id: \.self) { frames in
+                        Text(runAheadTitle(frames)).tag(Optional(frames))
+                    }
                 }
             }
             if offered.contains(.rewind) {
-                defaultablePicker("Rewind", selection: $settings.rewind)
+                defaultablePicker("Rewind", selection: $settings.rewind, default: emulatorDefaults.rewind)
             }
             if offered.contains(.resume) {
-                defaultablePicker("Resume where you left off", selection: $settings.resume)
+                defaultablePicker("Resume where you left off", selection: $settings.resume, default: emulatorDefaults.resume)
             }
         } header: {
             Text("Gameplay")
@@ -181,9 +186,9 @@ struct SystemSettingsView: View {
         }
     }
 
-    private func defaultablePicker(_ title: LocalizedStringKey, selection: Binding<Bool?>) -> some View {
+    private func defaultablePicker(_ title: LocalizedStringKey, selection: Binding<Bool?>, default defaultValue: Bool?) -> some View {
         Picker(title, selection: selection) {
-            Text("Default").tag(Bool?.none)
+            Text(defaultTitle(defaultValue.map { $0 ? String(localized: "On") : String(localized: "Off") })).tag(Bool?.none)
             Divider()
             Text("On").tag(Optional(true))
             Text("Off").tag(Optional(false))
@@ -219,10 +224,20 @@ struct SystemSettingsView: View {
 
     /// "Default", naming the retro look when that's what Default means.
     private var defaultLookTitle: String {
-        if retroLookByDefault, let look = SystemSettingsSupport.defaultLook(for: system.systemID) {
-            return String(localized: "Default (\(look.title))")
+        defaultTitle(retroLookByDefault ? SystemSettingsSupport.defaultLook(for: system.systemID)?.title : nil)
+    }
+
+    /// "Default (On)": what the emulator does when Attic leaves it alone.
+    private func defaultTitle(_ value: String?) -> String {
+        value.map { String(localized: "Default (\($0))") } ?? String(localized: "Default")
+    }
+
+    private func runAheadTitle(_ frames: Int) -> String {
+        switch frames {
+        case 0: String(localized: "Off")
+        case 1: String(localized: "1 frame")
+        default: String(localized: "\(frames) frames")
         }
-        return String(localized: "Default")
     }
 
     /// Says when the chosen look can't be shown, and offers the download.

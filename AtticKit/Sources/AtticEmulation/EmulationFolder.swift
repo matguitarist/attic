@@ -177,6 +177,84 @@ public struct EmulationFolder: Sendable, Hashable {
         try writeOwned(result.owned, for: "retroarch-core-options")
     }
 
+    // MARK: - What "Default" means
+
+    /// What each System Setting is when left on Default: the emulator's
+    /// current value, as the user set it (not one Attic set for a launch).
+    /// A setting stays `nil` when its value can't be told apart, such as a
+    /// resolution that isn't one of Attic's choices.
+    public func currentDefaults(
+        for backend: SystemSettingsBackend,
+        dolphinGFXFile: URL = FileManager.default.homeDirectoryForCurrentUser
+            .appending(path: "Library/Application Support/Dolphin/Config/GFX.ini")
+    ) -> SystemSettings {
+        var defaults = SystemSettings()
+        switch backend {
+        case .retroArch(let core):
+            let config = Self.parseRetroArchConfig((try? String(contentsOf: retroArchConfigFile, encoding: .utf8)) ?? "")
+            let value = Self.usersOwnValue(in: config, owned: readOwned("retroarch-system") ?? [:]) {
+                SystemSettingsSupport.retroArchDefaults[$0]
+            }
+            defaults.integerScaling = value("video_scale_integer").map { $0 == "true" }
+            defaults.runAheadFrames = value("run_ahead_enabled") == "true" ? value("run_ahead_frames").flatMap { Int($0) } : 0
+            defaults.rewind = value("rewind_enable").map { $0 == "true" }
+            defaults.resume = value("savestate_auto_load").map { $0 == "true" }
+
+            let options = Self.parseRetroArchConfig((try? String(contentsOf: retroArchCoreOptionsFile, encoding: .utf8)) ?? "")
+            let option = Self.usersOwnValue(in: options, owned: readOwned("retroarch-core-options") ?? [:], fallback: SystemSettingsSupport.coreOptionDefault)
+            guard let map = SystemSettingsSupport.coreOptions[core] else { break }
+            func matches(_ wanted: [String: String]) -> Bool { wanted.allSatisfy { option($0.key) == $0.value } }
+            func flag(_ mapping: (@Sendable (Bool) -> [String: String])?) -> Bool? {
+                guard let mapping else { return nil }
+                return matches(mapping(true)) ? true : matches(mapping(false)) ? false : nil
+            }
+            if let resolution = map.resolution {
+                defaults.internalResolution = map.resolutionChoices.first { matches(resolution($0)) }
+            }
+            defaults.widescreen = flag(map.widescreen)
+            defaults.geometryCorrection = flag(map.geometryCorrection)
+            defaults.unlimitedSprites = flag(map.unlimitedSprites)
+            defaults.lcdColors = flag(map.lcdColors)
+
+        case .duckStation:
+            let file = configHome(for: EmulatorCatalog.duckStation).appending(path: "Library/Application Support/DuckStation/settings.ini")
+            let ini = IniFile(contents: (try? String(contentsOf: file, encoding: .utf8)) ?? "")
+            let owned = readOwnedSettings("duckstation-system") ?? [:]
+            // A value Attic wrote is removed again on Default, back to
+            // DuckStation's own default.
+            func value(_ section: String, _ key: String) -> String? {
+                let current = ini.value(section: section, key: key)
+                return current == owned["\(section)/\(key)"] ? nil : current
+            }
+            defaults.internalResolution = Int(value("GPU", "ResolutionScale") ?? "1")
+            defaults.widescreen = (value("GPU", "WidescreenHack") ?? "false") == "true"
+            defaults.geometryCorrection = (value("GPU", "PGXPEnable") ?? "false") == "true"
+            defaults.rewind = (value("Main", "RewindEnable") ?? "false") == "true"
+
+        case .dolphin:
+            // Attic's Dolphin settings only last one run, so the file
+            // always has the user's own.
+            let ini = IniFile(contents: (try? String(contentsOf: dolphinGFXFile, encoding: .utf8)) ?? "")
+            defaults.internalResolution = Int(ini.value(section: "Settings", key: "InternalResolution") ?? "1")
+            defaults.widescreen = (ini.value(section: "Settings", key: "wideScreenHack") ?? "False").lowercased() == "true"
+
+        case .other:
+            break
+        }
+        return defaults
+    }
+
+    /// Reads a key the way the user has it: the value from before Attic
+    /// set it, while Attic's own value is still there.
+    static func usersOwnValue(in current: [String: String], owned: [String: OwnedValue], fallback: @escaping (String) -> String?) -> (String) -> String? {
+        { key in
+            if let record = owned[key], current[key] == record.written {
+                return record.original ?? fallback(key)
+            }
+            return current[key] ?? fallback(key)
+        }
+    }
+
     // MARK: - Shaders
 
     /// libretro's slang shader pack, which Attic downloads on request.

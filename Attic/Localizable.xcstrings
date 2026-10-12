@@ -164,6 +164,16 @@
         }
       }
     },
+    "%lld frames": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld images"
+          }
+        }
+      }
+    },
     "%lld games": {
       "localizations": {
         "en": {
@@ -294,6 +304,7 @@
       }
     },
     "2 frames": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {

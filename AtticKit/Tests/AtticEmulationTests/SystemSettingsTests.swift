@@ -268,6 +268,44 @@ struct SystemSettingsLaunchTests {
         #expect(folder.shaderPackInfo?.build == build)
     }
 
+    @Test func defaultsAreTheUsersOwnValuesNotAttics() throws {
+        try folder.createStructure()
+        try "video_scale_integer = \"true\"\nrewind_enable = \"false\"\n".write(to: folder.retroArchConfigFile, atomically: true, encoding: .utf8)
+        try "swanstation_GPU_ResolutionScale = \"3\"\n".write(to: folder.retroArchCoreOptionsFile, atomically: true, encoding: .utf8)
+
+        let backend = SystemSettingsBackend.retroArch(coreIdentifier: "swanstation_libretro")
+        var defaults = folder.currentDefaults(for: backend)
+        #expect(defaults.integerScaling == true)
+        #expect(defaults.rewind == false)
+        #expect(defaults.runAheadFrames == 0)
+        #expect(defaults.internalResolution == 3)
+        #expect(defaults.widescreen == false)
+
+        // While Attic's own value is in RetroArch's config, Default still
+        // means the user's.
+        var gba = SystemSettings()
+        gba.integerScaling = false
+        _ = try folder.prepareRetroArchLaunch(for: .gba, systemSettings: gba)
+        try "video_scale_integer = \"false\"\n".write(to: folder.retroArchConfigFile, atomically: true, encoding: .utf8)
+        defaults = folder.currentDefaults(for: backend)
+        #expect(defaults.integerScaling == true)
+    }
+
+    @Test func duckStationAndDolphinDefaultsComeFromTheirFiles() throws {
+        let duckStation = folder.configHome(for: EmulatorCatalog.duckStation).appending(path: "Library/Application Support/DuckStation/settings.ini")
+        try FileManager.default.createDirectory(at: duckStation.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try "[GPU]\nResolutionScale = 4\n".write(to: duckStation, atomically: true, encoding: .utf8)
+        let duck = folder.currentDefaults(for: .duckStation)
+        #expect(duck.internalResolution == 4)
+        #expect(duck.widescreen == false)
+
+        let gfx = folder.root.appending(path: "GFX.ini")
+        try "[Settings]\nwideScreenHack = True\n".write(to: gfx, atomically: true, encoding: .utf8)
+        let dolphin = folder.currentDefaults(for: .dolphin, dolphinGFXFile: gfx)
+        #expect(dolphin.internalResolution == 1)
+        #expect(dolphin.widescreen == true)
+    }
+
     @Test func extraArgumentsGoBeforeTheCore() {
         let core = URL(fileURLWithPath: "/cores/snes9x_libretro.dylib")
         let rom = URL(fileURLWithPath: "/roms/game.sfc")
