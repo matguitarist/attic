@@ -69,7 +69,9 @@ public enum SystemTaxonomy {
     /// auto-suggesting a default core in Settings, not folder
     /// detection/scraping, which key off `batoceraShortName`/`esdeShortName`
     /// and `CanonicalSystemID` instead.
-    public static let allSystems: [SystemDefinition] = [
+    public static let allSystems: [SystemDefinition] = systems + ROMHacks.definitions(basedOn: systems)
+
+    private static let systems: [SystemDefinition] = [
         SystemDefinition(
             canonicalID: .nes,
             displayName: "Nintendo Entertainment System",
@@ -588,6 +590,134 @@ public enum SystemTaxonomy {
             esdeShortName: "amstradcpc",
             retroArchSystemIDs: ["cpc", "amstrad_cpc"],
             category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .scummvm,
+            displayName: "ScummVM",
+            batoceraShortName: "scummvm",
+            esdeShortName: "scummvm",
+            retroArchSystemIDs: ["scummvm"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .doom,
+            displayName: "DOOM",
+            batoceraShortName: "prboom",
+            esdeShortName: "doom",
+            retroArchSystemIDs: ["doom", "prboom"],
+            category: .computer, otherShortNames: ["prboom"]
+        ),
+        SystemDefinition(
+            canonicalID: .quake,
+            displayName: "Quake",
+            batoceraShortName: "tyrquake",
+            esdeShortName: "quake",
+            retroArchSystemIDs: ["quake_1", "quake", "tyrquake"],
+            category: .computer, otherShortNames: ["tyrquake"]
+        ),
+        SystemDefinition(
+            canonicalID: .easyrpg,
+            displayName: "EasyRPG",
+            batoceraShortName: "easyrpg",
+            esdeShortName: "easyrpg",
+            retroArchSystemIDs: ["easyrpg"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .x68000,
+            displayName: "Sharp X68000",
+            batoceraShortName: "x68000",
+            esdeShortName: "x68000",
+            retroArchSystemIDs: ["sharp_x68000", "x68000"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .pc88,
+            displayName: "NEC PC-8801",
+            batoceraShortName: "pc88",
+            esdeShortName: "pc88",
+            retroArchSystemIDs: ["pc_88", "pc88"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .pc98,
+            displayName: "NEC PC-9801",
+            batoceraShortName: "pc98",
+            esdeShortName: "pc98",
+            retroArchSystemIDs: ["pc_98", "pc98"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .pico8,
+            displayName: "PICO-8",
+            batoceraShortName: "pico8",
+            esdeShortName: "pico8",
+            retroArchSystemIDs: ["pico8"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .tic80,
+            displayName: "TIC-80",
+            batoceraShortName: "tic80",
+            esdeShortName: "tic80",
+            retroArchSystemIDs: ["tic80"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .wasm4,
+            displayName: "WASM-4",
+            batoceraShortName: "wasm4",
+            esdeShortName: "wasm4",
+            retroArchSystemIDs: ["wasm4"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .arduboy,
+            displayName: "Arduboy",
+            batoceraShortName: "arduboy",
+            esdeShortName: "arduboy",
+            retroArchSystemIDs: ["arduboy"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .vic20,
+            displayName: "Commodore VIC-20",
+            batoceraShortName: "vic20",
+            esdeShortName: "vic20",
+            retroArchSystemIDs: ["commodore_vic20", "vic20"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .plus4,
+            displayName: "Commodore Plus/4",
+            batoceraShortName: "plus4",
+            esdeShortName: "plus4",
+            retroArchSystemIDs: ["commodore_plus4", "plus4"],
+            category: .computer, otherShortNames: ["c16"]
+        ),
+        SystemDefinition(
+            canonicalID: .c128,
+            displayName: "Commodore 128",
+            batoceraShortName: "c128",
+            esdeShortName: "c128",
+            retroArchSystemIDs: ["commodore_c128", "c128"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .zx81,
+            displayName: "Sinclair ZX81",
+            batoceraShortName: "zx81",
+            esdeShortName: "zx81",
+            retroArchSystemIDs: ["zx81"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .macintosh,
+            displayName: "Apple Macintosh",
+            batoceraShortName: "macintosh",
+            esdeShortName: "macintosh",
+            retroArchSystemIDs: ["mac68k", "macintosh"],
+            category: .computer, otherShortNames: ["mac"]
         ),
         SystemDefinition(
             canonicalID: .mame,

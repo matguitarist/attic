@@ -133,7 +133,12 @@ final class LaunchCoordinator {
             // archive itself (FinalBurn Neo reads the zip) — never extract.
             let systemID = CanonicalSystemID(game.systemCanonicalID)
             // DOSBox Pure likewise runs zipped DOS games as they are.
-            let romURL = SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos
+            // So do EasyRPG (zipped RPG Maker games) and game folders
+            // (ScummVM, Quake), which get the file inside that the core reads.
+            let isFolder = (try? game.romAbsoluteURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+            let romURL = isFolder
+                ? SystemROMExtensions.launchFile(forGameFolder: game.romAbsoluteURL)
+                : SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos || systemID == .easyrpg
                 ? game.romAbsoluteURL
                 : zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
             // Config, BIOS, saves and states all come from the Emulation

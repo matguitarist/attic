@@ -60,7 +60,7 @@ final class RetroArchSettingsStore {
     }
 
     func availableCores(for canonicalID: CanonicalSystemID) -> [AvailableCore] {
-        availableCores.filter { $0.systems.contains(canonicalID) }
+        availableCores.filter { $0.systems.contains(canonicalID.baseSystem) }
     }
 
     private static var knownInstallLocations: [URL] {
@@ -76,8 +76,8 @@ final class RetroArchSettingsStore {
     /// info file is missing its `database` field).
     func cores(for canonicalID: CanonicalSystemID) -> [RetroArchCoreInfo] {
         cores.filter {
-            $0.systems.contains(canonicalID)
-                || EmulatorCatalog.systems(forCore: $0.coreIdentifier).contains(canonicalID)
+            $0.systems.contains(canonicalID.baseSystem)
+                || EmulatorCatalog.systems(forCore: $0.coreIdentifier).contains(canonicalID.baseSystem)
         }
     }
 

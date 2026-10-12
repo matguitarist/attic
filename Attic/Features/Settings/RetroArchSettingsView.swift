@@ -241,7 +241,7 @@ private struct SystemEmulatorRow: View {
                 }
             }
 
-            let matchingProfiles = profiles.filter { $0.assignedSystemIDs.contains(system.systemID) }
+            let matchingProfiles = profiles.filter { $0.assignedSystemIDs.contains(system.systemID) || $0.assignedSystemIDs.contains(system.systemID.baseSystem) }
             if !matchingProfiles.isEmpty {
                 Section("Standalone Emulators") {
                     ForEach(matchingProfiles) { profile in

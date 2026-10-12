@@ -89,3 +89,18 @@ struct VersionedAssetTests {
         #expect(EmulatorCatalog.recommendation(for: .psvita)?.standalone == [EmulatorCatalog.vita3K])
     }
 }
+
+struct NewSystemsCatalogTests {
+    @Test func hacksUseTheBaseSystemsEmulators() {
+        #expect(EmulatorCatalog.recommendation(for: .snesh)?.systemID == .snes)
+        #expect(EmulatorCatalog.recommendation(for: .psxh)?.standalone == [EmulatorCatalog.duckStation])
+    }
+
+    @Test func newCoresMapToTheirSystems() {
+        #expect(LibretroDatabase.system(forDatabaseName: "Sharp - X68000") == .x68000)
+        #expect(LibretroDatabase.system(forDatabaseName: "TIC-80") == .tic80)
+        #expect(SystemTaxonomy.system(forRetroArchSystemID: "mac68k")?.canonicalID == .macintosh)
+        #expect(EmulatorCatalog.recommendation(for: .pc88)?.bios.filter(\.required).map(\.fileName) == ["quasi88/n88.rom", "quasi88/n88_0.rom"])
+        #expect(EmulatorCatalog.coreSystemFiles["scummvm_libretro"] == "ScummVM.zip")
+    }
+}

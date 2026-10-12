@@ -46,6 +46,19 @@ public enum ScreenScraperSystemID {
         .ps3: 59,
         .ps4: 60,
         .psvita: 62,
+        .scummvm: 123,
+        .doom: 135,
+        .quake: 135,
+        .x68000: 79,
+        .pc88: 221,
+        .pc98: 208,
+        .pico8: 234,
+        .tic80: 222,
+        .vic20: 73,
+        .plus4: 99,
+        .c128: 66,
+        .zx81: 77,
+        .macintosh: 146,
         .xbox: 32,
         .msx: 113,
         .dos: 135,
@@ -76,6 +89,6 @@ public enum ScreenScraperSystemID {
     ]
 
     public static func systemeID(for canonicalID: CanonicalSystemID) -> Int? {
-        byCanonicalID[canonicalID]
+        byCanonicalID[canonicalID.baseSystem]
     }
 }

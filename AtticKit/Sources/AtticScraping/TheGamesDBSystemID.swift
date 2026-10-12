@@ -45,6 +45,15 @@ public enum TheGamesDBSystemID {
         .ps3: 12,
         .ps4: 4919,
         .psvita: 39,
+        .scummvm: 1,
+        .doom: 1,
+        .quake: 1,
+        .x68000: 4931,
+        .pc88: 4933,
+        .pc98: 4934,
+        .vic20: 4945,
+        .c128: 4946,
+        .macintosh: 37,
         .xbox: 14,
         .msx: 4929,
         .dos: 1,
@@ -81,6 +90,6 @@ public enum TheGamesDBSystemID {
     ]
 
     public static func platformID(for canonicalID: CanonicalSystemID) -> Int? {
-        byCanonicalID[canonicalID]
+        byCanonicalID[canonicalID.baseSystem]
     }
 }

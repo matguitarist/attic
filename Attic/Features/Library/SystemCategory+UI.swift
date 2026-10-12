@@ -133,7 +133,7 @@ extension CanonicalSystemID {
     /// The system's logo (Attic/Resources/SystemLogos.xcassets), in light
     /// and dark versions; `nil` for systems without one.
     var logo: Image? {
-        let name = "SystemLogo/\(rawValue)"
+        let name = "SystemLogo/\(baseSystem.rawValue)"
         return NSImage(named: name) == nil ? nil : Image(name)
     }
 }

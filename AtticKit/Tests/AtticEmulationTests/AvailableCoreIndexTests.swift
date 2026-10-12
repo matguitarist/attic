@@ -20,10 +20,10 @@ struct AvailableCoreIndexTests {
             systemid = "playstation"
             database = "Sony - PlayStation"
             """)
-        try write("tic80_libretro", """
+        try write("madeup_libretro", """
             corename = "LRPS2"
-            systemid = "tic80"
-            database = "TIC-80"
+            systemid = "madeup"
+            database = "Made-Up Computer"
             """)
         try write("x86only_libretro", """
             corename = "Not on arm64"
@@ -45,7 +45,7 @@ struct AvailableCoreIndexTests {
 
     @Test func coresForSystemsAtticDoesntKnowAreLeftOut() {
         let identifiers = AvailableCoreIndex.scan(infoDirectory: infoDirectory).map(\.coreIdentifier)
-        #expect(!identifiers.contains("tic80_libretro"))
+        #expect(!identifiers.contains("madeup_libretro"))
     }
 
     @Test func availabilityListFiltersToBuiltCores() throws {

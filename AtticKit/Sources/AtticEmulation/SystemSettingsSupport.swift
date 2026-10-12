@@ -47,7 +47,7 @@ public enum SystemSettingsSupport {
             if options?.geometryCorrection != nil { settings.append(.geometryCorrection) }
             if options?.unlimitedSprites != nil { settings.append(.unlimitedSprites) }
             if options?.lcdColors != nil { settings.append(.lcdColors) }
-            if !threeDSystems.contains(system) { settings += [.runAhead, .rewind] }
+            if !threeDSystems.contains(system.baseSystem) { settings += [.runAhead, .rewind] }
             settings.append(.resume)
             return settings
         case .duckStation:
@@ -78,7 +78,7 @@ public enum SystemSettingsSupport {
     /// scanlines for 2D consoles and arcade, an LCD grid for handhelds.
     /// 3D systems and computers keep RetroArch's own setting.
     public static func defaultLook(for system: CanonicalSystemID) -> SystemSettings.Look? {
-        guard !threeDSystems.contains(system) else { return nil }
+        guard !threeDSystems.contains(system.baseSystem) else { return nil }
         switch SystemTaxonomy.definition(for: system)?.category {
         case .console, .arcade: return .crt
         case .handheld: return .lcd

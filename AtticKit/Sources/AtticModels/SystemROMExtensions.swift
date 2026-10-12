@@ -61,6 +61,22 @@ public enum SystemROMExtensions {
         // Vita3K plays games installed in it; a .psvita file names one by
         // its title ID (ES-DE's convention).
         .psvita: ["psvita"],
+        .scummvm: ["scummvm"],
+        .doom: ["iwad", "pk3", "pwad", "wad"],
+        .quake: ["quake"],
+        .easyrpg: ["easyrpg", "zip"],
+        .x68000: ["2hd", "88d", "cmd", "d88", "dim", "dup", "hdf", "hdm", "img", "m3u", "xdf", "zip"],
+        .pc88: ["d88", "m3u", "u88", "zip"],
+        .pc98: ["2hd", "88d", "98d", "cmd", "d88", "d98", "dup", "fdd", "fdi", "hdd", "hdi", "hdm", "hdn", "m3u", "nhd", "tfd", "thd", "xdf", "zip"],
+        .pico8: ["p8", "png"],
+        .tic80: ["tic"],
+        .wasm4: ["wasm"],
+        .arduboy: ["hex"],
+        .vic20: ["20", "40", "60", "a0", "b0", "crt", "d64", "d71", "d80", "d81", "d82", "g64", "m3u", "prg", "rom", "t64", "tap", "x64", "zip"],
+        .plus4: ["crt", "d64", "d71", "d80", "d81", "d82", "g64", "m3u", "prg", "t64", "tap", "x64", "zip"],
+        .c128: ["crt", "d64", "d71", "d80", "d81", "d82", "g64", "m3u", "prg", "t64", "tap", "x64", "zip"],
+        .zx81: ["p", "t81", "tzx", "zip"],
+        .macintosh: ["dsk", "hvf", "img", "zip"],
         .xbox: ["iso", "xiso"],
         .msx: ["7z", "cas", "col", "di1", "di2", "dmk", "dsk", "fd1", "fd2", "m3u", "mx1", "mx2", "ogv", "ri", "rom", "sc", "sg", "wav", "xsa", "zip"],
         .dos: ["7z", "bat", "com", "conf", "cue", "dosz", "exe", "img", "iso", "zip"],
@@ -87,13 +103,25 @@ public enum SystemROMExtensions {
     /// Lowercased extensions without the dot; `nil` for a system with no
     /// list, whose folders are taken as they are.
     public static func extensions(for systemID: CanonicalSystemID) -> Set<String>? {
-        byCanonicalID[systemID]
+        byCanonicalID[systemID.baseSystem]
+    }
+
+    /// Folders that are games themselves (`Game.ps3`, `Monkey Island.scummvm`),
+    /// the way Batocera and ES-DE store those systems' games.
+    public static let gameFolderExtensions: Set<String> = ["ps3", "ps4", "scummvm", "quake", "easyrpg"]
+
+    /// The file inside a game folder that a core is given: one named like
+    /// the folder (ScummVM's hook file), Quake's id1/pak0.pak, or an RPG
+    /// Maker game's RPG_RT.ldb; else the folder itself (PS3).
+    public static func launchFile(forGameFolder folder: URL) -> URL {
+        let candidates = [folder.lastPathComponent, "id1/pak0.pak", "RPG_RT.ldb"].map { folder.appending(path: $0) }
+        return candidates.first { FileManager.default.fileExists(atPath: $0.path) } ?? folder
     }
 
     /// Whether a file (or `.ps3`/`.ps4`-style game folder) at this path, relative
     /// to the system folder, is one of the system's games.
     public static func accepts(_ romRelativePath: String, for systemID: CanonicalSystemID) -> Bool {
-        guard let extensions = byCanonicalID[systemID] else { return true }
+        guard let extensions = byCanonicalID[systemID.baseSystem] else { return true }
         let ext = (romRelativePath as NSString).pathExtension.lowercased()
         return extensions.contains(ext)
     }

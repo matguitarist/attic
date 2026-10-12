@@ -305,6 +305,7 @@ enum SystemFacts {
         }
         if seen.isEmpty, systemID == .triforce { return ["iso", "gcz", "rvz", "ciso"] }
         if seen.isEmpty, systemID == .xbox { return ["iso"] }
+        if seen.isEmpty, let known = SystemROMExtensions.extensions(for: systemID) { return known.sorted() }
         return seen
     }
 

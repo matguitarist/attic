@@ -199,7 +199,9 @@ public enum EmulatorCatalog {
         "ppsspp_libretro": "PPSSPP.zip",
         "dolphin_libretro": "Dolphin.zip",
         "pcsx2_libretro": "LRPS2.zip",
-        "bluemsx_libretro": "blueMSX.zip"
+        "bluemsx_libretro": "blueMSX.zip",
+        "scummvm_libretro": "ScummVM.zip",
+        "prboom_libretro": "PrBoom.zip"
     ]
 
     public static func systemFilesURL(_ archiveName: String) -> URL {
@@ -560,6 +562,22 @@ public enum EmulatorCatalog {
         .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),
         .init(systemID: .psvita, cores: [], standalone: [vita3K], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
+        .init(systemID: .scummvm, cores: [RecommendedCore("scummvm_libretro_libretro", "ScummVM", String(localized: "LucasArts, Sierra and other classic adventures.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .doom, cores: [RecommendedCore("prboom_libretro_libretro", "PrBoom", String(localized: "DOOM, DOOM II, Final DOOM and their WADs.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .quake, cores: [RecommendedCore("tyrquake_libretro_libretro", "TyrQuake", String(localized: "Quake and its mission packs.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .easyrpg, cores: [RecommendedCore("easyrpg_libretro_libretro", "EasyRPG Player", String(localized: "Games made with RPG Maker 2000 and 2003.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .x68000, cores: [RecommendedCore("px68k_libretro", "PX68k", String(localized: "The Sharp X68000 home computer.", bundle: .module))], standalone: [], bios: [BIOSRequirement("keropi/iplrom.dat"), BIOSRequirement("keropi/cgrom.dat"), BIOSRequirement("keropi/iplrom30.dat", required: false, note: "X68030 model")], prefersStandalone: false),
+        .init(systemID: .pc88, cores: [RecommendedCore("quasi88_libretro", "QUASI88", String(localized: "The NEC PC-8801 home computer.", bundle: .module))], standalone: [], bios: [BIOSRequirement("quasi88/n88.rom"), BIOSRequirement("quasi88/n88_0.rom"), BIOSRequirement("quasi88/n88_1.rom", required: false), BIOSRequirement("quasi88/n88_2.rom", required: false), BIOSRequirement("quasi88/n88_3.rom", required: false), BIOSRequirement("quasi88/n88n.rom", required: false), BIOSRequirement("quasi88/disk.rom", required: false), BIOSRequirement("quasi88/n88knj1.rom", required: false, note: "Kanji font")], prefersStandalone: false),
+        .init(systemID: .pc98, cores: [RecommendedCore("np2kai_libretro", "Neko Project II kai", String(localized: "The NEC PC-9801 home computer.", bundle: .module))], standalone: [], bios: [BIOSRequirement("np2kai/bios.rom", required: false, note: "Without it a built-in replacement runs fewer games"), BIOSRequirement("np2kai/font.bmp", required: false, note: "Japanese font (or FONT.ROM)"), BIOSRequirement("np2kai/itf.rom", required: false), BIOSRequirement("np2kai/sound.rom", required: false)], prefersStandalone: false),
+        .init(systemID: .pico8, cores: [RecommendedCore("retro8_libretro", "Retro8", String(localized: "Plays PICO-8 carts (.p8 and .p8.png).", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .tic80, cores: [RecommendedCore("tic80_libretro", "TIC-80", String(localized: "The TIC-80 fantasy console.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .wasm4, cores: [RecommendedCore("wasm4_libretro", "WASM-4", String(localized: "The WASM-4 fantasy console.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .arduboy, cores: [RecommendedCore("arduous_libretro", "Arduous", String(localized: "The Arduboy handheld.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .vic20, cores: [RecommendedCore("vice_xvic_libretro", "VICE xvic", String(localized: "The Commodore VIC-20.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .plus4, cores: [RecommendedCore("vice_xplus4_libretro", "VICE xplus4", String(localized: "The Commodore Plus/4 and 16.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .c128, cores: [RecommendedCore("vice_x128_libretro", "VICE x128", String(localized: "The Commodore 128.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .zx81, cores: [RecommendedCore("81_libretro", "EightyOne", String(localized: "The Sinclair ZX81.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .macintosh, cores: [RecommendedCore("minivmac_libretro", "Mini vMac", String(localized: "The classic 68k Macintosh, System 6 and 7.", bundle: .module))], standalone: [], bios: [BIOSRequirement("MacII.ROM")], prefersStandalone: false),
         .init(systemID: .msx, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Accurate MSX, MSX2 and MSX2+.", bundle: .module)), RecommendedCore("fmsx_libretro", "fMSX", String(localized: "Lighter MSX core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .dos, cores: [RecommendedCore("dosbox_pure_libretro", "DOSBox Pure", String(localized: "Plays zipped DOS games directly.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .wonderswan, cores: [beetleWonderSwan], standalone: [], bios: [], prefersStandalone: false),
@@ -591,7 +609,7 @@ public enum EmulatorCatalog {
     ]
 
     public static func recommendation(for systemID: CanonicalSystemID) -> SystemEmulatorRecommendation? {
-        recommendations.first { $0.systemID == systemID }
+        recommendations.first { $0.systemID == systemID.baseSystem }
     }
 
     /// Every system whose catalog entry lists `coreIdentifier` — used so a

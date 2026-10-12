@@ -251,6 +251,16 @@
         }
       }
     },
+    "DOOM, DOOM II, Final DOOM and their WADs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DOOM, DOOM II, Final DOOM et leurs WAD."
+          }
+        }
+      }
+    },
     "Dedicated 5200 core.": {
       "localizations": {
         "fr": {
@@ -377,6 +387,16 @@
         }
       }
     },
+    "Games made with RPG Maker 2000 and 2003.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux faits avec RPG Maker 2000 et 2003."
+          }
+        }
+      }
+    },
     "Highly accurate Sega 8/16-bit and Sega CD.": {
       "localizations": {
         "fr": {
@@ -413,6 +433,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cœur PC Engine plus léger."
+          }
+        }
+      }
+    },
+    "LucasArts, Sierra and other classic adventures.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les aventures classiques de LucasArts, Sierra et d’autres."
           }
         }
       }
@@ -527,12 +557,32 @@
         }
       }
     },
+    "Plays PICO-8 carts (.p8 and .p8.png).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lit les cartouches PICO-8 (.p8 et .p8.png)."
+          }
+        }
+      }
+    },
     "Plays zipped DOS games directly.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Lance directement les jeux DOS zippés."
+          }
+        }
+      }
+    },
+    "Quake and its mission packs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quake et ses extensions."
           }
         }
       }
@@ -563,6 +613,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Amstrad CPC."
+          }
+        }
+      }
+    },
+    "The Arduboy handheld.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console portable Arduboy."
           }
         }
       }
@@ -607,6 +667,36 @@
         }
       }
     },
+    "The Commodore 128.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Commodore 128."
+          }
+        }
+      }
+    },
+    "The Commodore Plus/4 and 16.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les Commodore Plus/4 et 16."
+          }
+        }
+      }
+    },
+    "The Commodore VIC-20.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Commodore VIC-20."
+          }
+        }
+      }
+    },
     "The Dreamcast core.": {
       "localizations": {
         "fr": {
@@ -633,6 +723,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Intellivision."
+          }
+        }
+      }
+    },
+    "The NEC PC-8801 home computer.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’ordinateur NEC PC-8801."
+          }
+        }
+      }
+    },
+    "The NEC PC-9801 home computer.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’ordinateur NEC PC-9801."
           }
         }
       }
@@ -717,6 +827,36 @@
         }
       }
     },
+    "The Sharp X68000 home computer.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’ordinateur Sharp X68000."
+          }
+        }
+      }
+    },
+    "The Sinclair ZX81.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Sinclair ZX81."
+          }
+        }
+      }
+    },
+    "The TIC-80 fantasy console.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console imaginaire TIC-80."
+          }
+        }
+      }
+    },
     "The Vectrex core.": {
       "localizations": {
         "fr": {
@@ -737,6 +877,16 @@
         }
       }
     },
+    "The WASM-4 fantasy console.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console imaginaire WASM-4."
+          }
+        }
+      }
+    },
     "The Wii U emulator, as a RetroArch core.": {
       "localizations": {
         "fr": {
@@ -753,6 +903,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur ZX Spectrum."
+          }
+        }
+      }
+    },
+    "The classic 68k Macintosh, System 6 and 7.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Macintosh 68k classique, System 6 et 7."
           }
         }
       }

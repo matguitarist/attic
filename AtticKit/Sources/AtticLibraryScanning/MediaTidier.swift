@@ -1,4 +1,5 @@
 import Foundation
+import AtticModels
 
 /// What tidying a ROMs folder would do; see `MediaTidier`.
 public struct MediaTidyPlan: Sendable {
@@ -56,8 +57,6 @@ public enum MediaTidier {
     static let inFolderMediaFolders: Set<String> = ["images", "videos", "manuals"]
     /// Files that don't make a folder hold games.
     static let ignoredFileNames: Set<String> = ["_sysinfo.txt", ".DS_Store", "gamelist.xml"]
-    /// Folders that are games themselves (`Game.ps3`).
-    static let gameFolderExtensions: Set<String> = ["ps3", "ps4"]
 
     /// Batocera's `<rom>-<suffix>` names, by the kind they become.
     /// `thumb` is usually the box art again, so it's only used when there's
@@ -249,7 +248,7 @@ public enum MediaTidier {
             if isDirectory(url) {
                 if enumerator.level == 1, inFolderMediaFolders.contains(lowered) || foreignFolderNames.contains(lowered) {
                     enumerator.skipDescendants()
-                } else if gameFolderExtensions.contains(url.pathExtension.lowercased()) {
+                } else if SystemROMExtensions.gameFolderExtensions.contains(url.pathExtension.lowercased()) {
                     names.insert(relativeName(url, in: folder))
                     enumerator.skipDescendants()
                 }

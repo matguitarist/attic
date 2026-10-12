@@ -31,7 +31,7 @@ struct LaunchWithMenuItems: View {
                 }
             }
 
-            let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) }
+            let matchingProfiles = customEmulatorProfiles.filter { $0.assignedSystemIDs.contains(systemID) || $0.assignedSystemIDs.contains(systemID.baseSystem) }
             if !matchingProfiles.isEmpty {
                 Section("Custom Emulators") {
                     ForEach(matchingProfiles) { profile in

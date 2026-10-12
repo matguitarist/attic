@@ -915,6 +915,16 @@
         }
       }
     },
+    "Carts are .p8 or .p8.png files, from the PICO-8 website (Splore) or itch.io. Retro8 runs most of them; the official PICO-8 app runs all.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les cartouches sont des fichiers .p8 ou .p8.png, du site de PICO-8 (Splore) ou d’itch.io. Retro8 en fait tourner la plupart ; l’app PICO-8 officielle les fait toutes tourner."
+          }
+        }
+      }
+    },
     "Change any system's choice below.": {
       "localizations": {
         "fr": {
@@ -1681,6 +1691,26 @@
         }
       }
     },
+    "Each game is a .zip, or a folder named like Game.easyrpg with its RPG_RT.ldb inside.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est un .zip, ou un dossier nommé comme Jeu.easyrpg avec son RPG_RT.ldb dedans."
+          }
+        }
+      }
+    },
+    "Each game is a folder named like Monkey Island.scummvm holding the game's files and a file of the same name (Monkey Island.scummvm) containing ScummVM's ID for it, such as monkey.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est un dossier nommé comme Monkey Island.scummvm, avec les fichiers du jeu et un fichier du même nom (Monkey Island.scummvm) contenant l’identifiant ScummVM du jeu, comme monkey."
+          }
+        }
+      }
+    },
     "Edit Custom Emulator": {
       "localizations": {
         "fr": {
@@ -2053,6 +2083,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeux joués"
+          }
+        }
+      }
+    },
+    "Games are .hex files. A .arduboy download is a zip: take the .hex out of it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont des fichiers .hex. Un téléchargement .arduboy est un zip : sortez-en le .hex."
+          }
+        }
+      }
+    },
+    "Games are .wasm files, from wasm4.org.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont des fichiers .wasm, de wasm4.org."
           }
         }
       }
@@ -2747,6 +2797,16 @@
         }
       }
     },
+    "Mini vMac needs a Mac II ROM (MacII.ROM) and a system disk: games and System 6/7 go on .dsk disk images.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mini vMac a besoin d’une ROM de Mac II (MacII.ROM) et d’un disque système : les jeux et System 6/7 vont sur des images disque .dsk."
+          }
+        }
+      }
+    },
     "Missing": {
       "localizations": {
         "fr": {
@@ -3393,6 +3453,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez les fichiers BIOS dans %@. Extrayez-les du matériel que vous possédez ; Attic ne les télécharge jamais."
+          }
+        }
+      }
+    },
+    "Put the game's .wad files here: doom.wad, doom2.wad, or the free freedoom1.wad. Attic installs the prboom.wad PrBoom needs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettez ici les fichiers .wad du jeu : doom.wad, doom2.wad, ou le gratuit freedoom1.wad. Attic installe le prboom.wad dont PrBoom a besoin."
           }
         }
       }
@@ -4655,6 +4725,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur « %@ » n’est plus installé."
+          }
+        }
+      }
+    },
+    "The game is a folder named like Quake.quake with Quake's id1 folder inside (id1/pak0.pak, and pak1.pak for the full game).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le jeu est un dossier nommé comme Quake.quake avec le dossier id1 de Quake dedans (id1/pak0.pak, et pak1.pak pour le jeu complet)."
           }
         }
       }

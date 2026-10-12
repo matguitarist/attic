@@ -65,6 +65,17 @@ LOGOS = {
     "ps3": "Consoles/Sony Playstation 3",
     "ps4": "Consoles/Sony Playstation 4",
     "psvita": "Handhelds/Sony PS Vita",
+    "scummvm": "Computers/ScummVM",
+    "x68000": "Computers/Sharp X68000",
+    "pc88": "Computers/NEC PC-8801",
+    "pc98": "Computers/NEC PC-9801",
+    "pico8": "Consoles/Pico-8",
+    "tic80": "Computers/TIC-80",
+    "vic20": "Computers/Commodore VIC-20",
+    "plus4": "Computers/Commodore Plus 4",
+    "c128": "Computers/Commodore 128",
+    "zx81": "Computers/Sinclair ZX81",
+    "macintosh": "Computers/Apple Mac OS",
     "xbox": "Consoles/Microsoft Xbox",
     "msx": "Computers/Microsoft MSX",
     "dos": "Computers/MS-DOS",
@@ -132,8 +143,9 @@ def main(source):
 
 def find(source, variant, logo):
     """The two variants don't always spell a file the same way
-    ("Sega Model 3 " vs "Sega Model 3", "…Disk System-02")."""
-    for name in (logo, logo + " ", logo + "-02"):
+    ("Sega Model 3 " vs "Sega Model 3", "…Disk System-02", "Pico-8-10"),
+    and one is misspelled ("Sharp X6800")."""
+    for name in (logo, logo + " ", logo + "-02", logo + "-10", logo.replace("X68000", "X6800")):
         path = os.path.join(source, variant, name + ".png")
         if os.path.exists(path):
             return path

@@ -125,8 +125,6 @@ public struct ESDELibraryImporter: LibraryImporter {
         return nil
     }
 
-    static let gameFolderExtensions: Set<String> = ["ps3", "ps4"]
-
     private static func romFiles(in systemFolderURL: URL) -> [String] {
         guard let entries = try? FileManager.default.contentsOfDirectory(
             at: systemFolderURL,
@@ -143,7 +141,7 @@ public struct ESDELibraryImporter: LibraryImporter {
             let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
             // A folder is a game only when named like one (Game.ps3,
             // Game.ps4) — the way Batocera and ES-DE store those games.
-            if isDirectory { return Self.gameFolderExtensions.contains(url.pathExtension.lowercased()) ? url.lastPathComponent : nil }
+            if isDirectory { return SystemROMExtensions.gameFolderExtensions.contains(url.pathExtension.lowercased()) ? url.lastPathComponent : nil }
             return url.lastPathComponent
         }.sorted()
     }

@@ -22,7 +22,7 @@ struct SystemHelpInfo {
 
 enum SystemHelpContent {
     static func info(for system: CanonicalSystemID) -> SystemHelpInfo? {
-        byID[system]
+        byID[system.baseSystem]
     }
 
     private static let discNote = LocalizedStringResource("Disc images work best as .chd — one compressed file per disc. For .cue/.bin dumps, keep each .cue next to its .bin files.")
@@ -116,6 +116,30 @@ enum SystemHelpContent {
         .psvita: .init(manufacturer: "Sony", year: 2011, wikipediaTitle: "PlayStation_Vita",
                     controls: [LocalizedStringResource("Vita3K uses its own controller setup. Configure it once in Vita3K (Controls) — Attic's controller settings don't apply.")],
                     notes: [LocalizedStringResource("Install the PS Vita firmware once in Vita3K (PSVUPDAT.PUP and the font package, both from Sony's website)."), LocalizedStringResource("Install your games in Vita3K (.vpk, or .pkg with its license). With a psvita folder in your ROMs folder, Attic adds every installed game to the library by itself."), LocalizedStringResource("Each game is a .psvita file holding its title ID, such as PCSE00120.")]),
+        .scummvm: .init(manufacturer: "ScummVM", year: 2001, wikipediaTitle: "ScummVM",
+                    notes: [LocalizedStringResource("Each game is a folder named like Monkey Island.scummvm holding the game's files and a file of the same name (Monkey Island.scummvm) containing ScummVM's ID for it, such as monkey.")]),
+        .doom: .init(manufacturer: "id Software", year: 1993, wikipediaTitle: "Doom_(1993_video_game)",
+                    notes: [LocalizedStringResource("Put the game's .wad files here: doom.wad, doom2.wad, or the free freedoom1.wad. Attic installs the prboom.wad PrBoom needs.")]),
+        .quake: .init(manufacturer: "id Software", year: 1996, wikipediaTitle: "Quake_(video_game)",
+                    notes: [LocalizedStringResource("The game is a folder named like Quake.quake with Quake's id1 folder inside (id1/pak0.pak, and pak1.pak for the full game).")]),
+        .easyrpg: .init(manufacturer: "ASCII, Enterbrain", year: 2000, wikipediaTitle: "RPG_Maker",
+                    notes: [LocalizedStringResource("Each game is a .zip, or a folder named like Game.easyrpg with its RPG_RT.ldb inside.")]),
+        .x68000: .init(manufacturer: "Sharp", year: 1987, wikipediaTitle: "X68000"),
+        .pc88: .init(manufacturer: "NEC", year: 1981, wikipediaTitle: "PC-8800_series"),
+        .pc98: .init(manufacturer: "NEC", year: 1982, wikipediaTitle: "PC-9800_series"),
+        .pico8: .init(manufacturer: "Lexaloffle", year: 2015, wikipediaTitle: "Pico-8",
+                    notes: [LocalizedStringResource("Carts are .p8 or .p8.png files, from the PICO-8 website (Splore) or itch.io. Retro8 runs most of them; the official PICO-8 app runs all.")]),
+        .tic80: .init(manufacturer: "Nesbox", year: 2017, wikipediaTitle: "TIC-80"),
+        .wasm4: .init(manufacturer: "Aduros", year: 2021, wikipediaTitle: "WebAssembly",
+                    notes: [LocalizedStringResource("Games are .wasm files, from wasm4.org.")]),
+        .arduboy: .init(manufacturer: "Arduboy", year: 2016, wikipediaTitle: "Arduboy",
+                    notes: [LocalizedStringResource("Games are .hex files. A .arduboy download is a zip: take the .hex out of it.")]),
+        .vic20: .init(manufacturer: "Commodore", year: 1980, wikipediaTitle: "Commodore_VIC-20"),
+        .plus4: .init(manufacturer: "Commodore", year: 1984, wikipediaTitle: "Commodore_Plus/4"),
+        .c128: .init(manufacturer: "Commodore", year: 1985, wikipediaTitle: "Commodore_128"),
+        .zx81: .init(manufacturer: "Sinclair", year: 1981, wikipediaTitle: "ZX81"),
+        .macintosh: .init(manufacturer: "Apple", year: 1984, wikipediaTitle: "Macintosh",
+                    notes: [LocalizedStringResource("Mini vMac needs a Mac II ROM (MacII.ROM) and a system disk: games and System 6/7 go on .dsk disk images.")]),
         .xbox: .init(manufacturer: "Microsoft", year: 2001, wikipediaTitle: "Xbox_(console)",
                     controls: [LocalizedStringResource("xemu uses its own controller setup — configure it once in xemu.")],
                     notes: [LocalizedStringResource("xemu needs the Xbox boot ROM (MCPX), a flash BIOS and a hard disk image. Set them once in xemu (Settings › System)."), LocalizedStringResource("Games must be xiso-format .iso dumps.")]),

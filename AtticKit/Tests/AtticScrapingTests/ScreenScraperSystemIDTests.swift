@@ -36,8 +36,8 @@ import AtticModels
     }
 
     @Test func allTaxonomySystemsHaveAScreenScraperMapping() {
-        // No published ScreenScraper system ID found for Triforce yet.
-        let knownGaps: Set<CanonicalSystemID> = [.triforce]
+        // No published ScreenScraper system ID found for these yet.
+        let knownGaps: Set<CanonicalSystemID> = [.triforce, .easyrpg, .wasm4, .arduboy]
         for definition in SystemTaxonomy.allSystems where !knownGaps.contains(definition.canonicalID) {
             #expect(ScreenScraperSystemID.systemeID(for: definition.canonicalID) != nil, "missing ScreenScraper ID for \(definition.canonicalID)")
         }
