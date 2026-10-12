@@ -16,6 +16,7 @@ struct GeneralSettingsView: View {
     @State private var foreignNotes: [URL] = []
     @State private var isConfirmingNotesCleanup = false
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
+    @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
 
     var body: some View {
         Form {
@@ -37,6 +38,7 @@ struct GeneralSettingsView: View {
                     }
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
+                Toggle("Hide systems with no games", isOn: $hidesEmptySystems)
                 if !foreignNotes.isEmpty {
                     LabeledContent {
                         Button("Move to Trash…") { isConfirmingNotesCleanup = true }

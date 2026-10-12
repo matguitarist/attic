@@ -8,6 +8,7 @@ import AtticPersistence
 /// keeps up with each release's look instead of us re-skinning it by hand.
 struct LibraryBrowserView: View {
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
+    @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
     @State private var selection: LibrarySelection? = .allGames
     @State private var searchText = ""
     @State private var sortOrder: GameSortOrder = .title
@@ -31,7 +32,7 @@ struct LibraryBrowserView: View {
 
     var body: some View {
         NavigationSplitView {
-            LibrarySidebarView(systems: systems, collections: collections, selection: $selection)
+            LibrarySidebarView(systems: shownSystems, collections: collections, selection: $selection)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } detail: {
             GameGridView(
@@ -115,8 +116,8 @@ struct LibraryBrowserView: View {
             selectedGame = nil
         }
         .onChange(of: searchText) { multiSelection = [] }
-        // A removed system's games and page go with it.
-        .onChange(of: systems.map(\.systemID)) { _, ids in
+        // A removed (or now hidden) system's page goes with it.
+        .onChange(of: shownSystems.map(\.systemID)) { _, ids in
             if case .system(let id) = currentSelection, !ids.contains(id) {
                 selection = .allGames
             }
@@ -140,6 +141,11 @@ struct LibraryBrowserView: View {
     }
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
+
+    /// The sidebar's systems: all, or only those with games.
+    private var shownSystems: [GameSystem] {
+        hidesEmptySystems ? systems.filter { $0.gameCount > 0 } : systems
+    }
 
     /// The system shown, when the sidebar selection is one.
     private var selectedSystem: GameSystem? {
@@ -233,7 +239,7 @@ struct LibraryBrowserView: View {
     private func stepSection(by offset: Int) {
         let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed]
             + collections.map { .collection($0.collectionID) }
-            + systems.orderedByCategory().map { .system($0.systemID) }
+            + shownSystems.orderedByCategory().map { .system($0.systemID) }
         let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
         let count = sections.count
         selection = sections[((currentIndex + offset) % count + count) % count]

@@ -22,6 +22,9 @@ struct LibrarySidebarView: View {
     /// `groupedByCategory()`), so the list redraws.
     @State private var sortOrdersChanged = 0
     @State private var systemToRemove: GameSystem?
+    @AppStorage(Self.hideEmptySystemsKey) private var hidesEmptySystems = false
+    /// Also in Settings › General.
+    static let hideEmptySystemsKey = "hideEmptySystems"
 
     var body: some View {
         let _ = sortOrdersChanged
@@ -111,6 +114,9 @@ struct LibrarySidebarView: View {
                 ForEach(SystemSortOrder.allCases) { Text($0.label).tag($0) }
             }
             .pickerStyle(.inline)
+            Divider()
+            // For every kind at once, not just this one.
+            Toggle("Hide Empty Systems", isOn: $hidesEmptySystems)
         } label: {
             Label("Sort By", systemImage: "arrow.up.arrow.down")
                 .labelStyle(.iconOnly)

@@ -2127,6 +2127,26 @@
         }
       }
     },
+    "Hide Empty Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer les systèmes vides"
+          }
+        }
+      }
+    },
+    "Hide systems with no games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer les systèmes sans jeux"
+          }
+        }
+      }
+    },
     "Hide the inspector": {
       "localizations": {
         "fr": {
