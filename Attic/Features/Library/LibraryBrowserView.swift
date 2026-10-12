@@ -108,8 +108,12 @@ struct LibraryBrowserView: View {
         .sheet(item: $systemSettingsEditor.system) { system in
             SystemSettingsView(system: system)
         }
-        // A multi-selection belongs to what was showing when it was made.
-        .onChange(of: selection) { multiSelection = [] }
+        // A selection belongs to what was showing when it was made; the
+        // newly shown system's overview takes its place.
+        .onChange(of: selection) {
+            multiSelection = []
+            selectedGame = nil
+        }
         .onChange(of: searchText) { multiSelection = [] }
         .onAppear {
             if startsInCabinet, !Self.didAutoOpenCabinet {

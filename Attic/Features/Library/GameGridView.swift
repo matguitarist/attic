@@ -7,6 +7,7 @@ import AtticEmulation
 struct GameGridView: View {
     @Query private var games: [Game]
     @Binding var selectedGame: Game?
+    @State private var viewportHeight: CGFloat = 0
     /// Several games selected at once (⌘-click, ⇧-click, ⌘A). Empty or a
     /// single game means the plain one-game selection in `selectedGame`.
     @Binding var multiSelection: [Game]
@@ -142,7 +143,20 @@ struct GameGridView: View {
                     }
                 }
                 .padding(Self.padding)
+                // Clicking between or below the covers deselects, as in
+                // Finder; a cover's own click wins over this one. At least
+                // as tall as the view, so the space below the last row
+                // counts too.
+                .frame(maxWidth: .infinity, minHeight: viewportHeight, alignment: .top)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedGame = nil
+                    multiSelection = []
+                }
             }
+        }
+        .onScrollGeometryChange(for: CGFloat.self) { $0.containerSize.height } action: { _, height in
+            viewportHeight = height
         }
         // One key with plural variants in the String Catalog, rather than an
         // English-only singular/plural ternary.

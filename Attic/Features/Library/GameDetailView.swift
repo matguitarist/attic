@@ -110,6 +110,16 @@ struct GameDetailView: View {
             // shows; box art is the fallback. 4:3 like the screens of most
             // of these systems, and GameCoverArtView fits rather than crops
             // anything shaped otherwise.
+            // The system's logo first, as in the system overview.
+            if let logo = game.system?.systemID.logo {
+                logo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 200, maxHeight: 64)
+                    .accessibilityLabel(game.system?.displayName ?? "")
+                    .padding(.bottom, 4)
+            }
+
             GameCoverArtView(url: Self.headerImageURL(for: game), title: game.title, showBackground: false)
                 .aspectRatio(4.0 / 3.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)
