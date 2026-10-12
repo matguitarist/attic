@@ -11,6 +11,9 @@ struct GeneralSettingsView: View {
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
+    /// Other front-ends' info files (ES-DE, Batocera) in the ROMs folders.
+    @State private var foreignNotes: [URL] = []
+    @State private var isConfirmingNotesCleanup = false
 
     var body: some View {
         Form {
@@ -32,6 +35,23 @@ struct GeneralSettingsView: View {
                     }
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
+                if !foreignNotes.isEmpty {
+                    LabeledContent {
+                        Button("Move to Trash…") { isConfirmingNotesCleanup = true }
+                    } label: {
+                        Text("Other apps' info files")
+                        Text("\(foreignNotes.count) systeminfo.txt or _info.txt files from ES-DE or Batocera. Attic writes its own _sysinfo.txt in each system folder.")
+                    }
+                }
+            }
+            .task(id: romsRootsStore.rootURLs) { foreignNotes = ROMFolderNotes.foreignFiles(in: romsRootsStore.rootURLs) }
+            .confirmationDialog("Move \(foreignNotes.count) info files to the Trash?", isPresented: $isConfirmingNotesCleanup) {
+                Button("Move to Trash") {
+                    _ = ROMFolderNotes.moveToTrash(foreignNotes)
+                    foreignNotes = ROMFolderNotes.foreignFiles(in: romsRootsStore.rootURLs)
+                }
+            } message: {
+                Text("They describe other front-ends, not Attic. Your games and BIOS files aren't touched.")
             }
 
             Section {

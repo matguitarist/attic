@@ -11,6 +11,16 @@
         }
       }
     },
+    "%@ (RetroArch core)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (cœur RetroArch)"
+          }
+        }
+      }
+    },
     "%@ Needs a BIOS": {
       "localizations": {
         "fr": {
@@ -296,6 +306,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld étoiles"
+          }
+        }
+      }
+    },
+    "%lld systeminfo.txt or _info.txt files from ES-DE or Batocera. Attic writes its own _sysinfo.txt in each system folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers systeminfo.txt ou _info.txt d’ES-DE ou de Batocera. Attic écrit son propre _sysinfo.txt dans chaque dossier de système."
           }
         }
       }
@@ -705,12 +725,32 @@
         }
       }
     },
+    "BIOS, in %@:": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS, dans %@ :"
+          }
+        }
+      }
+    },
     "BIOS, saves, save states, RetroArch cores and settings, and emulators installed by Attic all live here — back up or move this one folder to take everything with you.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les BIOS, sauvegardes, sauvegardes d’état, cœurs et réglages de RetroArch et les émulateurs installés par Attic sont tous ici — sauvegardez ou déplacez ce seul dossier pour tout emporter."
+          }
+        }
+      }
+    },
+    "BIOS: none needed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS : aucun n’est nécessaire."
           }
         }
       }
@@ -1997,6 +2037,16 @@
         }
       }
     },
+    "Games go in this folder, as any of these file types:": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux vont dans ce dossier, dans l’un de ces types de fichiers :"
+          }
+        }
+      }
+    },
     "Games must be xiso-format .iso dumps.": {
       "localizations": {
         "fr": {
@@ -2627,6 +2677,36 @@
         }
       }
     },
+    "Move %lld info files to the Trash?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer %lld fichiers d’information dans la corbeille ?"
+          }
+        }
+      }
+    },
+    "Move to Trash": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer dans la corbeille"
+          }
+        }
+      }
+    },
+    "Move to Trash…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer dans la corbeille…"
+          }
+        }
+      }
+    },
     "Name": {
       "localizations": {
         "fr": {
@@ -3007,6 +3087,16 @@
         }
       }
     },
+    "Other apps' info files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers d’information d’autres apps"
+          }
+        }
+      }
+    },
     "PCSX2 needs a PS2 BIOS dump in the BIOS folder's pcsx2/bios folder (any region). Dumps work best as .chd or .iso.": {
       "localizations": {
         "fr": {
@@ -3313,6 +3403,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Émulateur recommandé"
+          }
+        }
+      }
+    },
+    "Recommended emulator: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateur recommandé : %@"
           }
         }
       }
@@ -4469,6 +4569,16 @@
         }
       }
     },
+    "They describe other front-ends, not Attic. Your games and BIOS files aren't touched.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ils décrivent d’autres front-ends, pas Attic. Vos jeux et vos BIOS ne sont pas touchés."
+          }
+        }
+      }
+    },
     "This look needs RetroArch’s shader pack.": {
       "localizations": {
         "fr": {
@@ -4825,6 +4935,16 @@
         }
       }
     },
+    "Written by Attic, which keeps this file up to date: changes to it don't stick. More in Help › Attic Help.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrit par Attic, qui tient ce fichier à jour : les modifications ne sont pas conservées. Plus d’infos dans Aide › Aide d’Attic."
+          }
+        }
+      }
+    },
     "Your Account (optional)": {
       "localizations": {
         "fr": {
@@ -4885,6 +5005,16 @@
         }
       }
     },
+    "for example %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "par exemple %@"
+          }
+        }
+      }
+    },
     "genre": {
       "localizations": {
         "fr": {
@@ -4941,6 +5071,16 @@
         }
       }
     },
+    "optional": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "facultatif"
+          }
+        }
+      }
+    },
     "players": {
       "localizations": {
         "fr": {
@@ -4977,6 +5117,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "date de sortie"
+          }
+        }
+      }
+    },
+    "required": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "requis"
           }
         }
       }
