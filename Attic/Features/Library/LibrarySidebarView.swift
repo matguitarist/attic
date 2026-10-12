@@ -146,6 +146,12 @@ struct LibrarySidebarView: View {
 
 /// Files games dropped on a sidebar system into its folder (see
 /// `ROMImportCoordinator`).
+struct ImportROMsAction {
+    let run: ([URL], CanonicalSystemID) -> Void
+
+    func callAsFunction(_ urls: [URL], _ system: CanonicalSystemID) { run(urls, system) }
+}
+
 extension EnvironmentValues {
-    @Entry var importROMs: ([URL], CanonicalSystemID) -> Void = { _, _ in }
+    @Entry var importROMs = ImportROMsAction { _, _ in }
 }

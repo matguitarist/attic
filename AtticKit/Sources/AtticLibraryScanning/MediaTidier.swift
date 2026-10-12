@@ -66,7 +66,7 @@ public enum MediaTidier {
     /// `thumb` is usually the box art again, so it's only used when there's
     /// no `boxart`.
     static let inFolderSuffixes: [String: MediaKind] = [
-        "boxart": .covers, "image": .screenshots, "mix": .miximages,
+        "boxart": .covers, "image": .screenshots,
         "video": .videos, "manual": .manuals,
     ]
 
@@ -225,9 +225,16 @@ public enum MediaTidier {
         }
     }
 
+    /// ES-DE kinds Attic no longer keeps, and the kind each stands in
+    /// for when a game has nothing else.
+    static let retiredKinds: [String: MediaKind] = ["miximages": .covers, "titlescreens": .screenshots]
+
     private static func planDownloadedMedia(_ systemMedia: URL, games: Set<String>, into plan: inout MediaTidyPlan) {
         for kindFolder in subfolders(of: systemMedia) {
             guard let kind = MediaKind(rawValue: kindFolder.lastPathComponent) else {
+                if let standIn = retiredKinds[kindFolder.lastPathComponent] {
+                    planStandIns(in: kindFolder, as: standIn, games: games, systemMedia: systemMedia, into: &plan)
+                }
                 plan.trash.append(kindFolder)
                 continue
             }
@@ -241,6 +248,20 @@ public enum MediaTidier {
                     plan.manuals.append(file)
                 }
             }
+        }
+    }
+
+    /// A game with only a mix image or a title screen keeps it, as its
+    /// cover or screenshot; the rest goes with the folder.
+    private static func planStandIns(in folder: URL, as kind: MediaKind, games: Set<String>, systemMedia: URL, into plan: inout MediaTidyPlan) {
+        let planned = Set(plan.moves.map { $0.to.deletingPathExtension().path })
+        for file in files(under: folder) {
+            let game = (String(file.path.dropFirst(folder.path.count + 1)) as NSString).deletingPathExtension
+            let base = systemMedia.appending(path: kind.rawValue).appending(path: game)
+            guard games.contains(game), MediaFolder.existingFiles(base: base).isEmpty, !planned.contains(base.path) else { continue }
+            let destination = base.appendingPathExtension(file.pathExtension.lowercased())
+            plan.moves.append(.init(from: file, to: destination))
+            if kind == .covers, isCompressible(file) { plan.compress.append(destination) }
         }
     }
 

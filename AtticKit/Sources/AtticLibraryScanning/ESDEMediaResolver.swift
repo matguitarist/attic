@@ -16,10 +16,10 @@ struct ESDEMediaResolver {
 
     private static let imageExtensions = MediaFolder.imageExtensions
     private static let videoExtensions = MediaFolder.videoExtensions
-    /// ES-DE's own preference order when multiple asset types exist for one
-    /// game: a generated `miximage` composite is preferred, falling back to
-    /// progressively less-composed art.
-    private static let coverArtPreferenceOrder = ["miximages", "covers", "titlescreens", "screenshots"]
+    /// The box art first. Mix images and title screens (which Attic no
+    /// longer keeps, see `MediaKind`) only stand in for a library that
+    /// hasn't been tidied up, after a screenshot.
+    private static let coverArtPreferenceOrder = ["covers", "screenshots", "miximages", "titlescreens"]
     /// Batocera's `-<suffix>` image names, box art first.
     private static let inFolderCoverSuffixes = ["boxart", "thumb", "image", "mix"]
 

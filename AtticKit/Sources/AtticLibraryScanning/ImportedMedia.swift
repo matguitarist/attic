@@ -11,8 +11,6 @@ public enum ImportedMedia {
     static let folderKinds: [String: MediaKind] = [
         "covers": .covers, "boxart": .covers, "box2dfront": .covers, "box - front": .covers, "boxes": .covers,
         "screenshots": .screenshots, "snap": .screenshots, "snaps": .screenshots, "screenshot - gameplay": .screenshots,
-        "titlescreens": .titlescreens, "titles": .titlescreens, "screenshot - game title": .titlescreens,
-        "miximages": .miximages, "mix": .miximages, "mixrbv2": .miximages,
         "videos": .videos, "video": .videos, "snap videos": .videos,
         "manuals": .manuals, "manual": .manuals,
     ]
@@ -20,6 +18,7 @@ public enum ImportedMedia {
     public static let nonGameFolderNames: Set<String> = Set(folderKinds.keys)
         .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "html_arrm",
                 "marquees", "wheel", "fanart", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
+                "miximages", "mix", "mixrbv2", "titlescreens", "titles", "screenshot - game title",
                 // A whole Batocera or ES-DE folder's other parts.
                 "bios", "saves", "states", "themes", "music", "splash", "cheats", "decorations", "overlays", "shaders"])
 

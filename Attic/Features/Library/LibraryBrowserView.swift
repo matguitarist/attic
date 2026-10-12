@@ -119,7 +119,7 @@ struct LibraryBrowserView: View {
             EditGameInfoView(game: game)
         }
         .environment(systemSettingsEditor)
-        .environment(\.importROMs) { urls, system in importROMs(urls, into: system) }
+        .environment(\.importROMs, ImportROMsAction { urls, system in importROMs(urls, into: system) })
         .sheet(item: Binding(get: { romImporter.question }, set: { _ in })) { question in
             ROMImportSheet(question: question) { romImporter.answer($0) }
         }

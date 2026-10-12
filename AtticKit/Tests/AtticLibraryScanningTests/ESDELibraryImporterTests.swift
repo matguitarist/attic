@@ -167,7 +167,7 @@ import Testing
         #expect(metroid.favorite == true)
     }
 
-    @Test func coverArtPrefersMiximageOverCover() throws {
+    @Test func coverArtPrefersCoverOverMiximage() throws {
         let folder = try makeESDERoot()
         let importer = ESDELibraryImporter(homeDirectoryURL: try isolatedHome())
         let data = try importer.importSystem(systemFolderURL: folder, canonicalID: .snes)
@@ -175,8 +175,8 @@ import Testing
 
         // makeESDERoot() creates media under <root>/ES-DE/downloaded_media/snes.
         let esdeRoot = folder.deletingLastPathComponent().deletingLastPathComponent().appending(path: "ES-DE")
-        let expectedMiximage = esdeRoot.appending(path: "downloaded_media/snes/miximages/Super Metroid.png")
-        #expect(metroid.coverArtURL == expectedMiximage)
+        let expectedCover = esdeRoot.appending(path: "downloaded_media/snes/covers/Super Metroid.png")
+        #expect(metroid.coverArtURL == expectedCover)
     }
 
     @Test func resolvesTitleScreenAndVideoByFilename() throws {

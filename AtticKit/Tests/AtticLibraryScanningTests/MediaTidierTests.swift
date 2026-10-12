@@ -98,6 +98,23 @@ struct MediaTidierTests {
         #expect(plan.compress.isEmpty)
     }
 
+    @Test func mixImagesAndTitleScreensOnlyStayAsStandIns() throws {
+        try touch(roms.appending(path: "snes/Covered.sfc"))
+        try touch(roms.appending(path: "snes/Bare.sfc"))
+        try touch(media.appending(path: "snes/covers/Covered.heic"))
+        try touch(media.appending(path: "snes/miximages/Covered.webp"))
+        try touch(media.appending(path: "snes/miximages/Bare.webp"))
+        try touch(media.appending(path: "snes/titlescreens/Bare.png"))
+
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        let moves = plan.moves.map { "\($0.to.deletingLastPathComponent().lastPathComponent)/\($0.to.lastPathComponent)" }
+        #expect(Set(moves) == ["covers/Bare.webp", "screenshots/Bare.png"])
+        #expect(Set(plan.trash.map(\.lastPathComponent)).isSuperset(of: ["miximages", "titlescreens"]))
+        MediaTidier.apply(plan)
+        #expect(exists(media.appending(path: "snes/covers/Bare.webp")))
+        #expect(!exists(media.appending(path: "snes/miximages")))
+    }
+
     @Test func leftoversOfOtherAppsGo() throws {
         let cps2 = roms.appending(path: "cps2")
         try touch(cps2.appending(path: "sf2.zip"))

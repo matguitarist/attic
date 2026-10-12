@@ -4,9 +4,10 @@ import ImageIO
 import UniformTypeIdentifiers
 
 /// The kinds of media Attic keeps, named like ES-DE's folders so the same
-/// tree still works there.
+/// tree still works there. (ES-DE's mix images and title screens aren't
+/// among them: Attic shows the cover and a screenshot instead.)
 public enum MediaKind: String, CaseIterable, Sendable {
-    case covers, miximages, screenshots, titlescreens, videos, manuals
+    case covers, screenshots, videos, manuals
 }
 
 /// Where a game's media lives: one tree next to the ROMs folder, in
