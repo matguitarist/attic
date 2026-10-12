@@ -3,6 +3,24 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.10.0</title>
+            <pubDate>Mon, 12 Oct 2026 19:16:10 -0400</pubDate>
+            <sparkle:version>14</sparkle:version>
+            <sparkle:shortVersionString>1.10.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Drag games onto Attic: on a sidebar system, on the library, or a whole folder (a system folder like atari2600, or a full roms folder). Each game goes to the right ROMs folder, with its covers, videos, manuals and gamelist, and a progress bar shows the import.</li>
+<li>New systems: PlayStation Vita (Vita3K, which adds installed games by itself) and PlayStation 4 (shadPS4), plus ScummVM, DOOM, Quake, EasyRPG, Sharp X68000, NEC PC-88 and PC-98, PICO-8, TIC-80, WASM-4, Arduboy, Commodore VIC-20, Plus/4 and 128, ZX81 and the classic Macintosh.</li>
+<li>ROM-hack folders (nesh, snesh, n64h, gbah, genh, psxh…) show as systems of their own and play like the system they&#x27;re made for.</li>
+<li>All media now lives in downloaded_media beside your games, ES-DE style; scraped and picked covers are saved there as HEIC, and earlier ones move over by themselves.</li>
+<li>Settings › General › Tidy Up moves Batocera media and gamelists into place, cleans gamelists, compresses covers and heavy manual scans, and moves other apps&#x27; leftovers to the Trash.</li>
+<li>Attic makes a ROMs folder for every system it knows, each with a _sysinfo.txt saying what goes there.</li>
+<li>A Manual button opens a game&#x27;s PDF manual.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.10.0/Attic-1.10.0.zip" length="11465408" type="application/octet-stream" sparkle:edSignature="oLJO7IvFn2CvBgZ+2LbDrtyxAeVZ70si3dofK0wzPuVbj0HqEuOLFBW+Z0bOG6ceIiYwcq6M+TVMqdPFqcLPBQ=="/>
+        </item>
+        <item>
             <title>1.9.1</title>
             <pubDate>Mon, 12 Oct 2026 13:33:35 -0400</pubDate>
             <sparkle:version>13</sparkle:version>
