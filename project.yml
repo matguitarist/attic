@@ -1,36 +1,36 @@
-name: RomsBox
+name: Attic
 options:
-  bundleIdPrefix: com.romsbox
+  bundleIdPrefix: com.attic
   developmentLanguage: en
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
 
 packages:
-  RomsBoxKit:
-    path: RomsBoxKit
+  AtticKit:
+    path: AtticKit
 
 targets:
-  RomsBox:
+  Attic:
     type: application
     platform: macOS
     sources:
-      - path: RomsBox
+      - path: Attic
         excludes:
-          - "RomsBox.entitlements"
+          - "Attic.entitlements"
     configFiles:
       Debug: Config/Signing.xcconfig
       Release: Config/Signing.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.romsbox.app
-        PRODUCT_NAME: RomsBox
-        MARKETING_VERSION: "1.7.2"
-        CURRENT_PROJECT_VERSION: "10"
+        PRODUCT_BUNDLE_IDENTIFIER: com.attic.app
+        PRODUCT_NAME: Attic
+        MARKETING_VERSION: "1.8.0"
+        CURRENT_PROJECT_VERSION: "11"
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "26.0"
         ENABLE_HARDENED_RUNTIME: YES
-        CODE_SIGN_ENTITLEMENTS: RomsBox/RomsBox.entitlements
+        CODE_SIGN_ENTITLEMENTS: Attic/Attic.entitlements
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.entertainment
@@ -40,13 +40,13 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     dependencies:
-      - package: RomsBoxKit
-        product: RomsBoxModels
-      - package: RomsBoxKit
-        product: RomsBoxPersistence
-      - package: RomsBoxKit
-        product: RomsBoxLibraryScanning
-      - package: RomsBoxKit
-        product: RomsBoxEmulation
-      - package: RomsBoxKit
-        product: RomsBoxScraping
+      - package: AtticKit
+        product: AtticModels
+      - package: AtticKit
+        product: AtticPersistence
+      - package: AtticKit
+        product: AtticLibraryScanning
+      - package: AtticKit
+        product: AtticEmulation
+      - package: AtticKit
+        product: AtticScraping

@@ -13,8 +13,8 @@ DERIVED="$ROOT/.build-xcode-strings"
 cd "$ROOT"
 xcodegen generate --quiet
 xcodebuild \
-    -project RomsBox.xcodeproj \
-    -scheme RomsBox \
+    -project Attic.xcodeproj \
+    -scheme Attic \
     -configuration Debug \
     -destination 'platform=macOS' \
     -derivedDataPath "$DERIVED" \
@@ -23,9 +23,9 @@ xcodebuild \
     build
 
 # Unregister the throwaway app this build produced, so Launch Services
-# (Spotlight, `open -a RomsBox`, AppleScript) never picks it over dist/.
+# (Spotlight, `open -a Attic`, AppleScript) never picks it over dist/.
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister \
-    -u "$DERIVED/Build/Products/Debug/RomsBox.app" 2>/dev/null || true
+    -u "$DERIVED/Build/Products/Debug/Attic.app" 2>/dev/null || true
 
 INTERMEDIATES="$DERIVED/Build/Intermediates.noindex"
 
@@ -38,5 +38,5 @@ sync() {
     echo "$(xcrun xcstringstool print "$catalog" | grep -c '^') keys in ${catalog#$ROOT/}"
 }
 
-sync "$ROOT/RomsBox/Localizable.xcstrings" "RomsBox.build"
-sync "$ROOT/RomsBoxKit/Sources/RomsBoxEmulation/Resources/Localizable.xcstrings" "RomsBoxKit.build/Debug/RomsBoxEmulation-t.build"
+sync "$ROOT/Attic/Localizable.xcstrings" "Attic.build"
+sync "$ROOT/AtticKit/Sources/AtticEmulation/Resources/Localizable.xcstrings" "AtticKit.build/Debug/AtticEmulation-t.build"

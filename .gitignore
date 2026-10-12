@@ -12,8 +12,8 @@ DerivedData/
 # Swift Package Manager
 .build/
 .swiftpm/
-RomsBoxKit/.build/
-RomsBoxKit/.swiftpm/
+AtticKit/.build/
+AtticKit/.swiftpm/
 
 # macOS
 .DS_Store
