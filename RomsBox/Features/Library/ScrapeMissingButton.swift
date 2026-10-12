@@ -45,3 +45,57 @@ struct ScrapeMissingButton: View {
         .help(missingCount == 0 ? String(localized: "Every game in this list already has info") : String(localized: "Scrape info for the \(missingCount) games in this list missing it"))
     }
 }
+
+/// "Scrape This System" / "Scrape This Collection" in the sidebar's
+/// context menu: games missing info, or every game replacing what it has.
+/// Fetches the games only when chosen, so the sidebar doesn't keep a query
+/// per row.
+struct ScrapeSelectionMenu: View {
+    let title: LocalizedStringKey
+    let selection: LibrarySelection
+
+    @Environment(\.modelContext) private var modelContext
+    @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
+    @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
+    @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+
+    var body: some View {
+        Menu(title) {
+            Section("Games Missing Info") {
+                sourceButtons(force: false)
+            }
+            Section("All Games, Replacing Existing Info") {
+                sourceButtons(force: true)
+            }
+        }
+        .disabled(isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+    }
+
+    private var isRunning: Bool {
+        if case .running = scrapeCoordinator.batchState { return true }
+        return false
+    }
+
+    @ViewBuilder
+    private func sourceButtons(force: Bool) -> some View {
+        Button("ScreenScraper") {
+            start(.screenScraper(screenScraperCredentialsStore.credentials), force: force)
+        }
+        .disabled(!screenScraperCredentialsStore.isConfigured)
+
+        Button("TheGamesDB") {
+            start(.theGamesDB(theGamesDBCredentialsStore.credentials), force: force)
+        }
+        .disabled(!theGamesDBCredentialsStore.isConfigured)
+    }
+
+    private func start(_ source: ScrapeCoordinator.ScraperSource, force: Bool) {
+        let descriptor = FetchDescriptor(predicate: GameGridView.selectionPredicate(selection), sortBy: [SortDescriptor(\Game.sortTitle)])
+        guard let games = try? modelContext.fetch(descriptor), !games.isEmpty else { return }
+        if force {
+            scrapeCoordinator.scrape(games: games, from: source, force: true)
+        } else {
+            scrapeCoordinator.scrapeAllMissing(games: games, source: source)
+        }
+    }
+}

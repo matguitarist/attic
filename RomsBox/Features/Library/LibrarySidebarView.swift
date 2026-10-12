@@ -35,6 +35,8 @@ struct LibrarySidebarView: View {
                         .badge(collection.games.count)
                         .tag(LibrarySelection.collection(collection.collectionID))
                         .contextMenu {
+                            ScrapeSelectionMenu(title: "Scrape This Collection", selection: .collection(collection.collectionID))
+                            Divider()
                             Button("Rename…") { collectionCoordinator.rename(collection) }
                             Button("Delete Collection…", role: .destructive) { collectionCoordinator.pendingDeletion = collection }
                         }
@@ -73,6 +75,8 @@ struct LibrarySidebarView: View {
                             .badge(system.gameCount)
                             .tag(LibrarySelection.system(system.systemID))
                             .contextMenu {
+                                ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
+                                Divider()
                                 Button("About This System") {
                                     helpNavigator.open(.system(system.systemID), with: openWindow)
                                 }

@@ -36,6 +36,18 @@ struct ESDEMediaResolverTests {
         #expect(resolver.resolveCoverArt(romNameNoExt: "F-Zero AX")?.path.contains("downloaded_media") == true)
     }
 
+    @Test func screenshotIsPreferredOverTitleScreen() throws {
+        try touch(root.appending(path: "downloaded_media/triforce/titlescreens/F-Zero AX.png"))
+        #expect(resolver.resolveTitleScreen(romNameNoExt: "F-Zero AX")?.path.contains("/titlescreens/") == true)
+        try touch(root.appending(path: "downloaded_media/triforce/screenshots/F-Zero AX.png"))
+        #expect(resolver.resolveTitleScreen(romNameNoExt: "F-Zero AX")?.path.contains("/screenshots/") == true)
+    }
+
+    @Test func fallsBackToBatoceraInFolderScreenshot() throws {
+        try touch(systemFolder.appending(path: "images/Mario Kart Arcade GP (USA)-image.jpg"))
+        #expect(resolver.resolveTitleScreen(romNameNoExt: "Mario Kart Arcade GP (USA)")?.lastPathComponent == "Mario Kart Arcade GP (USA)-image.jpg")
+    }
+
     @Test func findsInFolderVideos() throws {
         try touch(systemFolder.appending(path: "videos/F-Zero AX-video.mp4"))
         #expect(resolver.resolveVideo(romNameNoExt: "F-Zero AX")?.lastPathComponent == "F-Zero AX-video.mp4")

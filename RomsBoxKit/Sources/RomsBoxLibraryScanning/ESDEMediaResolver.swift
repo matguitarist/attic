@@ -37,8 +37,14 @@ struct ESDEMediaResolver {
         return nil
     }
 
+    /// A shot of the game itself, for the detail panel's header: an
+    /// in-game screenshot, or its title screen when there's none.
+    /// (`Game.titleScreenPath` holds whichever was found.)
     func resolveTitleScreen(romNameNoExt: String) -> URL? {
-        firstExistingFile(mediaType: "titlescreens", nameNoExt: romNameNoExt, extensions: Self.imageExtensions)
+        firstExistingFile(mediaType: "screenshots", nameNoExt: romNameNoExt, extensions: Self.imageExtensions)
+            ?? firstExistingFile(mediaType: "titlescreens", nameNoExt: romNameNoExt, extensions: Self.imageExtensions)
+            // Batocera packs name their screenshot `<rom>-image`.
+            ?? firstInFolderFile(subfolder: "images", name: "\(romNameNoExt)-image", extensions: Self.imageExtensions)
     }
 
     func resolveVideo(romNameNoExt: String) -> URL? {

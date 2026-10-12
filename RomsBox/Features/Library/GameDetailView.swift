@@ -16,27 +16,18 @@ struct GameDetailView: View {
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
     @Environment(GameInfoEditor.self) private var infoEditor
 
+    /// The description box grows into whatever height the panel has spare,
+    /// which keeps Info and Play History at the bottom; it never goes below
+    /// `minimumDescriptionHeight`, past which the panel just scrolls.
+    @State private var descriptionHeight: CGFloat = Self.minimumDescriptionHeight
+    private static let minimumDescriptionHeight: CGFloat = 120
+    @State private var isEditingTitle = false
+
     var body: some View {
         if let game {
             Form {
                 Section {
                     header(for: game)
-                }
-
-                Section("Description") {
-                    // TextEditor has no Return-to-submit (Return is a
-                    // newline), so this one commits on focus loss only.
-                    CommitOnBlurField(
-                        value: game.gameDescription ?? "",
-                        onCommit: { commitOptionalText($0, to: \.gameDescription, for: game) }
-                    ) { text, focus in
-                        TextEditor(text: text)
-                            .font(.callout)
-                            .frame(minHeight: 90, maxHeight: 200)
-                            .scrollContentBackground(.hidden)
-                            .focused(focus)
-                    }
-                    .labelsHidden()
                 }
 
                 Section("Info") {
@@ -67,8 +58,35 @@ struct GameDetailView: View {
                         }
                     }
                 }
+
+                Section("Description") {
+                    // TextEditor has no Return-to-submit (Return is a
+                    // newline), so this one commits on focus loss only.
+                    CommitOnBlurField(
+                        value: game.gameDescription ?? "",
+                        onCommit: { commitOptionalText($0, to: \.gameDescription, for: game) }
+                    ) { text, focus in
+                        TextEditor(text: text)
+                            .font(.callout)
+                            .frame(height: descriptionHeight)
+                            .scrollContentBackground(.hidden)
+                            .focused(focus)
+                    }
+                    .labelsHidden()
+                }
             }
             .formStyle(.grouped)
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                // Spare room (positive) or overflow (negative).
+                geometry.containerSize.height - geometry.contentSize.height
+            } action: { _, slack in
+                let target = max(Self.minimumDescriptionHeight, (descriptionHeight + slack).rounded(.down))
+                // Ignore sub-point jitter so this settles instead of
+                // nudging the layout back and forth.
+                if abs(target - descriptionHeight) >= 1 {
+                    descriptionHeight = target
+                }
+            }
             // Fresh field state per game — see CommitOnBlurField.
             .id(game.persistentModelID)
         } else {
@@ -83,28 +101,48 @@ struct GameDetailView: View {
     @ViewBuilder
     private func header(for game: Game) -> some View {
         VStack(spacing: 12) {
-            // Fixed frame regardless of the system — real box art
-            // proportions vary wildly (NES portrait, SNES landscape, GBA
-            // near-square), so GameCoverArtView fits the whole image inside
-            // this frame rather than cropping.
-            GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
-                .frame(width: 220, height: 220 / (3.0 / 4.0))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            // A shot of the game itself (screenshot or title screen) reads
+            // better at this size than box art, which the grid already
+            // shows; box art is the fallback. 4:3 like the screens of most
+            // of these systems, and GameCoverArtView fits rather than crops
+            // anything shaped otherwise.
+            GameCoverArtView(url: Self.headerImageURL(for: game), title: game.title, showBackground: false)
+                .aspectRatio(4.0 / 3.0, contentMode: .fit)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
-            CommitOnBlurField(
-                value: game.title,
-                isValid: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
-                onCommit: { commitTitle($0, for: game) }
-            ) { text, focus in
-                // Inside a Form, a TextField renders its title as a leading
-                // row label ("Title  3 Ninjas…"); the header wants just the
-                // centered name.
-                TextField("Title", text: text, axis: .vertical)
-                    .labelsHidden()
-                    .textFieldStyle(.plain)
+            // A centered multi-line TextField only draws its first line, so
+            // the title shows as wrapping Text and turns into a field when
+            // clicked (Return or clicking away saves).
+            if isEditingTitle {
+                CommitOnBlurField(
+                    value: game.title,
+                    isValid: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
+                    onCommit: { commitTitle($0, for: game) }
+                ) { text, focus in
+                    // Inside a Form, a TextField renders its title as a
+                    // leading row label; the header wants just the name.
+                    TextField("Title", text: text)
+                        .labelsHidden()
+                        .textFieldStyle(.roundedBorder)
+                        .font(.title2.bold())
+                        .multilineTextAlignment(.center)
+                        .focused(focus)
+                        .onAppear { focus.wrappedValue = true }
+                        .onChange(of: focus.wrappedValue) { _, focused in
+                            if !focused { isEditingTitle = false }
+                        }
+                        .onSubmit { isEditingTitle = false }
+                }
+            } else {
+                Text(game.title)
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
-                    .focused(focus)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture { isEditingTitle = true }
+                    .help("Click to rename")
             }
 
             actions(for: game)
@@ -189,6 +227,24 @@ struct GameDetailView: View {
             .fixedSize()
             .help("Launch with a specific emulator, scrape info, edit info, or reveal the ROM")
         }
+    }
+
+    /// The game's screenshot, else its title screen, else its box art.
+    /// Libraries scanned before screenshots were preferred stored the title
+    /// screen, so look for an ES-DE screenshot next to it too — no rescan
+    /// needed.
+    static func headerImageURL(for game: Game) -> URL? {
+        guard let titleScreen = game.titleScreenURL else { return game.coverArtURL }
+        let folder = titleScreen.deletingLastPathComponent()
+        if folder.lastPathComponent == "titlescreens" {
+            let screenshots = folder.deletingLastPathComponent().appending(path: "screenshots", directoryHint: .isDirectory)
+            let name = titleScreen.deletingPathExtension().lastPathComponent
+            for ext in ["png", "jpg", "jpeg"] {
+                let candidate = screenshots.appending(path: "\(name).\(ext)")
+                if FileManager.default.fileExists(atPath: candidate.path) { return candidate }
+            }
+        }
+        return titleScreen
     }
 
     private func formattedPlaytime(_ seconds: Double) -> String {

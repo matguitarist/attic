@@ -74,6 +74,16 @@
         }
       }
     },
+    "%lld Games Selected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jeux sélectionnés"
+          }
+        }
+      }
+    },
     "%lld already had info": {
       "localizations": {
         "en": {
@@ -323,6 +333,16 @@
         }
       }
     },
+    "Actions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actions"
+          }
+        }
+      }
+    },
     "Add Custom Emulator…": {
       "localizations": {
         "fr": {
@@ -469,6 +489,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tous les jeux"
+          }
+        }
+      }
+    },
+    "All Games, Replacing Existing Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux, en remplaçant les infos existantes"
           }
         }
       }
@@ -785,6 +815,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Classique (Xbox, PlayStation)"
+          }
+        }
+      }
+    },
+    "Click to rename": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquez pour renommer"
           }
         }
       }
@@ -1617,6 +1657,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les noms, descriptions et illustrations déjà présents dans un gamelist.xml (d’ES-DE, Batocera ou RetroBat) et dans downloaded_media ou les dossiers images et videos d’un système sont repris automatiquement. Les jeux d’arcade reçoivent leur vrai titre depuis la liste de jeux de FinalBurn Neo."
+          }
+        }
+      }
+    },
+    "Games Missing Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux sans infos"
           }
         }
       }
@@ -3232,6 +3282,26 @@
         }
       }
     },
+    "Scrape This Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer les infos de cette collection"
+          }
+        }
+      }
+    },
+    "Scrape This System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer les infos de ce système"
+          }
+        }
+      }
+    },
     "Scrape info for the %lld games in this list missing it": {
       "localizations": {
         "en": {
@@ -4212,6 +4282,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "xemu utilise sa propre configuration de manette — réglez-la une fois dans xemu."
+          }
+        }
+      }
+    },
+    "⌘-click to add or remove a game, ⇧-click to select a range, ⌘A to select everything shown.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌘-clic pour ajouter ou retirer un jeu, ⇧-clic pour sélectionner une plage, ⌘A pour tout sélectionner."
           }
         }
       }

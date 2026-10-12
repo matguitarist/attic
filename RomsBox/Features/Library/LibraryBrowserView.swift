@@ -12,6 +12,7 @@ struct LibraryBrowserView: View {
     @State private var searchText = ""
     @State private var sortOrder: GameSortOrder = .title
     @State private var selectedGame: Game?
+    @State private var multiSelection: [Game] = []
     @AppStorage("gridCellScale") private var cellScale: Double = 1.0
     @AppStorage("showsGameInspector") private var showsInspector = true
     @State private var showsControllerHelp = false
@@ -37,7 +38,8 @@ struct LibraryBrowserView: View {
                 searchText: searchText,
                 sortOrder: sortOrder,
                 cellScale: CGFloat(cellScale),
-                selectedGame: $selectedGame
+                selectedGame: $selectedGame,
+                multiSelection: $multiSelection
             )
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 BatchScrapeStatusBar()
@@ -46,8 +48,14 @@ struct LibraryBrowserView: View {
             .navigationTitle(selectionTitle)
             .toolbar { toolbarContent }
             .inspector(isPresented: $showsInspector) {
-                GameDetailView(game: selectedGame)
-                    .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
+                Group {
+                    if multiSelection.count > 1 {
+                        MultipleGamesSummaryView(games: multiSelection)
+                    } else {
+                        GameDetailView(game: selectedGame)
+                    }
+                }
+                .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
             }
         }
         // In the sidebar rather than the toolbar: a toolbar search field
@@ -87,6 +95,9 @@ struct LibraryBrowserView: View {
         .sheet(item: $infoEditor.game) { game in
             EditGameInfoView(game: game)
         }
+        // A multi-selection belongs to what was showing when it was made.
+        .onChange(of: selection) { multiSelection = [] }
+        .onChange(of: searchText) { multiSelection = [] }
         .onAppear {
             if startsInBigBox, !Self.didAutoOpenBigBox {
                 Self.didAutoOpenBigBox = true

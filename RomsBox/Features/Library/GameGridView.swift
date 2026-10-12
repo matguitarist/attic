@@ -7,6 +7,9 @@ import RomsBoxEmulation
 struct GameGridView: View {
     @Query private var games: [Game]
     @Binding var selectedGame: Game?
+    /// Several games selected at once (⌘-click, ⇧-click, ⌘A). Empty or a
+    /// single game means the plain one-game selection in `selectedGame`.
+    @Binding var multiSelection: [Game]
     private let sortOrder: GameSortOrder
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
@@ -44,7 +47,8 @@ struct GameGridView: View {
         GridNavigation.columnCount(availableWidth: availableWidth - Self.padding * 2, cellWidth: cellWidth, spacing: Self.spacing)
     }
 
-    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>) {
+    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>, multiSelection: Binding<[Game]>) {
+        _multiSelection = multiSelection
         self.cellScale = cellScale
         // Recently Played always shows most-recent-first, regardless of the
         // toolbar's sort picker — that's the one thing that view is for.
@@ -93,6 +97,12 @@ struct GameGridView: View {
                     @unknown default: break
                     }
                 }
+                .onCommand(#selector(NSResponder.selectAll(_:))) {
+                    selectAll()
+                }
+                .onExitCommand {
+                    multiSelection = []
+                }
                 .onKeyPress(.return) {
                     guard let selectedGame else { return .ignored }
                     play(selectedGame)
@@ -117,14 +127,14 @@ struct GameGridView: View {
             } else {
                 LazyVGrid(columns: columns, spacing: Self.spacing) {
                     ForEach(displayedGames) { game in
-                        GameCoverCell(game: game, isSelected: game.persistentModelID == selectedGame?.persistentModelID, width: cellWidth)
+                        GameCoverCell(game: game, isSelected: isSelected(game), width: cellWidth)
                             // Both gestures attached together let SwiftUI
                             // disambiguate by tap count itself (waiting
                             // briefly after one tap to see if a second
                             // arrives) rather than needing to do that by hand.
                             .onTapGesture(count: 2) { play(game) }
                             .onTapGesture(count: 1) {
-                                selectedGame = game
+                                click(game)
                                 isGridFocused = true
                             }
                             .contextMenu { contextMenuContent(for: game) }
@@ -168,12 +178,68 @@ struct GameGridView: View {
         ) else { return }
 
         let game = items[newIndex]
+        multiSelection = []
         selectedGame = game
         // `anchor: nil` scrolls only as far as needed to reveal the cell,
         // rather than snapping every move to the top or center.
         withAnimation(.easeOut(duration: 0.15)) {
             proxy.scrollTo(game.persistentModelID, anchor: nil)
         }
+    }
+
+    private var isMultiSelecting: Bool { multiSelection.count > 1 }
+
+    private func isSelected(_ game: Game) -> Bool {
+        if isMultiSelecting {
+            return multiSelection.contains { $0.persistentModelID == game.persistentModelID }
+        }
+        return game.persistentModelID == selectedGame?.persistentModelID
+    }
+
+    /// Finder-style clicks: ⌘ adds or removes one game, ⇧ selects the range
+    /// from the last plainly clicked game, a plain click selects just one.
+    private func click(_ game: Game) {
+        let modifiers = NSEvent.modifierFlags
+        let id = game.persistentModelID
+        if modifiers.contains(.command) {
+            var games = isMultiSelecting ? multiSelection : [selectedGame].compactMap { $0 }
+            if let index = games.firstIndex(where: { $0.persistentModelID == id }) {
+                games.remove(at: index)
+                if selectedGame?.persistentModelID == id { selectedGame = games.last }
+            } else {
+                games.append(game)
+                selectedGame = game
+            }
+            multiSelection = games.count > 1 ? games : []
+            if games.count == 1 { selectedGame = games[0] }
+        } else if modifiers.contains(.shift), let anchor = selectedGame {
+            let items = displayedGames
+            guard let from = items.firstIndex(where: { $0.persistentModelID == anchor.persistentModelID }),
+                  let to = items.firstIndex(where: { $0.persistentModelID == id }) else {
+                multiSelection = []
+                selectedGame = game
+                return
+            }
+            let range = items[min(from, to)...max(from, to)]
+            multiSelection = range.count > 1 ? Array(range) : []
+        } else {
+            multiSelection = []
+            selectedGame = game
+        }
+    }
+
+    /// ⌘A / Edit › Select All: every game currently shown, e.g. all the
+    /// results of a search.
+    private func selectAll() {
+        let items = displayedGames
+        guard items.count > 1 else {
+            selectedGame = items.first
+            return
+        }
+        if selectedGame == nil || !items.contains(where: { $0.persistentModelID == selectedGame?.persistentModelID }) {
+            selectedGame = items.first
+        }
+        multiSelection = items
     }
 
     private func play(_ game: Game) {
@@ -183,6 +249,17 @@ struct GameGridView: View {
 
     @ViewBuilder
     private func contextMenuContent(for game: Game) -> some View {
+        // Right-clicking inside a multi-selection acts on all of it; on a
+        // game outside it, just on that game (as in Finder).
+        if isMultiSelecting, isSelected(game) {
+            MultipleGamesMenuItems(games: multiSelection, shownCollection: shownCollection.first)
+        } else {
+            singleGameMenuContent(for: game)
+        }
+    }
+
+    @ViewBuilder
+    private func singleGameMenuContent(for game: Game) -> some View {
         let target = resolvedTarget(for: game)
         let isRunningThisGame = launchCoordinator.state == .running(gameID: game.persistentModelID)
         let isBusy = launchCoordinator.state == .launching || isRunningThisGame

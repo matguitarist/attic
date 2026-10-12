@@ -183,14 +183,30 @@ final class ScrapeCoordinator {
         }
     }
 
+    /// Scrapes exactly these games (a multi-selection), whether or not they
+    /// already have info — filling empty fields, or replacing them all with
+    /// `force`. One game goes through `scrape(_:from:force:)` instead, for
+    /// its more detailed status.
+    func scrape(games: [Game], from source: ScraperSource, force: Bool = false) {
+        if games.count == 1, let game = games.first {
+            Task { await scrape(game, from: source, force: force) }
+            return
+        }
+        dismissActivity()
+        batchTask?.cancel()
+        batchTask = Task { [weak self] in
+            await self?.runBatch(games: games, source: source, onlyMissing: false, force: force)
+        }
+    }
+
     func cancelBatch() {
         batchTask?.cancel()
         batchTask = nil
         batchState = .idle
     }
 
-    private func runBatch(games: [Game], source: ScraperSource) async {
-        let missing = games.filter { $0.gameDescription == nil }
+    private func runBatch(games: [Game], source: ScraperSource, onlyMissing: Bool = true, force: Bool = false) async {
+        let missing = onlyMissing ? games.filter { $0.gameDescription == nil } : games
         guard !missing.isEmpty else {
             batchState = .finished(scraped: 0, alreadyPresent: games.count, failed: 0)
             return
@@ -204,9 +220,9 @@ final class ScrapeCoordinator {
 
             switch source {
             case .screenScraper(let credentials):
-                await scrapeUsingScreenScraper(game: game, credentials: credentials)
+                await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
             case .theGamesDB(let credentials):
-                await scrapeUsingTheGamesDB(game: game, credentials: credentials)
+                await scrapeUsingTheGamesDB(game: game, credentials: credentials, force: force)
             }
             if case .failed = state { failed += 1 } else { scraped += 1 }
 
