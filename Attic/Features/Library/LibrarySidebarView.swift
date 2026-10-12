@@ -114,6 +114,8 @@ struct LibrarySidebarView: View {
                 .labelStyle(.iconOnly)
         }
         .menuStyle(.borderlessButton)
+        .controlSize(.small)
+        .imageScale(.small)
         .menuIndicator(.hidden)
         .fixedSize()
         .help("Sort \(category.title)")
