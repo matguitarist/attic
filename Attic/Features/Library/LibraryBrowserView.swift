@@ -48,20 +48,28 @@ struct LibraryBrowserView: View {
             }
             .navigationTitle(selectionTitle)
             .toolbar { toolbarContent }
-            .inspector(isPresented: $showsInspector) {
-                Group {
-                    if multiSelection.count > 1 {
-                        MultipleGamesSummaryView(games: multiSelection)
-                    } else {
-                        GameDetailView(game: selectedGame, system: selectedSystem)
-                    }
-                }
-                .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
-            }
         }
         // In the sidebar rather than the toolbar: a toolbar search field
-        // always goes last, which puts it over the inspector column.
+        // always goes last, which puts it over the inspector column. Before
+        // `.inspector`, or it lands in the inspector's toolbar.
         .searchable(text: $searchText, placement: .sidebar, prompt: "Search Games")
+        // On the split view rather than its detail column, so the inspector
+        // is a column of its own with its own part of the toolbar; inside
+        // the detail column, the grid's toolbar items ran on over it.
+        .inspector(isPresented: $showsInspector) {
+            Group {
+                if multiSelection.count > 1 {
+                    MultipleGamesSummaryView(games: multiSelection)
+                } else {
+                    GameDetailView(game: selectedGame, system: selectedSystem)
+                }
+            }
+            .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
+            .toolbar {
+                ToolbarSpacer(.flexible)
+                ToolbarItem { inspectorToggle }
+            }
+        }
         .focusedSceneValue(\.selectedGame, selectedGame)
         .focusedSceneValue(\.gameInfoEditor, infoEditor)
         .environment(infoEditor)
@@ -128,6 +136,15 @@ struct LibraryBrowserView: View {
         return systems.first { $0.systemID == id }
     }
 
+
+    private var inspectorToggle: some View {
+        Button {
+            showsInspector.toggle()
+        } label: {
+            Label("Inspector", systemImage: "info.circle")
+        }
+        .help(showsInspector ? String(localized: "Hide game details") : String(localized: "Show game details"))
+    }
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
@@ -210,14 +227,8 @@ struct LibraryBrowserView: View {
             .help("Full-screen couch mode (⌘⇧B, or Menu/Start on a controller)")
         }
 
-        ToolbarItem {
-            Button {
-                showsInspector.toggle()
-            } label: {
-                Label("Inspector", systemImage: "info.circle")
-            }
-            .help(showsInspector ? String(localized: "Hide game details") : String(localized: "Show game details"))
-        }
+        // The inspector toggle is in the inspector's own toolbar (see
+        // `.inspector` above), which stays in place while it's closed.
     }
 
     /// Same order the sidebar lists them in, wrapping at either end so a
