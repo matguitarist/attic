@@ -232,6 +232,16 @@ public struct EmulatorInstaller: Sendable {
         }
         defer { try? FileManager.default.removeItem(at: staging) }
 
+        // A bare binary: the archive's contents are the emulator.
+        if !emulator.appBundleName.hasSuffix(".app") {
+            let executable = staging.appending(path: emulator.executableRelativePath)
+            guard FileManager.default.fileExists(atPath: executable.path) else {
+                throw InstallError.missingFileInArchive(emulator.executableRelativePath)
+            }
+            try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
+            return try moveIntoPlace(staging, in: destination, as: emulator.appBundleName)
+        }
+
         // Archives put the app at the top or inside a folder — look a few
         // levels down rather than relying on each project's layout.
         guard let app = Self.findApp(named: emulator.appBundleName, in: staging),
@@ -300,8 +310,16 @@ public struct EmulatorInstaller: Sendable {
             let assets: [Asset]
         }
         return (try? JSONDecoder().decode(Release.self, from: data))?.assets
-            .first { $0.name.hasSuffix(suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") }?
+            .first { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") }?
             .browser_download_url
+    }
+
+    /// `suffix` ends the name; a `*` in it matches anything (a version).
+    static func matches(_ name: String, suffix: String) -> Bool {
+        guard let star = suffix.firstIndex(of: "*") else { return name.hasSuffix(suffix) }
+        let (head, tail) = (String(suffix[..<star]), String(suffix[suffix.index(after: star)...]))
+        guard let headRange = name.range(of: head, options: .backwards) else { return false }
+        return name[headRange.upperBound...].hasSuffix(tail)
     }
 
     /// Unpacks a downloaded release into a new staging directory, by its

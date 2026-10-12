@@ -3,6 +3,7 @@ import Observation
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import AtticEmulation
 
 /// Bridges `LibraryScanner`'s output into `LibraryStore`. Lives in the app
 /// layer specifically so `AtticLibraryScanning` stays independent of
@@ -39,7 +40,9 @@ final class ScanCoordinator {
 
         let scanner = self.scanner
         let result = await Task.detached(priority: .userInitiated) {
-            scanner.scan(romsRootURLs: romsRootURLs)
+            // Vita games installed in Vita3K since the last scan.
+            Vita3KLibrary.addShortcuts(romsRoots: romsRootURLs)
+            return scanner.scan(romsRootURLs: romsRootURLs)
         }.value
         // Systems the user removed stay out until added back.
         let systems = await Self.withArcadeNames(result.systems.filter { !RemovedSystems.contains($0.canonicalID) })

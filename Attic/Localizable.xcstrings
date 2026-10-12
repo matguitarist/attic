@@ -1671,6 +1671,16 @@
         }
       }
     },
+    "Each game is a .psvita file holding its title ID, such as PCSE00120.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est un fichier .psvita qui contient son identifiant, comme PCSE00120."
+          }
+        }
+      }
+    },
     "Edit Custom Emulator": {
       "localizations": {
         "fr": {
@@ -2047,6 +2057,16 @@
         }
       }
     },
+    "Games are dumped game folders (with eboot.bin inside), renamed like Game.ps4. Installed .pkg files aren't supported.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont des dossiers de jeu extraits (avec eboot.bin dedans), renommés comme Jeu.ps4. Les fichiers .pkg ne sont pas pris en charge."
+          }
+        }
+      }
+    },
     "Games can be .iso files or game folders named like Game.ps3 (containing PS3_GAME).": {
       "localizations": {
         "fr": {
@@ -2317,12 +2337,32 @@
         }
       }
     },
+    "Install the PS Vita firmware once in Vita3K (PSVUPDAT.PUP and the font package, both from Sony's website).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installez une fois le firmware PS Vita dans Vita3K (PSVUPDAT.PUP et le paquet de polices, tous deux sur le site de Sony)."
+          }
+        }
+      }
+    },
     "Install the PS3 system software once in RPCS3 (File › Install Firmware) with PS3UPDAT.PUP from Sony's website.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Installez une fois le logiciel système PS3 dans RPCS3 (Fichier › Installer le firmware) avec PS3UPDAT.PUP depuis le site de Sony."
+          }
+        }
+      }
+    },
+    "Install your games in Vita3K (.vpk, or .pkg with its license). With a psvita folder in your ROMs folder, Attic adds every installed game to the library by itself.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installez vos jeux dans Vita3K (.vpk, ou .pkg avec sa licence). Avec un dossier psvita dans votre dossier de ROMs, Attic ajoute de lui-même chaque jeu installé à la bibliothèque."
           }
         }
       }
@@ -4369,6 +4409,16 @@
         }
       }
     },
+    "Some games need system modules dumped from your PS4, in shadPS4's sys_modules folder (~/Library/Application Support/shadPS4).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains jeux ont besoin de modules système extraits de votre PS4, dans le dossier sys_modules de shadPS4 (~/Library/Application Support/shadPS4)."
+          }
+        }
+      }
+    },
     "Some systems need the console's BIOS. These files are copyrighted, so Attic never downloads them: dump them from hardware you own and put them in the Emulation folder's BIOS folder. Each system's page shows which files it needs and whether they're there.": {
       "localizations": {
         "fr": {
@@ -5045,6 +5095,16 @@
         }
       }
     },
+    "Vita3K uses its own controller setup. Configure it once in Vita3K (Controls) — Attic's controller settings don't apply.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vita3K utilise sa propre configuration de manette. Configurez-la une fois dans Vita3K (Controls) — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
     "Welcome to Attic": {
       "localizations": {
         "fr": {
@@ -5277,6 +5337,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "capture d’écran"
+          }
+        }
+      }
+    },
+    "shadPS4 is still young: many games don't start or run slowly yet. Its Mac version runs through Rosetta.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shadPS4 est encore jeune : beaucoup de jeux ne démarrent pas ou tournent lentement. Sa version Mac passe par Rosetta."
+          }
+        }
+      }
+    },
+    "shadPS4 uses its own controller setup — Attic's controller settings don't apply.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shadPS4 utilise sa propre configuration de manette — les réglages de manette d’Attic ne s’appliquent pas."
           }
         }
       }

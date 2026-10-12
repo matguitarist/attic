@@ -43,6 +43,8 @@ public enum TheGamesDBSystemID {
         .psp: 13,
         .ps2: 11,
         .ps3: 12,
+        .ps4: 4919,
+        .psvita: 39,
         .xbox: 14,
         .msx: 4929,
         .dos: 1,

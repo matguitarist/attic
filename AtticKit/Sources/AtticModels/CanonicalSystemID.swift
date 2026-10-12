@@ -83,6 +83,8 @@ public extension CanonicalSystemID {
     static let psp = CanonicalSystemID("psp")
     static let ps2 = CanonicalSystemID("ps2")
     static let ps3 = CanonicalSystemID("ps3")
+    static let ps4 = CanonicalSystemID("ps4")
+    static let psvita = CanonicalSystemID("psvita")
     static let xbox = CanonicalSystemID("xbox")
     static let msx = CanonicalSystemID("msx")
     static let dos = CanonicalSystemID("dos")

@@ -647,12 +647,32 @@
         }
       }
     },
+    "The PS Vita emulator, native on Apple Silicon.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PS Vita, natif sur Apple Silicon."
+          }
+        }
+      }
+    },
     "The PS2 emulator's own app. Intel-only, so it runs through Rosetta.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "L’app de l’émulateur PS2. Uniquement Intel, elle passe donc par Rosetta."
+          }
+        }
+      }
+    },
+    "The PS4 emulator. Early days: many games don't run yet. Intel-only, so it runs through Rosetta.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur PS4. Encore jeune : beaucoup de jeux ne tournent pas. Intel uniquement, il passe donc par Rosetta."
           }
         }
       }

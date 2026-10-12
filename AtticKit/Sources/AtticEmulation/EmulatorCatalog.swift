@@ -33,7 +33,7 @@ public struct StandaloneEmulator: Sendable, Hashable, Identifiable {
         case dolphinReleaseFeed
         /// `downloadURL` is a GitHub "latest release" API URL; the asset
         /// whose name ends with the suffix is downloaded (.zip, .dmg, .7z
-        /// or .tar.xz).
+        /// or .tar.xz). A `*` in it stands for a version.
         case githubRelease(assetSuffix: String)
     }
 
@@ -41,6 +41,8 @@ public struct StandaloneEmulator: Sendable, Hashable, Identifiable {
     public let name: String
     public let summary: String
     /// The `.app` bundle name inside the archive and once installed.
+    /// For an emulator shipped as a bare binary, the folder it's
+    /// installed as instead (no `.app`): the archive's contents.
     public let appBundleName: String
     /// Path of the launch binary inside the bundle.
     public let executableRelativePath: String
@@ -373,7 +375,44 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2]
+    /// Native on Apple Silicon. Games are installed into it (its own
+    /// data stays in ~/Library) and run by title ID, from a `.psvita` file
+    /// holding it; the SDL frontend is a plain window that quits with the
+    /// game.
+    public static let vita3K = StandaloneEmulator(
+        id: "vita3k",
+        name: "Vita3K",
+        summary: String(localized: "The PS Vita emulator, native on Apple Silicon.", bundle: .module),
+        appBundleName: "Vita3K.app",
+        executableRelativePath: "Contents/MacOS/Vita3K",
+        argumentTemplate: "--frontend sdl -F -r {titleID}",
+        downloadURL: URL(string: "https://api.github.com/repos/Vita3K/Vita3K/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "macos-arm64-latest.dmg"),
+        homepageURL: URL(string: "https://vita3k.org")!,
+        license: "GPL-2.0",
+        systems: [.psvita],
+        portableHome: nil
+    )
+
+    /// A bare Intel binary (with its Vulkan libraries) rather than an app,
+    /// so it runs through Rosetta and installs as a folder. It keeps its
+    /// data in ~/Library/Application Support/shadPS4 whatever HOME says.
+    public static let shadPS4 = StandaloneEmulator(
+        id: "shadps4",
+        name: "shadPS4",
+        summary: String(localized: "The PS4 emulator. Early days: many games don't run yet. Intel-only, so it runs through Rosetta.", bundle: .module),
+        appBundleName: "shadPS4",
+        executableRelativePath: "shadps4",
+        argumentTemplate: "--fullscreen true -g {romPath}/eboot.bin",
+        downloadURL: URL(string: "https://api.github.com/repos/shadps4-emu/shadPS4/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "macos-sdl-*.zip"),
+        homepageURL: URL(string: "https://shadps4.net")!,
+        license: "GPL-2.0",
+        systems: [.ps4],
+        portableHome: nil
+    )
+
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4]
 
     // MARK: - Per-system table
 
@@ -518,6 +557,8 @@ public enum EmulatorCatalog {
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
+        .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),
+        .init(systemID: .psvita, cores: [], standalone: [vita3K], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
         .init(systemID: .msx, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Accurate MSX, MSX2 and MSX2+.", bundle: .module)), RecommendedCore("fmsx_libretro", "fMSX", String(localized: "Lighter MSX core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .dos, cores: [RecommendedCore("dosbox_pure_libretro", "DOSBox Pure", String(localized: "Plays zipped DOS games directly.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),

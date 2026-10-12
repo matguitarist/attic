@@ -56,6 +56,11 @@ public enum SystemROMExtensions {
         .psp: ["7z", "chd", "cso", "elf", "iso", "pbp", "prx", "zip"],
         .ps2: ["bin", "chd", "ciso", "cso", "dump", "elf", "gz", "img", "iso", "isz", "m3u", "mdf", "ngr", "nrg", "zso"],
         .ps3: ["app", "iso", "ps3", "ps3dir"],
+        // Game folders (CUSA…, with eboot.bin) named like Game.ps4.
+        .ps4: ["ps4"],
+        // Vita3K plays games installed in it; a .psvita file names one by
+        // its title ID (ES-DE's convention).
+        .psvita: ["psvita"],
         .xbox: ["iso", "xiso"],
         .msx: ["7z", "cas", "col", "di1", "di2", "dmk", "dsk", "fd1", "fd2", "m3u", "mx1", "mx2", "ogv", "ri", "rom", "sc", "sg", "wav", "xsa", "zip"],
         .dos: ["7z", "bat", "com", "conf", "cue", "dosz", "exe", "img", "iso", "zip"],
@@ -85,7 +90,7 @@ public enum SystemROMExtensions {
         byCanonicalID[systemID]
     }
 
-    /// Whether a file (or `.ps3`-style game folder) at this path, relative
+    /// Whether a file (or `.ps3`/`.ps4`-style game folder) at this path, relative
     /// to the system folder, is one of the system's games.
     public static func accepts(_ romRelativePath: String, for systemID: CanonicalSystemID) -> Bool {
         guard let extensions = byCanonicalID[systemID] else { return true }

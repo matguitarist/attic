@@ -422,6 +422,22 @@ public enum SystemTaxonomy {
             category: .console
         ),
         SystemDefinition(
+            canonicalID: .ps4,
+            displayName: "Sony PlayStation 4",
+            batoceraShortName: "ps4",
+            esdeShortName: "ps4",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .psvita,
+            displayName: "Sony PlayStation Vita",
+            batoceraShortName: "psvita",
+            esdeShortName: "psvita",
+            retroArchSystemIDs: [],
+            category: .handheld
+        ),
+        SystemDefinition(
             canonicalID: .xbox,
             displayName: "Microsoft Xbox",
             batoceraShortName: "xbox",

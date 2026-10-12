@@ -63,6 +63,8 @@ LOGOS = {
     "psp": "Handhelds/Sony PSP",
     "ps2": "Consoles/Sony Playstation 2",
     "ps3": "Consoles/Sony Playstation 3",
+    "ps4": "Consoles/Sony Playstation 4",
+    "psvita": "Handhelds/Sony PS Vita",
     "xbox": "Consoles/Microsoft Xbox",
     "msx": "Computers/Microsoft MSX",
     "dos": "Computers/MS-DOS",

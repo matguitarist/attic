@@ -57,7 +57,7 @@ public enum MediaTidier {
     /// Files that don't make a folder hold games.
     static let ignoredFileNames: Set<String> = ["_sysinfo.txt", ".DS_Store", "gamelist.xml"]
     /// Folders that are games themselves (`Game.ps3`).
-    static let gameFolderExtensions: Set<String> = ["ps3"]
+    static let gameFolderExtensions: Set<String> = ["ps3", "ps4"]
 
     /// Batocera's `<rom>-<suffix>` names, by the kind they become.
     /// `thumb` is usually the box art again, so it's only used when there's

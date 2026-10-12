@@ -44,6 +44,8 @@ public enum ScreenScraperSystemID {
         .psp: 61,
         .ps2: 58,
         .ps3: 59,
+        .ps4: 60,
+        .psvita: 62,
         .xbox: 32,
         .msx: 113,
         .dos: 135,
