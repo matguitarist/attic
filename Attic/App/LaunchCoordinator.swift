@@ -28,6 +28,8 @@ final class LaunchCoordinator {
         let game: Game
         let systemName: String
         let fileNames: [String]
+        /// "Any model works, for example SCPH-39001 (US), …", when Attic knows which dumps do.
+        let supportedDumps: String?
         /// Where the files go: the first missing one's folder.
         let folder: URL
     }
@@ -199,6 +201,7 @@ final class LaunchCoordinator {
             game: game,
             systemName: game.system?.displayName ?? game.systemCanonicalID,
             fileNames: missing.map(\.fileName),
+            supportedDumps: missing.lazy.compactMap(SystemFacts.supportedDumps).first,
             folder: first.isFolder ? firstURL : firstURL.deletingLastPathComponent()
         )
     }

@@ -30,7 +30,8 @@ struct MissingBIOSAlert: ViewModifier {
             }
             Button("Cancel", role: .cancel) {}
         } message: { missing in
-            Text("Put \(missing.fileNames.joined(separator: ", ")) in the BIOS folder first; without it the emulator can't start. Dump BIOS files from hardware you own; Attic never downloads them.")
+            let put = String(localized: "Put \(missing.fileNames.joined(separator: ", ")) in the BIOS folder first; without it the emulator can't start. Dump BIOS files from hardware you own; Attic never downloads them.")
+            Text([put, missing.supportedDumps.map { $0 + "." }].compactMap { $0 }.joined(separator: "\n\n"))
         }
     }
 }

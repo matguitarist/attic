@@ -176,6 +176,9 @@ struct SystemOverviewView: View {
                     Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
                         .compactMap { $0 }
                         .joined(separator: " · "))
+                    if let dumps = SystemFacts.supportedDumps(requirement) {
+                        Text(dumps)
+                    }
                 }
             }
             Button("Show BIOS Folder") {

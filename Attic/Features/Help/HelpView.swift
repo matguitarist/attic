@@ -236,6 +236,12 @@ private struct SystemHelpView: View {
                                 .joined(separator: " · "))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                            if let dumps = SystemFacts.supportedDumps(requirement) {
+                                Text(dumps)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
                         Spacer()
                         statusLabel(biosIsPresent(requirement), yes: "Found", no: "Missing", missingIsWarning: requirement.required)
@@ -306,6 +312,13 @@ enum SystemFacts {
         if seen.isEmpty, systemID == .triforce { return ["iso", "gcz", "rvz", "ciso"] }
         if seen.isEmpty, systemID == .xbox { return ["iso"] }
         return seen
+    }
+
+    /// "Any model works, for example SCPH-39001 (US), …" for a folder
+    /// requirement.
+    static func supportedDumps(_ requirement: BIOSRequirement) -> String? {
+        guard !requirement.supportedDumps.isEmpty else { return nil }
+        return String(localized: "Any model works, for example \(requirement.supportedDumps.formatted(.list(type: .and)))")
     }
 
     /// "Nintendo · 1990 · Console".
