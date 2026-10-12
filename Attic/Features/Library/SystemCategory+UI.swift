@@ -40,14 +40,14 @@ extension GameSystem {
 
 extension Sequence where Element == GameSystem {
     /// Non-empty categories in display order, each sorted the way the
-    /// user chose for it (by manufacturer unless changed). The one ordering
+    /// user chose (by manufacturer unless changed). The one ordering
     /// the sidebar, Cabinet Mode's system bar and LB/RB stepping share, so
     /// moving "next system" always matches what's on screen.
     func groupedByCategory() -> [(category: SystemCategory, systems: [GameSystem])] {
         let byCategory = Dictionary(grouping: self, by: \.category)
         return SystemCategory.allCases.compactMap { category in
             guard let systems = byCategory[category], !systems.isEmpty else { return nil }
-            return (category, systems.sorted(by: category.sortOrder.areInIncreasingOrder))
+            return (category, systems.sorted(by: SystemSortOrder.current.areInIncreasingOrder))
         }
     }
 
@@ -56,9 +56,15 @@ extension Sequence where Element == GameSystem {
     }
 }
 
-/// How one kind of system (Consoles, Handhelds…) is sorted in the
-/// sidebar; chosen per kind from its section header.
+/// How systems are sorted within each kind (Consoles, Handhelds…) in the
+/// sidebar; chosen from the sidebar's toolbar.
 enum SystemSortOrder: String, CaseIterable, Identifiable {
+    static let key = "systemSortOrder"
+
+    static var current: SystemSortOrder {
+        UserDefaults.standard.string(forKey: key).flatMap(SystemSortOrder.init(rawValue:)) ?? .manufacturer
+    }
+
     /// By manufacturer, oldest first within one (NES, SNES, N64…).
     case manufacturer
     case name
@@ -87,15 +93,6 @@ enum SystemSortOrder: String, CaseIterable, Identifiable {
         case .gameCount:
             return a.gameCount != b.gameCount ? a.gameCount > b.gameCount : byName
         }
-    }
-}
-
-extension SystemCategory {
-    /// UserDefaults key for this kind's `SystemSortOrder`.
-    var sortOrderKey: String { "systemSortOrder.\(self)" }
-
-    var sortOrder: SystemSortOrder {
-        UserDefaults.standard.string(forKey: sortOrderKey).flatMap(SystemSortOrder.init(rawValue:)) ?? .manufacturer
     }
 }
 

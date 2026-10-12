@@ -18,16 +18,15 @@ struct LibrarySidebarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
-    /// Bumped when a sort order changes (stored in UserDefaults, read by
-    /// `groupedByCategory()`), so the list redraws.
-    @State private var sortOrdersChanged = 0
+    @AppStorage(SystemSortOrder.key) private var sortOrder = SystemSortOrder.manufacturer
     @State private var systemToRemove: GameSystem?
     @AppStorage(Self.hideEmptySystemsKey) private var hidesEmptySystems = false
     /// Also in Settings › General.
     static let hideEmptySystemsKey = "hideEmptySystems"
 
     var body: some View {
-        let _ = sortOrdersChanged
+        // `groupedByCategory()` reads the order itself; this redraws on change.
+        let _ = sortOrder
         List(selection: $selection) {
             Section("Library") {
                 Label("All Games", systemImage: "square.grid.2x2")
@@ -84,14 +83,10 @@ struct LibrarySidebarView: View {
                         systemRow(system, category: group.category)
                     }
                 } header: {
-                    HStack {
-                        Text(group.category.title)
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                        Spacer()
-                        sortMenu(for: group.category)
-                    }
-                    .padding(.bottom, 4)
+                    Text(group.category.title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .padding(.bottom, 4)
                 }
             }
         }
@@ -100,33 +95,27 @@ struct LibrarySidebarView: View {
         // of systems fit; all rows alike, so the sections stay even.
         .environment(\.sidebarRowSize, .small)
         .removeSystemConfirmation($systemToRemove)
+        // In the sidebar's own toolbar, next to its show/hide button.
+        .toolbar {
+            ToolbarItem {
+                sortMenu
+            }
+        }
     }
 
-    private func sortMenu(for category: SystemCategory) -> some View {
+    /// One order for every kind of system, plus hiding empty ones.
+    private var sortMenu: some View {
         Menu {
-            Picker("Sort By", selection: Binding(
-                get: { category.sortOrder },
-                set: { order in
-                    UserDefaults.standard.set(order.rawValue, forKey: category.sortOrderKey)
-                    sortOrdersChanged += 1
-                }
-            )) {
+            Picker("Sort Systems By", selection: $sortOrder) {
                 ForEach(SystemSortOrder.allCases) { Text($0.label).tag($0) }
             }
             .pickerStyle(.inline)
             Divider()
-            // For every kind at once, not just this one.
             Toggle("Hide Empty Systems", isOn: $hidesEmptySystems)
         } label: {
-            Label("Sort By", systemImage: "arrow.up.arrow.down")
-                .labelStyle(.iconOnly)
+            Label("Sort Systems", systemImage: "arrow.up.arrow.down")
         }
-        .menuStyle(.borderlessButton)
-        .controlSize(.small)
-        .imageScale(.small)
-        .menuIndicator(.hidden)
-        .fixedSize()
-        .help("Sort \(category.title)")
+        .help("Sort systems, or hide empty ones")
     }
 
     private func systemRow(_ system: GameSystem, category: SystemCategory) -> some View {

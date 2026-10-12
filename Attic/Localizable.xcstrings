@@ -4369,16 +4369,6 @@
         }
       }
     },
-    "Sort %@": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trier : %@"
-          }
-        }
-      }
-    },
     "Sort As": {
       "localizations": {
         "fr": {
@@ -4399,12 +4389,42 @@
         }
       }
     },
+    "Sort Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier les systèmes"
+          }
+        }
+      }
+    },
+    "Sort Systems By": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier les systèmes par"
+          }
+        }
+      }
+    },
     "Sort by": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Trier par"
+          }
+        }
+      }
+    },
+    "Sort systems, or hide empty ones": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier les systèmes, ou masquer ceux qui sont vides"
           }
         }
       }
