@@ -48,8 +48,11 @@ struct LibraryBrowserView: View {
                 multiSelection: $multiSelection
             )
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                BatchScrapeStatusBar()
-                    .background(.bar)
+                VStack(spacing: 0) {
+                    ROMImportStatusBar(importer: romImporter)
+                    BatchScrapeStatusBar()
+                }
+                .background(.bar)
             }
             .navigationTitle(selectionTitle)
             .toolbar { toolbarContent }
