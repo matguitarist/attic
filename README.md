@@ -49,3 +49,8 @@ signed builds, put your team in `Config/Signing.local.xcconfig` (see
 
 `scripts/release.sh` publishes the version in `project.yml` as a GitHub
 release and adds it to the Sparkle appcast; its header lists what it needs.
+
+## License
+
+Attic is free and open source (MIT license). It isn't affiliated with
+RetroArch, libretro, ScreenScraper or TheGamesDB.
