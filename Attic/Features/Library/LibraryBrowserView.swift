@@ -154,7 +154,7 @@ struct LibraryBrowserView: View {
                 logo
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 150, maxHeight: 26)
+                    .frame(maxWidth: 220, maxHeight: 40)
                     .accessibilityLabel(selectedSystem?.displayName ?? "")
             }
             .sharedBackgroundVisibility(.hidden)
