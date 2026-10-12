@@ -3010,6 +3010,7 @@
       }
     },
     "Plain pixels": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {

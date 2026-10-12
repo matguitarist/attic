@@ -342,7 +342,7 @@ struct SystemSettingsView: View {
 extension SystemSettings.Look {
     var title: String {
         switch self {
-        case .none: String(localized: "Plain pixels")
+        case .none: String(localized: "None")
         case .sharp: String(localized: "Sharp pixels")
         case .crt: String(localized: "CRT TV")
         case .crtCurved: String(localized: "Curved CRT TV")
