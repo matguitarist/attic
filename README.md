@@ -15,6 +15,9 @@ standalone emulator.
 - **Emulators**: installs RetroArch, its cores and standalone emulators from
   their official sources, and keeps everything (BIOS, saves, states,
   settings) in one Emulation folder you can back up or move.
+- **System Settings**: per system, how games look (sharp pixels, CRT,
+  handheld LCD or any RetroArch shader) and play (internal resolution,
+  widescreen, run-ahead, rewind, resume where you left off).
 - **Cabinet Mode**: a full-screen, controller-driven view for the TV.
 - **Controllers**: one button mapping applied across emulators.
 
