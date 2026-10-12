@@ -105,6 +105,22 @@ extension CanonicalSystemID {
         }
     }
 
+    /// The name under its maker's heading, without repeating the maker
+    /// ("Sony PlayStation 2" → "PlayStation 2"). Names that would be left
+    /// meaningless keep the maker: "Nintendo 64", "Atari 2600", "Sega CD".
+    func shortName(displayName: String) -> String {
+        switch self {
+        case .nes: return "NES"
+        case .snes: return "Super Nintendo"
+        default: break
+        }
+        let prefix = maker + " "
+        guard displayName.hasPrefix(prefix) else { return displayName }
+        let rest = String(displayName.dropFirst(prefix.count))
+        if rest.count <= 2 || rest.first?.isNumber == true { return displayName }
+        return rest
+    }
+
     var releaseYear: Int { SystemHelpContent.info(for: self)?.year ?? .max }
 
     /// The system's logo (Attic/Resources/SystemLogos.xcassets), in light

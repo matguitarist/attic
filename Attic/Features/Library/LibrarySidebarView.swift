@@ -75,9 +75,11 @@ struct LibrarySidebarView: View {
                     ForEach(group.systems.groupedByMaker(), id: \.maker) { makerGroup in
                         // Untagged, so it can't be selected.
                         Text(makerGroup.maker)
-                            .font(.caption.weight(.medium))
+                            .font(.caption2.weight(.semibold))
+                            .textCase(.uppercase)
+                            .tracking(0.5)
                             .foregroundStyle(.tertiary)
-                            .padding(.top, 4)
+                            .padding(.bottom, -4)
                         ForEach(makerGroup.systems) { system in
                             systemRow(system, category: group.category)
                         }
@@ -93,7 +95,9 @@ struct LibrarySidebarView: View {
     }
 
     private func systemRow(_ system: GameSystem, category: SystemCategory) -> some View {
-        Label(system.displayName, systemImage: category.symbolName)
+        // The maker is in the heading above, so not repeated here.
+        Label(system.systemID.shortName(displayName: system.displayName), systemImage: category.symbolName)
+            .help(system.displayName)
             .lineLimit(1)
             .badge(system.gameCount)
             .tag(LibrarySelection.system(system.systemID))
