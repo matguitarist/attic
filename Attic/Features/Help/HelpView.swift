@@ -230,25 +230,18 @@ private struct SystemHelpView: View {
                 Text("No BIOS needed.")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(requirements, id: \.fileName) { requirement in
+                ForEach(requirements.statuses(in: emulationFolderStore.folder.bios)) { file in
                     HStack(alignment: .firstTextBaseline) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Tag(requirement.fileName)
-                            Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
+                            Tag(file.fileName)
+                            Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
                                 .compactMap { $0 }
                                 .joined(separator: " · "))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            if !requirement.supportedDumps.isEmpty {
-                                Text("Any model works, for example:")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                TagList(items: requirement.supportedDumps)
-                                    .padding(.top, 2)
-                            }
                         }
                         Spacer()
-                        statusLabel(biosIsPresent(requirement), yes: "Found", no: "Missing", missingIsWarning: requirement.required)
+                        statusLabel(file.isPresent, yes: "Found", no: "Missing", missingIsWarning: file.required)
                     }
                 }
             }
@@ -287,9 +280,6 @@ private struct SystemHelpView: View {
         SystemFacts.fileExtensions(for: systemID, coreInfo: emulationFolderStore.folder.coreInfo)
     }
 
-    private func biosIsPresent(_ requirement: BIOSRequirement) -> Bool {
-        requirement.isPresent(in: emulationFolderStore.folder.bios)
-    }
 }
 
 /// Facts about a system shown both on its help page and in the library's

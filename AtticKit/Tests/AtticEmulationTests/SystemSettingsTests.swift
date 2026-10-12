@@ -372,3 +372,30 @@ struct SystemSettingsLaunchTests {
         #expect(folder.movePS2BIOSIntoPlace().isEmpty)
     }
 }
+
+@Suite struct BIOSFileStatusTests {
+    @Test func folderRequirementListsFoundThenMissingDumps() throws {
+        let bios = FileManager.default.temporaryDirectory.appending(path: "biosrows-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: bios) }
+        let requirement = BIOSRequirement("pcsx2/bios/", supportedDumps: ["scph39001.bin", "scph30004r.bin"])
+
+        let none = [requirement].statuses(in: bios)
+        #expect(none.map(\.fileName) == ["scph39001.bin", "scph30004r.bin"])
+        #expect(none.allSatisfy { !$0.isPresent && $0.required })
+
+        let folder = bios.appending(path: "pcsx2/bios")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        for name in ["SCPH30004R.bin", "SCPH30004R.MEC", "ps2-0230a-20080220.bin"] {
+            try Data([1]).write(to: folder.appending(path: name))
+        }
+        let some = [requirement].statuses(in: bios)
+        #expect(some.map(\.fileName) == ["ps2-0230a-20080220.bin", "SCPH30004R.bin", "scph39001.bin"])
+        #expect(some.map(\.isPresent) == [true, true, false])
+        #expect(!some[2].required)
+    }
+
+    @Test func fileRequirementIsOneRow() {
+        let rows = [BIOSRequirement("scph5501.bin", note: "US")].statuses(in: URL(fileURLWithPath: "/nonexistent"))
+        #expect(rows == [BIOSFileStatus(fileName: "scph5501.bin", isPresent: false, required: true, note: "US")])
+    }
+}

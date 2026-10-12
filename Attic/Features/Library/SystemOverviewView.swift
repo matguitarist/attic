@@ -157,22 +157,16 @@ struct SystemOverviewView: View {
     private var biosSection: some View {
         Section {
             let _ = biosCheck
-            ForEach(biosRequirements, id: \.fileName) { requirement in
-                let present = requirement.isPresent(in: emulationFolderStore.folder.bios)
+            ForEach(biosRequirements.statuses(in: emulationFolderStore.folder.bios)) { file in
                 LabeledContent {
-                    Label(present ? "Found" : "Missing",
-                          systemImage: present ? "checkmark.circle.fill" : (requirement.required ? "exclamationmark.triangle.fill" : "circle"))
-                        .foregroundStyle(present ? .green : (requirement.required ? .orange : .secondary))
+                    Label(file.isPresent ? "Found" : "Missing",
+                          systemImage: file.isPresent ? "checkmark.circle.fill" : (file.required ? "exclamationmark.triangle.fill" : "circle"))
+                        .foregroundStyle(file.isPresent ? .green : (file.required ? .orange : .secondary))
                 } label: {
-                    Tag(requirement.fileName)
-                    Text([requirement.required ? String(localized: "Required") : String(localized: "Optional"), requirement.note]
+                    Tag(file.fileName)
+                    Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
                         .compactMap { $0 }
                         .joined(separator: " · "))
-                    if !requirement.supportedDumps.isEmpty {
-                        Text("Any model works, for example:")
-                        TagList(items: requirement.supportedDumps)
-                            .padding(.top, 2)
-                    }
                 }
             }
             Button("Show BIOS Folder") {

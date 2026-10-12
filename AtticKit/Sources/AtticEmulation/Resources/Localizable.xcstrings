@@ -151,6 +151,16 @@
         }
       }
     },
+    "Any one is enough": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un seul suffit"
+          }
+        }
+      }
+    },
     "Atari 400/800, XL and XE.": {
       "localizations": {
         "fr": {
