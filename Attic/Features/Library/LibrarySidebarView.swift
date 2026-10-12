@@ -82,7 +82,7 @@ struct LibrarySidebarView: View {
                 } header: {
                     HStack {
                         Text(group.category.title)
-                            .font(.title3.weight(.semibold))
+                            .font(.headline)
                             .foregroundStyle(.primary)
                         Spacer()
                         sortMenu(for: group.category)
@@ -91,6 +91,9 @@ struct LibrarySidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        // Smaller rows and icons than the system's default, so long lists
+        // of systems fit; all rows alike, so the sections stay even.
+        .environment(\.sidebarRowSize, .small)
     }
 
     private func sortMenu(for category: SystemCategory) -> some View {
