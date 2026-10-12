@@ -42,7 +42,7 @@ struct SystemOverviewView: View {
             Section {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
                 Button("System Settings…") { systemSettingsEditor.system = system }
-                ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
+                ScrapeSelectionButton(title: "Scrape This System", selection: .system(system.systemID))
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }
