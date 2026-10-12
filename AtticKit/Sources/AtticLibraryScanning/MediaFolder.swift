@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 import ImageIO
 import UniformTypeIdentifiers
 
@@ -96,4 +97,89 @@ public enum MediaFolder {
         try? FileManager.default.trashItem(at: url, resultingItemURL: nil)
         return destination
     }
+
+    // MARK: - Manuals
+
+    /// Written into manuals Attic recompressed (the PDF's Creator), so
+    /// they're never done twice.
+    static let manualCreator = "Attic"
+    /// Set on a manual that didn't get smaller, for the same reason.
+    static let checkedAttribute = "com.attic.manual-checked"
+    /// Scans heavier than this per page are worth redoing: a typical
+    /// cartridge-era manual is 50–80 KB a page, Neo Geo scans ten times more.
+    static let heavyBytesPerPage = 150_000
+
+    /// Whether a manual is a heavy scan Attic hasn't tried to shrink yet.
+    public static func manualIsWorthCompressing(_ url: URL) -> Bool {
+        guard url.pathExtension.lowercased() == "pdf",
+              getxattr(url.path, checkedAttribute, nil, 0, 0, 0) < 0,
+              let size = (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize,
+              let document = CGPDFDocument(url as CFURL), document.numberOfPages > 0,
+              creator(of: document) != manualCreator else { return false }
+        return size / document.numberOfPages > heavyBytesPerPage
+    }
+
+    /// Redraws each page at 150 dpi as a JPEG, which keeps scanned text
+    /// sharp at full screen. The new file replaces the old one (which goes
+    /// to the Trash) only when it's at most 60% of its size. Returns
+    /// whether it was replaced.
+    @discardableResult
+    public static func compressManual(_ url: URL) -> Bool {
+        let fileManager = FileManager.default
+        guard let document = CGPDFDocument(url as CFURL), document.numberOfPages > 0,
+              let original = (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize else { return false }
+        let temporary = url.deletingLastPathComponent().appending(path: ".\(UUID().uuidString).pdf")
+        defer { try? fileManager.removeItem(at: temporary) }
+
+        guard rewriteManual(document, to: temporary),
+              let size = (try? temporary.resourceValues(forKeys: [.fileSizeKey]))?.fileSize,
+              Double(size) <= Double(original) * 0.6,
+              (try? fileManager.trashItem(at: url, resultingItemURL: nil)) != nil else {
+            _ = setxattr(url.path, checkedAttribute, "1", 1, 0, 0)
+            return false
+        }
+        return (try? fileManager.moveItem(at: temporary, to: url)) != nil
+    }
+
+    private static func rewriteManual(_ document: CGPDFDocument, to destination: URL) -> Bool {
+        let info = [kCGPDFContextCreator: manualCreator] as CFDictionary
+        guard let output = CGContext(destination as CFURL, mediaBox: nil, info),
+              let sRGB = CGColorSpace(name: CGColorSpace.sRGB) else { return false }
+        let scale = 150.0 / 72
+        for number in 1...document.numberOfPages {
+            // Turned pages would need their rotation redone; leave those be.
+            guard let page = document.page(at: number), page.rotationAngle == 0 else { return false }
+            let box = page.getBoxRect(.mediaBox)
+            let (width, height) = (Int(box.width * scale), Int(box.height * scale))
+            guard width > 0, height > 0,
+                  let bitmap = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
+                                         space: sRGB, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { return false }
+            bitmap.setFillColor(CGColor(gray: 1, alpha: 1))
+            bitmap.fill(CGRect(x: 0, y: 0, width: width, height: height))
+            bitmap.scaleBy(x: scale, y: scale)
+            bitmap.translateBy(x: -box.minX, y: -box.minY)
+            bitmap.drawPDFPage(page)
+
+            let jpeg = NSMutableData()
+            guard let rendered = bitmap.makeImage(),
+                  let encoder = CGImageDestinationCreateWithData(jpeg, UTType.jpeg.identifier as CFString, 1, nil) else { return false }
+            CGImageDestinationAddImage(encoder, rendered, [kCGImageDestinationLossyCompressionQuality: 0.7] as CFDictionary)
+            guard CGImageDestinationFinalize(encoder),
+                  let provider = CGDataProvider(data: jpeg),
+                  let image = CGImage(jpegDataProviderSource: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { return false }
+            var pageBox = CGRect(origin: .zero, size: box.size)
+            output.beginPage(mediaBox: &pageBox)
+            output.draw(image, in: pageBox)
+            output.endPage()
+        }
+        output.closePDF()
+        return true
+    }
+
+    private static func creator(of document: CGPDFDocument) -> String? {
+        var value: CGPDFStringRef?
+        guard let info = document.info, CGPDFDictionaryGetString(info, "Creator", &value), let value else { return nil }
+        return CGPDFStringCopyTextString(value) as String?
+    }
+
 }

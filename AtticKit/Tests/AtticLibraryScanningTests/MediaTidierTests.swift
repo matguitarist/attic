@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 import Testing
 @testable import AtticLibraryScanning
 
@@ -201,5 +202,41 @@ struct MediaTidierTests {
         let url = try MediaFolder.store(Data("new".utf8), fileExtension: "JPG", forSystemFolder: snes, romRelativePath: "Game.sfc", kind: .screenshots)
         #expect(url.path == media.appending(path: "snes/screenshots/Game.jpg").path)
         #expect(!exists(media.appending(path: "snes/screenshots/Game.png")))
+    }
+}
+
+struct ManualCompressionTests {
+    /// A one-page PDF holding a large noisy scan, stored losslessly so it's
+    /// far heavier per page than a real manual.
+    private func heavyManual() throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appending(path: "Manual-\(UUID().uuidString).pdf")
+        let (width, height) = (1700, 2200)
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        var seed: UInt32 = 1
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            seed = seed &* 1_103_515_245 &+ 12345
+            let noise = UInt8(truncatingIfNeeded: seed >> 16) / 8
+            let shade = UInt8((index / 4 / width) * 200 / height) &+ noise
+            pixels[index] = shade; pixels[index + 1] = shade; pixels[index + 2] = shade; pixels[index + 3] = 255
+        }
+        let context = CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+        let image = context.makeImage()!
+        var box = CGRect(x: 0, y: 0, width: 612, height: 792)
+        let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
+        pdf.beginPage(mediaBox: &box)
+        pdf.draw(image, in: box)
+        pdf.endPage()
+        pdf.closePDF()
+        return url
+    }
+
+    @Test func heavyScansAreRedoneOnlyOnce() throws {
+        let manual = try heavyManual()
+        #expect(MediaFolder.manualIsWorthCompressing(manual))
+        let replaced = MediaFolder.compressManual(manual)
+        #expect(FileManager.default.fileExists(atPath: manual.path))
+        // Either way, it's never offered again.
+        #expect(!MediaFolder.manualIsWorthCompressing(manual), "replaced: \(replaced)")
     }
 }

@@ -53,6 +53,9 @@ struct GeneralSettingsView: View {
         if !plan.compress.isEmpty {
             lines.append(String(localized: "\(plan.compress.count) covers are saved as HEIC, which takes less space."))
         }
+        if !plan.manuals.isEmpty {
+            lines.append(String(localized: "\(plan.manuals.count) heavy manual scans are redrawn lighter, kept only where that saves at least 40%."))
+        }
         if !plan.trash.isEmpty {
             let size = ByteCountFormatter.string(fromByteCount: plan.trashBytes, countStyle: .file)
             lines.append(String(localized: "\(size) goes to the Trash: folders Attic doesn't use, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files."))

@@ -213,6 +213,17 @@ struct GameDetailView: View {
             .controlSize(.large)
             .help("Edit title, cover, release date, rating and more (⌘I)")
 
+            if let manual = game.manualURL {
+                Button {
+                    NSWorkspace.shared.open(manual)
+                } label: {
+                    Label("Manual", systemImage: "book")
+                        .labelStyle(.iconOnly)
+                }
+                .controlSize(.large)
+                .help("Open the game's manual")
+            }
+
             Menu {
                 Menu("Launch With") {
                     LaunchWithMenuItems(game: game)

@@ -25,11 +25,14 @@ public struct MediaTidyPlan: Sendable {
     public var trash: [URL] = []
     /// PNG and JPEG covers to rewrite as HEIC, after the moves.
     public var compress: [URL] = []
+    /// Heavy scanned manuals to redraw lighter (see
+    /// `MediaFolder.compressManual`).
+    public var manuals: [URL] = []
     /// What `trash` takes up.
     public var trashBytes: Int64 = 0
 
-    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trash.isEmpty && compress.isEmpty }
-    var operationCount: Int { moves.count + gamelists.count + trash.count + compress.count }
+    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trash.isEmpty && compress.isEmpty && manuals.isEmpty }
+    var operationCount: Int { moves.count + gamelists.count + trash.count + compress.count + manuals.count }
 }
 
 /// Leaves a ROMs folder and the media beside it the way Attic keeps them:
@@ -119,6 +122,10 @@ public enum MediaTidier {
         var compressed = 0
         for url in plan.compress {
             if MediaFolder.compressToHEIC(url) != nil { compressed += 1 }
+            step()
+        }
+        for url in plan.manuals {
+            MediaFolder.compressManual(url)
             step()
         }
         return compressed
@@ -230,6 +237,8 @@ public enum MediaTidier {
                     plan.trash.append(file)
                 } else if kind == .covers, isCompressible(file) {
                     plan.compress.append(file)
+                } else if kind == .manuals, MediaFolder.manualIsWorthCompressing(file) {
+                    plan.manuals.append(file)
                 }
             }
         }

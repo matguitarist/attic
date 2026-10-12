@@ -18,6 +18,7 @@ struct LibrarySidebarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
+    @Environment(\.importROMs) private var importROMs
     @AppStorage(SystemSortOrder.key) private var sortOrder = SystemSortOrder.manufacturer
     @State private var systemToRemove: GameSystem?
     @AppStorage(Self.hideEmptySystemsKey) private var hidesEmptySystems = false
@@ -123,6 +124,11 @@ struct LibrarySidebarView: View {
             .lineLimit(1)
             .badge(system.gameCount)
             .tag(LibrarySelection.system(system.systemID))
+            // Games dropped on a system go to its folder, whatever their type.
+            .dropDestination(for: URL.self) { urls, _ in
+                importROMs(urls, system.systemID)
+                return true
+            }
             .contextMenu {
                 Button("System Settings…") { systemSettingsEditor.system = system }
                 Divider()
@@ -136,4 +142,10 @@ struct LibrarySidebarView: View {
             }
     }
 
+}
+
+/// Files games dropped on a sidebar system into its folder (see
+/// `ROMImportCoordinator`).
+extension EnvironmentValues {
+    @Entry var importROMs: ([URL], CanonicalSystemID) -> Void = { _, _ in }
 }

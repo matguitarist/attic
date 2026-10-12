@@ -12,6 +12,13 @@ extension Game {
         return url
     }
 
+    /// The game's manual, when there's one in its media folder.
+    var manualURL: URL? {
+        let base = MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .manuals)
+        let manual = base.appendingPathExtension("pdf")
+        return FileManager.default.fileExists(atPath: manual.path) ? manual : nil
+    }
+
     /// Stores downloaded or picked media for this game where the scanner
     /// finds it (see `MediaFolder`).
     func storeMedia(_ data: Data, fileExtension: String, kind: MediaKind) throws -> URL {

@@ -54,6 +54,8 @@ public enum TheGamesDBSystemID {
         .vic20: 4945,
         .c128: 4946,
         .macintosh: 37,
+        .plus4: 5007,
+        .zx81: 5010,
         .xbox: 14,
         .msx: 4929,
         .dos: 1,

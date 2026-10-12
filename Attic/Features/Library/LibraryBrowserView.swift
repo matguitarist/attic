@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import AtticPersistence
+import AtticModels
 
 /// Native macOS layout throughout: a `NavigationSplitView` sidebar, the
 /// window's own toolbar (title, search, sort, zoom, scrape), and an
@@ -26,6 +27,9 @@ struct LibraryBrowserView: View {
     @State private var infoEditor = GameInfoEditor()
     @State private var collectionCoordinator = CollectionCoordinator()
     @State private var systemSettingsEditor = SystemSettingsEditor()
+    @State private var romImporter = ROMImportCoordinator()
+    @Environment(RomsRootsStore.self) private var romsRootsStore
+    @Environment(ScanCoordinator.self) private var scanCoordinator
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
 
     static let cellScaleRange: ClosedRange<Double> = 0.6...1.8
@@ -49,6 +53,12 @@ struct LibraryBrowserView: View {
             }
             .navigationTitle(selectionTitle)
             .toolbar { toolbarContent }
+            // Games dropped here go to the system shown when it takes
+            // them, else to the one their file type says.
+            .dropDestination(for: URL.self) { urls, _ in
+                importROMs(urls, shown: selectedSystem?.systemID)
+                return true
+            }
         }
         // In the sidebar rather than the toolbar: a toolbar search field
         // always goes last, which puts it over the inspector column. Before
@@ -106,6 +116,15 @@ struct LibraryBrowserView: View {
             EditGameInfoView(game: game)
         }
         .environment(systemSettingsEditor)
+        .environment(\.importROMs) { urls, system in importROMs(urls, into: system) }
+        .sheet(item: Binding(get: { romImporter.question }, set: { _ in })) { question in
+            ROMImportSheet(question: question) { romImporter.answer($0) }
+        }
+        .alert("Games Added", isPresented: Binding(get: { romImporter.summary != nil }, set: { if !$0 { romImporter.summary = nil } })) {
+            Button("OK") { romImporter.summary = nil }
+        } message: {
+            Text(romImporter.summary ?? "")
+        }
         .sheet(item: $systemSettingsEditor.system) { system in
             SystemSettingsView(system: system)
         }
@@ -141,6 +160,12 @@ struct LibraryBrowserView: View {
     }
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
+
+    private func importROMs(_ urls: [URL], into system: CanonicalSystemID? = nil, shown: CanonicalSystemID? = nil) {
+        romImporter.receive(urls, into: system, shown: shown, romsRoots: romsRootsStore.rootURLs) {
+            Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+        }
+    }
 
     /// The sidebar's systems: all, or only those with games.
     private var shownSystems: [GameSystem] {

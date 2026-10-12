@@ -274,6 +274,16 @@
         }
       }
     },
+    "%lld heavy manual scans are redrawn lighter, kept only where that saves at least 40%%.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld scans de manuels lourds sont refaits plus légers, gardés seulement s’ils font gagner au moins 40 %%."
+          }
+        }
+      }
+    },
     "%lld media files in ROM folders move to downloaded_media.": {
       "localizations": {
         "fr": {
@@ -350,6 +360,16 @@
         }
       }
     },
+    "%lld were already in your ROMs folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld étaient déjà dans votre dossier de ROMs."
+          }
+        }
+      }
+    },
     "/": {
       "shouldTranslate": false
     },
@@ -419,6 +439,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actions"
+          }
+        }
+      }
+    },
+    "Add": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter"
           }
         }
       }
@@ -559,6 +589,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajoutez votre dossier dans Réglages › Général, puis choisissez Réanalyser la bibliothèque. Réanalysez chaque fois que vous ajoutez ou retirez des jeux."
+          }
+        }
+      }
+    },
+    "Added to %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutés à %@."
           }
         }
       }
@@ -2067,6 +2107,16 @@
         }
       }
     },
+    "Games Added": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux ajoutés"
+          }
+        }
+      }
+    },
     "Games Missing Info": {
       "localizations": {
         "fr": {
@@ -2777,6 +2827,16 @@
         }
       }
     },
+    "Manual": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manuel"
+          }
+        }
+      }
+    },
     "Manufacturer": {
       "localizations": {
         "fr": {
@@ -3117,6 +3177,16 @@
         }
       }
     },
+    "Not added, no system takes them: %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non ajoutés, aucun système ne les prend : %@."
+          }
+        }
+      }
+    },
     "Not installed": {
       "localizations": {
         "fr": {
@@ -3223,6 +3293,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ouvrir le mode Cabinet au démarrage"
+          }
+        }
+      }
+    },
+    "Open the game's manual": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir le manuel du jeu"
           }
         }
       }
@@ -4479,6 +4559,16 @@
         }
       }
     },
+    "Skip": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passer"
+          }
+        }
+      }
+    },
     "Some games need system modules dumped from your PS4, in shadPS4's sys_modules folder (~/Library/Application Support/shadPS4).": {
       "localizations": {
         "fr": {
@@ -5205,6 +5295,16 @@
         }
       }
     },
+    "Which System Are These For?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour quel système sont-ils ?"
+          }
+        }
+      }
+    },
     "Widescreen (16:9)": {
       "localizations": {
         "fr": {
@@ -5271,6 +5371,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vos jeux, sauvegardes et fichiers BIOS ne sont pas touchés."
+          }
+        }
+      }
+    },
+    "and %lld more": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "et %lld de plus"
           }
         }
       }
