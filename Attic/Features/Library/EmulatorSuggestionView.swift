@@ -8,6 +8,8 @@ import AtticPersistence
 /// the user does can be pressing Play — not hunting through Settings.
 struct EmulatorSuggestionView: View {
     let system: GameSystem
+    /// Off inside a Form section, which already draws one.
+    var showsBackground = true
 
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(EmulatorSetupCoordinator.self) private var setup
@@ -46,8 +48,8 @@ struct EmulatorSuggestionView: View {
                 .font(.caption)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(showsBackground ? 12 : 0)
+            .background(.quaternary.opacity(showsBackground ? 0.5 : 0), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
     }
 

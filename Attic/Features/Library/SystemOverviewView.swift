@@ -15,6 +15,8 @@ struct SystemOverviewView: View {
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
     @Environment(HelpNavigator.self) private var helpNavigator
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @Environment(EmulatorSetupCoordinator.self) private var setup
+    @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
     /// Bumped when Attic comes back to the front, so BIOS files dropped in
     /// from the Finder show up as found.
     @State private var biosCheck = 0
@@ -44,6 +46,13 @@ struct SystemOverviewView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
+            }
+
+            // No working emulator yet: offer the recommended ones first.
+            if !setup.status(of: system, retroArchStore: retroArchStore, profiles: profiles).isReady {
+                Section {
+                    EmulatorSuggestionView(system: system, showsBackground: false)
+                }
             }
 
             Section {

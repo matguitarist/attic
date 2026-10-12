@@ -29,6 +29,8 @@ struct SystemSettingsView: View {
     @State private var isChoosingShaderFile = false
     /// What each setting is on Default, read from the emulator.
     @State private var emulatorDefaults = SystemSettings()
+    @Environment(EmulatorSetupCoordinator.self) private var setup
+    @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,6 +52,13 @@ struct SystemSettingsView: View {
             .padding(.bottom, 8)
 
             Form {
+                // The settings depend on the emulator, so without one,
+                // setting it up comes first.
+                if !setup.status(of: system, retroArchStore: retroArchStore, profiles: profiles).isReady {
+                    Section {
+                        EmulatorSuggestionView(system: system, showsBackground: false)
+                    }
+                }
                 if offered.contains(.look) || offered.contains(.integerScaling) {
                     pictureSection
                 }
@@ -86,6 +95,10 @@ struct SystemSettingsView: View {
         }
         .onAppear {
             settings = system.settings
+            emulatorDefaults = emulationFolderStore.folder.currentDefaults(for: backend)
+        }
+        // An emulator installed from here changes what's on Default.
+        .onChange(of: emulatorName) {
             emulatorDefaults = emulationFolderStore.folder.currentDefaults(for: backend)
         }
         .onChange(of: settings) { _, newValue in
