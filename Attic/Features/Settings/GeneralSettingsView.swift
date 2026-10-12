@@ -5,6 +5,7 @@ struct GeneralSettingsView: View {
     @Environment(ScanCoordinator.self) private var scanCoordinator
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
+    @Environment(AppUpdater.self) private var appUpdater
     @State private var isChoosingFolder = false
     @State private var isChoosingEmulationFolder = false
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
@@ -99,6 +100,17 @@ struct GeneralSettingsView: View {
                 Text("BIOS, saves, save states, RetroArch cores and settings, and emulators installed by Attic all live here — back up or move this one folder to take everything with you.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Toggle("Check for updates automatically", isOn: Binding(
+                    get: { appUpdater.automaticallyChecksForUpdates },
+                    set: { appUpdater.automaticallyChecksForUpdates = $0 }
+                ))
+                Button("Check Now") { appUpdater.checkForUpdates() }
+                    .disabled(!appUpdater.canCheckForUpdates)
+            } header: {
+                Text("Updates")
             }
 
             Section {

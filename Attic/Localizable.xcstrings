@@ -569,6 +569,56 @@
         }
       }
     },
+    "Attic Help": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aide d’Attic"
+          }
+        }
+      }
+    },
+    "Attic can fetch descriptions, release dates and artwork from ScreenScraper or TheGamesDB. ScreenScraper matches games exactly by file; TheGamesDB searches by title.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic peut récupérer descriptions, dates de sortie et illustrations depuis ScreenScraper ou TheGamesDB. ScreenScraper identifie les jeux exactement par fichier ; TheGamesDB cherche par titre."
+          }
+        }
+      }
+    },
+    "Attic downloads emulators from their official sources only: RetroArch and its cores from libretro's buildbot, standalone emulators from their own release pages. Each system's page lists the recommended emulator first.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic télécharge les émulateurs uniquement depuis leurs sources officielles : RetroArch et ses cœurs depuis le buildbot de libretro, les émulateurs autonomes depuis leur propre page de versions. La page de chaque système indique d’abord l’émulateur recommandé."
+          }
+        }
+      }
+    },
+    "Attic installs blueMSX's machine and database files into the BIOS folder with the core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic installe les fichiers de machines et de base de données de blueMSX dans le dossier BIOS avec le cœur."
+          }
+        }
+      }
+    },
+    "Attic reads ROMs folders organized the way Batocera, RetroBat and ES-DE do it: one subfolder per system, named after the system (snes, megadrive, neogeo…). Each system's help page lists the folder names it recognizes.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic lit les dossiers de ROMs organisés comme Batocera, RetroBat et ES-DE : un sous-dossier par système, nommé d’après le système (snes, megadrive, neogeo…). La page d’aide de chaque système indique les noms de dossier reconnus."
+          }
+        }
+      }
+    },
     "BIOS": {
       "localizations": {
         "fr": {
@@ -595,26 +645,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les BIOS, sauvegardes, sauvegardes d’état, cœurs et réglages de RetroArch et les émulateurs installés par Attic sont tous ici — sauvegardez ou déplacez ce seul dossier pour tout emporter."
-          }
-        }
-      }
-    },
-    "Cabinet Mode": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode Cabinet"
-          }
-        }
-      }
-    },
-    "Cabinet Mode is a full-screen view made for the TV and a controller. Open it with ⌘⇧B, the Cabinet Mode toolbar button, or Menu / Start on a controller; leave it with the back button.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le mode Cabinet est une vue plein écran pensée pour la télé et une manette. Ouvrez-le avec ⌘⇧B, le bouton Mode Cabinet de la barre d’outils, ou Menu / Start sur une manette ; quittez-le avec le bouton retour."
           }
         }
       }
@@ -699,6 +729,36 @@
         }
       }
     },
+    "Cabinet Mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode Cabinet"
+          }
+        }
+      }
+    },
+    "Cabinet Mode (full screen)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode Cabinet (plein écran)"
+          }
+        }
+      }
+    },
+    "Cabinet Mode is a full-screen view made for the TV and a controller. Open it with ⌘⇧B, the Cabinet Mode toolbar button, or Menu / Start on a controller; leave it with the back button.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode Cabinet est une vue plein écran pensée pour la télé et une manette. Ouvrez-le avec ⌘⇧B, le bouton Mode Cabinet de la barre d’outils, ou Menu / Start sur une manette ; quittez-le avec le bouton retour."
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "fr": {
@@ -729,12 +789,42 @@
         }
       }
     },
+    "Check Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier maintenant"
+          }
+        }
+      }
+    },
     "Check for Updates": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher des mises à jour"
+          }
+        }
+      }
+    },
+    "Check for Updates…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher des mises à jour…"
+          }
+        }
+      }
+    },
+    "Check for updates automatically": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher les mises à jour automatiquement"
           }
         }
       }
@@ -3082,56 +3172,6 @@
         }
       }
     },
-    "Attic Help": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aide d’Attic"
-          }
-        }
-      }
-    },
-    "Attic can fetch descriptions, release dates and artwork from ScreenScraper or TheGamesDB. ScreenScraper matches games exactly by file; TheGamesDB searches by title.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attic peut récupérer descriptions, dates de sortie et illustrations depuis ScreenScraper ou TheGamesDB. ScreenScraper identifie les jeux exactement par fichier ; TheGamesDB cherche par titre."
-          }
-        }
-      }
-    },
-    "Attic downloads emulators from their official sources only: RetroArch and its cores from libretro's buildbot, standalone emulators from their own release pages. Each system's page lists the recommended emulator first.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attic télécharge les émulateurs uniquement depuis leurs sources officielles : RetroArch et ses cœurs depuis le buildbot de libretro, les émulateurs autonomes depuis leur propre page de versions. La page de chaque système indique d’abord l’émulateur recommandé."
-          }
-        }
-      }
-    },
-    "Attic installs blueMSX's machine and database files into the BIOS folder with the core.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attic installe les fichiers de machines et de base de données de blueMSX dans le dossier BIOS avec le cœur."
-          }
-        }
-      }
-    },
-    "Attic reads ROMs folders organized the way Batocera, RetroBat and ES-DE do it: one subfolder per system, named after the system (snes, megadrive, neogeo…). Each system's help page lists the folder names it recognizes.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attic lit les dossiers de ROMs organisés comme Batocera, RetroBat et ES-DE : un sous-dossier par système, nommé d’après le système (snes, megadrive, neogeo…). La page d’aide de chaque système indique les noms de dossier reconnus."
-          }
-        }
-      }
-    },
     "Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.": {
       "localizations": {
         "fr": {
@@ -3970,6 +4010,16 @@
         }
       }
     },
+    "Updates": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mises à jour"
+          }
+        }
+      }
+    },
     "Updating %@…": {
       "localizations": {
         "fr": {
@@ -4292,16 +4342,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "⌘-clic pour ajouter ou retirer un jeu, ⇧-clic pour sélectionner une plage, ⌘A pour tout sélectionner."
-          }
-        }
-      }
-    },
-    "Cabinet Mode (full screen)": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode Cabinet (plein écran)"
           }
         }
       }

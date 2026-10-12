@@ -9,6 +9,9 @@ options:
 packages:
   AtticKit:
     path: AtticKit
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 
 targets:
   Attic:
@@ -18,6 +21,7 @@ targets:
       - path: Attic
         excludes:
           - "Attic.entitlements"
+          - "Info.plist"
     configFiles:
       Debug: Config/Signing.xcconfig
       Release: Config/Signing.xcconfig
@@ -32,6 +36,8 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: Attic/Attic.entitlements
         GENERATE_INFOPLIST_FILE: YES
+        # Merged into the generated one; holds the Sparkle keys.
+        INFOPLIST_FILE: Attic/Info.plist
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.entertainment
         ENABLE_PREVIEWS: YES
@@ -50,3 +56,4 @@ targets:
         product: AtticEmulation
       - package: AtticKit
         product: AtticScraping
+      - package: Sparkle

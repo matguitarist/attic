@@ -28,3 +28,7 @@ dist/
 # Personal code-signing team (see Config/Signing.xcconfig)
 Config/Signing.local.xcconfig
 .build-xcode-strings/
+
+# Sparkle tools and release builds (scripts/release.sh)
+.sparkle/
+.build-release/

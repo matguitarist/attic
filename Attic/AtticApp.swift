@@ -17,6 +17,7 @@ struct AtticApp: App {
     @State private var controllerSettingsStore: ControllerSettingsStore
     @State private var helpNavigator = HelpNavigator()
     @State private var emulatorSetupCoordinator: EmulatorSetupCoordinator
+    @State private var appUpdater = AppUpdater()
 
     init() {
         // Before any store reads its settings.
@@ -72,6 +73,7 @@ struct AtticApp: App {
         }
         .modelContainer(modelContainer)
         .commands {
+            UpdateCommands(updater: appUpdater)
             SidebarCommands()
             InspectorCommands()
             CabinetCommands()
@@ -124,5 +126,6 @@ struct AtticApp: App {
             .environment(helpNavigator)
             .environment(emulatorSetupCoordinator)
             .environment(emulationFolderStore)
+            .environment(appUpdater)
     }
 }

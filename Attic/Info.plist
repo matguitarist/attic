@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Sparkle: the feed scripts/release.sh publishes, and the public half of the key updates are signed with (Keychain account "attic"). The rest of Info.plist is generated from project.yml. -->
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/matguitarist/attic/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>3KzeRUnpVmIfKXzdWxYFIWELLGSQJBXM9w0oLWtifjI=</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+</dict>
+</plist>
