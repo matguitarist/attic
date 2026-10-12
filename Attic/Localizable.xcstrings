@@ -214,6 +214,16 @@
         }
       }
     },
+    "%lld gamelists lose old media paths and entries for games that aren't there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld gamelists perdent d’anciens chemins de médias et les entrées de jeux absents."
+          }
+        }
+      }
+    },
     "%lld games": {
       "localizations": {
         "en": {

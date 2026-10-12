@@ -7,11 +7,19 @@ public struct MediaTidyPlan: Sendable {
         public let to: URL
     }
 
+    public struct GamelistFix: Sendable, Equatable {
+        public let from: URL
+        public let to: URL
+        /// Where its games are.
+        public let systemFolder: URL
+    }
+
     /// Batocera-style media in the ROM folders, going to `downloaded_media`.
     public var moves: [Move] = []
-    /// Batocera-style `gamelist.xml` in a ROM folder, going to ES-DE's
-    /// `gamelists/<system>/` (without its media paths, which no longer hold).
-    public var gamelists: [Move] = []
+    /// Gamelists to rewrite without media paths (which no longer hold)
+    /// or entries for games that aren't there: Batocera-style ones in a
+    /// ROM folder go to ES-DE's `gamelists/<system>/`, others stay put.
+    public var gamelists: [GamelistFix] = []
     /// Whole folders or single files, all going to the Trash.
     public var trash: [URL] = []
     /// PNG and JPEG covers to rewrite as HEIC, after the moves.
@@ -88,11 +96,16 @@ public enum MediaTidier {
             }
             step()
         }
-        for move in plan.gamelists {
-            if let data = try? Data(contentsOf: move.from), let text = String(data: data, encoding: .utf8) {
-                try? fileManager.createDirectory(at: move.to.deletingLastPathComponent(), withIntermediateDirectories: true)
-                if (try? withoutMediaPaths(text).write(to: move.to, atomically: true, encoding: .utf8)) != nil {
-                    try? fileManager.trashItem(at: move.from, resultingItemURL: nil)
+        for fix in plan.gamelists {
+            // The original goes to the Trash, and comes back if the new
+            // one can't be written.
+            if let text = try? String(contentsOf: fix.from, encoding: .utf8) {
+                var trashed: NSURL?
+                try? fileManager.createDirectory(at: fix.to.deletingLastPathComponent(), withIntermediateDirectories: true)
+                if (try? fileManager.trashItem(at: fix.from, resultingItemURL: &trashed)) != nil,
+                   (try? cleanedGamelist(text, systemFolder: fix.systemFolder).write(to: fix.to, atomically: true, encoding: .utf8)) == nil,
+                   let trashed = trashed as URL? {
+                    try? fileManager.moveItem(at: trashed, to: fix.from)
                 }
             }
             step()
@@ -145,13 +158,19 @@ public enum MediaTidier {
             }
 
             let gamelist = folder.appending(path: "gamelist.xml")
-            if fileManager.fileExists(atPath: gamelist.path) {
-                let destination = gamelistsRoot.appending(path: name).appending(path: "gamelist.xml")
-                if fileManager.fileExists(atPath: destination.path) {
-                    plan.trash.append(gamelist)
-                } else {
-                    plan.gamelists.append(.init(from: gamelist, to: destination))
+            let esdeFolder = gamelistsRoot.appending(path: name, directoryHint: .isDirectory)
+            let destination = esdeFolder.appending(path: "gamelist.xml")
+            if fileManager.fileExists(atPath: destination.path) {
+                if fileManager.fileExists(atPath: gamelist.path) { plan.trash.append(gamelist) }
+                if let text = try? String(contentsOf: destination, encoding: .utf8),
+                   cleanedGamelist(text, systemFolder: folder) != text {
+                    plan.gamelists.append(.init(from: destination, to: destination, systemFolder: folder))
                 }
+            } else if fileManager.fileExists(atPath: gamelist.path) {
+                plan.gamelists.append(.init(from: gamelist, to: destination, systemFolder: folder))
+            } else if fileManager.fileExists(atPath: esdeFolder.path) {
+                // A gamelist folder with no gamelist in it.
+                plan.trash.append(esdeFolder)
             }
 
             let systemMedia = mediaRoot.appending(path: name, directoryHint: .isDirectory)
@@ -248,8 +267,21 @@ public enum MediaTidier {
         return (relative as NSString).deletingPathExtension
     }
 
+    /// PNGs and JPEGs, except palette PNGs: already that small, HEIC
+    /// doesn't beat them, so they'd come up again on every tidy.
     private static func isCompressible(_ url: URL) -> Bool {
-        ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased())
+        switch url.pathExtension.lowercased() {
+        case "jpg", "jpeg":
+            return true
+        case "png":
+            // Byte 25 of a PNG is the colour type, 3 for a palette.
+            guard let handle = try? FileHandle(forReadingFrom: url),
+                  let header = try? handle.read(upToCount: 26), header.count == 26 else { return true }
+            try? handle.close()
+            return header[25] != 3
+        default:
+            return false
+        }
     }
 
     private static func children(of folder: URL) -> [URL] {
@@ -285,8 +317,34 @@ public enum MediaTidier {
 
     /// Batocera's per-game media tags, whose paths point at files that
     /// have moved; ES-DE finds media by name instead.
-    static let mediaTags = ["image", "thumbnail", "video", "marquee", "fanart", "manual", "boxart", "boxback",
+    static let mediaTags = ["image", "thumbnail", "screenshot", "titlescreen", "video", "marquee", "fanart", "manual", "boxart", "boxback",
                             "cartridge", "wheel", "mix", "titleshot", "map", "bezel", "magazine", "music"]
+
+    /// Without media paths, and without entries for games that aren't in
+    /// `systemFolder` any more.
+    static func cleanedGamelist(_ text: String, systemFolder: URL) -> String {
+        let games = try! NSRegularExpression(pattern: "[ \\t]*<game\\b[^>]*>.*?</game>[ \\t]*\\r?\\n?", options: .dotMatchesLineSeparators)
+        let path = try! NSRegularExpression(pattern: "<path>([^<]*)</path>")
+        var result = withoutMediaPaths(text)
+        let nsText = result as NSString
+        for match in games.matches(in: result, range: NSRange(location: 0, length: nsText.length)).reversed() {
+            let entry = nsText.substring(with: match.range)
+            guard let pathMatch = path.firstMatch(in: entry, range: NSRange(location: 0, length: (entry as NSString).length)) else { continue }
+            let relative = ESDEGamelistMapper.normalizeRelativePath(unescaped((entry as NSString).substring(with: pathMatch.range(at: 1))))
+            if !FileManager.default.fileExists(atPath: systemFolder.appending(path: relative).path) {
+                result = (result as NSString).replacingCharacters(in: match.range, with: "")
+            }
+        }
+        return result
+    }
+
+    private static func unescaped(_ text: String) -> String {
+        text.replacingOccurrences(of: "&lt;", with: "<")
+            .replacingOccurrences(of: "&gt;", with: ">")
+            .replacingOccurrences(of: "&quot;", with: "\"")
+            .replacingOccurrences(of: "&apos;", with: "'")
+            .replacingOccurrences(of: "&amp;", with: "&")
+    }
 
     static func withoutMediaPaths(_ text: String) -> String {
         let tags = mediaTags.joined(separator: "|")

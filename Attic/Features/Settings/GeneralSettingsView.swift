@@ -42,8 +42,13 @@ struct GeneralSettingsView: View {
         if !plan.moves.isEmpty {
             lines.append(String(localized: "\(plan.moves.count) media files in ROM folders move to downloaded_media."))
         }
-        if !plan.gamelists.isEmpty {
-            lines.append(String(localized: "\(plan.gamelists.count) gamelists in ROM folders move to gamelists."))
+        let movedGamelists = plan.gamelists.count { $0.from != $0.to }
+        if movedGamelists > 0 {
+            lines.append(String(localized: "\(movedGamelists) gamelists in ROM folders move to gamelists."))
+        }
+        let cleanedGamelists = plan.gamelists.count - movedGamelists
+        if cleanedGamelists > 0 {
+            lines.append(String(localized: "\(cleanedGamelists) gamelists lose old media paths and entries for games that aren't there."))
         }
         if !plan.compress.isEmpty {
             lines.append(String(localized: "\(plan.compress.count) covers are saved as HEIC, which takes less space."))

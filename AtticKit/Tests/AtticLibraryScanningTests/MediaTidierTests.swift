@@ -148,6 +148,48 @@ struct MediaTidierTests {
         #expect(MediaTidier.plan(romsRoots: [roms]).isEmpty)
     }
 
+    @Test func gamelistsLoseStalePathsAndMissingGames() throws {
+        try touch(roms.appending(path: "cps1/1941.zip"))
+        try touch(gamelists.appending(path: "cps1/gamelist.xml"), """
+        <gameList>
+        \t<game id="1">
+        \t\t<path>./1941.zip</path>
+        \t\t<screenshot>./images/1941-image.png</screenshot>
+        \t</game>
+        \t<game>
+        \t\t<path>./gone &amp; away.zip</path>
+        \t</game>
+        </gameList>
+        """)
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        #expect(plan.gamelists.count == 1)
+        MediaTidier.apply(plan)
+        let cleaned = try String(contentsOf: gamelists.appending(path: "cps1/gamelist.xml"), encoding: .utf8)
+        #expect(cleaned == "<gameList>\n\t<game id=\"1\">\n\t\t<path>./1941.zip</path>\n\t</game>\n</gameList>")
+        #expect(MediaTidier.plan(romsRoots: [roms]).isEmpty)
+    }
+
+    @Test func emptyGamelistFolderGoes() throws {
+        try touch(roms.appending(path: "gba/Game.gba"))
+        try touch(gamelists.appending(path: "gba/.DS_Store"))
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        #expect(plan.trash.map(\.lastPathComponent) == ["gba"])
+    }
+
+    @Test func palettePNGsAreLeftAsTheyAre() throws {
+        try touch(roms.appending(path: "snes/Game.sfc"))
+        try touch(roms.appending(path: "snes/Other.sfc"))
+        // A PNG header up to IHDR's colour type: 3 (palette), then 6 (RGBA).
+        func png(colourType: UInt8) -> Data {
+            Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52,
+                  0, 0, 0, 1, 0, 0, 0, 1, 8, colourType, 0, 0, 0])
+        }
+        try FileManager.default.createDirectory(at: media.appending(path: "snes/covers"), withIntermediateDirectories: true)
+        try png(colourType: 3).write(to: media.appending(path: "snes/covers/Game.png"))
+        try png(colourType: 6).write(to: media.appending(path: "snes/covers/Other.png"))
+        #expect(MediaTidier.plan(romsRoots: [roms]).compress.map(\.lastPathComponent) == ["Other.png"])
+    }
+
     @Test func storeReplacesTheEarlierFile() throws {
         let snes = roms.appending(path: "snes")
         try touch(media.appending(path: "snes/screenshots/Game.png"))
