@@ -238,7 +238,7 @@ public struct EmulatorInstaller: Sendable {
               FileManager.default.fileExists(atPath: app.appending(path: emulator.executableRelativePath).path) else {
             throw InstallError.missingFileInArchive(emulator.appBundleName)
         }
-        return try moveIntoPlace(app, in: destination)
+        return try moveIntoPlace(app, in: destination, as: emulator.appBundleName)
     }
 
     // MARK: - RetroArch itself
@@ -328,8 +328,13 @@ public struct EmulatorInstaller: Sendable {
     static func findApp(named appName: String, in directory: URL, depth: Int = 3) -> URL? {
         let direct = directory.appending(path: appName)
         if FileManager.default.fileExists(atPath: direct.path) { return direct }
-        guard depth > 0,
-              let entries = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.isDirectoryKey]) else { return nil }
+        guard let entries = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.isDirectoryKey]) else { return nil }
+        // A versioned name: "PCSX2-v2.8.2.app" for "PCSX2.app".
+        let stem = (appName as NSString).deletingPathExtension
+        if let versioned = entries.first(where: { $0.pathExtension == "app" && $0.lastPathComponent.hasPrefix(stem + "-") }) {
+            return versioned
+        }
+        guard depth > 0 else { return nil }
         for entry in entries where entry.pathExtension != "app"
             && (try? entry.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
             if let found = findApp(named: appName, in: entry, depth: depth - 1) { return found }
@@ -394,13 +399,13 @@ public struct EmulatorInstaller: Sendable {
         return staging
     }
 
-    /// Replaces `directory/<item name>` with `item`, creating `directory`
-    /// if needed.
+    /// Replaces `directory/<name>` (by default the item's own name) with
+    /// `item`, creating `directory` if needed.
     @discardableResult
-    private func moveIntoPlace(_ item: URL, in directory: URL) throws -> URL {
+    private func moveIntoPlace(_ item: URL, in directory: URL, as name: String? = nil) throws -> URL {
         let fileManager = FileManager.default
         try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-        let destination = directory.appending(path: item.lastPathComponent)
+        let destination = directory.appending(path: name ?? item.lastPathComponent)
         if fileManager.fileExists(atPath: destination.path) {
             _ = try fileManager.replaceItemAt(destination, withItemAt: item)
         } else {

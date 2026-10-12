@@ -190,14 +190,19 @@ final class EmulatorSetupCoordinator {
     func missingBIOS(for system: GameSystem) -> [BIOSRequirement] {
         let systemDirectory = emulationFolderStore.folder.bios
         return Self.biosRequirements(for: system).filter { requirement in
-            requirement.required && !FileManager.default.fileExists(atPath: systemDirectory.appending(path: requirement.fileName).path)
+            requirement.required && !requirement.isPresent(in: systemDirectory)
         }
     }
 
     /// The system's BIOS files as its chosen core needs them.
     static func biosRequirements(for system: GameSystem) -> [BIOSRequirement] {
-        guard let recommendation = EmulatorCatalog.recommendation(for: system.systemID) else { return [] }
-        if case .retroArchCore(let identifier) = system.defaultLaunchTarget {
+        biosRequirements(for: system.systemID, target: system.defaultLaunchTarget)
+    }
+
+    /// The BIOS files `target` needs to run `systemID`'s games.
+    static func biosRequirements(for systemID: CanonicalSystemID, target: LaunchTargetReference?) -> [BIOSRequirement] {
+        guard let recommendation = EmulatorCatalog.recommendation(for: systemID) else { return [] }
+        if case .retroArchCore(let identifier) = target {
             return recommendation.bios(forCore: identifier)
         }
         return recommendation.bios

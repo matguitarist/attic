@@ -329,3 +329,26 @@ struct SystemSettingsLaunchTests {
         #expect(saturn.bios(forCore: "yabasanshiro_libretro").allSatisfy { !$0.required })
     }
 }
+
+@Suite struct BIOSFolderRequirementTests {
+    @Test func folderRequirementNeedsAFileInside() throws {
+        let bios = FileManager.default.temporaryDirectory.appending(path: "bios-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: bios) }
+        let requirement = BIOSRequirement("pcsx2/bios/")
+        #expect(requirement.isFolder)
+        #expect(!requirement.isPresent(in: bios))
+        let folder = bios.appending(path: "pcsx2/bios")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try Data().write(to: folder.appending(path: ".DS_Store"))
+        #expect(!requirement.isPresent(in: bios))
+        try Data([1]).write(to: folder.appending(path: "SCPH-39001.bin"))
+        #expect(requirement.isPresent(in: bios))
+    }
+
+    @Test func ps2NeedsABIOSAndOffersPCSX2() throws {
+        let ps2 = try #require(EmulatorCatalog.recommendation(for: .ps2))
+        #expect(ps2.cores.map(\.coreIdentifier) == ["pcsx2_libretro"])
+        #expect(ps2.standalone.map(\.id) == ["pcsx2"])
+        #expect(ps2.bios(forCore: "pcsx2_libretro").allSatisfy { $0.required })
+    }
+}

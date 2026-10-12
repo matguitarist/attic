@@ -119,6 +119,17 @@ public struct BIOSRequirement: Sendable, Hashable {
         self.note = note
         self.notNeededBy = notNeededBy
     }
+
+    /// A name ending in "/" is a folder the emulator scans for any dump
+    /// (PCSX2 takes whichever PS2 BIOS it finds there).
+    public var isFolder: Bool { fileName.hasSuffix("/") }
+
+    public func isPresent(in biosDirectory: URL) -> Bool {
+        let url = biosDirectory.appending(path: fileName)
+        guard isFolder else { return FileManager.default.fileExists(atPath: url.path) }
+        let entries = (try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: .skipsHiddenFiles)) ?? []
+        return entries.contains { (try? $0.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true }
+    }
 }
 
 /// Everything Attic recommends for running one system.
@@ -283,6 +294,58 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
+    /// PCSX2's Mac build is Intel-only, so it runs through Rosetta; the
+    /// core runs natively and stays the first pick. Its release archive
+    /// names the app with its version ("PCSX2-v2.8.2.app"); it's installed
+    /// as PCSX2.app. Verified against the real app: with HOME redirected,
+    /// all its data goes under it.
+    public static let pcsx2 = StandaloneEmulator(
+        id: "pcsx2",
+        name: "PCSX2",
+        summary: String(localized: "The PS2 emulator's own app. Intel-only, so it runs through Rosetta.", bundle: .module),
+        appBundleName: "PCSX2.app",
+        executableRelativePath: "Contents/MacOS/PCSX2",
+        argumentTemplate: "-batch -nogui -fullscreen -- {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/PCSX2/pcsx2/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos-Qt.tar.xz"),
+        homepageURL: URL(string: "https://pcsx2.net")!,
+        license: "GPL-3.0",
+        systems: [.ps2],
+        portableHome: PortableHome(
+            settingsRelativePath: "Library/Application Support/PCSX2/inis/PCSX2.ini",
+            settings: [
+                .init("UI", "SetupWizardIncomplete", "false"),
+                .init("UI", "ConfirmShutdown", "false"),
+                // The same folder the PCSX2 core reads, so one dump serves both.
+                .init("Folders", "Bios", "{bios}/pcsx2/bios"),
+                .init("Folders", "MemoryCards", "{saves}"),
+                .init("Folders", "Savestates", "{states}"),
+                .init("InputSources", "SDL", "true", onlyIfMissing: true)
+            ] + pcsx2ControllerDefaults,
+            quitComboSettings: [
+                // In -batch mode, shutting down exits PCSX2.
+                .init("Hotkeys", "ShutdownVM", "SDL-0/Back & SDL-0/Start")
+            ]
+        )
+    )
+
+    /// Player 1 on the first SDL controller (PCSX2's own defaults are
+    /// keyboard keys). PCSX2 names SDL buttons by position: FaceSouth is
+    /// A on an Xbox pad, Cross on a PlayStation one.
+    private static let pcsx2ControllerDefaults: [PortableHome.Setting] = [
+        .init("Pad1", "Type", "DualShock2", onlyIfMissing: true)
+    ] + [
+        ("Up", "DPadUp"), ("Down", "DPadDown"), ("Left", "DPadLeft"), ("Right", "DPadRight"),
+        ("Cross", "FaceSouth"), ("Circle", "FaceEast"), ("Square", "FaceWest"), ("Triangle", "FaceNorth"),
+        ("Select", "Back"), ("Start", "Start"), ("Analog", "Guide"),
+        ("L1", "LeftShoulder"), ("R1", "RightShoulder"),
+        ("L2", "+LeftTrigger"), ("R2", "+RightTrigger"),
+        ("L3", "LeftStick"), ("R3", "RightStick"),
+        ("LUp", "-LeftY"), ("LDown", "+LeftY"), ("LLeft", "-LeftX"), ("LRight", "+LeftX"),
+        ("RUp", "-RightY"), ("RDown", "+RightY"), ("RLeft", "-RightX"), ("RRight", "+RightX"),
+        ("LargeMotor", "LargeMotor"), ("SmallMotor", "SmallMotor")
+    ].map { PortableHome.Setting("Pad1", $0.0, "SDL-0/\($0.1)", onlyIfMissing: true) }
+
     public static let rpcs3 = StandaloneEmulator(
         id: "rpcs3",
         name: "RPCS3",
@@ -298,7 +361,7 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2]
 
     // MARK: - Per-system table
 
@@ -360,7 +423,7 @@ public enum EmulatorCatalog {
             RecommendedCore("mednafen_saturn_libretro", "Beetle Saturn", String(localized: "Most accurate Saturn core.", bundle: .module)),
             RecommendedCore("yabasanshiro_libretro", "YabaSanshiro", String(localized: "Faster, less accurate.", bundle: .module))
         ], standalone: [], bios: [
-            BIOSRequirement("sega_101.bin", note: "Japan", notNeededBy: ["yabasanshiro_libretro"]),
+            BIOSRequirement("sega_101.bin", required: false, note: "Japan; for Japanese games"),
             BIOSRequirement("mpr-17933.bin", note: "US/Europe", notNeededBy: ["yabasanshiro_libretro"])
         ], prefersStandalone: false),
 
@@ -441,7 +504,7 @@ public enum EmulatorCatalog {
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
-        .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module)), RecommendedCore("play_libretro", "Play!", String(localized: "Lighter PS2 emulator; runs fewer games.", bundle: .module))], standalone: [], bios: [BIOSRequirement("pcsx2/bios/scph39001.bin", required: false, note: "Needed by PCSX2: any PS2 BIOS dump, in this folder")], prefersStandalone: false),
+        .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder")], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
         .init(systemID: .msx, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Accurate MSX, MSX2 and MSX2+.", bundle: .module)), RecommendedCore("fmsx_libretro", "fMSX", String(localized: "Lighter MSX core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),

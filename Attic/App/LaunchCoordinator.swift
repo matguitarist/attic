@@ -20,6 +20,18 @@ final class LaunchCoordinator {
     }
 
     private(set) var state: State = .idle
+
+    /// A game held back because its emulator's BIOS isn't there: launching
+    /// would only crash or hang the emulator. Shown as an alert.
+    struct MissingBIOS: Identifiable {
+        let id = UUID()
+        let game: Game
+        let systemName: String
+        let fileNames: [String]
+        /// Where the files go: the first missing one's folder.
+        let folder: URL
+    }
+    var missingBIOS: MissingBIOS?
     private var currentSession: RunningGameSession?
     private let zippedROMExtractor = ZippedROMExtractor()
 
@@ -39,7 +51,9 @@ final class LaunchCoordinator {
         UserDefaults.standard.object(forKey: Self.neoGeoFreePlayKey) as? Bool ?? true
     }
 
-    func play(game: Game, retroArchStore: RetroArchSettingsStore) {
+    /// `checkingBIOS: false` is "Play Anyway" from the missing-BIOS alert,
+    /// for dumps named differently from what Attic looks for.
+    func play(game: Game, retroArchStore: RetroArchSettingsStore, checkingBIOS: Bool = true) {
         guard state == .idle || isFailed else { return }
 
         guard let target = LaunchTargetResolution.resolve(
@@ -47,6 +61,11 @@ final class LaunchCoordinator {
             systemDefault: game.system?.defaultLaunchTarget
         ) else {
             state = .failed(String(localized: "No emulator configured for this game or its system."))
+            return
+        }
+
+        if checkingBIOS, let missing = missingBIOS(for: game, target: target, biosFolder: retroArchStore.emulationFolderStore.folder.bios) {
+            missingBIOS = missing
             return
         }
 
@@ -162,6 +181,26 @@ final class LaunchCoordinator {
                 extraArguments: extraArguments
             )
         }
+    }
+
+    /// Required BIOS files `target` lacks. Emulator profiles the user made
+    /// by hand are theirs to set up, so only Attic's own installs count.
+    private func missingBIOS(for game: Game, target: LaunchTargetReference, biosFolder: URL) -> MissingBIOS? {
+        if case .emulatorProfile(let id) = target,
+           fetchEmulatorProfile(id: id, context: game.modelContext)?.catalogEmulatorID == nil {
+            return nil
+        }
+        let systemID = CanonicalSystemID(game.systemCanonicalID)
+        let missing = EmulatorSetupCoordinator.biosRequirements(for: systemID, target: target)
+            .filter { $0.required && !$0.isPresent(in: biosFolder) }
+        guard let first = missing.first else { return nil }
+        let firstURL = biosFolder.appending(path: first.fileName)
+        return MissingBIOS(
+            game: game,
+            systemName: game.system?.displayName ?? game.systemCanonicalID,
+            fileNames: missing.map(\.fileName),
+            folder: first.isFolder ? firstURL : firstURL.deletingLastPathComponent()
+        )
     }
 
     private enum LaunchError: LocalizedError {

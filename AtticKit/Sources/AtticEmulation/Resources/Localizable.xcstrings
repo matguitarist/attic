@@ -407,16 +407,6 @@
         }
       }
     },
-    "Lighter PS2 emulator; runs fewer games.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Émulateur PS2 plus léger ; fait tourner moins de jeux."
-          }
-        }
-      }
-    },
     "Mednafen's Lynx core.": {
       "localizations": {
         "fr": {
@@ -643,6 +633,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Neo Geo CD."
+          }
+        }
+      }
+    },
+    "The PS2 emulator's own app. Intel-only, so it runs through Rosetta.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app de l’émulateur PS2. Uniquement Intel, elle passe donc par Rosetta."
           }
         }
       }

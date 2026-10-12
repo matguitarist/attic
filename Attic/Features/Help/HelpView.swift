@@ -278,7 +278,7 @@ private struct SystemHelpView: View {
     }
 
     private func biosIsPresent(_ requirement: BIOSRequirement) -> Bool {
-        FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
+        requirement.isPresent(in: emulationFolderStore.folder.bios)
     }
 }
 

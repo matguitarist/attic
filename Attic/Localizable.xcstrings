@@ -11,6 +11,16 @@
         }
       }
     },
+    "%@ Needs a BIOS": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ a besoin d’un BIOS"
+          }
+        }
+      }
+    },
     "%@ connected": {
       "localizations": {
         "fr": {
@@ -3047,6 +3057,16 @@
         }
       }
     },
+    "Play Anyway": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer quand même"
+          }
+        }
+      }
+    },
     "Play Count": {
       "localizations": {
         "fr": {
@@ -3163,6 +3183,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Éditeur"
+          }
+        }
+      }
+    },
+    "Put %@ in the BIOS folder first; without it the emulator can't start. Dump BIOS files from hardware you own; Attic never downloads them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez d’abord %@ dans le dossier BIOS ; sans lui, l’émulateur ne peut pas démarrer. Copiez les BIOS depuis du matériel qui vous appartient ; Attic ne les télécharge jamais."
           }
         }
       }

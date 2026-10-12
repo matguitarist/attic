@@ -115,6 +115,7 @@ struct LibraryBrowserView: View {
             selectedGame = nil
         }
         .onChange(of: searchText) { multiSelection = [] }
+        .missingBIOSAlert(isActive: !gamepad.isCabinetActive)
         .onAppear {
             if startsInCabinet, !Self.didAutoOpenCabinet {
                 Self.didAutoOpenCabinet = true

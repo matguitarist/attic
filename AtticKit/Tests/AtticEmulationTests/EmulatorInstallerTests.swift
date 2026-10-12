@@ -160,6 +160,8 @@ struct GitHubReleaseTests {
         defer { try? FileManager.default.removeItem(at: root) }
         try FileManager.default.createDirectory(at: root.appending(path: "Emu 1.0/Emu.app/Contents"), withIntermediateDirectories: true)
         #expect(EmulatorInstaller.findApp(named: "Emu.app", in: root)?.lastPathComponent == "Emu.app")
+        try FileManager.default.createDirectory(at: root.appending(path: "PCSX2-v2.8.2.app"), withIntermediateDirectories: true)
+        #expect(EmulatorInstaller.findApp(named: "PCSX2.app", in: root)?.lastPathComponent == "PCSX2-v2.8.2.app")
         #expect(EmulatorInstaller.findApp(named: "Other.app", in: root) == nil)
     }
 }

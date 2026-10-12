@@ -164,7 +164,7 @@ struct SystemOverviewView: View {
         Section {
             let _ = biosCheck
             ForEach(biosRequirements, id: \.fileName) { requirement in
-                let present = FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
+                let present = requirement.isPresent(in: emulationFolderStore.folder.bios)
                 LabeledContent {
                     Label(present ? "Found" : "Missing",
                           systemImage: present ? "checkmark.circle.fill" : (requirement.required ? "exclamationmark.triangle.fill" : "circle"))
