@@ -31,6 +31,16 @@
         }
       }
     },
+    "%@ goes to the Trash: system folders with no games, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ vont à la corbeille : les dossiers de systèmes sans jeux, les médias qu’Attic n’affiche pas (fan art, marquees, boîtes 3D…), les médias de jeux absents et les fichiers d’autres apps."
+          }
+        }
+      }
+    },
     "%@ · %lld cores": {
       "localizations": {
         "en": {
@@ -134,6 +144,16 @@
         }
       }
     },
+    "%lld covers are saved as HEIC, which takes less space.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jaquettes sont enregistrées en HEIC, qui prend moins de place."
+          }
+        }
+      }
+    },
     "%lld failed": {
       "localizations": {
         "en": {
@@ -184,6 +204,16 @@
         }
       }
     },
+    "%lld gamelists in ROM folders move to gamelists.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld gamelists des dossiers de ROMs vont dans gamelists."
+          }
+        }
+      }
+    },
     "%lld games": {
       "localizations": {
         "en": {
@@ -230,6 +260,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld jeux dans votre bibliothèque"
+          }
+        }
+      }
+    },
+    "%lld media files in ROM folders move to downloaded_media.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers de médias des dossiers de ROMs vont dans downloaded_media."
           }
         }
       }
@@ -296,16 +336,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld étoiles"
-          }
-        }
-      }
-    },
-    "%lld systeminfo.txt or _info.txt files from ES-DE or Batocera. Attic writes its own _sysinfo.txt in each system folder.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld fichiers systeminfo.txt ou _info.txt d’ES-DE ou de Batocera. Attic écrit son propre _sysinfo.txt dans chaque dossier de système."
           }
         }
       }
@@ -2507,6 +2537,16 @@
         }
       }
     },
+    "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garde les jeux dans ROMs et leurs médias dans downloaded_media, et met à la corbeille ce que d’autres apps ont laissé."
+          }
+        }
+      }
+    },
     "LB / RB": {
       "localizations": {
         "fr": {
@@ -2693,36 +2733,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plus d’options…"
-          }
-        }
-      }
-    },
-    "Move %lld info files to the Trash?": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placer %lld fichiers d’information dans la corbeille ?"
-          }
-        }
-      }
-    },
-    "Move to Trash": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placer dans la corbeille"
-          }
-        }
-      }
-    },
-    "Move to Trash…": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placer dans la corbeille…"
           }
         }
       }
@@ -3123,16 +3133,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autres"
-          }
-        }
-      }
-    },
-    "Other apps' info files": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fichiers d’information d’autres apps"
           }
         }
       }
@@ -4689,22 +4689,62 @@
         }
       }
     },
-    "They describe other front-ends, not Attic. Your games and BIOS files aren't touched.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ils décrivent d’autres front-ends, pas Attic. Vos jeux et vos BIOS ne sont pas touchés."
-          }
-        }
-      }
-    },
     "This look needs RetroArch’s shader pack.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ce rendu nécessite le pack de shaders de RetroArch."
+          }
+        }
+      }
+    },
+    "Tidy Up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranger"
+          }
+        }
+      }
+    },
+    "Tidy Up Your ROMs Folders?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranger vos dossiers de ROMs ?"
+          }
+        }
+      }
+    },
+    "Tidy Up…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranger…"
+          }
+        }
+      }
+    },
+    "Tidy up media and leftovers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranger les médias et les restes"
+          }
+        }
+      }
+    },
+    "Tidying up…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rangement…"
           }
         }
       }
@@ -5071,6 +5111,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre dossier de ROMs"
+          }
+        }
+      }
+    },
+    "Your games, saves and BIOS files aren't touched.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos jeux, sauvegardes et fichiers BIOS ne sont pas touchés."
           }
         }
       }

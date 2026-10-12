@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticLibraryScanning
 import SwiftData
 import AtticModels
 import AtticPersistence
@@ -253,7 +254,7 @@ struct GameDetailView: View {
         if folder.lastPathComponent == "titlescreens" {
             let screenshots = folder.deletingLastPathComponent().appending(path: "screenshots", directoryHint: .isDirectory)
             let name = titleScreen.deletingPathExtension().lastPathComponent
-            for ext in ["png", "jpg", "jpeg"] {
+            for ext in MediaFolder.imageExtensions {
                 let candidate = screenshots.appending(path: "\(name).\(ext)")
                 if FileManager.default.fileExists(atPath: candidate.path) { return candidate }
             }

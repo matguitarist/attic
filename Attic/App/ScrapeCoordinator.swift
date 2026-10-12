@@ -1,4 +1,5 @@
 import Foundation
+import AtticLibraryScanning
 import Observation
 import AtticModels
 import AtticPersistence
@@ -53,26 +54,18 @@ final class ScrapeCoordinator {
 
     private let screenScraperClient: ScreenScraperClientProtocol
     private let theGamesDBClient: TheGamesDBClientProtocol
-    private let mediaCacheDirectory: URL
 
     init(
         screenScraperClient: ScreenScraperClientProtocol = ScreenScraperClient(),
-        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(namesCacheURL: ScrapeCoordinator.theGamesDBNamesCacheURL),
-        mediaCacheDirectory: URL = ScrapeCoordinator.defaultMediaCacheDirectory
+        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(namesCacheURL: ScrapeCoordinator.theGamesDBNamesCacheURL)
     ) {
         self.screenScraperClient = screenScraperClient
         self.theGamesDBClient = theGamesDBClient
-        self.mediaCacheDirectory = mediaCacheDirectory
     }
 
     static var theGamesDBNamesCacheURL: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return appSupport.appending(path: "Attic/TheGamesDBNames.json")
-    }
-
-    static var defaultMediaCacheDirectory: URL {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return appSupport.appending(path: "Attic/ScrapedMedia", directoryHint: .isDirectory)
     }
 
     /// Scrapes one game, reporting progress and the outcome in the status
@@ -265,7 +258,7 @@ final class ScrapeCoordinator {
         // A cover the user picked is only replaced on an explicit "Replace
         // Existing Info".
         if (force || game.coverArtPath == nil), let remoteURL = info.coverArtURL {
-            if let localURL = try? await downloadMedia(from: remoteURL, systemID: game.systemCanonicalID, kind: nil, romFilename: game.romAbsoluteURL.lastPathComponent) {
+            if let localURL = try? await downloadMedia(from: remoteURL, for: game, kind: .covers) {
                 game.coverArtPath = localURL.path
                 game.coverArtManuallySet = false
                 changed.append(String(localized: "cover"))
@@ -275,7 +268,7 @@ final class ScrapeCoordinator {
         // Shown at the top of the detail panel; `titleScreenPath` holds a
         // screenshot or title screen, whichever the game has.
         if (force || game.titleScreenPath == nil), let remoteURL = info.screenshotURL {
-            if let localURL = try? await downloadMedia(from: remoteURL, systemID: game.systemCanonicalID, kind: "screenshots", romFilename: game.romAbsoluteURL.lastPathComponent) {
+            if let localURL = try? await downloadMedia(from: remoteURL, for: game, kind: .screenshots) {
                 game.titleScreenPath = localURL.path
                 changed.append(String(localized: "screenshot"))
             }
@@ -289,20 +282,10 @@ final class ScrapeCoordinator {
         return changed
     }
 
-    /// Covers go straight in the system's folder (where earlier versions
-    /// put them), other kinds in a subfolder named after the kind.
-    private func downloadMedia(from remoteURL: URL, systemID: String, kind: String?, romFilename: String) async throws -> URL {
+    /// Into the media folder beside the games, where a rescan finds it too.
+    private func downloadMedia(from remoteURL: URL, for game: Game, kind: MediaKind) async throws -> URL {
         let (data, _) = try await URLSession.shared.data(from: remoteURL)
-        var systemDirectory = mediaCacheDirectory.appending(path: systemID, directoryHint: .isDirectory)
-        if let kind { systemDirectory = systemDirectory.appending(path: kind, directoryHint: .isDirectory) }
-        try FileManager.default.createDirectory(at: systemDirectory, withIntermediateDirectories: true)
-
-        let baseName = (romFilename as NSString).deletingPathExtension
-        let ext = remoteURL.pathExtension.isEmpty ? "png" : remoteURL.pathExtension
-        let destination = systemDirectory.appending(path: "\(baseName).\(ext)")
-        try data.write(to: destination, options: .atomic)
-        CoverArtThumbnailCache.shared.invalidate(destination)
-        return destination
+        return try game.storeMedia(data, fileExtension: remoteURL.pathExtension, kind: kind)
     }
 
     private static func message(for error: ScreenScraperError) -> String {

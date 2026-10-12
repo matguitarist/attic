@@ -40,6 +40,7 @@ struct AtticApp: App {
         // cores or launches a game.
         emulationFolderStore.prepare(romsRoots: romsRootsStore.rootURLs)
         LegacyRomsBoxMigration.migrateFiles(emulationFolder: emulationFolderStore.folder, modelContainer: container)
+        AppSupportMediaMigration.run(in: container)
         _romsRootsStore = State(initialValue: romsRootsStore)
         _emulationFolderStore = State(initialValue: emulationFolderStore)
         _shaderPackStore = State(initialValue: ShaderPackStore(emulationFolderStore: emulationFolderStore))

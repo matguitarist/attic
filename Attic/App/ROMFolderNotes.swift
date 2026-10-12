@@ -7,12 +7,10 @@ import AtticEmulation
 /// there (file types, BIOS, emulator) for someone browsing in the Finder —
 /// a summary of the system's help page, in English. Front-ends like ES-DE and
 /// Batocera leave their own (`systeminfo.txt`, `_info.txt`); those
-/// describe other apps, so Settings offers to move them to the Trash.
+/// describe other apps, so tidying up (`MediaTidier`) moves them to the
+/// Trash.
 enum ROMFolderNotes {
     static let fileName = "_sysinfo.txt"
-    /// Other front-ends' notes: per system folder, then at a ROMs root.
-    static let foreignFileNames = ["systeminfo.txt", "_info.txt"]
-    static let foreignRootFileNames = ["systems.txt"]
 
     /// Writes the notes into every recognized system folder under the
     /// roots, leaving files whose text hasn't changed untouched.
@@ -22,30 +20,6 @@ enum ROMFolderNotes {
             let text = Self.text(for: systemID, biosDirectory: biosDirectory)
             if (try? String(contentsOf: url, encoding: .utf8)) == text { continue }
             try? text.write(to: url, atomically: true, encoding: .utf8)
-        }
-    }
-
-    /// Other front-ends' info files under the roots.
-    static func foreignFiles(in romsRoots: [URL]) -> [URL] {
-        let fileManager = FileManager.default
-        var files: [URL] = []
-        for root in romsRoots {
-            files += foreignRootFileNames.map { root.appending(path: $0) }
-                .filter { fileManager.fileExists(atPath: $0.path) }
-            let folders = (try? fileManager.contentsOfDirectory(at: root, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)) ?? []
-            for folder in folders where (try? folder.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
-                files += foreignFileNames.map { folder.appending(path: $0) }
-                    .filter { fileManager.fileExists(atPath: $0.path) }
-            }
-        }
-        return files
-    }
-
-    /// Moves `files` to the Trash, so nothing is lost for good. Returns
-    /// how many went.
-    static func moveToTrash(_ files: [URL]) -> Int {
-        files.reduce(0) { count, url in
-            (try? FileManager.default.trashItem(at: url, resultingItemURL: nil)) != nil ? count + 1 : count
         }
     }
 

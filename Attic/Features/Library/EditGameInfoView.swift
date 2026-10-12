@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticLibraryScanning
 import UniformTypeIdentifiers
 import AtticPersistence
 
@@ -181,7 +182,7 @@ struct EditGameInfoView: View {
             }
         } else if removesCustomCover {
             CustomCoverArt.remove(for: game)
-            // The next rescan or scrape fills it back in.
+            // A scrape fills it back in.
             game.coverArtPath = nil
             game.coverArtManuallySet = false
         }
@@ -234,42 +235,21 @@ struct StarRatingPicker: View {
     }
 }
 
-/// Covers the user picks, copied next to scraped media so they don't
-/// depend on the original file staying put.
+/// Covers the user picks, copied into the game's media folder so they
+/// don't depend on the original file staying put.
 enum CustomCoverArt {
-    static var directory: URL {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return appSupport.appending(path: "Attic/CustomMedia", directoryHint: .isDirectory)
-    }
-
     static func store(_ source: URL, for game: Game) throws -> URL {
         let accessing = source.startAccessingSecurityScopedResource()
         defer { if accessing { source.stopAccessingSecurityScopedResource() } }
-
-        let systemDirectory = directory.appending(path: game.systemCanonicalID, directoryHint: .isDirectory)
-        try FileManager.default.createDirectory(at: systemDirectory, withIntermediateDirectories: true)
-        remove(for: game)
-        let ext = source.pathExtension.isEmpty ? "png" : source.pathExtension.lowercased()
-        let destination = systemDirectory.appending(path: "\(baseName(for: game)).\(ext)")
-        try FileManager.default.copyItem(at: source, to: destination)
-        CoverArtThumbnailCache.shared.invalidate(destination)
-        return destination
+        return try game.storeMedia(Data(contentsOf: source), fileExtension: source.pathExtension, kind: .covers)
     }
 
-    /// Deletes the game's custom cover, whatever its image type.
+    /// Moves the game's cover to the Trash, whatever its image type.
     static func remove(for game: Game) {
-        let systemDirectory = directory.appending(path: game.systemCanonicalID, directoryHint: .isDirectory)
-        let base = baseName(for: game)
-        let files = (try? FileManager.default.contentsOfDirectory(at: systemDirectory, includingPropertiesForKeys: nil)) ?? []
-        for file in files where file.deletingPathExtension().lastPathComponent == base {
-            try? FileManager.default.removeItem(at: file)
+        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .covers)
+        for file in MediaFolder.existingFiles(base: base) {
+            try? FileManager.default.trashItem(at: file, resultingItemURL: nil)
             CoverArtThumbnailCache.shared.invalidate(file)
         }
-    }
-
-    /// The ROM's path within its system folder, flattened — two games with
-    /// the same file name in different subfolders keep separate covers.
-    private static func baseName(for game: Game) -> String {
-        (game.romRelativePath as NSString).deletingPathExtension.replacingOccurrences(of: "/", with: "__")
     }
 }

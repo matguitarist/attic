@@ -1,5 +1,6 @@
 import SwiftUI
 import AtticModels
+import AtticLibraryScanning
 
 struct GeneralSettingsView: View {
     @Environment(RomsRootsStore.self) private var romsRootsStore
@@ -12,11 +13,48 @@ struct GeneralSettingsView: View {
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
-    /// Other front-ends' info files (ES-DE, Batocera) in the ROMs folders.
-    @State private var foreignNotes: [URL] = []
-    @State private var isConfirmingNotesCleanup = false
+    /// What tidying the ROMs folders would do; nil until worked out.
+    @State private var tidyPlan: MediaTidyPlan?
+    @State private var isConfirmingTidy = false
+    @State private var tidyProgress: Double?
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
+
+    private func planTidy() async {
+        let roots = romsRootsStore.rootURLs
+        tidyPlan = await Task.detached(priority: .utility) { MediaTidier.plan(romsRoots: roots) }.value
+    }
+
+    private func tidy(_ plan: MediaTidyPlan) async {
+        tidyProgress = 0
+        let progress = { @Sendable (value: Double) -> Void in
+            Task { @MainActor in tidyProgress = value }
+        }
+        await Task.detached(priority: .userInitiated) { MediaTidier.apply(plan, progress: progress) }.value
+        // Media and gamelists moved: the library picks up their new places.
+        await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs)
+        tidyProgress = nil
+        await planTidy()
+    }
+
+    static func tidyDescription(_ plan: MediaTidyPlan) -> String {
+        var lines: [String] = []
+        if !plan.moves.isEmpty {
+            lines.append(String(localized: "\(plan.moves.count) media files in ROM folders move to downloaded_media."))
+        }
+        if !plan.gamelists.isEmpty {
+            lines.append(String(localized: "\(plan.gamelists.count) gamelists in ROM folders move to gamelists."))
+        }
+        if !plan.compress.isEmpty {
+            lines.append(String(localized: "\(plan.compress.count) covers are saved as HEIC, which takes less space."))
+        }
+        if !plan.trash.isEmpty {
+            let size = ByteCountFormatter.string(fromByteCount: plan.trashBytes, countStyle: .file)
+            lines.append(String(localized: "\(size) goes to the Trash: system folders with no games, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files."))
+        }
+        lines.append(String(localized: "Your games, saves and BIOS files aren't touched."))
+        return lines.joined(separator: "\n\n")
+    }
 
     var body: some View {
         Form {
@@ -39,23 +77,22 @@ struct GeneralSettingsView: View {
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
                 Toggle("Hide systems with no games", isOn: $hidesEmptySystems)
-                if !foreignNotes.isEmpty {
+                if let tidyProgress {
+                    ProgressView("Tidying up…", value: tidyProgress)
+                } else if let tidyPlan, !tidyPlan.isEmpty {
                     LabeledContent {
-                        Button("Move to Trash…") { isConfirmingNotesCleanup = true }
+                        Button("Tidy Up…") { isConfirmingTidy = true }
                     } label: {
-                        Text("Other apps' info files")
-                        Text("\(foreignNotes.count) systeminfo.txt or _info.txt files from ES-DE or Batocera. Attic writes its own _sysinfo.txt in each system folder.")
+                        Text("Tidy up media and leftovers")
+                        Text("Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash.")
                     }
                 }
             }
-            .task(id: romsRootsStore.rootURLs) { foreignNotes = ROMFolderNotes.foreignFiles(in: romsRootsStore.rootURLs) }
-            .confirmationDialog("Move \(foreignNotes.count) info files to the Trash?", isPresented: $isConfirmingNotesCleanup) {
-                Button("Move to Trash") {
-                    _ = ROMFolderNotes.moveToTrash(foreignNotes)
-                    foreignNotes = ROMFolderNotes.foreignFiles(in: romsRootsStore.rootURLs)
-                }
-            } message: {
-                Text("They describe other front-ends, not Attic. Your games and BIOS files aren't touched.")
+            .task(id: romsRootsStore.rootURLs) { await planTidy() }
+            .confirmationDialog("Tidy Up Your ROMs Folders?", isPresented: $isConfirmingTidy, presenting: tidyPlan) { plan in
+                Button("Tidy Up") { Task { await tidy(plan) } }
+            } message: { plan in
+                Text(Self.tidyDescription(plan))
             }
 
             // Reads `removedSystems` so it redraws when one is added back.

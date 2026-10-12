@@ -14,8 +14,8 @@ struct ESDEMediaResolver {
     let systemName: String
     var systemFolder: URL? = nil
 
-    private static let imageExtensions = ["png", "jpg", "jpeg"]
-    private static let videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"]
+    private static let imageExtensions = MediaFolder.imageExtensions
+    private static let videoExtensions = MediaFolder.videoExtensions
     /// ES-DE's own preference order when multiple asset types exist for one
     /// game: a generated `miximage` composite is preferred, falling back to
     /// progressively less-composed art.
