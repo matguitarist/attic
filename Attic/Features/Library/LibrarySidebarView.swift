@@ -87,6 +87,7 @@ struct LibrarySidebarView: View {
                         Spacer()
                         sortMenu(for: group.category)
                     }
+                    .padding(.bottom, 4)
                 }
             }
         }
