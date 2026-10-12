@@ -29,6 +29,7 @@ struct SystemSettingsView: View {
     @State private var isChoosingShaderFile = false
     /// What each setting is on Default, read from the emulator.
     @State private var emulatorDefaults = SystemSettings()
+    @State private var systemToRemove: GameSystem?
     @Environment(EmulatorSetupCoordinator.self) private var setup
     @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
 
@@ -72,6 +73,7 @@ struct SystemSettingsView: View {
             .formStyle(.grouped)
 
             HStack {
+                Button("Remove from Library…", role: .destructive) { systemToRemove = system }
                 Button("Reset to Defaults") { settings = SystemSettings() }
                     .disabled(settings.isEmpty)
                 Spacer()
@@ -81,6 +83,7 @@ struct SystemSettingsView: View {
             .padding()
         }
         .frame(width: 520, height: 620)
+        .removeSystemConfirmation($systemToRemove) { dismiss() }
         .sheet(isPresented: $isBrowsingShaders) {
             ShaderLibraryView { preset in
                 settings.shaderPreset = preset.relativePath
@@ -102,6 +105,7 @@ struct SystemSettingsView: View {
             emulatorDefaults = emulationFolderStore.folder.currentDefaults(for: backend)
         }
         .onChange(of: settings) { _, newValue in
+            guard system.modelContext != nil else { return }
             system.settings = newValue
             try? modelContext.save()
         }

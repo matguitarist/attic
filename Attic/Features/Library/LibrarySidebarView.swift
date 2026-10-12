@@ -21,6 +21,7 @@ struct LibrarySidebarView: View {
     /// Bumped when a sort order changes (stored in UserDefaults, read by
     /// `groupedByCategory()`), so the list redraws.
     @State private var sortOrdersChanged = 0
+    @State private var systemToRemove: GameSystem?
 
     var body: some View {
         let _ = sortOrdersChanged
@@ -95,6 +96,7 @@ struct LibrarySidebarView: View {
         // Smaller rows and icons than the system's default, so long lists
         // of systems fit; all rows alike, so the sections stay even.
         .environment(\.sidebarRowSize, .small)
+        .removeSystemConfirmation($systemToRemove)
     }
 
     private func sortMenu(for category: SystemCategory) -> some View {
@@ -134,6 +136,8 @@ struct LibrarySidebarView: View {
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }
+                Divider()
+                Button("Remove from Library…", role: .destructive) { systemToRemove = system }
             }
     }
 

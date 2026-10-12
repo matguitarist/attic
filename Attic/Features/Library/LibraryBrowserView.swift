@@ -115,6 +115,12 @@ struct LibraryBrowserView: View {
             selectedGame = nil
         }
         .onChange(of: searchText) { multiSelection = [] }
+        // A removed system's games and page go with it.
+        .onChange(of: systems.map(\.systemID)) { _, ids in
+            if case .system(let id) = currentSelection, !ids.contains(id) {
+                selection = .allGames
+            }
+        }
         .missingBIOSAlert(isActive: !gamepad.isCabinetActive)
         .onAppear {
             if startsInCabinet, !Self.didAutoOpenCabinet {

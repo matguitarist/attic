@@ -41,7 +41,8 @@ final class ScanCoordinator {
         let result = await Task.detached(priority: .userInitiated) {
             scanner.scan(romsRootURLs: romsRootURLs)
         }.value
-        let systems = await Self.withArcadeNames(result.systems)
+        // Systems the user removed stay out until added back.
+        let systems = await Self.withArcadeNames(result.systems.filter { !RemovedSystems.contains($0.canonicalID) })
 
         var systemsSaved = 0
         var gamesInserted = 0

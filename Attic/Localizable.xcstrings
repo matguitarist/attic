@@ -383,6 +383,16 @@
         }
       }
     },
+    "Add Back": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rajouter"
+          }
+        }
+      }
+    },
     "Add Custom Emulator…": {
       "localizations": {
         "fr": {
@@ -2377,6 +2387,26 @@
         }
       }
     },
+    "Its %lld games leave Attic, along with their play history, favorites and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ses %lld jeux quittent Attic, avec leur historique, leurs favoris et les infos modifiées. Les fichiers ROM restent où ils sont, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+          }
+        }
+      }
+    },
+    "Its ROM folder stays where it is, and rescans skip the system until you add it back in Settings › General.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son dossier de ROM reste où il est, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+          }
+        }
+      }
+    },
     "Its custom emulator was deleted.": {
       "localizations": {
         "fr": {
@@ -3467,6 +3497,26 @@
         }
       }
     },
+    "Remove %@ from the library?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer %@ de la bibliothèque ?"
+          }
+        }
+      }
+    },
+    "Remove System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer le système"
+          }
+        }
+      }
+    },
     "Remove from Favorites": {
       "localizations": {
         "fr": {
@@ -3487,6 +3537,16 @@
         }
       }
     },
+    "Remove from Library…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer de la bibliothèque…"
+          }
+        }
+      }
+    },
     "Remove from “%@”": {
       "localizations": {
         "fr": {
@@ -3503,6 +3563,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Supprimer le scintillement des sprites"
+          }
+        }
+      }
+    },
+    "Removed Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Systèmes retirés"
+          }
+        }
+      }
+    },
+    "Removed from the library; their ROM folders are as they were. Adding one back rescans the library.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirés de la bibliothèque ; leurs dossiers de ROM sont intacts. En rajouter un relance l’analyse de la bibliothèque."
           }
         }
       }

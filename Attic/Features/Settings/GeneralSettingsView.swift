@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticModels
 
 struct GeneralSettingsView: View {
     @Environment(RomsRootsStore.self) private var romsRootsStore
@@ -14,6 +15,7 @@ struct GeneralSettingsView: View {
     /// Other front-ends' info files (ES-DE, Batocera) in the ROMs folders.
     @State private var foreignNotes: [URL] = []
     @State private var isConfirmingNotesCleanup = false
+    @AppStorage(RemovedSystems.key) private var removedSystems = ""
 
     var body: some View {
         Form {
@@ -52,6 +54,26 @@ struct GeneralSettingsView: View {
                 }
             } message: {
                 Text("They describe other front-ends, not Attic. Your games and BIOS files aren't touched.")
+            }
+
+            // Reads `removedSystems` so it redraws when one is added back.
+            if !removedSystems.isEmpty {
+                Section {
+                    ForEach(RemovedSystems.ids, id: \.self) { id in
+                        LabeledContent(SystemTaxonomy.definition(for: id)?.displayName ?? id.rawValue) {
+                            Button("Add Back") {
+                                RemovedSystems.addBack(id)
+                                Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Removed Systems")
+                } footer: {
+                    Text("Removed from the library; their ROM folders are as they were. Adding one back rescans the library.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Section {
