@@ -11,16 +11,6 @@
         }
       }
     },
-    "%@ (RetroArch core)": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ (cœur RetroArch)"
-          }
-        }
-      }
-    },
     "%@ Needs a BIOS": {
       "localizations": {
         "fr": {
@@ -725,32 +715,12 @@
         }
       }
     },
-    "BIOS, in %@:": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BIOS, dans %@ :"
-          }
-        }
-      }
-    },
     "BIOS, saves, save states, RetroArch cores and settings, and emulators installed by Attic all live here — back up or move this one folder to take everything with you.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les BIOS, sauvegardes, sauvegardes d’état, cœurs et réglages de RetroArch et les émulateurs installés par Attic sont tous ici — sauvegardez ou déplacez ce seul dossier pour tout emporter."
-          }
-        }
-      }
-    },
-    "BIOS: none needed.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BIOS : aucun n’est nécessaire."
           }
         }
       }
@@ -2033,16 +2003,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux peuvent être des fichiers .iso ou des dossiers nommés comme Jeu.ps3 (contenant PS3_GAME)."
-          }
-        }
-      }
-    },
-    "Games go in this folder, as any of these file types:": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les jeux vont dans ce dossier, dans l’un de ces types de fichiers :"
           }
         }
       }
@@ -3403,16 +3363,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Émulateur recommandé"
-          }
-        }
-      }
-    },
-    "Recommended emulator: %@": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Émulateur recommandé : %@"
           }
         }
       }
@@ -4935,16 +4885,6 @@
         }
       }
     },
-    "Written by Attic, which keeps this file up to date: changes to it don't stick. More in Help › Attic Help.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Écrit par Attic, qui tient ce fichier à jour : les modifications ne sont pas conservées. Plus d’infos dans Aide › Aide d’Attic."
-          }
-        }
-      }
-    },
     "Your Account (optional)": {
       "localizations": {
         "fr": {
@@ -5005,16 +4945,6 @@
         }
       }
     },
-    "for example %@": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "par exemple %@"
-          }
-        }
-      }
-    },
     "genre": {
       "localizations": {
         "fr": {
@@ -5071,16 +5001,6 @@
         }
       }
     },
-    "optional": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "facultatif"
-          }
-        }
-      }
-    },
     "players": {
       "localizations": {
         "fr": {
@@ -5117,16 +5037,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "date de sortie"
-          }
-        }
-      }
-    },
-    "required": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "requis"
           }
         }
       }

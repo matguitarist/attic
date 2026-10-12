@@ -12,6 +12,16 @@ extension SystemCategory {
         }
     }
 
+    /// For text Attic writes in English whatever the app's language.
+    var englishTitle: String {
+        switch self {
+        case .console: "Console"
+        case .handheld: "Handheld"
+        case .arcade: "Arcade"
+        case .computer: "Computer"
+        }
+    }
+
     var symbolName: String {
         switch self {
         case .console: "gamecontroller"

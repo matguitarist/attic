@@ -5,7 +5,7 @@ import AtticEmulation
 
 /// A short `_sysinfo.txt` in each system's ROMs folder, saying what goes
 /// there (file types, BIOS, emulator) for someone browsing in the Finder —
-/// a summary of the system's help page. Front-ends like ES-DE and
+/// a summary of the system's help page, in English. Front-ends like ES-DE and
 /// Batocera leave their own (`systeminfo.txt`, `_info.txt`); those
 /// describe other apps, so Settings offers to move them to the Trash.
 enum ROMFolderNotes {
@@ -62,46 +62,59 @@ enum ROMFolderNotes {
 
     // MARK: - Text
 
+    private static func english(_ resource: LocalizedStringResource) -> String {
+        var resource = resource
+        resource.locale = Locale(identifier: "en")
+        return String(localized: resource)
+    }
+
+    /// In English whatever the app's language: these files outlive the
+    /// app's settings and get shared along with the ROMs folder.
     static func text(for systemID: CanonicalSystemID, biosDirectory: URL) -> String {
         var sections: [String] = []
 
         let name = SystemTaxonomy.definition(for: systemID)?.displayName ?? systemID.rawValue
-        sections.append([name, SystemFacts.summary(for: systemID)].compactMap { $0 }.joined(separator: "\n"))
+        if let info = SystemHelpContent.info(for: systemID) {
+            let category = SystemTaxonomy.definition(for: systemID)?.category ?? .console
+            sections.append("\(name)\n\(info.manufacturer) · \(info.year) · \(category.englishTitle)")
+        } else {
+            sections.append(name)
+        }
 
         if let extensions = SystemROMExtensions.extensions(for: systemID) {
-            sections.append(String(localized: "Games go in this folder, as any of these file types:")
+            sections.append("Games go in this folder, as any of these file types:"
                 + "\n" + extensions.sorted().map { ".\($0)" }.joined(separator: " "))
         }
 
         if let recommendation = EmulatorCatalog.recommendation(for: systemID) {
-            let core = recommendation.recommendedCore.map { String(localized: "\($0.displayName) (RetroArch core)") }
+            let core = recommendation.recommendedCore.map { "\($0.displayName) (RetroArch core)" }
             let emulator = recommendation.prefersStandalone ? recommendation.standalone.first?.name ?? core : core ?? recommendation.standalone.first?.name
             if let emulator {
-                sections.append(String(localized: "Recommended emulator: \(emulator)"))
+                sections.append("Recommended emulator: \(emulator)")
             }
 
             let biosPath = (biosDirectory.path as NSString).abbreviatingWithTildeInPath
             if recommendation.bios.isEmpty {
-                sections.append(String(localized: "BIOS: none needed."))
+                sections.append("BIOS: none needed.")
             } else {
                 let lines = recommendation.bios.map { requirement -> String in
-                    var parts = [requirement.required ? String(localized: "required") : String(localized: "optional")]
+                    var parts = [requirement.required ? "required" : "optional"]
                     if !requirement.supportedDumps.isEmpty {
-                        parts.append(String(localized: "for example \(requirement.supportedDumps.prefix(3).joined(separator: ", "))"))
+                        parts.append("for example \(requirement.supportedDumps.prefix(3).joined(separator: ", "))")
                     } else if let note = requirement.note {
                         parts.append(note)
                     }
                     return "- \(requirement.fileName) (\(parts.joined(separator: " · ")))"
                 }
-                sections.append(String(localized: "BIOS, in \(biosPath):") + "\n" + lines.joined(separator: "\n"))
+                sections.append("BIOS, in \(biosPath):\n" + lines.joined(separator: "\n"))
             }
         }
 
         if let notes = SystemHelpContent.info(for: systemID)?.notes, !notes.isEmpty {
-            sections.append(notes.map { "- \($0)" }.joined(separator: "\n"))
+            sections.append(notes.map { "- \(english($0))" }.joined(separator: "\n"))
         }
 
-        sections.append(String(localized: "Written by Attic, which keeps this file up to date: changes to it don't stick. More in Help › Attic Help."))
+        sections.append("Written by Attic, which keeps this file up to date: changes to it don't stick. More in Help › Attic Help.")
         return sections.joined(separator: "\n\n") + "\n"
     }
 }

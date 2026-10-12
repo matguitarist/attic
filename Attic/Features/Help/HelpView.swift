@@ -256,10 +256,10 @@ private struct SystemHelpView: View {
         }
     }
 
-    private func paragraphs(_ heading: LocalizedStringKey, _ items: [String]) -> some View {
+    private func paragraphs(_ heading: LocalizedStringKey, _ items: [LocalizedStringResource]) -> some View {
         Section(heading) {
-            ForEach(items, id: \.self) { item in
-                Text(item).fixedSize(horizontal: false, vertical: true)
+            ForEach(items.indices, id: \.self) { index in
+                Text(items[index]).fixedSize(horizontal: false, vertical: true)
             }
         }
     }
