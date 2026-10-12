@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Attic</title>
+        <item>
+            <title>1.8.0</title>
+            <pubDate>Mon, 12 Oct 2026 07:25:14 -0400</pubDate>
+            <sparkle:version>11</sparkle:version>
+            <sparkle:shortVersionString>1.8.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>RomsBox is now called Attic, and Big Box is now Cabinet Mode.</p>
+<ul>
+<li>Your library, collections, settings, artwork and scraper keys carry over from RomsBox automatically.</li>
+<li>Attic updates itself: Attic › Check for Updates…, and Settings › General › Updates.</li>
+<li>Scraped screenshots are shown at the top of the detail panel.</li>
+<li>Only each system&#x27;s ROM file types are listed in the library.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.8.0/Attic-1.8.0.zip" length="4253309" type="application/octet-stream" sparkle:edSignature="BO3FV2jF6YyLZ4lzqs0OXri0aZMMsA3CyyXELZb0a0hByrCIGUyhrpmZN385WF3n/GxirDWIfC1ybplynAhrBg=="/>
+        </item>
+    </channel>
+</rss>
