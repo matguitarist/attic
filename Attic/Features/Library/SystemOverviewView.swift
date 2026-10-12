@@ -105,21 +105,33 @@ struct SystemOverviewView: View {
         let info = SystemHelpContent.info(for: system.systemID)
         if definition != nil || !extensions.isEmpty || info != nil {
             Section("Information") {
+                // Label above, value below: these run long, and beside the
+                // label they wrapped differently from one system to the next.
                 if let definition {
-                    LabeledContent("ROM Folder") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ROM Folder")
                         Text(SystemFacts.romFolderNames(definition))
-                            .textSelection(.enabled)
                             .monospaced()
-                            .multilineTextAlignment(.trailing)
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
                     }
                 }
                 if !extensions.isEmpty {
-                    LabeledContent("File Types") {
-                        Text(extensions.map { ".\($0)" }.joined(separator: " "))
-                            .textSelection(.enabled)
-                            .monospaced()
-                            .font(.callout)
-                            .multilineTextAlignment(.trailing)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("File Types")
+                        // One tag per extension, so a line only ever breaks
+                        // between two of them.
+                        FlowLayout(spacing: 4) {
+                            ForEach(extensions, id: \.self) { ext in
+                                Text(verbatim: ".\(ext)")
+                                    .monospaced()
+                                    .font(.caption)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(.quaternary, in: .rect(cornerRadius: 4))
+                            }
+                        }
                     }
                 }
                 if let info {
@@ -210,5 +222,47 @@ extension GameSystem {
         case nil:
             return nil
         }
+    }
+}
+
+/// Lays its subviews out left to right, starting a new line when the next
+/// one wouldn't fit.
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 4
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = rows(for: subviews, width: proposal.width ?? .infinity)
+        let width = rows.map { $0.reduce(0) { $0 + $1.width } + spacing * CGFloat(max($0.count - 1, 0)) }.max() ?? 0
+        let height = rows.map { $0.map(\.height).max() ?? 0 }.reduce(0, +) + spacing * CGFloat(max(rows.count - 1, 0))
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        var index = 0
+        for row in rows(for: subviews, width: bounds.width) {
+            var x = bounds.minX
+            for size in row {
+                subviews[index].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+                x += size.width + spacing
+                index += 1
+            }
+            y += (row.map(\.height).max() ?? 0) + spacing
+        }
+    }
+
+    private func rows(for subviews: Subviews, width: CGFloat) -> [[CGSize]] {
+        var rows: [[CGSize]] = [[]]
+        var x: CGFloat = 0
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x > 0, x + size.width > width {
+                rows.append([])
+                x = 0
+            }
+            rows[rows.count - 1].append(size)
+            x += size.width + spacing
+        }
+        return rows
     }
 }
