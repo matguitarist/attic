@@ -18,6 +18,7 @@ struct AtticApp: App {
     @State private var helpNavigator = HelpNavigator()
     @State private var emulatorSetupCoordinator: EmulatorSetupCoordinator
     @State private var appUpdater = AppUpdater()
+    @State private var shaderPackStore: ShaderPackStore
 
     init() {
         // Before any store reads its settings.
@@ -41,6 +42,7 @@ struct AtticApp: App {
         LegacyRomsBoxMigration.migrateFiles(emulationFolder: emulationFolderStore.folder, modelContainer: container)
         _romsRootsStore = State(initialValue: romsRootsStore)
         _emulationFolderStore = State(initialValue: emulationFolderStore)
+        _shaderPackStore = State(initialValue: ShaderPackStore(emulationFolderStore: emulationFolderStore))
 
         let controllerSettingsStore = ControllerSettingsStore(emulationFolderStore: emulationFolderStore)
         let launchCoordinator = LaunchCoordinator(controllerSettingsStore: controllerSettingsStore)
@@ -127,5 +129,6 @@ struct AtticApp: App {
             .environment(emulatorSetupCoordinator)
             .environment(emulationFolderStore)
             .environment(appUpdater)
+            .environment(shaderPackStore)
     }
 }

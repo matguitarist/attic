@@ -74,6 +74,28 @@ public enum SystemSettingsSupport {
         return handheld ? [.none, .sharp, .lcd, .crt] : [.none, .sharp, .crt, .crtCurved]
     }
 
+    /// The look "Retro look by default" gives a system left on Default:
+    /// scanlines for 2D consoles and arcade, an LCD grid for handhelds.
+    /// 3D systems and computers keep RetroArch's own setting.
+    public static func defaultLook(for system: CanonicalSystemID) -> SystemSettings.Look? {
+        guard !threeDSystems.contains(system) else { return nil }
+        switch SystemTaxonomy.definition(for: system)?.category {
+        case .console, .arcade: return .crt
+        case .handheld: return .lcd
+        case .computer, nil: return nil
+        }
+    }
+
+    /// `settings` with the retro look filled in where the system has
+    /// none of its own.
+    public static func effective(_ settings: SystemSettings, system: CanonicalSystemID, retroLookByDefault: Bool) -> SystemSettings {
+        var effective = settings
+        if retroLookByDefault, settings.look == nil, settings.shaderPreset == nil {
+            effective.look = defaultLook(for: system)
+        }
+        return effective
+    }
+
     // MARK: - RetroArch
 
     /// Shader presets, relative to a slang shader pack's root.
@@ -92,7 +114,9 @@ public enum SystemSettingsSupport {
     public static func retroArchConfig(_ settings: SystemSettings, system: CanonicalSystemID) -> [(key: String, value: String)] {
         var config: [(key: String, value: String)] = []
         let offered = Set(Self.settings(for: system, backend: .retroArch(coreIdentifier: "")))
-        if let look = settings.look, look != .none { config.append(("video_shader_enable", "true")) }
+        if settings.shaderPreset != nil || (settings.look.map { $0 != .none } ?? false) {
+            config.append(("video_shader_enable", "true"))
+        }
         if let integer = settings.integerScaling { config.append(("video_scale_integer", bool(integer))) }
         if offered.contains(.runAhead), let frames = settings.runAheadFrames {
             config.append(("run_ahead_enabled", bool(frames > 0)))

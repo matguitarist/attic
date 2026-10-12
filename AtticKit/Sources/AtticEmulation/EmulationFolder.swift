@@ -184,26 +184,70 @@ public struct EmulationFolder: Sendable, Hashable {
         retroArchConfigDirectory.appending(path: "shaders/shaders_slang", directoryHint: .isDirectory)
     }
 
-    /// The preset file for `look`: from Attic's own shader pack, else from
-    /// the one RetroArch's Online Updater installed. `nil` when neither has it.
-    public func shaderPresetURL(for look: SystemSettings.Look) -> URL? {
-        guard let preset = SystemSettingsSupport.shaderPreset(for: look) else { return nil }
+    /// Where shader packs are looked for: Attic's own, then the one
+    /// RetroArch's Online Updater installed in its shader directory.
+    public var shaderPackRoots: [URL] {
         var roots = [retroArchShadersDirectory]
         let saved = Self.parseRetroArchConfig((try? String(contentsOf: retroArchConfigFile, encoding: .utf8)) ?? "")
         if let directory = saved["video_shader_dir"], !directory.isEmpty, !directory.hasPrefix(":") {
             let expanded = URL(fileURLWithPath: (directory as NSString).expandingTildeInPath, isDirectory: true)
             roots += [expanded.appending(path: "shaders_slang", directoryHint: .isDirectory), expanded]
         }
-        return roots.map { $0.appending(path: preset) }.first { FileManager.default.fileExists(atPath: $0.path) }
+        return roots
     }
 
-    /// RetroArch's `--set-shader` for `look`: an empty path turns
-    /// shaders off for the run. No arguments when there's no preset to
-    /// load, or nothing was chosen.
-    public func retroArchShaderArguments(for look: SystemSettings.Look?) -> [String] {
-        guard let look else { return [] }
+    /// The first shader pack found, for listing its presets.
+    public var shaderPackRoot: URL? {
+        shaderPackRoots.first { FileManager.default.fileExists(atPath: $0.appending(path: "crt").path) }
+    }
+
+    /// A preset path as `SystemSettings.shaderPreset` stores it: absolute
+    /// for the user's own files, else relative to a shader pack.
+    public func shaderPresetURL(forPath path: String) -> URL? {
+        let candidates = path.hasPrefix("/")
+            ? [URL(fileURLWithPath: path)]
+            : shaderPackRoots.map { $0.appending(path: path) }
+        return candidates.first { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
+    /// The preset file for `look`, or `nil` when no shader pack has it.
+    public func shaderPresetURL(for look: SystemSettings.Look) -> URL? {
+        SystemSettingsSupport.shaderPreset(for: look).flatMap(shaderPresetURL(forPath:))
+    }
+
+    /// RetroArch's `--set-shader` for these settings: the chosen preset,
+    /// else the look's; an empty path turns shaders off for the run. No
+    /// arguments when nothing was chosen or the preset can't be found.
+    public func retroArchShaderArguments(for settings: SystemSettings) -> [String] {
+        if let path = settings.shaderPreset {
+            return shaderPresetURL(forPath: path).map { ["--set-shader", $0.path] } ?? []
+        }
+        guard let look = settings.look else { return [] }
         if look == .none { return ["--set-shader", ""] }
         return shaderPresetURL(for: look).map { ["--set-shader", $0.path] } ?? []
+    }
+
+    /// When the buildbot built the shader pack Attic downloaded.
+    public struct ShaderPackInfo: Codable, Sendable {
+        public var build: Date
+        public init(build: Date) { self.build = build }
+    }
+
+    private var shaderPackInfoFile: URL {
+        retroArchShadersDirectory.deletingLastPathComponent().appending(path: "attic-shaders.json")
+    }
+
+    public var shaderPackInfo: ShaderPackInfo? {
+        guard FileManager.default.fileExists(atPath: retroArchShadersDirectory.path) else { return nil }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return (try? Data(contentsOf: shaderPackInfoFile)).flatMap { try? decoder.decode(ShaderPackInfo.self, from: $0) }
+    }
+
+    public func setShaderPackInfo(_ info: ShaderPackInfo) throws {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        try encoder.encode(info).write(to: shaderPackInfoFile, options: .atomic)
     }
 
     /// Settings Attic owns in an emulator's config: what it last wrote,

@@ -98,6 +98,61 @@ struct SystemSettingsSupportTests {
     }
 }
 
+struct RetroLookTests {
+    @Test func retroLookFillsOnlySystemsLeftOnDefault() {
+        let empty = SystemSettings()
+        #expect(SystemSettingsSupport.effective(empty, system: .snes, retroLookByDefault: true).look == .crt)
+        #expect(SystemSettingsSupport.effective(empty, system: .neogeo, retroLookByDefault: true).look == .crt)
+        #expect(SystemSettingsSupport.effective(empty, system: .gba, retroLookByDefault: true).look == .lcd)
+        #expect(SystemSettingsSupport.effective(empty, system: .psx, retroLookByDefault: true).look == nil)
+        #expect(SystemSettingsSupport.effective(empty, system: .snes, retroLookByDefault: false).look == nil)
+
+        var chosen = SystemSettings()
+        chosen.look = .sharp
+        #expect(SystemSettingsSupport.effective(chosen, system: .snes, retroLookByDefault: true).look == .sharp)
+        chosen = SystemSettings()
+        chosen.shaderPreset = "crt/crt-royale.slangp"
+        #expect(SystemSettingsSupport.effective(chosen, system: .snes, retroLookByDefault: true).look == nil)
+    }
+
+    @Test func aPresetTurnsShadersOn() {
+        var settings = SystemSettings()
+        settings.shaderPreset = "crt/crt-royale.slangp"
+        #expect(SystemSettingsSupport.retroArchConfig(settings, system: .snes).contains { $0 == ("video_shader_enable", "true") })
+    }
+}
+
+struct ShaderLibraryTests {
+    @Test func listsPresetsByFolderWithoutBuildingBlocks() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "ShaderLibraryTests-\(UUID().uuidString)")
+        for path in ["crt/crt-geom.slangp", "crt/crt-easymode.slangp", "crt/shaders/crt-geom.slang", "handheld/lcd-grid-v2.slangp",
+                     "presets/crt-plus-signal/my-preset.slangp", "test/format.slangp", "include/x.slangp", "bilinear.slangp"] {
+            let file = root.appending(path: path)
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try "".write(to: file, atomically: true, encoding: .utf8)
+        }
+        let groups = ShaderLibrary.presets(in: root)
+        #expect(groups.map(\.folder) == ["", "crt", "handheld", "presets"])
+        #expect(groups[1].presets.map(\.relativePath) == ["crt/crt-easymode.slangp", "crt/crt-geom.slangp"])
+        #expect(groups[3].presets.first?.name == "crt-plus-signal/my-preset")
+    }
+
+    @Test func anUpdateNeedsANewerCommitThatsBeenBuilt() {
+        let installed = Date(timeIntervalSince1970: 1000)
+        #expect(ShaderPackUpdateChecker.isUpdateAvailable(installedBuild: installed, latestCommit: Date(timeIntervalSince1970: 2000), latestBuild: Date(timeIntervalSince1970: 3000)))
+        // Rebuilt nightly, but nothing new.
+        #expect(!ShaderPackUpdateChecker.isUpdateAvailable(installedBuild: installed, latestCommit: Date(timeIntervalSince1970: 500), latestBuild: Date(timeIntervalSince1970: 3000)))
+        // Committed, not built yet.
+        #expect(!ShaderPackUpdateChecker.isUpdateAvailable(installedBuild: installed, latestCommit: Date(timeIntervalSince1970: 2000), latestBuild: Date(timeIntervalSince1970: 1500)))
+    }
+
+    @Test func readsDatesFromGitHubAndTheBuildbot() {
+        let json = #"[{"sha":"abc","commit":{"committer":{"name":"x","date":"2026-10-08T18:05:19Z"}}}]"#
+        #expect(ShaderPackUpdateChecker.latestCommitDate(inCommitsResponse: Data(json.utf8)) == ISO8601DateFormatter().date(from: "2026-10-08T18:05:19Z"))
+        #expect(ShaderPackUpdateChecker.buildDate(lastModified: "Sun, 11 Oct 2026 23:42:15 GMT") == ISO8601DateFormatter().date(from: "2026-10-11T23:42:15Z"))
+    }
+}
+
 struct SystemSettingsLaunchTests {
     private let folder: EmulationFolder
 
@@ -175,14 +230,42 @@ struct SystemSettingsLaunchTests {
     }
 
     @Test func shaderArgumentsNeedAPresetExceptToTurnShadersOff() throws {
-        #expect(folder.retroArchShaderArguments(for: nil).isEmpty)
-        #expect(folder.retroArchShaderArguments(for: SystemSettings.Look.none) == ["--set-shader", ""])
-        #expect(folder.retroArchShaderArguments(for: .crt).isEmpty)
+        func arguments(_ look: SystemSettings.Look?) -> [String] {
+            var settings = SystemSettings()
+            settings.look = look
+            return folder.retroArchShaderArguments(for: settings)
+        }
+        #expect(arguments(nil).isEmpty)
+        #expect(arguments(SystemSettings.Look.none) == ["--set-shader", ""])
+        #expect(arguments(.crt).isEmpty)
 
         let preset = folder.retroArchShadersDirectory.appending(path: "crt/crt-easymode.slangp")
         try FileManager.default.createDirectory(at: preset.deletingLastPathComponent(), withIntermediateDirectories: true)
         try "".write(to: preset, atomically: true, encoding: .utf8)
-        #expect(folder.retroArchShaderArguments(for: .crt) == ["--set-shader", preset.path])
+        #expect(arguments(.crt) == ["--set-shader", preset.path])
+    }
+
+    @Test func aChosenPresetWinsOverTheLook() throws {
+        let preset = folder.retroArchShadersDirectory.appending(path: "crt/crt-royale.slangp")
+        try FileManager.default.createDirectory(at: preset.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try "".write(to: preset, atomically: true, encoding: .utf8)
+        var settings = SystemSettings()
+        settings.look = SystemSettings.Look.none
+        settings.shaderPreset = "crt/crt-royale.slangp"
+        #expect(folder.retroArchShaderArguments(for: settings) == ["--set-shader", preset.path])
+
+        // The user's own file, anywhere.
+        settings.shaderPreset = preset.path
+        #expect(folder.retroArchShaderArguments(for: settings) == ["--set-shader", preset.path])
+        settings.shaderPreset = "/nowhere/missing.slangp"
+        #expect(folder.retroArchShaderArguments(for: settings).isEmpty)
+    }
+
+    @Test func shaderPackInfoRoundTrips() throws {
+        try FileManager.default.createDirectory(at: folder.retroArchShadersDirectory, withIntermediateDirectories: true)
+        let build = Date(timeIntervalSince1970: 1_800_000_000)
+        try folder.setShaderPackInfo(.init(build: build))
+        #expect(folder.shaderPackInfo?.build == build)
     }
 
     @Test func extraArgumentsGoBeforeTheCore() {

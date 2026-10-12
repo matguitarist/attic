@@ -17,6 +17,7 @@ struct RetroArchSettingsView: View {
     var body: some View {
         Form {
             retroArchSection
+            ShadersSection()
 
             if !retroArchStore.cores.isEmpty {
                 installedCoresSection

@@ -20,6 +20,10 @@ public struct SystemSettings: Codable, Hashable, Sendable {
     }
 
     public var look: Look?
+    /// A shader preset picked from the shader library (relative to the
+    /// pack, e.g. "crt/crt-royale.slangp") or the user's own file (an
+    /// absolute path). Takes the place of `look` when set.
+    public var shaderPreset: String?
     /// Scale only by whole multiples, so every pixel is the same size.
     public var integerScaling: Bool?
     /// The 3D renderer's resolution, as a multiple of the console's.

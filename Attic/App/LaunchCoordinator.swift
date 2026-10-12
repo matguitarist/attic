@@ -114,7 +114,11 @@ final class LaunchCoordinator {
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let folder = retroArchStore.emulationFolderStore.folder
-            let systemSettings = game.system?.settings ?? SystemSettings()
+            let systemSettings = SystemSettingsSupport.effective(
+                game.system?.settings ?? SystemSettings(),
+                system: systemID,
+                retroLookByDefault: UserDefaults.standard.bool(forKey: ShaderPackStore.retroLookByDefaultKey)
+            )
             let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(
                 for: systemID, controller: controllerSettingsStore.settings, systemSettings: systemSettings
             )
@@ -124,7 +128,7 @@ final class LaunchCoordinator {
             ))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL).launch(
                 coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL,
-                extraArguments: folder.retroArchShaderArguments(for: systemSettings.look)
+                extraArguments: folder.retroArchShaderArguments(for: systemSettings)
             )
 
         case .emulatorProfile(let id):

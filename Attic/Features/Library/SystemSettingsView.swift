@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 import AtticModels
 import AtticPersistence
 import AtticEmulation
@@ -21,11 +22,11 @@ struct SystemSettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @Environment(ShaderPackStore.self) private var shaderPack
+    @AppStorage(ShaderPackStore.retroLookByDefaultKey) private var retroLookByDefault = false
     @State private var settings = SystemSettings()
-    @State private var isDownloadingShaders = false
-    @State private var shaderError: String?
-    /// Bumped after downloading shaders, so the "missing" note re-checks.
-    @State private var shaderCheck = 0
+    @State private var isBrowsingShaders = false
+    @State private var isChoosingShaderFile = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -69,6 +70,18 @@ struct SystemSettingsView: View {
             .padding()
         }
         .frame(width: 520, height: 620)
+        .sheet(isPresented: $isBrowsingShaders) {
+            ShaderLibraryView { preset in
+                settings.shaderPreset = preset.relativePath
+                settings.look = nil
+            }
+        }
+        .fileImporter(isPresented: $isChoosingShaderFile, allowedContentTypes: [.shaderPreset]) { result in
+            if case .success(let url) = result {
+                settings.shaderPreset = url.path
+                settings.look = nil
+            }
+        }
         .onAppear { settings = system.settings }
         .onChange(of: settings) { _, newValue in
             system.settings = newValue
@@ -81,16 +94,21 @@ struct SystemSettingsView: View {
     private var pictureSection: some View {
         Section {
             if offered.contains(.look) {
-                Picker("Look", selection: $settings.look) {
-                    Text("Default").tag(SystemSettings.Look?.none)
+                Picker("Look", selection: lookChoice) {
+                    Text(defaultLookTitle).tag(LookChoice.automatic)
                     Divider()
                     ForEach(SystemSettingsSupport.looks(for: system.systemID), id: \.self) { look in
-                        Text(look.title).tag(Optional(look))
+                        Text(look.title).tag(LookChoice.look(look))
                     }
+                    if let preset = settings.shaderPreset {
+                        Divider()
+                        Text(ShaderLibrary.displayName(forPreset: preset)).tag(LookChoice.preset(preset))
+                    }
+                    Divider()
+                    Text("Shader Library…").tag(LookChoice.browse)
+                    Text("Choose File…").tag(LookChoice.chooseFile)
                 }
-                if let look = settings.look, look != .none {
-                    shaderStatus(for: look)
-                }
+                shaderStatus
             }
             if offered.contains(.integerScaling) {
                 defaultablePicker("Integer scaling", selection: $settings.integerScaling)
@@ -174,39 +192,65 @@ struct SystemSettingsView: View {
 
     // MARK: - Shaders
 
-    @ViewBuilder
-    private func shaderStatus(for look: SystemSettings.Look) -> some View {
-        let _ = shaderCheck
-        if emulationFolderStore.folder.shaderPresetURL(for: look) == nil {
-            HStack(alignment: .firstTextBaseline) {
-                Label("This look needs RetroArch’s shader pack.", systemImage: "exclamationmark.triangle")
-                    .foregroundStyle(.secondary)
-                Spacer()
-                if isDownloadingShaders {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Button("Download (54 MB)") { downloadShaders() }
-                }
-            }
-            .font(.callout)
-            if let shaderError {
-                Text(shaderError).font(.caption).foregroundStyle(.red)
+    /// The Look menu's entries: the built-in looks, a preset from the
+    /// shader library or a file, and the two items that pick one.
+    private enum LookChoice: Hashable {
+        case automatic
+        case look(SystemSettings.Look)
+        case preset(String)
+        case browse
+        case chooseFile
+    }
+
+    private var lookChoice: Binding<LookChoice> {
+        Binding {
+            if let preset = settings.shaderPreset { return .preset(preset) }
+            return settings.look.map(LookChoice.look) ?? .automatic
+        } set: { choice in
+            switch choice {
+            case .automatic: settings.look = nil; settings.shaderPreset = nil
+            case .look(let look): settings.look = look; settings.shaderPreset = nil
+            case .preset: break
+            case .browse: isBrowsingShaders = true
+            case .chooseFile: isChoosingShaderFile = true
             }
         }
     }
 
-    private func downloadShaders() {
-        isDownloadingShaders = true
-        shaderError = nil
-        let folder = emulationFolderStore.folder
-        Task {
-            do {
-                try await EmulatorInstaller(paths: folder.installerPaths).installShaderPack(into: folder.retroArchShadersDirectory)
-            } catch {
-                shaderError = error.localizedDescription
+    /// "Default", naming the retro look when that's what Default means.
+    private var defaultLookTitle: String {
+        if retroLookByDefault, let look = SystemSettingsSupport.defaultLook(for: system.systemID) {
+            return String(localized: "Default (\(look.title))")
+        }
+        return String(localized: "Default")
+    }
+
+    /// Says when the chosen look can't be shown, and offers the download.
+    @ViewBuilder
+    private var shaderStatus: some View {
+        let _ = shaderPack.revision
+        let chosen = settings.shaderPreset != nil || (settings.look.map { $0 != .none } ?? false)
+        if chosen, emulationFolderStore.folder.retroArchShaderArguments(for: settings).isEmpty {
+            if let preset = settings.shaderPreset, preset.hasPrefix("/") {
+                Label("Can’t find this shader file.", systemImage: "exclamationmark.triangle")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            } else {
+                HStack(alignment: .firstTextBaseline) {
+                    Label("This look needs RetroArch’s shader pack.", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if shaderPack.isDownloading {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Button("Download (54 MB)") { Task { await shaderPack.download() } }
+                    }
+                }
+                .font(.callout)
+                if let error = shaderPack.lastError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
             }
-            isDownloadingShaders = false
-            shaderCheck += 1
         }
     }
 
@@ -298,4 +342,9 @@ private extension Text {
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }
+}
+
+extension UTType {
+    /// A RetroArch slang shader preset.
+    static let shaderPreset = UTType(filenameExtension: "slangp") ?? .data
 }

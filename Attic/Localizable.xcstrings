@@ -825,6 +825,16 @@
         }
       }
     },
+    "Can’t find this shader file.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de trouver ce fichier de shader."
+          }
+        }
+      }
+    },
     "Change any system's choice below.": {
       "localizations": {
         "fr": {
@@ -881,6 +891,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher les mises à jour automatiquement"
+          }
+        }
+      }
+    },
+    "Choose File…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir un fichier…"
           }
         }
       }
@@ -1321,6 +1341,16 @@
         }
       }
     },
+    "Default (%@)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par défaut (%@)"
+          }
+        }
+      }
+    },
     "Delete": {
       "localizations": {
         "fr": {
@@ -1477,6 +1507,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Télécharger (54 Mo)"
+          }
+        }
+      }
+    },
+    "Download Again": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharger à nouveau"
+          }
+        }
+      }
+    },
+    "Download Attic’s Own": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharger celui d’Attic"
+          }
+        }
+      }
+    },
+    "Download libretro’s slang shaders to choose from them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargez les shaders slang de libretro pour pouvoir les choisir."
           }
         }
       }
@@ -2157,6 +2217,16 @@
         }
       }
     },
+    "Installed in the Emulation folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installé dans le dossier Emulation."
+          }
+        }
+      }
+    },
     "Installed — %@": {
       "localizations": {
         "fr": {
@@ -2678,6 +2748,16 @@
         }
       }
     },
+    "No Shaders": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun shader"
+          }
+        }
+      }
+    },
     "No emulator": {
       "localizations": {
         "fr": {
@@ -2768,6 +2848,16 @@
         }
       }
     },
+    "Not installed. Looks and the shader library need libretro’s slang shaders.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non installé. Les rendus et la bibliothèque de shaders nécessitent les shaders slang de libretro."
+          }
+        }
+      }
+    },
     "Not on buildbot": {
       "localizations": {
         "fr": {
@@ -2854,6 +2944,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Facultatif"
+          }
+        }
+      }
+    },
+    "Other": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autres"
           }
         }
       }
@@ -3388,6 +3488,16 @@
         }
       }
     },
+    "Retro look by default": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendu rétro par défaut"
+          }
+        }
+      }
+    },
     "RetroArch": {
       "localizations": {
         "fr": {
@@ -3434,6 +3544,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "RetroArch n’est pas installé."
+          }
+        }
+      }
+    },
+    "RetroArch’s slang shaders: %lld presets": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shaders slang de RetroArch : %lld préréglages"
           }
         }
       }
@@ -3820,6 +3940,16 @@
         }
       }
     },
+    "Search Shaders": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher des shaders"
+          }
+        }
+      }
+    },
     "Select a Topic": {
       "localizations": {
         "fr": {
@@ -3886,6 +4016,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Réglages › Manette choisit le bouton de validation : celui du bas (Xbox, PlayStation) ou celui de droite (Nintendo, Switch). Cela s’applique à Attic, au mode Cabinet et aux menus de RetroArch."
+          }
+        }
+      }
+    },
+    "Shader Library…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothèque de shaders…"
+          }
+        }
+      }
+    },
+    "Shader pack": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pack de shaders"
+          }
+        }
+      }
+    },
+    "Shaders": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shaders"
           }
         }
       }
@@ -4350,6 +4510,16 @@
         }
       }
     },
+    "Up to date, built %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À jour, compilé le %@."
+          }
+        }
+      }
+    },
     "Update": {
       "localizations": {
         "fr": {
@@ -4366,6 +4536,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tout mettre à jour (%lld)"
+          }
+        }
+      }
+    },
+    "Update available. Installed version built %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise à jour disponible. Version installée compilée le %@."
           }
         }
       }
@@ -4456,6 +4636,16 @@
         }
       }
     },
+    "Use Shader": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser ce shader"
+          }
+        }
+      }
+    },
     "Use System Default": {
       "localizations": {
         "fr": {
@@ -4492,6 +4682,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nom d’utilisateur"
+          }
+        }
+      }
+    },
+    "Using RetroArch’s, in %@. RetroArch’s Online Updater keeps it current.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celui de RetroArch, dans %@. Le programme de mise à jour en ligne de RetroArch le tient à jour."
           }
         }
       }
@@ -4542,6 +4742,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wikipédia"
+          }
+        }
+      }
+    },
+    "With the retro look, systems left on Default get CRT scanlines (2D consoles and arcade) or an LCD grid (handhelds). Choose a different look per system with right-click › System Settings…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avec le rendu rétro, les systèmes laissés « Par défaut » ont des lignes de balayage CRT (consoles 2D et arcade) ou une grille LCD (consoles portables). Choisissez un autre rendu par système avec clic droit › Réglages du système…"
           }
         }
       }
