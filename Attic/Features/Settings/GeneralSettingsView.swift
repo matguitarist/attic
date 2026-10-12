@@ -55,7 +55,7 @@ struct GeneralSettingsView: View {
         }
         if !plan.trash.isEmpty {
             let size = ByteCountFormatter.string(fromByteCount: plan.trashBytes, countStyle: .file)
-            lines.append(String(localized: "\(size) goes to the Trash: system folders with no games, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files."))
+            lines.append(String(localized: "\(size) goes to the Trash: folders Attic doesn't use, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files."))
         }
         lines.append(String(localized: "Your games, saves and BIOS files aren't touched."))
         return lines.joined(separator: "\n\n")

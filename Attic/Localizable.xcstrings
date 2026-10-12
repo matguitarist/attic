@@ -31,12 +31,12 @@
         }
       }
     },
-    "%@ goes to the Trash: system folders with no games, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files.": {
+    "%@ goes to the Trash: folders Attic doesn't use, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ vont à la corbeille : les dossiers de systèmes sans jeux, les médias qu’Attic n’affiche pas (fan art, marquees, boîtes 3D…), les médias de jeux absents et les fichiers d’autres apps."
+            "value": "%@ vont à la corbeille : les dossiers qu’Attic n’utilise pas, les médias qu’Attic n’affiche pas (fan art, marquees, boîtes 3D…), les médias de jeux absents et les fichiers d’autres apps."
           }
         }
       }

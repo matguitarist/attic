@@ -59,6 +59,9 @@ public struct LibraryScanner: Sendable {
             }
 
             guard let importer = importers.first(where: { $0.detect(systemFolderURL: folderURL) }) else {
+                // An empty folder waiting for games (Attic makes one per
+                // system) isn't a problem worth reporting.
+                if MediaTidier.gameNames(in: folderURL).isEmpty { continue }
                 issues.append(ScanIssue(folderURL: folderURL, reason: .noImporterRecognizedFormat))
                 continue
             }

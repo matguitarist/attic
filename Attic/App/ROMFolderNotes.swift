@@ -3,7 +3,8 @@ import AppKit
 import AtticModels
 import AtticEmulation
 
-/// A short `_sysinfo.txt` in each system's ROMs folder, saying what goes
+/// A folder per system in ROMs (see `createSystemFolders`), each with a
+/// short `_sysinfo.txt` saying what goes
 /// there (file types, BIOS, emulator) for someone browsing in the Finder —
 /// a summary of the system's help page, in English. Front-ends like ES-DE and
 /// Batocera leave their own (`systeminfo.txt`, `_info.txt`); those
@@ -11,6 +12,31 @@ import AtticEmulation
 /// Trash.
 enum ROMFolderNotes {
     static let fileName = "_sysinfo.txt"
+
+    /// Systems whose folder Attic has already made, so one the user
+    /// deletes isn't made again, while systems new in an update get theirs.
+    static let createdFoldersKey = "createdSystemFolders"
+
+    /// Makes a folder in the first ROMs folder for every system Attic
+    /// knows (ES-DE's name for it), so it's clear where games go. Skips
+    /// systems that already have one under any name, and removed systems.
+    static func createSystemFolders(romsRoots: [URL], defaults: UserDefaults = .standard) {
+        let fileManager = FileManager.default
+        guard let root = romsRoots.first, fileManager.fileExists(atPath: root.path) else { return }
+        // APFS ignores case, so "SNES" counts as "snes".
+        let existing = Set(romsRoots.flatMap { root in
+            ((try? fileManager.contentsOfDirectory(atPath: root.path)) ?? []).map { $0.lowercased() }
+        })
+        var created = Set(defaults.stringArray(forKey: createdFoldersKey) ?? [])
+        for definition in SystemTaxonomy.allSystems
+        where !created.contains(definition.canonicalID.rawValue) && !RemovedSystems.contains(definition.canonicalID) {
+            if !definition.allShortNames.contains(where: { existing.contains($0.lowercased()) }) {
+                try? fileManager.createDirectory(at: root.appending(path: definition.esdeShortName, directoryHint: .isDirectory), withIntermediateDirectories: false)
+            }
+            created.insert(definition.canonicalID.rawValue)
+        }
+        defaults.set(created.sorted(), forKey: createdFoldersKey)
+    }
 
     /// Writes the notes into every recognized system folder under the
     /// roots, leaving files whose text hasn't changed untouched.

@@ -84,7 +84,8 @@ import Testing
         #expect(gba.games.map(\.romRelativePath) == ["Metroid Fusion.gba"])
 
         #expect(result.issues.contains { $0.folderURL.lastPathComponent == "totally-unknown-system" && $0.reason == .unrecognizedSystemFolderName })
-        #expect(result.issues.contains { $0.folderURL.lastPathComponent == "psx" && $0.reason == .noImporterRecognizedFormat })
+        // An empty folder is waiting for games, not a problem to report.
+        #expect(!result.issues.contains { $0.folderURL.lastPathComponent == "psx" })
         // .DS_Store is a file, not a directory, and must not appear as an issue at all.
         #expect(result.issues.allSatisfy { $0.folderURL.lastPathComponent != ".DS_Store" })
     }

@@ -39,8 +39,9 @@ public struct MediaTidyPlan: Sendable {
 /// other front-ends and scrapers left goes to the Trash, so nothing is
 /// lost for good:
 ///
-/// - system folders with no games (ES-DE creates one for every system it
-///   knows), with their media and gamelist;
+/// - folders with no games for systems Attic doesn't know (ES-DE creates
+///   one for everything it knows), and media and gamelists for systems
+///   with no games — empty folders of known systems stay, ready for games;
 /// - other apps' notes and spare gamelists (`systeminfo.txt`,
 ///   `gamelist_ARRM.xml`, ARRM's `html_arrm/`…);
 /// - media kinds Attic doesn't show (fan art, marquees, 3D boxes…) and
@@ -140,12 +141,15 @@ public enum MediaTidier {
         for folder in subfolders(of: root) {
             let name = folder.lastPathComponent
             let games = gameNames(in: folder)
-            guard !games.isEmpty else {
-                // Nothing to play: the folder goes, with what's beside it.
+            let isKnownSystem = SystemTaxonomy.system(forShortName: name) != nil
+            guard !games.isEmpty || isKnownSystem else {
+                // A folder for no system Attic knows, with nothing to play.
                 plan.trash.append(folder)
                 continue
             }
-            systemsWithGames.insert(name)
+            // A known system's folder stays even while empty: it's where
+            // its games go.
+            if !games.isEmpty { systemsWithGames.insert(name) }
 
             for child in children(of: folder) {
                 let childName = child.lastPathComponent

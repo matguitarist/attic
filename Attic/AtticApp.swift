@@ -70,6 +70,7 @@ struct AtticApp: App {
                 // Emulation folder's default location derives from it.
                 .task(id: romsRootsStore.rootURLs) {
                     emulationFolderStore.prepare(romsRoots: romsRootsStore.rootURLs)
+                    ROMFolderNotes.createSystemFolders(romsRoots: romsRootsStore.rootURLs)
                     ROMFolderNotes.write(romsRoots: romsRootsStore.rootURLs, biosDirectory: emulationFolderStore.folder.bios)
                     retroArchSettingsStore.refresh()
                     controllerSettingsStore.loadProfiles()

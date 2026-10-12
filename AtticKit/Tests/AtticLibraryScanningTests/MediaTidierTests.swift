@@ -24,6 +24,9 @@ struct MediaTidierTests {
         try touch(roms.appending(path: "snes/Super Mario World (USA).sfc"))
         try touch(roms.appending(path: "steam/_sysinfo.txt"))
         try touch(roms.appending(path: "kodi/systeminfo.txt"))
+        // Known systems' folders stay, empty or not; other apps' notes go.
+        try touch(roms.appending(path: "x68000/_sysinfo.txt"))
+        try touch(roms.appending(path: "pc98/systeminfo.txt"))
         try FileManager.default.createDirectory(at: roms.appending(path: "themes"), withIntermediateDirectories: true)
         try touch(media.appending(path: "steam/covers/Game.png"))
         try touch(gamelists.appending(path: "steam/gamelist.xml"))
@@ -32,6 +35,8 @@ struct MediaTidierTests {
         let trashed = Set(plan.trash.map(\.lastPathComponent))
         #expect(trashed.isSuperset(of: ["steam", "kodi", "themes"]))
         #expect(!plan.trash.contains { $0.lastPathComponent == "snes" })
+        #expect(!plan.trash.contains { $0.lastPathComponent == "x68000" || $0.lastPathComponent == "pc98" })
+        #expect(plan.trash.contains { $0.path.hasSuffix("pc98/systeminfo.txt") })
         #expect(plan.trash.contains { $0.path.hasSuffix("downloaded_media/steam") })
         #expect(plan.trash.contains { $0.path.hasSuffix("gamelists/steam") })
     }
