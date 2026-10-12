@@ -15,6 +15,9 @@ struct SystemOverviewView: View {
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
     @Environment(HelpNavigator.self) private var helpNavigator
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    /// Bumped when Attic comes back to the front, so BIOS files dropped in
+    /// from the Finder show up as found.
+    @State private var biosCheck = 0
 
     var body: some View {
         Form {
@@ -80,18 +83,24 @@ struct SystemOverviewView: View {
             }
         }
         .formStyle(.grouped)
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: NSApplication.didBecomeActiveNotification) {
+                biosCheck += 1
+            }
+        }
     }
 
     // MARK: - BIOS
 
-    /// What the system's recommended emulator needs. Attic only checks for
+    /// What the system's chosen emulator needs. Attic only checks for
     /// these; they're dumped from hardware the user owns.
     private var biosRequirements: [BIOSRequirement] {
-        EmulatorCatalog.recommendation(for: system.systemID)?.bios ?? []
+        EmulatorSetupCoordinator.biosRequirements(for: system)
     }
 
     private var biosSection: some View {
         Section {
+            let _ = biosCheck
             ForEach(biosRequirements, id: \.fileName) { requirement in
                 let present = FileManager.default.fileExists(atPath: emulationFolderStore.folder.bios.appending(path: requirement.fileName).path)
                 LabeledContent {

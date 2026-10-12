@@ -303,17 +303,6 @@
         }
       }
     },
-    "2 frames": {
-      "extractionState": "stale",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 images"
-          }
-        }
-      }
-    },
     "A Dolphin already in your Applications folder is used as is; otherwise Attic installs the latest release from dolphin-emu.org.": {
       "localizations": {
         "fr": {
@@ -2098,12 +2087,12 @@
         }
       }
     },
-    "Hide game details": {
+    "Hide the inspector": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Masquer les détails du jeu"
+            "value": "Masquer l’inspecteur"
           }
         }
       }
@@ -2498,17 +2487,6 @@
         }
       }
     },
-    "Launch with a specific emulator, scrape info, or reveal the ROM": {
-      "extractionState": "stale",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lancer avec un émulateur précis, récupérer les infos ou afficher la ROM"
-          }
-        }
-      }
-    },
     "Layout": {
       "localizations": {
         "fr": {
@@ -2565,17 +2543,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Charger"
-          }
-        }
-      }
-    },
-    "Logos by Dan Patrick. Systems without one show their name.": {
-      "extractionState": "stale",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Logos de Dan Patrick. Les systèmes qui n’en ont pas affichent leur nom."
           }
         }
       }
@@ -3056,17 +3023,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Variables : {romPath}, {romDir}, {romName}, {romNameNoExt}"
-          }
-        }
-      }
-    },
-    "Plain pixels": {
-      "extractionState": "stale",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pixels bruts"
           }
         }
       }
@@ -4133,16 +4089,6 @@
         }
       }
     },
-    "Show game details": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afficher les détails du jeu"
-          }
-        }
-      }
-    },
     "Show in Finder": {
       "localizations": {
         "fr": {
@@ -4153,13 +4099,12 @@
         }
       }
     },
-    "Show system logos in the sidebar": {
-      "extractionState": "stale",
+    "Show the inspector": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Afficher les logos des systèmes dans la barre latérale"
+            "value": "Afficher l’inspecteur"
           }
         }
       }

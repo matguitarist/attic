@@ -147,7 +147,7 @@ struct LibraryBrowserView: View {
         } label: {
             Label("Inspector", systemImage: "info.circle")
         }
-        .help(showsInspector ? String(localized: "Hide game details") : String(localized: "Show game details"))
+        .help(showsInspector ? String(localized: "Hide the inspector") : String(localized: "Show the inspector"))
     }
 
     @ToolbarContentBuilder

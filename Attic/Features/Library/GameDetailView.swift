@@ -105,11 +105,6 @@ struct GameDetailView: View {
     @ViewBuilder
     private func header(for game: Game) -> some View {
         VStack(spacing: 12) {
-            // A shot of the game itself (screenshot or title screen) reads
-            // better at this size than box art, which the grid already
-            // shows; box art is the fallback. 4:3 like the screens of most
-            // of these systems, and GameCoverArtView fits rather than crops
-            // anything shaped otherwise.
             // The system's logo first, as in the system overview.
             if let logo = game.system?.systemID.logo {
                 logo
@@ -120,6 +115,11 @@ struct GameDetailView: View {
                     .padding(.bottom, 4)
             }
 
+            // A shot of the game itself (screenshot or title screen) reads
+            // better at this size than box art, which the grid already
+            // shows; box art is the fallback. 4:3 like the screens of most
+            // of these systems, and GameCoverArtView fits rather than crops
+            // anything shaped otherwise.
             GameCoverArtView(url: Self.headerImageURL(for: game), title: game.title, showBackground: false)
                 .aspectRatio(4.0 / 3.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)

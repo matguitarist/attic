@@ -313,3 +313,19 @@ struct SystemSettingsLaunchTests {
             == ["--set-shader", "", "-L", core.path, rom.path])
     }
 }
+
+@Suite struct BIOSRequirementTests {
+    @Test func coreWithItsOwnBIOSMakesRequiredFilesOptional() throws {
+        let psx = try #require(EmulatorCatalog.recommendation(for: .psx))
+        #expect(psx.bios(forCore: "swanstation_libretro").first { $0.fileName == "scph5501.bin" }?.required == true)
+        let rearmed = try #require(psx.bios(forCore: "pcsx_rearmed_libretro").first { $0.fileName == "scph5501.bin" })
+        #expect(!rearmed.required)
+        #expect(rearmed.note?.contains("US") == true)
+    }
+
+    @Test func noCoreKeepsTheCatalogList() throws {
+        let saturn = try #require(EmulatorCatalog.recommendation(for: .saturn))
+        #expect(saturn.bios(forCore: nil) == saturn.bios)
+        #expect(saturn.bios(forCore: "yabasanshiro_libretro").allSatisfy { !$0.required })
+    }
+}

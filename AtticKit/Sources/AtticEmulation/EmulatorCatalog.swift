@@ -109,11 +109,15 @@ public struct BIOSRequirement: Sendable, Hashable {
     public let fileName: String
     public let required: Bool
     public let note: String?
+    /// Cores that run without this file (they have a built-in replacement),
+    /// for which a required file is only optional.
+    public let notNeededBy: Set<String>
 
-    public init(_ fileName: String, required: Bool = true, note: String? = nil) {
+    public init(_ fileName: String, required: Bool = true, note: String? = nil, notNeededBy: Set<String> = []) {
         self.fileName = fileName
         self.required = required
         self.note = note
+        self.notNeededBy = notNeededBy
     }
 }
 
@@ -131,6 +135,20 @@ public struct SystemEmulatorRecommendation: Sendable, Hashable {
     public let prefersStandalone: Bool
 
     public var recommendedCore: RecommendedCore? { cores.first }
+
+    /// The BIOS files as `coreIdentifier` needs them: required ones it has
+    /// its own replacement for become optional. Unknown or no core (a
+    /// standalone emulator) keeps the list as is.
+    public func bios(forCore coreIdentifier: String?) -> [BIOSRequirement] {
+        guard let coreIdentifier else { return bios }
+        return bios.map { requirement in
+            guard requirement.required, requirement.notNeededBy.contains(coreIdentifier) else { return requirement }
+            let core = cores.first { $0.coreIdentifier == coreIdentifier }?.displayName ?? coreIdentifier
+            let notNeeded = String(localized: "Not needed by \(core)", bundle: .module)
+            return BIOSRequirement(requirement.fileName, required: false,
+                                   note: [requirement.note, notNeeded].compactMap { $0 }.joined(separator: " · "))
+        }
+    }
 }
 
 /// The curated table behind Attic's emulator setup. Choices favor
@@ -327,7 +345,7 @@ public enum EmulatorCatalog {
             RecommendedCore("mednafen_psx_hw_libretro", "Beetle PSX HW", String(localized: "Very accurate, with upscaling.", bundle: .module)),
             RecommendedCore("pcsx_rearmed_libretro", "PCSX ReARMed", String(localized: "Fast; can run without a BIOS.", bundle: .module))
         ], standalone: [duckStation], bios: [
-            BIOSRequirement("scph5501.bin", note: "US"),
+            BIOSRequirement("scph5501.bin", note: "US", notNeededBy: ["pcsx_rearmed_libretro"]),
             BIOSRequirement("scph5502.bin", required: false, note: "Europe"),
             BIOSRequirement("scph5500.bin", required: false, note: "Japan")
         ], prefersStandalone: true),
@@ -342,8 +360,8 @@ public enum EmulatorCatalog {
             RecommendedCore("mednafen_saturn_libretro", "Beetle Saturn", String(localized: "Most accurate Saturn core.", bundle: .module)),
             RecommendedCore("yabasanshiro_libretro", "YabaSanshiro", String(localized: "Faster, less accurate.", bundle: .module))
         ], standalone: [], bios: [
-            BIOSRequirement("sega_101.bin", note: "Japan"),
-            BIOSRequirement("mpr-17933.bin", note: "US/Europe")
+            BIOSRequirement("sega_101.bin", note: "Japan", notNeededBy: ["yabasanshiro_libretro"]),
+            BIOSRequirement("mpr-17933.bin", note: "US/Europe", notNeededBy: ["yabasanshiro_libretro"])
         ], prefersStandalone: false),
 
         .init(systemID: .dreamcast, cores: [

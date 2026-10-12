@@ -184,15 +184,23 @@ final class EmulatorSetupCoordinator {
         }
     }
 
-    /// Required BIOS files for the system's recommended core that aren't in
-    /// the Emulation folder's BIOS directory (which every emulator Attic
-    /// launches is pointed at).
-    func missingBIOS(for systemID: CanonicalSystemID) -> [BIOSRequirement] {
-        guard let recommendation = EmulatorCatalog.recommendation(for: systemID) else { return [] }
+    /// Required BIOS files for the system's chosen core (or, with none
+    /// chosen, its recommended one) that aren't in the Emulation folder's
+    /// BIOS directory (which every emulator Attic launches is pointed at).
+    func missingBIOS(for system: GameSystem) -> [BIOSRequirement] {
         let systemDirectory = emulationFolderStore.folder.bios
-        return recommendation.bios.filter { requirement in
+        return Self.biosRequirements(for: system).filter { requirement in
             requirement.required && !FileManager.default.fileExists(atPath: systemDirectory.appending(path: requirement.fileName).path)
         }
+    }
+
+    /// The system's BIOS files as its chosen core needs them.
+    static func biosRequirements(for system: GameSystem) -> [BIOSRequirement] {
+        guard let recommendation = EmulatorCatalog.recommendation(for: system.systemID) else { return [] }
+        if case .retroArchCore(let identifier) = system.defaultLaunchTarget {
+            return recommendation.bios(forCore: identifier)
+        }
+        return recommendation.bios
     }
 
     var biosDirectoryPath: String {

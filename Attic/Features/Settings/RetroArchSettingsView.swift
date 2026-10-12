@@ -186,7 +186,7 @@ private struct SystemEmulatorRow: View {
 
     var body: some View {
         let status = setup.status(of: system, retroArchStore: retroArchStore, profiles: profiles)
-        let missingBIOS = setup.missingBIOS(for: system.systemID)
+        let missingBIOS = setup.missingBIOS(for: system)
 
         LabeledContent {
             HStack(spacing: 8) {

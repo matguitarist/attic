@@ -28,7 +28,7 @@ struct EmulatorSuggestionView: View {
                     optionRow(option, isRecommended: index == 0)
                 }
 
-                let missingBIOS = setup.missingBIOS(for: system.systemID)
+                let missingBIOS = setup.missingBIOS(for: system)
                 if !missingBIOS.isEmpty {
                     Label {
                         Text("Also needs BIOS \(missingBIOS.map(\.fileName).joined(separator: ", ")) in \(setup.biosDirectoryPath)")
