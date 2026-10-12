@@ -66,7 +66,11 @@ final class LaunchCoordinator {
             return
         }
 
-        if checkingBIOS, let missing = missingBIOS(for: game, target: target, biosFolder: retroArchStore.emulationFolderStore.folder.bios) {
+        let folder = retroArchStore.emulationFolderStore.folder
+        if checkingBIOS {
+            folder.movePS2BIOSIntoPlace()
+        }
+        if checkingBIOS, let missing = missingBIOS(for: game, target: target, biosFolder: folder.bios) {
             missingBIOS = missing
             return
         }
@@ -196,13 +200,12 @@ final class LaunchCoordinator {
         let missing = EmulatorSetupCoordinator.biosRequirements(for: systemID, target: target)
             .filter { $0.required && !$0.isPresent(in: biosFolder) }
         guard let first = missing.first else { return nil }
-        let firstURL = biosFolder.appending(path: first.fileName)
         return MissingBIOS(
             game: game,
             systemName: game.system?.displayName ?? game.systemCanonicalID,
             fileNames: missing.map(\.fileName),
             supportedDumps: missing.lazy.compactMap(SystemFacts.supportedDumps).first,
-            folder: first.isFolder ? firstURL : firstURL.deletingLastPathComponent()
+            folder: first.folder(in: biosFolder)
         )
     }
 

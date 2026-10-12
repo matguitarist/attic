@@ -352,3 +352,23 @@ struct SystemSettingsLaunchTests {
         #expect(ps2.bios(forCore: "pcsx2_libretro").allSatisfy { $0.required })
     }
 }
+
+@Suite struct PS2BIOSPlacementTests {
+    @Test func movesPS2DumpsAndTheirCompanionsButNotPlayStationOnes() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "ps2bios-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folder = EmulationFolder(root: root)
+        try FileManager.default.createDirectory(at: folder.bios, withIntermediateDirectories: true)
+        try Data(count: 4 * 1024 * 1024).write(to: folder.bios.appending(path: "SCPH39001.bin"))
+        try Data(count: 4).write(to: folder.bios.appending(path: "SCPH39001.MEC"))
+        try Data(count: 1024).write(to: folder.bios.appending(path: "scph39001.nvm"))
+        try Data(count: 512 * 1024).write(to: folder.bios.appending(path: "scph5501.bin"))
+
+        #expect(folder.movePS2BIOSIntoPlace() == ["SCPH39001.bin"])
+        let moved = try FileManager.default.contentsOfDirectory(atPath: folder.ps2BIOS.path).sorted()
+        #expect(moved == ["SCPH39001.MEC", "SCPH39001.bin", "scph39001.nvm"])
+        #expect(FileManager.default.fileExists(atPath: folder.bios.appending(path: "scph5501.bin").path))
+        #expect(BIOSRequirement("pcsx2/bios/").isPresent(in: folder.bios))
+        #expect(folder.movePS2BIOSIntoPlace().isEmpty)
+    }
+}

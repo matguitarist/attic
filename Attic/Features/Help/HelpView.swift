@@ -94,6 +94,8 @@ private struct SystemHelpView: View {
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Query private var librarySystems: [GameSystem]
+    /// Bumped after BIOS files move, so their status redraws.
+    @State private var biosCheck = 0
 
     private var definition: SystemDefinition? { SystemTaxonomy.definition(for: systemID) }
     private var info: SystemHelpInfo? { SystemHelpContent.info(for: systemID) }
@@ -114,6 +116,10 @@ private struct SystemHelpView: View {
         }
         .formStyle(.grouped)
         .navigationTitle(definition?.displayName ?? systemID.rawValue)
+        // PS2 dumps dropped into BIOS/ itself go where PCSX2 looks.
+        .task(id: systemID) {
+            if !emulationFolderStore.folder.movePS2BIOSIntoPlace().isEmpty { biosCheck += 1 }
+        }
     }
 
     // MARK: - Sections
@@ -218,6 +224,7 @@ private struct SystemHelpView: View {
     @ViewBuilder
     private var biosSection: some View {
         let requirements = recommendation?.bios ?? []
+        let _ = biosCheck
         Section {
             if requirements.isEmpty {
                 Text("No BIOS needed.")

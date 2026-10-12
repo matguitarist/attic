@@ -128,6 +128,13 @@ public struct BIOSRequirement: Sendable, Hashable {
     /// (PCSX2 takes whichever PS2 BIOS it finds there).
     public var isFolder: Bool { fileName.hasSuffix("/") }
 
+    /// The folder this file goes in: BIOS/ itself for most, a subfolder
+    /// like BIOS/dc or BIOS/pcsx2/bios for some.
+    public func folder(in biosDirectory: URL) -> URL {
+        let url = biosDirectory.appending(path: fileName)
+        return isFolder ? url : url.deletingLastPathComponent()
+    }
+
     public func isPresent(in biosDirectory: URL) -> Bool {
         let url = biosDirectory.appending(path: fileName)
         guard isFolder else { return FileManager.default.fileExists(atPath: url.path) }

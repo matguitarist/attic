@@ -99,7 +99,10 @@ struct SystemOverviewView: View {
         }
         .formStyle(.grouped)
         .task {
+            // PS2 dumps dropped into BIOS/ itself go where PCSX2 looks.
+            if emulationFolderStore.folder.movePS2BIOSIntoPlace().count > 0 { biosCheck += 1 }
             for await _ in NotificationCenter.default.notifications(named: NSApplication.didBecomeActiveNotification) {
+                emulationFolderStore.folder.movePS2BIOSIntoPlace()
                 biosCheck += 1
             }
         }
@@ -173,7 +176,12 @@ struct SystemOverviewView: View {
                 }
             }
             Button("Show BIOS Folder") {
-                let folder = emulationFolderStore.folder.bios
+                // Where this system's files go, which isn't always BIOS/
+                // itself: the first missing required file's folder, else
+                // the first file's.
+                let bios = emulationFolderStore.folder.bios
+                let requirement = biosRequirements.first { $0.required && !$0.isPresent(in: bios) } ?? biosRequirements[0]
+                let folder = requirement.folder(in: bios)
                 try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
                 NSWorkspace.shared.open(folder)
             }
