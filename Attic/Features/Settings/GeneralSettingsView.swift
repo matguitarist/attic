@@ -13,16 +13,25 @@ struct GeneralSettingsView: View {
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
-    /// What tidying the ROMs folders would do; nil until worked out.
+    /// What tidying the ROMs folders would do, shown in the report.
     @State private var tidyPlan: MediaTidyPlan?
-    @State private var isConfirmingTidy = false
+    @State private var isShowingTidyReport = false
+    @State private var isAnalyzing = false
+    /// The last analysis found nothing to do.
+    @State private var isTidy = false
     @State private var tidyProgress: Double?
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
 
-    private func planTidy() async {
+    /// A dry run: works out what Tidy Up would do and shows it, changing nothing.
+    private func analyze() async {
+        isAnalyzing = true
         let roots = romsRootsStore.rootURLs
-        tidyPlan = await Task.detached(priority: .utility) { MediaTidier.plan(romsRoots: roots) }.value
+        let plan = await Task.detached(priority: .userInitiated) { MediaTidier.plan(romsRoots: roots) }.value
+        isAnalyzing = false
+        isTidy = plan.isEmpty
+        tidyPlan = plan
+        isShowingTidyReport = !plan.isEmpty
     }
 
     private func tidy(_ plan: MediaTidyPlan) async {
@@ -34,34 +43,6 @@ struct GeneralSettingsView: View {
         // Media and gamelists moved: the library picks up their new places.
         await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs)
         tidyProgress = nil
-        await planTidy()
-    }
-
-    static func tidyDescription(_ plan: MediaTidyPlan) -> String {
-        var lines: [String] = []
-        if !plan.moves.isEmpty {
-            lines.append(String(localized: "\(plan.moves.count) media files in ROM folders move to downloaded_media."))
-        }
-        let movedGamelists = plan.gamelists.count { $0.from != $0.to }
-        if movedGamelists > 0 {
-            lines.append(String(localized: "\(movedGamelists) gamelists in ROM folders move to gamelists."))
-        }
-        let cleanedGamelists = plan.gamelists.count - movedGamelists
-        if cleanedGamelists > 0 {
-            lines.append(String(localized: "\(cleanedGamelists) gamelists lose old media paths and entries for games that aren't there."))
-        }
-        if !plan.compress.isEmpty {
-            lines.append(String(localized: "\(plan.compress.count) covers are saved as HEIC, which takes less space."))
-        }
-        if !plan.manuals.isEmpty {
-            lines.append(String(localized: "\(plan.manuals.count) heavy manual scans are redrawn lighter, kept only where that saves at least 40%."))
-        }
-        if !plan.trash.isEmpty {
-            let size = ByteCountFormatter.string(fromByteCount: plan.trashBytes, countStyle: .file)
-            lines.append(String(localized: "\(size) goes to the Trash: folders Attic doesn't use, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files."))
-        }
-        lines.append(String(localized: "Your games, saves and BIOS files aren't touched."))
-        return lines.joined(separator: "\n\n")
     }
 
     var body: some View {
@@ -87,20 +68,27 @@ struct GeneralSettingsView: View {
                 Toggle("Hide systems with no games", isOn: $hidesEmptySystems)
                 if let tidyProgress {
                     ProgressView("Tidying up…", value: tidyProgress)
-                } else if let tidyPlan, !tidyPlan.isEmpty {
+                } else if !romsRootsStore.rootURLs.isEmpty {
                     LabeledContent {
-                        Button("Tidy Up…") { isConfirmingTidy = true }
+                        if isAnalyzing {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Button("Analyze…") { Task { await analyze() } }
+                        }
                     } label: {
                         Text("Tidy up media and leftovers")
-                        Text("Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash.")
+                        Text(isTidy
+                             ? String(localized: "Everything's already in place.")
+                             : String(localized: "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens."))
                     }
                 }
             }
-            .task(id: romsRootsStore.rootURLs) { await planTidy() }
-            .confirmationDialog("Tidy Up Your ROMs Folders?", isPresented: $isConfirmingTidy, presenting: tidyPlan) { plan in
-                Button("Tidy Up") { Task { await tidy(plan) } }
-            } message: { plan in
-                Text(Self.tidyDescription(plan))
+            .sheet(isPresented: $isShowingTidyReport) {
+                if let tidyPlan, let root = romsRootsStore.rootURLs.first?.deletingLastPathComponent() {
+                    TidyReportView(plan: tidyPlan, root: root) { approved in
+                        Task { await tidy(approved) }
+                    }
+                }
             }
 
             // Reads `removedSystems` so it redraws when one is added back.

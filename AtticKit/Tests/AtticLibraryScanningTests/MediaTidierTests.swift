@@ -115,6 +115,28 @@ struct MediaTidierTests {
         #expect(!exists(media.appending(path: "snes/miximages")))
     }
 
+    @Test func leavingOutStepsKeepsWhatTheyNeed() throws {
+        let neogeo = roms.appending(path: "neogeo")
+        try touch(neogeo.appending(path: "2020bb.zip"))
+        try touch(neogeo.appending(path: "images/2020bb-boxart.png"))
+        try touch(neogeo.appending(path: "readme.txt"))
+        try touch(media.appending(path: "neogeo/fanart/2020bb.png"))
+
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        #expect(plan.steps == [.moveMedia, .compressCovers, .trash(.otherApps), .trash(.unshownMedia), .trash(.leftoverMedia)])
+        #expect(plan.trashed.first { $0.url.lastPathComponent == "readme.txt" }?.bytes ?? 0 > 0)
+
+        // Without the move, Batocera's images folder stays: its box art
+        // would otherwise go to the Trash unmoved.
+        let noMove = plan.only([.trash(.otherApps), .trash(.leftoverMedia), .trash(.unshownMedia)])
+        #expect(noMove.moves.isEmpty && noMove.compress.isEmpty)
+        #expect(Set(noMove.trash.map(\.lastPathComponent)) == ["readme.txt", "fanart"])
+
+        let onlyReadme = plan.only([.moveMedia, .trash(.otherApps)])
+        #expect(onlyReadme.trash.map(\.lastPathComponent) == ["readme.txt"])
+        #expect(onlyReadme.moves.count == 1)
+    }
+
     @Test func leftoversOfOtherAppsGo() throws {
         let cps2 = roms.appending(path: "cps2")
         try touch(cps2.appending(path: "sf2.zip"))

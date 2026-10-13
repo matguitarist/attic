@@ -21,18 +21,82 @@ public struct MediaTidyPlan: Sendable {
     /// or entries for games that aren't there: Batocera-style ones in a
     /// ROM folder go to ES-DE's `gamelists/<system>/`, others stay put.
     public var gamelists: [GamelistFix] = []
-    /// Whole folders or single files, all going to the Trash.
-    public var trash: [URL] = []
+    /// Whole folders or single files, all going to the Trash, with why.
+    public var trashed: [Trashed] = []
+    public var trash: [URL] { trashed.map(\.url) }
     /// PNG and JPEG covers to rewrite as HEIC, after the moves.
     public var compress: [URL] = []
     /// Heavy scanned manuals to redraw lighter (see
     /// `MediaFolder.compressManual`).
     public var manuals: [URL] = []
     /// What `trash` takes up.
-    public var trashBytes: Int64 = 0
+    public var trashBytes: Int64 { trashed.reduce(0) { $0 + $1.bytes } }
 
-    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trash.isEmpty && compress.isEmpty && manuals.isEmpty }
-    var operationCount: Int { moves.count + gamelists.count + trash.count + compress.count + manuals.count }
+    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trashed.isEmpty && compress.isEmpty && manuals.isEmpty }
+    var operationCount: Int { moves.count + gamelists.count + trashed.count + compress.count + manuals.count }
+
+    /// Why something goes to the Trash; also how the report groups it.
+    public enum TrashReason: String, CaseIterable, Sendable {
+        /// Folders for no system Attic knows, and empty gamelist folders.
+        case unusedFolders
+        /// Media and gamelists of systems with no games.
+        case noGames
+        /// Other apps' notes, spare gamelists, ARRM's leftovers.
+        case otherApps
+        /// Media kinds Attic doesn't show (fan art, mix images…).
+        case unshownMedia
+        /// Media for games that aren't there.
+        case missingGames
+        /// What's left in Batocera's media folders once the rest has moved.
+        case leftoverMedia
+    }
+
+    public struct Trashed: Sendable, Equatable {
+        public let url: URL
+        public let reason: TrashReason
+        public internal(set) var bytes: Int64 = 0
+    }
+
+    /// The parts of a tidy-up, which the report lets one leave out.
+    public enum Step: Hashable, Sendable {
+        case moveMedia, gamelists, compressCovers, compressManuals
+        case trash(TrashReason)
+    }
+
+    /// The steps this plan has something to do in, in the report's order.
+    public var steps: [Step] {
+        var steps: [Step] = []
+        if !moves.isEmpty { steps.append(.moveMedia) }
+        if !gamelists.isEmpty { steps.append(.gamelists) }
+        if !compress.isEmpty { steps.append(.compressCovers) }
+        if !manuals.isEmpty { steps.append(.compressManuals) }
+        for reason in TrashReason.allCases where trashed.contains(where: { $0.reason == reason }) {
+            steps.append(.trash(reason))
+        }
+        return steps
+    }
+
+    /// The plan with only `steps`. Without `moveMedia`, the folders the
+    /// media would have moved out of stay too, so nothing is lost.
+    public func only(_ steps: Set<Step>) -> MediaTidyPlan {
+        var plan = self
+        if !steps.contains(.moveMedia) {
+            plan.moves = []
+            plan.trashed.removeAll { trashed in
+                moves.contains { $0.from == trashed.url || $0.from.path.hasPrefix(trashed.url.path + "/") }
+            }
+            plan.compress.removeAll { file in moves.contains { $0.to == file } }
+        }
+        if !steps.contains(.gamelists) { plan.gamelists = [] }
+        if !steps.contains(.compressCovers) { plan.compress = [] }
+        if !steps.contains(.compressManuals) { plan.manuals = [] }
+        plan.trashed.removeAll { !steps.contains(.trash($0.reason)) }
+        return plan
+    }
+
+    mutating func discard(_ url: URL, _ reason: TrashReason) {
+        trashed.append(Trashed(url: url, reason: reason))
+    }
 }
 
 /// Leaves a ROMs folder and the media beside it the way Attic keeps them:
@@ -75,7 +139,7 @@ public enum MediaTidier {
         for root in romsRoots {
             addPlan(root: root, into: &plan)
         }
-        plan.trashBytes = plan.trash.reduce(0) { $0 + size(of: $1) }
+        for index in plan.trashed.indices { plan.trashed[index].bytes = size(of: plan.trashed[index].url) }
         return plan
     }
 
@@ -141,7 +205,7 @@ public enum MediaTidier {
 
         for name in foreignRootFileNames {
             let url = root.appending(path: name)
-            if fileManager.fileExists(atPath: url.path) { plan.trash.append(url) }
+            if fileManager.fileExists(atPath: url.path) { plan.discard(url, .otherApps) }
         }
 
         var systemsWithGames: Set<String> = []
@@ -151,7 +215,7 @@ public enum MediaTidier {
             let isKnownSystem = SystemTaxonomy.system(forShortName: name) != nil
             guard !games.isEmpty || isKnownSystem else {
                 // A folder for no system Attic knows, with nothing to play.
-                plan.trash.append(folder)
+                plan.discard(folder, .unusedFolders)
                 continue
             }
             // A known system's folder stays even while empty: it's where
@@ -163,7 +227,7 @@ public enum MediaTidier {
                 let lowered = childName.lowercased()
                 if foreignFileNames.contains(lowered) || foreignFolderNames.contains(lowered)
                     || (lowered.hasPrefix("gamelist_") && lowered.hasSuffix(".xml")) {
-                    plan.trash.append(child)
+                    plan.discard(child, .otherApps)
                 }
             }
 
@@ -171,7 +235,7 @@ public enum MediaTidier {
             let esdeFolder = gamelistsRoot.appending(path: name, directoryHint: .isDirectory)
             let destination = esdeFolder.appending(path: "gamelist.xml")
             if fileManager.fileExists(atPath: destination.path) {
-                if fileManager.fileExists(atPath: gamelist.path) { plan.trash.append(gamelist) }
+                if fileManager.fileExists(atPath: gamelist.path) { plan.discard(gamelist, .otherApps) }
                 if let text = try? String(contentsOf: destination, encoding: .utf8),
                    cleanedGamelist(text, systemFolder: folder) != text {
                     plan.gamelists.append(.init(from: destination, to: destination, systemFolder: folder))
@@ -180,7 +244,7 @@ public enum MediaTidier {
                 plan.gamelists.append(.init(from: gamelist, to: destination, systemFolder: folder))
             } else if fileManager.fileExists(atPath: esdeFolder.path) {
                 // A gamelist folder with no gamelist in it.
-                plan.trash.append(esdeFolder)
+                plan.discard(esdeFolder, .unusedFolders)
             }
 
             let systemMedia = mediaRoot.appending(path: name, directoryHint: .isDirectory)
@@ -191,7 +255,7 @@ public enum MediaTidier {
         // Media and gamelists for systems with no games here.
         for parent in [mediaRoot, gamelistsRoot] {
             for folder in subfolders(of: parent) where !systemsWithGames.contains(folder.lastPathComponent) {
-                plan.trash.append(folder)
+                plan.discard(folder, .noGames)
             }
         }
     }
@@ -221,7 +285,7 @@ public enum MediaTidier {
                 if kind == .covers, isCompressible(destination) { plan.compress.append(destination) }
             }
             // What's left (marquees, fan art, cartridges…) goes with the folder.
-            plan.trash.append(mediaFolder)
+            plan.discard(mediaFolder, .leftoverMedia)
         }
     }
 
@@ -235,13 +299,13 @@ public enum MediaTidier {
                 if let standIn = retiredKinds[kindFolder.lastPathComponent] {
                     planStandIns(in: kindFolder, as: standIn, games: games, systemMedia: systemMedia, into: &plan)
                 }
-                plan.trash.append(kindFolder)
+                plan.discard(kindFolder, .unshownMedia)
                 continue
             }
             for file in files(under: kindFolder) {
                 let relative = String(file.path.dropFirst(kindFolder.path.count + 1))
                 if !games.contains((relative as NSString).deletingPathExtension) {
-                    plan.trash.append(file)
+                    plan.discard(file, .missingGames)
                 } else if kind == .covers, isCompressible(file) {
                     plan.compress.append(file)
                 } else if kind == .manuals, MediaFolder.manualIsWorthCompressing(file) {

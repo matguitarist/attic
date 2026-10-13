@@ -31,12 +31,12 @@
         }
       }
     },
-    "%@ goes to the Trash: folders Attic doesn't use, media Attic doesn't show (fan art, marquees, 3D boxes…), media for games that aren't there, and other apps' files.": {
+    "%@ to the Trash": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ vont à la corbeille : les dossiers qu’Attic n’utilise pas, les médias qu’Attic n’affiche pas (fan art, marquees, boîtes 3D…), les médias de jeux absents et les fichiers d’autres apps."
+            "value": "%@ vers la corbeille"
           }
         }
       }
@@ -104,6 +104,16 @@
         }
       }
     },
+    "%lld PNG and JPEG covers, kept only when HEIC is smaller.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jaquettes PNG et JPEG, gardées en HEIC seulement si c’est plus léger."
+          }
+        }
+      }
+    },
     "%lld already had info": {
       "localizations": {
         "en": {
@@ -140,16 +150,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "%lld covers are saved as HEIC, which takes less space.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jaquettes sont enregistrées en HEIC, qui prend moins de place."
           }
         }
       }
@@ -214,6 +214,16 @@
         }
       }
     },
+    "%lld files, renamed ES-DE style (Game-boxart.png becomes covers/Game.png).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers, renommés à la manière d’ES-DE (Jeu-boxart.png devient covers/Jeu.png)."
+          }
+        }
+      }
+    },
     "%lld frames": {
       "localizations": {
         "fr": {
@@ -224,22 +234,12 @@
         }
       }
     },
-    "%lld gamelists in ROM folders move to gamelists.": {
+    "%lld gamelists: Batocera's move to gamelists/, and old media paths and missing games come out.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld gamelists des dossiers de ROMs vont dans gamelists."
-          }
-        }
-      }
-    },
-    "%lld gamelists lose old media paths and entries for games that aren't there.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld gamelists perdent d’anciens chemins de médias et les entrées de jeux absents."
+            "value": "%lld gamelists : celles de Batocera vont dans gamelists/, et les anciens chemins de médias et les jeux absents en sont retirés."
           }
         }
       }
@@ -294,22 +294,92 @@
         }
       }
     },
-    "%lld heavy manual scans are redrawn lighter, kept only where that saves at least 40%%.": {
+    "%lld items, %@.": {
       "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@."
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld scans de manuels lourds sont refaits plus légers, gardés seulement s’ils font gagner au moins 40 %%."
+            "value": "%1$lld éléments, %2$@."
           }
         }
       }
     },
-    "%lld media files in ROM folders move to downloaded_media.": {
+    "%lld items, %@: fan art, marquees, 3D boxes, mix images, title screens…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: fan art, marquees, 3D boxes, mix images, title screens…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : fan art, marquees, boîtes 3D, mix images, écrans titres…"
+          }
+        }
+      }
+    },
+    "%lld items, %@: folders for no system Attic knows, and empty gamelist folders.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: folders for no system Attic knows, and empty gamelist folders."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : dossiers d’aucun système connu d’Attic, et dossiers de gamelist vides."
+          }
+        }
+      }
+    },
+    "%lld items, %@: marquees, fan art and the like, once the rest has moved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: marquees, fan art and the like, once the rest has moved."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : marquees, fan art et autres, une fois le reste déplacé."
+          }
+        }
+      }
+    },
+    "%lld items, %@: systeminfo.txt, spare gamelists, scraper leftovers.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: systeminfo.txt, spare gamelists, scraper leftovers."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : systeminfo.txt, gamelists en trop, restes de scrapers."
+          }
+        }
+      }
+    },
+    "%lld manuals redrawn at 150 dpi, kept only when that saves at least 40%%.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld fichiers de médias des dossiers de ROMs vont dans downloaded_media."
+            "value": "%lld manuels refaits à 150 dpi, gardés seulement s’ils font gagner au moins 40 %%."
           }
         }
       }
@@ -681,6 +751,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nécessite aussi le BIOS %@ dans %@"
+          }
+        }
+      }
+    },
+    "Analyze…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyser…"
           }
         }
       }
@@ -1177,6 +1257,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Collections"
+          }
+        }
+      }
+    },
+    "Compress heavy manual scans": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser les scans de manuels lourds"
           }
         }
       }
@@ -1937,6 +2027,16 @@
         }
       }
     },
+    "Everything's already in place.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout est déjà en place."
+          }
+        }
+      }
+    },
     "Executable Path": {
       "localizations": {
         "fr": {
@@ -2023,6 +2123,16 @@
         }
       }
     },
+    "Fix gamelists": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corriger les gamelists"
+          }
+        }
+      }
+    },
     "Fix wobbly polygons (PGXP)": {
       "localizations": {
         "fr": {
@@ -2039,6 +2149,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dossier ajouté. Prêt pour l’analyse."
+          }
+        }
+      }
+    },
+    "Folders Attic doesn't use": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossiers qu’Attic n’utilise pas"
           }
         }
       }
@@ -2723,12 +2843,12 @@
         }
       }
     },
-    "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash.": {
+    "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Garde les jeux dans ROMs et leurs médias dans downloaded_media, et met à la corbeille ce que d’autres apps ont laissé."
+            "value": "Garde les jeux dans ROMs et leurs médias dans downloaded_media, et met à la corbeille ce que d’autres apps ont laissé. Vous voyez un rapport de chaque changement avant que rien ne se passe."
           }
         }
       }
@@ -2893,6 +3013,36 @@
         }
       }
     },
+    "Media Attic doesn't show": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias qu’Attic n’affiche pas"
+          }
+        }
+      }
+    },
+    "Media and gamelists of systems with no games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias et gamelists de systèmes sans jeux"
+          }
+        }
+      }
+    },
+    "Media for games that aren't there": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias de jeux absents"
+          }
+        }
+      }
+    },
     "Menu / Start": {
       "localizations": {
         "fr": {
@@ -2949,6 +3099,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plus d’options…"
+          }
+        }
+      }
+    },
+    "Move media into downloaded_media": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer les médias dans downloaded_media"
           }
         }
       }
@@ -3283,6 +3443,16 @@
         }
       }
     },
+    "Nothing has changed yet. Untick what you'd rather keep as it is, then tidy up. Everything removed goes to the Trash, and your games, saves and BIOS files aren't touched.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien n’a encore changé. Décochez ce que vous préférez garder tel quel, puis rangez. Tout ce qui est retiré va à la corbeille, et vos jeux, sauvegardes et fichiers BIOS ne sont pas touchés."
+          }
+        }
+      }
+    },
     "Nothing new for “%@”: it already has everything found. Use Scrape Info › Replace Existing Info to overwrite it.": {
       "localizations": {
         "fr": {
@@ -3369,6 +3539,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autres"
+          }
+        }
+      }
+    },
+    "Other apps' files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers d’autres apps"
           }
         }
       }
@@ -4193,6 +4373,16 @@
         }
       }
     },
+    "Save covers as HEIC": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer les jaquettes en HEIC"
+          }
+        }
+      }
+    },
     "Save your setup as a profile to switch back to it later; profiles are kept in the Emulation folder.": {
       "localizations": {
         "fr": {
@@ -4985,22 +5175,12 @@
         }
       }
     },
-    "Tidy Up Your ROMs Folders?": {
+    "Tidy Up Report": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ranger vos dossiers de ROMs ?"
-          }
-        }
-      }
-    },
-    "Tidy Up…": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ranger…"
+            "value": "Rapport de rangement"
           }
         }
       }
@@ -5331,6 +5511,16 @@
         }
       }
     },
+    "What's left in Batocera's media folders": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restes des dossiers de médias de Batocera"
+          }
+        }
+      }
+    },
     "Where the game sorts in the library, e.g. “Legend of Zelda, The”. Leave empty to sort by title.": {
       "localizations": {
         "fr": {
@@ -5407,16 +5597,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre dossier de ROMs"
-          }
-        }
-      }
-    },
-    "Your games, saves and BIOS files aren't touched.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vos jeux, sauvegardes et fichiers BIOS ne sont pas touchés."
           }
         }
       }
