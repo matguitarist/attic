@@ -1,4 +1,5 @@
 import Foundation
+import AtticModels
 
 enum GamelistXMLParserError: Error {
     case malformedXML(Error?)
@@ -90,6 +91,15 @@ enum GamelistDateParsing {
 }
 
 extension Dictionary where Key == String, Value == String {
+    /// The play history in a gamelist entry, when it has any.
+    var playHistory: PlayHistory? {
+        let count = self["playcount"].flatMap { Int($0.trimmingCharacters(in: .whitespaces)) } ?? 0
+        let lastPlayed = GamelistDateParsing.parseReleaseDate(self["lastplayed"])
+        let seconds = (self["playtime"] ?? self["gametime"]).flatMap { Double($0.trimmingCharacters(in: .whitespaces)) } ?? 0
+        guard count > 0 || lastPlayed != nil || seconds > 0 else { return nil }
+        return PlayHistory(playCount: count, lastPlayed: lastPlayed, playtimeSeconds: seconds)
+    }
+
     /// nil for both a missing key and an empty (whitespace-trimmed) value —
     /// gamelist.xml frequently has empty tags (`<desc></desc>`) that should
     /// be treated the same as an absent tag.

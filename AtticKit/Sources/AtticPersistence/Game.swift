@@ -38,6 +38,10 @@ public final class Game {
     /// keep it instead of switching back to the gamelist's matched media.
     public var coverArtManuallySet: Bool = false
 
+    /// Set once the play history and favorite another front-end recorded
+    /// in its gamelist have been taken in, so they're merged only once.
+    public var importedFrontEndHistory: Bool = false
+
     public var coverArtPath: String?
     public var titleScreenPath: String?
     public var videoPath: String?
@@ -117,6 +121,22 @@ public final class Game {
             titleScreenURL: record.titleScreenURL,
             videoURL: record.videoURL
         )
+        takeFrontEndHistory(from: record)
+    }
+
+    /// Merges the favorite and play history another front-end recorded
+    /// (counts and playtime kept at whichever is higher, the latest play
+    /// date), the first time the game is seen with them.
+    func takeFrontEndHistory(from record: ImportedGameRecord) {
+        guard !importedFrontEndHistory else { return }
+        importedFrontEndHistory = true
+        if record.favorite { favorite = true }
+        guard let history = record.history else { return }
+        playCount = max(playCount, history.playCount)
+        totalPlaytimeSeconds = max(totalPlaytimeSeconds, history.playtimeSeconds)
+        if let played = history.lastPlayed, played > (lastPlayedDate ?? .distantPast) {
+            lastPlayedDate = played
+        }
     }
 
     /// Refreshes metadata from a rescanned record. Deliberately leaves
@@ -129,6 +149,7 @@ public final class Game {
     /// gamelist.xml still says.
     public func applyRescannedMetadata(_ record: ImportedGameRecord, romsRootURL: URL) {
         romAbsolutePath = romsRootURL.appending(path: record.romRelativePath).path
+        takeFrontEndHistory(from: record)
         if !metadataManuallyEdited {
             title = record.title
             sortTitle = record.sortTitle ?? record.title

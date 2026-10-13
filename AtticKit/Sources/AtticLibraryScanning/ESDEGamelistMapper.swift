@@ -31,7 +31,8 @@ enum ESDEGamelistMapper {
             favorite: fields["favorite"] == "true",
             coverArtURL: mediaResolver.resolveCoverArt(romNameNoExt: nameNoExt),
             titleScreenURL: mediaResolver.resolveTitleScreen(romNameNoExt: nameNoExt),
-            videoURL: mediaResolver.resolveVideo(romNameNoExt: nameNoExt)
+            videoURL: mediaResolver.resolveVideo(romNameNoExt: nameNoExt),
+            history: fields.playHistory
         )
     }
 

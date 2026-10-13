@@ -64,3 +64,25 @@ struct GameCollectionTests {
         #expect(games[0].collections.isEmpty)
     }
 }
+
+@MainActor
+struct FrontEndHistoryTests {
+    @Test func historyFromGamelistsIsTakenInOnce() throws {
+        let container = try AtticModelContainer.makeInMemory()
+        let context = container.mainContext
+        let game = Game(system: nil, systemCanonicalID: .snes, romRelativePath: "smw.sfc", romAbsoluteURL: URL(fileURLWithPath: "/tmp/smw.sfc"), title: "Super Mario World")
+        context.insert(game)
+        game.playCount = 1
+        let played = Date(timeIntervalSince1970: 1_800_000_000)
+        let record = ImportedGameRecord(romRelativePath: "smw.sfc", title: "Super Mario World", favorite: true,
+                                        history: PlayHistory(playCount: 9, lastPlayed: played, playtimeSeconds: 1427))
+        game.applyRescannedMetadata(record, romsRootURL: URL(fileURLWithPath: "/tmp"))
+        #expect(game.playCount == 9 && game.totalPlaytimeSeconds == 1427 && game.lastPlayedDate == played && game.favorite)
+
+        // Played in Attic since, and unfavorited: a rescan doesn't undo it.
+        game.playCount = 10
+        game.favorite = false
+        game.applyRescannedMetadata(record, romsRootURL: URL(fileURLWithPath: "/tmp"))
+        #expect(game.playCount == 10 && !game.favorite)
+    }
+}

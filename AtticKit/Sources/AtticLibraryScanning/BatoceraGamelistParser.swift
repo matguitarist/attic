@@ -32,7 +32,8 @@ enum BatoceraGamelistParser {
             favorite: fields["favorite"] == "true",
             coverArtURL: fields["image"].flatMap { resolveMediaPath($0, systemFolderURL: systemFolderURL) },
             titleScreenURL: fields["thumbnail"].flatMap { resolveMediaPath($0, systemFolderURL: systemFolderURL) },
-            videoURL: fields["video"].flatMap { resolveMediaPath($0, systemFolderURL: systemFolderURL) }
+            videoURL: fields["video"].flatMap { resolveMediaPath($0, systemFolderURL: systemFolderURL) },
+            history: fields.playHistory
         )
     }
 

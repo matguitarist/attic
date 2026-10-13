@@ -21,6 +21,9 @@ public struct ImportedGameRecord: Sendable, Hashable {
     public let coverArtURL: URL?
     public let titleScreenURL: URL?
     public let videoURL: URL?
+    /// What the front-end it came from (ES-DE, Batocera) recorded of it
+    /// being played, if anything.
+    public let history: PlayHistory?
 
     public init(
         romRelativePath: String,
@@ -36,7 +39,8 @@ public struct ImportedGameRecord: Sendable, Hashable {
         favorite: Bool = false,
         coverArtURL: URL? = nil,
         titleScreenURL: URL? = nil,
-        videoURL: URL? = nil
+        videoURL: URL? = nil,
+        history: PlayHistory? = nil
     ) {
         self.romRelativePath = romRelativePath
         self.title = title
@@ -52,6 +56,22 @@ public struct ImportedGameRecord: Sendable, Hashable {
         self.coverArtURL = coverArtURL
         self.titleScreenURL = titleScreenURL
         self.videoURL = videoURL
+        self.history = history
+    }
+}
+
+/// A game's play history as another front-end kept it in its gamelist:
+/// `playcount`, `lastplayed`, and `playtime` (ES-DE) or `gametime`
+/// (Batocera), in seconds.
+public struct PlayHistory: Sendable, Hashable {
+    public let playCount: Int
+    public let lastPlayed: Date?
+    public let playtimeSeconds: Double
+
+    public init(playCount: Int, lastPlayed: Date?, playtimeSeconds: Double) {
+        self.playCount = playCount
+        self.lastPlayed = lastPlayed
+        self.playtimeSeconds = playtimeSeconds
     }
 }
 

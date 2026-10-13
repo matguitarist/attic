@@ -49,7 +49,8 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
                 favorite: game.favorite,
                 coverArtURL: game.coverArtURL,
                 titleScreenURL: game.titleScreenURL,
-                videoURL: game.videoURL
+                videoURL: game.videoURL,
+                history: game.history
             )
         }
         return ImportedSystemData(
