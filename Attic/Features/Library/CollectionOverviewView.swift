@@ -28,15 +28,29 @@ struct CollectionOverviewView: View {
                             .clipShape(.rect(cornerRadius: 8))
                     }
                     if let logo = picture(CollectionFile.logoName) {
-                        Image(nsImage: logo)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: 240, maxHeight: 90)
-                            .accessibilityLabel(collection.name)
+                        Button { chooseLogo() } label: {
+                            Image(nsImage: logo)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: 240, maxHeight: 90)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(collection.name)
+                        .help("Click to choose another logo")
+                        .contextMenu { logoMenu(hasLogo: true) }
                     } else {
                         Text(collection.name)
                             .font(.title2.bold())
                             .multilineTextAlignment(.center)
+                            .contextMenu { logoMenu(hasLogo: false) }
+                        HStack {
+                            if let found = CollectionLogos.logo(forCollectionNamed: collection.name) {
+                                Button("Use \(found.lastPathComponent)") { setLogo(found) }
+                                    .help(found.path)
+                            }
+                            Button("Add Logo…") { chooseLogo() }
+                        }
+                        .controlSize(.small)
                     }
                     Text(summary(games))
                         .foregroundStyle(.secondary)
@@ -109,6 +123,33 @@ struct CollectionOverviewView: View {
         .formStyle(.grouped)
         // Pictures picked in the editor show up when it closes.
         .onChange(of: collectionCoordinator.draft == nil) { pictureCheck += 1 }
+    }
+
+    @ViewBuilder
+    private func logoMenu(hasLogo: Bool) -> some View {
+        Button(hasLogo ? String(localized: "Choose Another Logo…") : String(localized: "Add Logo…")) { chooseLogo() }
+        if let found = CollectionLogos.logo(forCollectionNamed: collection.name) {
+            Button("Use \(found.lastPathComponent)") { setLogo(found) }
+        }
+        if hasLogo {
+            Button("Remove Logo") { setLogo(nil) }
+        }
+    }
+
+    /// Picks a logo, starting in the logos folder when there's one.
+    private func chooseLogo() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.image]
+        panel.directoryURL = CollectionLogos.folder
+        panel.prompt = String(localized: "Choose")
+        panel.begin { response in
+            if response == .OK, let url = panel.url { setLogo(url) }
+        }
+    }
+
+    private func setLogo(_ url: URL?) {
+        CollectionFolders.setImage(url, as: CollectionFile.logoName, for: collection, root: root)
+        pictureCheck += 1
     }
 
     private func picture(_ name: String) -> NSImage? {

@@ -21,16 +21,28 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
 
     /// The file names (without extension) a logo for a collection called
     /// `name` may have in a folder of theme logos, best first: a
-    /// template's aliases, then the name in lowercase letters and digits
-    /// only, with and without a leading "the".
+    /// template's aliases (the template named so, give or take a leading
+    /// "The"), the whole name squeezed to lowercase letters and digits,
+    /// with and without "the", then each of its words ("Mario Bros"
+    /// finds mario.png).
     public static func logoNames(for name: String) -> [String] {
-        let squeezed = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
-            .lowercased().filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
-        var names = all.first { $0.name.caseInsensitiveCompare(name) == .orderedSame }?.logoAliases ?? []
-        names.append(squeezed)
-        if squeezed.hasPrefix("the") { names.append(String(squeezed.dropFirst(3))) }
+        let squeezed = squeeze(name)
+        let bare = squeezed.hasPrefix("the") ? String(squeezed.dropFirst(3)) : squeezed
+        let template = all.first { template in
+            let other = squeeze(template.name)
+            return other == squeezed || (other.hasPrefix("the") ? String(other.dropFirst(3)) : other) == bare
+        }
+        var names = template?.logoAliases ?? []
+        names += [squeezed, bare]
+        names += name.split(whereSeparator: \.isWhitespace).map { squeeze(String($0)) }
+            .filter { $0.count >= 4 && $0 != "the" }
         var seen = Set<String>()
         return names.filter { !$0.isEmpty && seen.insert($0).inserted }
+    }
+
+    private static func squeeze(_ text: String) -> String {
+        text.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+            .lowercased().filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
     }
 
     public static let all: [SeriesTemplate] = [

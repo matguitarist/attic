@@ -851,6 +851,16 @@
         }
       }
     },
+    "Add Logo…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un logo…"
+          }
+        }
+      }
+    },
     "Add a devID/devPassword to enable scraping.": {
       "localizations": {
         "fr": {
@@ -1529,6 +1539,16 @@
         }
       }
     },
+    "Choose Another Logo…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir un autre logo…"
+          }
+        }
+      }
+    },
     "Choose File…": {
       "localizations": {
         "fr": {
@@ -1645,6 +1665,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Classique (Xbox, PlayStation)"
+          }
+        }
+      }
+    },
+    "Click to choose another logo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquer pour choisir un autre logo"
           }
         }
       }
@@ -5011,6 +5041,16 @@
         }
       }
     },
+    "Remove Logo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer le logo"
+          }
+        }
+      }
+    },
     "Remove System": {
       "localizations": {
         "fr": {
@@ -6675,6 +6715,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utiliser"
+          }
+        }
+      }
+    },
+    "Use %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser %@"
           }
         }
       }

@@ -37,10 +37,12 @@ struct SeriesTemplatesTests {
     }
 
     @Test func logoNamesFollowThemeNaming() {
-        #expect(SeriesTemplate.logoNames(for: "Super Mario") == ["mario", "supermario"])
+        #expect(SeriesTemplate.logoNames(for: "Super Mario") == ["mario", "supermario", "super"])
+        #expect(SeriesTemplate.logoNames(for: "Legend of Zelda").first == "zelda")
+        #expect(SeriesTemplate.logoNames(for: "Mario Bros") == ["mariobros", "mario", "bros"])
         #expect(SeriesTemplate.logoNames(for: "Pokémon") == ["pokemon"])
-        #expect(SeriesTemplate.logoNames(for: "The Legend of Zelda") == ["zelda", "thelegendofzelda", "legendofzelda"])
+        #expect(SeriesTemplate.logoNames(for: "The Legend of Zelda") == ["zelda", "thelegendofzelda", "legendofzelda", "legend"])
         #expect(SeriesTemplate.logoNames(for: "F-Zero") == ["fzero"])
-        #expect(SeriesTemplate.logoNames(for: "My RPGs") == ["myrpgs"])
+        #expect(SeriesTemplate.logoNames(for: "My RPGs") == ["myrpgs", "rpgs"])
     }
 }
