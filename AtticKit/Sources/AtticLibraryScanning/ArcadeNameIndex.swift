@@ -6,8 +6,10 @@ import AtticModels
 ///
 /// Built from FinalBurn Neo's own Arcade DAT (ClrMamePro XML), which covers
 /// every set the core runs — Neo Geo, CPS-1/2/3 and the rest — keyed by the
-/// same romset names arcade ROM files use. The 14 MB DAT is boiled down to
-/// a small JSON cache once and refreshed occasionally.
+/// same romset names arcade ROM files use; and, for the boards FinalBurn
+/// Neo doesn't run (NAOMI, Model 2, ST-V…), from ES-DE's list of every
+/// MAME set's name. Each is boiled down to a small JSON cache once and
+/// refreshed occasionally.
 public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     public struct Entry: Sendable, Codable, Equatable {
         public let title: String
@@ -16,6 +18,9 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     }
 
     public static let datURL = URL(string: "https://raw.githubusercontent.com/libretro/FBNeo/master/dats/FinalBurn%20Neo%20(ClrMame%20Pro%20XML%2C%20Arcade%20only).dat")!
+    /// ES-DE's names for every MAME set (`<mamename>`, `<realname>`),
+    /// generated from MAME's own driver list.
+    public static let mameNamesURL = URL(string: "https://gitlab.com/es-de/emulationstation-de/-/raw/master/resources/MAME/mamenames.xml")!
 
     public let entries: [String: Entry]
 
@@ -24,6 +29,11 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     }
 
     public subscript(romset: String) -> Entry? { entries[romset.lowercased()] }
+
+    /// This index, with `other`'s sets that it doesn't have.
+    public func adding(_ other: ArcadeNameIndex) -> ArcadeNameIndex {
+        ArcadeNameIndex(entries: entries.merging(other.entries) { mine, _ in mine })
+    }
 
     // MARK: - Applying
 
@@ -70,8 +80,15 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     // MARK: - Parsing
 
     /// Parses a ClrMamePro/Logiqx XML DAT: `<game name="…">` with
-    /// `<description>`, `<year>` and `<manufacturer>` children.
+    /// `<description>`, `<year>` and `<manufacturer>` children; or ES-DE's
+    /// MAME names: `<game>` with `<mamename>` and `<realname>`.
     public static func parse(dat data: Data) -> ArcadeNameIndex? {
+        // ES-DE's list is a run of <game> elements with no root around
+        // them, which XML doesn't allow: given one, it reads.
+        parsed(data) ?? parsed(Data("<games>".utf8) + data + Data("</games>".utf8))
+    }
+
+    private static func parsed(_ data: Data) -> ArcadeNameIndex? {
         let delegate = DATParserDelegate()
         let parser = XMLParser(data: data)
         parser.delegate = delegate
@@ -101,13 +118,17 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
         private var manufacturer = ""
         private var currentElement: String?
 
+        private var inGame = false
+        private var mameName = ""
+
         func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName: String?, attributes: [String: String] = [:]) {
             switch elementName {
             case "game", "machine":
+                inGame = true
                 currentName = attributes["name"]?.lowercased()
-                gameDescription = ""; year = ""; manufacturer = ""
-            case "description", "year", "manufacturer":
-                currentElement = currentName == nil ? nil : elementName
+                gameDescription = ""; year = ""; manufacturer = ""; mameName = ""
+            case "description", "year", "manufacturer", "realname", "mamename":
+                currentElement = inGame ? elementName : nil
             default:
                 currentElement = nil
             }
@@ -115,7 +136,8 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
 
         func parser(_ parser: XMLParser, foundCharacters string: String) {
             switch currentElement {
-            case "description": gameDescription += string
+            case "description", "realname": gameDescription += string
+            case "mamename": mameName += string
             case "year": year += string
             case "manufacturer": manufacturer += string
             default: break
@@ -123,7 +145,11 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
         }
 
         func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName: String?) {
-            if elementName == "game" || elementName == "machine", let name = currentName {
+            if elementName == "mamename" {
+                currentName = mameName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            }
+            if elementName == "game" || elementName == "machine" { inGame = false }
+            if elementName == "game" || elementName == "machine", let name = currentName, !name.isEmpty {
                 let title = ArcadeNameIndex.cleanedTitle(gameDescription)
                 if !title.isEmpty {
                     let manufacturer = manufacturer.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -140,6 +166,12 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     }
 
     // MARK: - Caching
+
+    /// The indexes cached at `urls`, earlier ones first, without fetching.
+    public static func cached(at urls: [URL]) -> ArcadeNameIndex? {
+        urls.compactMap { (try? Data(contentsOf: $0)).flatMap { try? JSONDecoder().decode(ArcadeNameIndex.self, from: $0) } }
+            .reduce(nil) { merged, next in merged.map { $0.adding(next) } ?? next }
+    }
 
     /// The cached index when it's fresh enough; otherwise fetches the DAT,
     /// rebuilds the cache, and returns that. Falls back to a stale cache

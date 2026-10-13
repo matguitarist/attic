@@ -172,6 +172,11 @@ public final class Game {
             players = record.players
             releaseDate = record.releaseDate
             rating = record.rating
+        } else if title == ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: romRelativePath), record.title != title {
+            // Still named after its file (an arcade set's "vf4"): nobody
+            // chose that, so a real name a rescan found replaces it.
+            title = record.title
+            sortTitle = record.sortTitle ?? record.title
         }
         if !coverArtManuallySet {
             coverArtPath = record.coverArtURL?.path ?? Self.stillExisting(coverArtPath)

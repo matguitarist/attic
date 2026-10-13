@@ -76,4 +76,32 @@ struct ArcadeNameIndexTests {
         let offline = await ArcadeNameIndex.load(cacheURL: cacheURL, maxAge: 0) { throw URLError(.notConnectedToInternet) }
         #expect(offline == first)
     }
+
+    @Test func readsESDEsMAMENames() throws {
+        let xml = """
+        <!-- Generated from MAME driver file mame0289.xml -->
+        <game>
+        \t<mamename>vf4</mamename>
+        \t<realname>Virtua Fighter 4 Version C (GDS-0012C)</realname>
+        </game>
+        <game>
+        \t<mamename>vf4evo</mamename>
+        \t<realname>Virtua Fighter 4: Evolution (Version B) (Japan) (GDS-0024C)</realname>
+        </game>
+        """
+        // As ES-DE ships it: no root element.
+        let index = try #require(ArcadeNameIndex.parse(dat: Data(xml.utf8)))
+        #expect(index["VF4"]?.title == "Virtua Fighter 4 Version C")
+        #expect(index["vf4evo"]?.title == "Virtua Fighter 4: Evolution")
+        #expect(index["vf4"]?.year == nil)
+    }
+
+    @Test func finalBurnNeosNamesComeFirst() {
+        let fbneo = ArcadeNameIndex(entries: ["mslug": .init(title: "Metal Slug", year: 1996, manufacturer: "Nazca")])
+        let mame = ArcadeNameIndex(entries: ["mslug": .init(title: "Metal Slug (MAME)", year: nil, manufacturer: nil),
+                                             "vf4": .init(title: "Virtua Fighter 4", year: nil, manufacturer: nil)])
+        let both = fbneo.adding(mame)
+        #expect(both["mslug"]?.year == 1996)
+        #expect(both["vf4"]?.title == "Virtua Fighter 4")
+    }
 }

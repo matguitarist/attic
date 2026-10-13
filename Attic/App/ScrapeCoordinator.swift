@@ -157,6 +157,14 @@ final class ScrapeCoordinator {
         }
 
         state = .scraping
+        // TheGamesDB searches by title: an arcade game still named after
+        // its set ("vf4") is looked up, and named, by its real title.
+        if SystemTaxonomy.definition(for: CanonicalSystemID(game.systemCanonicalID))?.category == .arcade,
+           game.title == ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: game.romRelativePath),
+           let entry = ArcadeNameIndex.cached(at: ScanCoordinator.arcadeNameCaches)?[game.romAbsoluteURL.deletingPathExtension().lastPathComponent] {
+            game.title = entry.title
+            game.sortTitle = entry.title
+        }
 
         do {
             let info = try await theGamesDBClient.fetchGameInfo(

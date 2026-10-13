@@ -105,17 +105,25 @@ final class ScanCoordinator {
             SystemTaxonomy.definition(for: system.canonicalID)?.category == .arcade
         }
         guard systems.contains(where: isArcade) else { return systems }
-        let index = await ArcadeNameIndex.load(cacheURL: arcadeNamesCacheURL) {
-            let (data, response) = try await URLSession.shared.data(from: ArcadeNameIndex.datURL)
-            guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
-            return data
+        func fetch(_ url: URL) -> @Sendable () async throws -> Data {
+            {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                return data
+            }
         }
-        guard let index else { return systems }
+        // FinalBurn Neo's first (it has years and makers), then MAME's
+        // names for the boards it doesn't run.
+        let fbneo = await ArcadeNameIndex.load(cacheURL: arcadeNameCaches[0], fetchDAT: fetch(ArcadeNameIndex.datURL))
+        let mame = await ArcadeNameIndex.load(cacheURL: arcadeNameCaches[1], fetchDAT: fetch(ArcadeNameIndex.mameNamesURL))
+        guard let index = fbneo.map({ mame.map($0.adding) ?? $0 }) ?? mame else { return systems }
         return systems.map { isArcade($0) ? index.applying(to: $0) : $0 }
     }
 
-    nonisolated private static var arcadeNamesCacheURL: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appending(path: "Attic/ArcadeNames.json")
+    /// FinalBurn Neo's names, then MAME's.
+    nonisolated static var arcadeNameCaches: [URL] {
+        ["ArcadeNames.json", "ArcadeNamesMAME.json"].map {
+            FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appending(path: "Attic/\($0)")
+        }
     }
 }
