@@ -28,16 +28,25 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
     public static func logoNames(for name: String) -> [String] {
         let squeezed = squeeze(name)
         let bare = squeezed.hasPrefix("the") ? String(squeezed.dropFirst(3)) : squeezed
-        let template = all.first { template in
-            let other = squeeze(template.name)
-            return other == squeezed || (other.hasPrefix("the") ? String(other.dropFirst(3)) : other) == bare
-        }
-        var names = template?.logoAliases ?? []
+        var names = named(name)?.logoAliases ?? []
         names += [squeezed, bare]
         names += name.split(whereSeparator: \.isWhitespace).map { squeeze(String($0)) }
             .filter { $0.count >= 4 && $0 != "the" }
         var seen = Set<String>()
         return names.filter { !$0.isEmpty && seen.insert($0).inserted }
+    }
+
+    /// The template a collection called `name` is, give or take a
+    /// leading "The", case and accents: "Legend of Zelda" is The Legend
+    /// of Zelda, "pokemon" is Pokémon.
+    public static func named(_ name: String) -> SeriesTemplate? {
+        func bare(_ text: String) -> String {
+            let squeezed = squeeze(text)
+            return squeezed.hasPrefix("the") ? String(squeezed.dropFirst(3)) : squeezed
+        }
+        let wanted = bare(name)
+        guard !wanted.isEmpty else { return nil }
+        return all.first { bare($0.name) == wanted }
     }
 
     private static func squeeze(_ text: String) -> String {

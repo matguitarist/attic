@@ -36,6 +36,14 @@ struct SeriesTemplatesTests {
         #expect(CollectionFile.folderName(for: "Mario: The / Best?") == "Mario- The - Best-")
     }
 
+    @Test func aCollectionIsFoundAsItsSeries() {
+        #expect(SeriesTemplate.named("Legend of Zelda")?.name == "The Legend of Zelda")
+        #expect(SeriesTemplate.named("pokemon")?.name == "Pokémon")
+        #expect(SeriesTemplate.named("Castlevania")?.search.includedTerms.contains("Dracula X") == true)
+        #expect(SeriesTemplate.named("My Favorites") == nil)
+        #expect(SeriesTemplate.named("") == nil)
+    }
+
     @Test func logoNamesFollowThemeNaming() {
         #expect(SeriesTemplate.logoNames(for: "Super Mario") == ["mario", "supermario", "super"])
         #expect(SeriesTemplate.logoNames(for: "Legend of Zelda").first == "zelda")

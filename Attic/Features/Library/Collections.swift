@@ -110,6 +110,12 @@ struct CollectionEditorView: View {
             _searchFollowsName = State(initialValue: false)
             _system = State(initialValue: collection.searchSystemID.map { CanonicalSystemID($0) })
             _addsMatchingGames = State(initialValue: collection.addsMatchingGames)
+            // Made without a search, as a known series: start from the
+            // series' one, so it can keep up with new games.
+            if collection.search.isEmpty, let template = SeriesTemplate.named(collection.name) {
+                _search = State(initialValue: template.search)
+                _addsMatchingGames = State(initialValue: true)
+            }
         } else {
             _name = State(initialValue: "")
             _search = State(initialValue: CollectionSearch())
@@ -156,7 +162,7 @@ struct CollectionEditorView: View {
                         .onChange(of: name) {
                             if searchFollowsName { search.including = trimmedName }
                         }
-                    if editedCollection == nil {
+                    if editedCollection == nil || search.isEmpty {
                         Menu("Start from a Series") {
                             ForEach(SeriesTemplate.all.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { template in
                                 let count = templateCounts[template.name] ?? 0
@@ -265,7 +271,6 @@ struct CollectionEditorView: View {
         // Games left out before start unticked, so they can be put back.
         .task(id: search) { untickExcluded() }
         .task {
-            guard editedCollection == nil else { return }
             let titles = games.map(\.title)
             templateCounts = await Task.detached(priority: .userInitiated) {
                 Dictionary(uniqueKeysWithValues: SeriesTemplate.all.map { template in
@@ -355,14 +360,16 @@ struct CollectionEditorView: View {
     }
 
     private func apply(_ template: SeriesTemplate) {
-        name = template.name
+        // A collection being edited keeps its name.
+        if editedCollection == nil { name = template.name }
         search = template.search
         searchFollowsName = false
         system = nil
         addsMatchingGames = true
         // The series' logo from one's logos folder, unless one was picked
         // by hand.
-        if pendingPictures[CollectionFile.logoName] == nil || logoIsFromFolder {
+        if pendingPictures[CollectionFile.logoName] == nil || logoIsFromFolder,
+           logoIsFromFolder || picture(CollectionFile.logoName) == nil {
             if let logo = CollectionLogos.logo(forCollectionNamed: template.name) {
                 pendingPictures[CollectionFile.logoName] = .some(logo)
                 logoIsFromFolder = true
