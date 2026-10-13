@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.18.2</title>
+            <pubDate>Tue, 13 Oct 2026 19:34:13 -0400</pubDate>
+            <sparkle:version>26</sparkle:version>
+            <sparkle:shortVersionString>1.18.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Editing a collection made without a search, named like a series (&quot;Legend of Zelda&quot;), fills in the series&#x27; search and turns on adding new matching games, ready to save</li>
+<li>&quot;Start from a Series&quot; is offered while editing a collection without a search, keeping its name and logo</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.18.2/Attic-1.18.2.zip" length="14085960" type="application/octet-stream" sparkle:edSignature="HmemKWPQXVcOMpzXoAKQIU3E7nmNIYjJ7cvnKOFdqV9MdFP/P+g4LLc4leaRQiNaozC1axdUymwXDM6HDzoiDw=="/>
+        </item>
+        <item>
             <title>1.18.1</title>
             <pubDate>Tue, 13 Oct 2026 19:12:23 -0400</pubDate>
             <sparkle:version>25</sparkle:version>
