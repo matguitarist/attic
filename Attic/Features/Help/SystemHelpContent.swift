@@ -30,11 +30,16 @@ enum SystemHelpContent {
     private static let romsetNote = LocalizedStringResource("Keep each game zipped and named after its romset (for example mslug.zip). Don't unzip or rename them: arcade emulators find games by these names.")
     private static let fbneoVersionNote = LocalizedStringResource("Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.")
     private static let coinControls = LocalizedStringResource("Select inserts a coin, Start starts the game.")
+    private static let mameVersionNote = LocalizedStringResource("These games run in MAME's current core, so the romsets must come from the same MAME version.")
     private static let sixButtonControls = LocalizedStringResource("Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.")
 
     private static let byID: [CanonicalSystemID: SystemHelpInfo] = [
         .nes: .init(manufacturer: "Nintendo", year: 1983, wikipediaTitle: "Nintendo_Entertainment_System"),
         .snes: .init(manufacturer: "Nintendo", year: 1990, wikipediaTitle: "Super_Nintendo_Entertainment_System"),
+        .satellaview: .init(manufacturer: "Nintendo", year: 1995, wikipediaTitle: "Satellaview",
+                    notes: [LocalizedStringResource("Satellaview games are .bs dumps of what was broadcast. Snes9x plays them through the BS-X BIOS (BS-X.bin), in the BIOS folder.")]),
+        .sufami: .init(manufacturer: "Bandai", year: 1996, wikipediaTitle: "Sufami_Turbo",
+                    notes: [LocalizedStringResource("SuFami Turbo cartridges are .st files. Snes9x plays them through the SuFami Turbo BIOS (STBIOS.bin), in the BIOS folder.")]),
         .gba: .init(manufacturer: "Nintendo", year: 2001, wikipediaTitle: "Game_Boy_Advance"),
         .virtualboy: .init(manufacturer: "Nintendo", year: 1995, wikipediaTitle: "Virtual_Boy",
                            controls: [LocalizedStringResource("The Virtual Boy's second D-pad is on the right stick.")],
@@ -75,6 +80,8 @@ enum SystemHelpContent {
         .gb: .init(manufacturer: "Nintendo", year: 1989, wikipediaTitle: "Game_Boy"),
         .gbc: .init(manufacturer: "Nintendo", year: 1998, wikipediaTitle: "Game_Boy_Color"),
         .n64: .init(manufacturer: "Nintendo", year: 1996, wikipediaTitle: "Nintendo_64"),
+        .n64dd: .init(manufacturer: "Nintendo", year: 1999, wikipediaTitle: "64DD",
+                    notes: [LocalizedStringResource("64DD disks are .ndd files. Mupen64Plus-Next needs the 64DD IPL as IPL.n64 in a Mupen64plus folder inside the BIOS folder; ParaLLEl N64 needs the same file as 64DD_IPL.bin.")]),
         .nds: .init(manufacturer: "Nintendo", year: 2004, wikipediaTitle: "Nintendo_DS",
                     controls: [LocalizedStringResource("The touch screen follows the mouse; click to touch.")]),
         .n3ds: .init(manufacturer: "Nintendo", year: 2011, wikipediaTitle: "Nintendo_3DS",
@@ -100,6 +107,20 @@ enum SystemHelpContent {
         .atomiswave: .init(manufacturer: "Sammy", year: 2003, wikipediaTitle: "Atomiswave",
                     controls: [LocalizedStringResource("Select inserts a coin, Start starts the game.")],
                     notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name. The Atomiswave BIOS (awbios.zip) goes in a dc folder inside the BIOS folder.")]),
+        .naomi2: .init(manufacturer: "Sega", year: 2000, wikipediaTitle: "Sega_NAOMI_2",
+                    controls: [coinControls],
+                    notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name. The NAOMI 2 BIOS (naomi2.zip) goes in a dc folder inside the BIOS folder.")]),
+        .model2: .init(manufacturer: "Sega", year: 1993, wikipediaTitle: "Sega_Model_2",
+                    controls: [coinControls],
+                    notes: [romsetNote, mameVersionNote,
+                            LocalizedStringResource("Model 2 is demanding to emulate: the heaviest games may run slowly.")]),
+        .stv: .init(manufacturer: "Sega", year: 1995, wikipediaTitle: "Sega_Titan_Video",
+                    controls: [coinControls],
+                    notes: [romsetNote, mameVersionNote,
+                            LocalizedStringResource("Put the ST-V BIOS (stvbios.zip) in the stv folder with the games: MAME looks for it there.")]),
+        .gaelco: .init(manufacturer: "Gaelco", year: 1996, wikipediaTitle: "Gaelco",
+                    controls: [coinControls],
+                    notes: [romsetNote, mameVersionNote]),
         .model3: .init(manufacturer: "Sega", year: 1996, wikipediaTitle: "Sega_Model_3",
                     controls: [LocalizedStringResource("Select inserts a coin, Start starts the game.")],
                     notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name.")]),

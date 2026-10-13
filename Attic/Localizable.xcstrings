@@ -830,6 +830,16 @@
         }
       }
     },
+    "64DD disks are .ndd files. Mupen64Plus-Next needs the 64DD IPL as IPL.n64 in a Mupen64plus folder inside the BIOS folder; ParaLLEl N64 needs the same file as 64DD_IPL.bin.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les disques 64DD sont des fichiers .ndd. Mupen64Plus-Next a besoin de l’IPL du 64DD sous le nom IPL.n64, dans un dossier Mupen64plus du dossier BIOS ; ParaLLEl N64 a besoin du même fichier sous le nom 64DD_IPL.bin."
+          }
+        }
+      }
+    },
     "A Dolphin already in your Applications folder is used as is; otherwise Attic installs the latest release from dolphin-emu.org.": {
       "localizations": {
         "fr": {
@@ -4240,6 +4250,16 @@
         }
       }
     },
+    "Keep each game zipped with its MAME romset name. The NAOMI 2 BIOS (naomi2.zip) goes in a dc folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu zippé sous son nom de romset MAME. Le BIOS NAOMI 2 (naomi2.zip) va dans un dossier dc du dossier BIOS."
+          }
+        }
+      }
+    },
     "Keep each game zipped with its MAME romset name. The NAOMI BIOS (naomi.zip) goes in a dc folder inside the BIOS folder.": {
       "localizations": {
         "fr": {
@@ -4576,6 +4596,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Manquant"
+          }
+        }
+      }
+    },
+    "Model 2 is demanding to emulate: the heaviest games may run slowly.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Model 2 est exigeant à émuler : les jeux les plus lourds peuvent ralentir."
           }
         }
       }
@@ -5620,6 +5650,16 @@
         }
       }
     },
+    "Put the ST-V BIOS (stvbios.zip) in the stv folder with the games: MAME looks for it there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettez le BIOS ST-V (stvbios.zip) dans le dossier stv avec les jeux : MAME le cherche là."
+          }
+        }
+      }
+    },
     "Put the game's .wad files here: doom.wad, doom2.wad, or the free freedoom1.wad. Attic installs the prboom.wad PrBoom needs.": {
       "localizations": {
         "fr": {
@@ -6376,6 +6416,16 @@
         }
       }
     },
+    "Satellaview games are .bs dumps of what was broadcast. Snes9x plays them through the BS-X BIOS (BS-X.bin), in the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Satellaview sont des dumps .bs de ce qui était diffusé. Snes9x les lance via le BIOS BS-X (BS-X.bin), dans le dossier BIOS."
+          }
+        }
+      }
+    },
     "Save": {
       "localizations": {
         "fr": {
@@ -7118,6 +7168,16 @@
         }
       }
     },
+    "SuFami Turbo cartridges are .st files. Snes9x plays them through the SuFami Turbo BIOS (STBIOS.bin), in the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les cartouches SuFami Turbo sont des fichiers .st. Snes9x les lance via le BIOS SuFami Turbo (STBIOS.bin), dans le dossier BIOS."
+          }
+        }
+      }
+    },
     "Super Mario, Mario Bros": {
       "localizations": {
         "fr": {
@@ -7424,6 +7484,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "TheGamesDB a refusé la requête (clé d’API incorrecte ou quota dépassé) : %@"
+          }
+        }
+      }
+    },
+    "These games run in MAME's current core, so the romsets must come from the same MAME version.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ces jeux tournent dans le core MAME actuel : les romsets doivent venir de la même version de MAME."
           }
         }
       }

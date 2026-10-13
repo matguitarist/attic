@@ -87,6 +87,22 @@ public enum SystemTaxonomy {
             retroArchSystemIDs: ["super_nes", "snes"]
         ),
         SystemDefinition(
+            canonicalID: .satellaview,
+            displayName: "Nintendo Satellaview",
+            batoceraShortName: "satellaview",
+            esdeShortName: "satellaview",
+            retroArchSystemIDs: ["satellaview"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .sufami,
+            displayName: "Bandai SuFami Turbo",
+            batoceraShortName: "sufami",
+            esdeShortName: "sufami",
+            retroArchSystemIDs: ["sufami"],
+            category: .console
+        ),
+        SystemDefinition(
             canonicalID: .genesis,
             displayName: "Sega Genesis / Mega Drive",
             batoceraShortName: "megadrive",
@@ -304,6 +320,14 @@ public enum SystemTaxonomy {
             category: .console
         ),
         SystemDefinition(
+            canonicalID: .n64dd,
+            displayName: "Nintendo 64DD",
+            batoceraShortName: "n64dd",
+            esdeShortName: "n64dd",
+            retroArchSystemIDs: ["n64dd"],
+            category: .console
+        ),
+        SystemDefinition(
             canonicalID: .nds,
             displayName: "Nintendo DS",
             batoceraShortName: "nds",
@@ -381,7 +405,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "naomi",
             esdeShortName: "naomi",
             retroArchSystemIDs: ["naomi"],
-            category: .arcade, otherShortNames: ["naomi2", "naomigd"]
+            category: .arcade, otherShortNames: ["naomigd"]
         ),
         SystemDefinition(
             canonicalID: .atomiswave,
@@ -389,6 +413,39 @@ public enum SystemTaxonomy {
             batoceraShortName: "atomiswave",
             esdeShortName: "atomiswave",
             retroArchSystemIDs: ["atomiswave"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .naomi2,
+            displayName: "Sega NAOMI 2",
+            batoceraShortName: "naomi2",
+            esdeShortName: "naomi2",
+            retroArchSystemIDs: ["naomi2"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .model2,
+            displayName: "Sega Model 2",
+            batoceraShortName: "model2",
+            esdeShortName: "model2",
+            retroArchSystemIDs: ["model2"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .stv,
+            displayName: "Sega ST-V",
+            batoceraShortName: "stv",
+            esdeShortName: "stv",
+            retroArchSystemIDs: ["stv"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .gaelco,
+            displayName: "Gaelco",
+            batoceraShortName: "gaelco",
+            // ES-DE has no Gaelco system; the same name, should it get one.
+            esdeShortName: "gaelco",
+            retroArchSystemIDs: ["gaelco"],
             category: .arcade
         ),
         SystemDefinition(

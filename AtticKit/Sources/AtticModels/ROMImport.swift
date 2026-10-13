@@ -7,7 +7,7 @@ public enum ROMImport {
     /// (Genesis Plus GX also reads .sms, mGBA also reads .gb).
     static let usualSystem: [String: CanonicalSystemID] = [
         "nes": .nes, "unf": .nes, "unif": .nes, "fds": .fds,
-        "sfc": .snes, "smc": .snes, "bs": .snes,
+        "sfc": .snes, "smc": .snes, "bs": .satellaview, "st": .sufami, "ndd": .n64dd,
         "gb": .gb, "dmg": .gb, "sgb": .gb, "gbc": .gbc, "cgb": .gbc,
         "md": .genesis, "gen": .genesis, "smd": .genesis, "32x": .sega32x,
         "sms": .mastersystem, "gg": .gamegear, "sg": .sg1000, "col": .colecovision,

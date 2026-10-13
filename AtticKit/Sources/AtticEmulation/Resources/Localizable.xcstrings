@@ -121,6 +121,16 @@
         }
       }
     },
+    "Also reads 64DD disks, from its own copy of the IPL.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lit aussi les disques 64DD, avec sa propre copie de l’IPL."
+          }
+        }
+      }
+    },
     "Also runs ColecoVision.": {
       "localizations": {
         "fr": {
@@ -567,6 +577,26 @@
         }
       }
     },
+    "Plays Satellaview broadcasts through the BS-X BIOS.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lance les diffusions Satellaview via le BIOS BS-X."
+          }
+        }
+      }
+    },
+    "Plays SuFami Turbo cartridges through its BIOS.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lance les cartouches SuFami Turbo via leur BIOS."
+          }
+        }
+      }
+    },
     "Plays zipped DOS games directly.": {
       "localizations": {
         "fr": {
@@ -593,6 +623,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "RPCS3 en cœur RetroArch ; l’app autonome reste la référence."
+          }
+        }
+      }
+    },
+    "Reads 64DD disks with the 64DD IPL.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lit les disques 64DD avec l’IPL du 64DD."
           }
         }
       }

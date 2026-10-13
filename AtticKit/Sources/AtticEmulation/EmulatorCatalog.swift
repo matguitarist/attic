@@ -446,6 +446,14 @@ public enum EmulatorCatalog {
             RecommendedCore("bsnes_libretro", "bsnes", String(localized: "Cycle-accurate; heavier.", bundle: .module))
         ], standalone: [], bios: [], prefersStandalone: false),
 
+        // Snes9x is the core that reads BS-X and Sufami Turbo cartridges.
+        .init(systemID: .satellaview, cores: [
+            RecommendedCore("snes9x_libretro", "Snes9x", String(localized: "Plays Satellaview broadcasts through the BS-X BIOS.", bundle: .module))
+        ], standalone: [], bios: [BIOSRequirement("BS-X.bin", note: "BS-X Japan, Rev 1")], prefersStandalone: false),
+        .init(systemID: .sufami, cores: [
+            RecommendedCore("snes9x_libretro", "Snes9x", String(localized: "Plays SuFami Turbo cartridges through its BIOS.", bundle: .module))
+        ], standalone: [], bios: [BIOSRequirement("STBIOS.bin")], prefersStandalone: false),
+
         .init(systemID: .genesis, cores: [genesisPlusGX, picoDrive], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .mastersystem, cores: [genesisPlusGX, picoDrive], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .gamegear, cores: [genesisPlusGX, picoDrive], standalone: [], bios: [], prefersStandalone: false),
@@ -544,6 +552,13 @@ public enum EmulatorCatalog {
         .init(systemID: .gb, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gb_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
         .init(systemID: .gbc, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gbc_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
         .init(systemID: .n64, cores: [RecommendedCore("mupen64plus_next_libretro", "Mupen64Plus-Next", String(localized: "Best compatibility, with upscaling.", bundle: .module)), RecommendedCore("parallel_n64_libretro", "ParaLLEl N64", String(localized: "Alternative N64 core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .n64dd, cores: [
+            RecommendedCore("mupen64plus_next_libretro", "Mupen64Plus-Next", String(localized: "Reads 64DD disks with the 64DD IPL.", bundle: .module)),
+            RecommendedCore("parallel_n64_libretro", "ParaLLEl N64", String(localized: "Also reads 64DD disks, from its own copy of the IPL.", bundle: .module))
+        ], standalone: [], bios: [
+            BIOSRequirement("Mupen64plus/IPL.n64", note: "64DD IPL, for Mupen64Plus-Next", notNeededBy: ["parallel_n64_libretro"]),
+            BIOSRequirement("64DD_IPL.bin", note: "The same IPL, for ParaLLEl N64", notNeededBy: ["mupen64plus_next_libretro"])
+        ], prefersStandalone: false),
         .init(systemID: .nds, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Accurate DS and DSi, no BIOS needed.", bundle: .module)), RecommendedCore("desmume_libretro", "DeSmuME", String(localized: "Older, widely compatible DS core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios7.bin", required: false, note: "Optional; melonDS DS has a built-in replacement"), BIOSRequirement("bios9.bin", required: false, note: "Optional"), BIOSRequirement("firmware.bin", required: false, note: "Optional")], prefersStandalone: false),
         .init(systemID: .n3ds, cores: [RecommendedCore("azahar_libretro", "Azahar", String(localized: "Citra's actively developed successor.", bundle: .module)), RecommendedCore("panda3ds_libretro", "Panda3DS", String(localized: "Newer, lighter 3DS core.", bundle: .module)), RecommendedCore("citra_libretro", "Citra", String(localized: "The original 3DS core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .gamecube, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
@@ -555,6 +570,11 @@ public enum EmulatorCatalog {
         .init(systemID: .sg1000, cores: [genesisPlusGX, RecommendedCore("gearsystem_libretro", "Gearsystem", String(localized: "Accurate Sega 8-bit core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .naomi, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi.zip")], prefersStandalone: false),
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
+        .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
+        // MAME finds a board's BIOS set (stvbios.zip) beside the games.
+        .init(systemID: .model2, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .stv, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .gaelco, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
