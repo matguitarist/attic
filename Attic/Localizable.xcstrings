@@ -384,6 +384,22 @@
         }
       }
     },
+    "%lld of %lld games": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld games"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld sur %2$lld jeux"
+          }
+        }
+      }
+    },
     "%lld of %lld systems need an emulator": {
       "localizations": {
         "en": {
@@ -583,12 +599,32 @@
         }
       }
     },
+    "Add Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des jeux"
+          }
+        }
+      }
+    },
     "Add Games…": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter des jeux…"
+          }
+        }
+      }
+    },
+    "Add More Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter d’autres jeux"
           }
         }
       }
@@ -629,16 +665,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajoutez vos identifiants dans Réglages › ScreenScraper ou TheGamesDB, puis utilisez Récupérer les manquants dans la barre d’outils, ou Récupérer les infos sur un seul jeu."
-          }
-        }
-      }
-    },
-    "Add games with “%@” in the title": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter les jeux avec « %@ » dans le titre"
           }
         }
       }
@@ -739,6 +765,16 @@
         }
       }
     },
+    "All": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous"
+          }
+        }
+      }
+    },
     "All Games": {
       "localizations": {
         "fr": {
@@ -755,6 +791,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tous les jeux, en remplaçant les infos existantes"
+          }
+        }
+      }
+    },
+    "All Systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les systèmes"
           }
         }
       }
@@ -997,6 +1043,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Parcourir les jeux"
+          }
+        }
+      }
+    },
+    "But not": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais pas"
           }
         }
       }
@@ -1903,6 +1959,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chaque jeu est un dossier nommé comme Monkey Island.scummvm, avec les fichiers du jeu et un fichier du même nom (Monkey Island.scummvm) contenant l’identifiant ScummVM du jeu, comme monkey."
+          }
+        }
+      }
+    },
+    "Edit Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier la collection"
+          }
+        }
+      }
+    },
+    "Edit Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier la collection…"
           }
         }
       }
@@ -3393,6 +3469,16 @@
         }
       }
     },
+    "No other games match.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun autre jeu ne correspond."
+          }
+        }
+      }
+    },
     "No quit combo": {
       "localizations": {
         "fr": {
@@ -4113,36 +4199,6 @@
         }
       }
     },
-    "Rename": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renommer"
-          }
-        }
-      }
-    },
-    "Rename Collection": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renommer la collection"
-          }
-        }
-      }
-    },
-    "Rename…": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renommer…"
-          }
-        }
-      }
-    },
     "Replace Existing Info": {
       "localizations": {
         "fr": {
@@ -4439,6 +4495,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enregistrer le profil"
+          }
+        }
+      }
+    },
+    "Save and Add %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer et ajouter %lld"
           }
         }
       }
@@ -4745,6 +4811,16 @@
         }
       }
     },
+    "Separate several words with commas: a game is added when its title contains any of the first ones and none of the others.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Séparez plusieurs mots par des virgules : un jeu est ajouté si son titre contient l’un des premiers et aucun des autres."
+          }
+        }
+      }
+    },
     "Set Up All Systems": {
       "localizations": {
         "fr": {
@@ -5005,6 +5081,16 @@
         }
       }
     },
+    "Super Mario, Mario Bros": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super Mario, Mario Bros"
+          }
+        }
+      }
+    },
     "Swap A/B and X/Y": {
       "localizations": {
         "fr": {
@@ -5071,6 +5157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prend effet au prochain démarrage d’Attic."
+          }
+        }
+      }
+    },
+    "Tennis, Golf, Kart": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tennis, Golf, Kart"
           }
         }
       }
@@ -5295,6 +5391,16 @@
         }
       }
     },
+    "Titles containing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titres contenant"
+          }
+        }
+      }
+    },
     "To always start in Cabinet Mode, turn on Open Cabinet Mode at launch in Settings › General.": {
       "localizations": {
         "fr": {
@@ -5331,16 +5437,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux Triforce tournent dans Dolphin, l’émulateur GameCube et Wii, qui prend désormais en charge le Triforce. Utilisez des dumps .iso, .gcz ou .rvz."
-          }
-        }
-      }
-    },
-    "Type a name to find matching games.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saisissez un nom pour trouver les jeux correspondants."
           }
         }
       }
@@ -5721,12 +5817,12 @@
         }
       }
     },
-    "e.g. Zelda": {
+    "e.g. Mario": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "p. ex. Zelda"
+            "value": "p. ex. Mario"
           }
         }
       }

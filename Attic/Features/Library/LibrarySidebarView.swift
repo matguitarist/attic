@@ -47,7 +47,7 @@ struct LibrarySidebarView: View {
                         .contextMenu {
                             ScrapeSelectionMenu(title: "Scrape This Collection", selection: .collection(collection.collectionID))
                             Divider()
-                            Button("Rename…") { collectionCoordinator.rename(collection) }
+                            Button("Edit Collection…") { collectionCoordinator.edit(collection) }
                             Button("Delete Collection…", role: .destructive) { collectionCoordinator.pendingDeletion = collection }
                         }
                 }

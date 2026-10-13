@@ -1,13 +1,14 @@
 import SwiftUI
 import SwiftData
+import AtticModels
 import AtticPersistence
 
 /// What the library window's collection sheet is doing: making a new
-/// collection (optionally with games already in it) or renaming one.
+/// collection (optionally with games already in it) or editing one.
 struct CollectionDraft: Identifiable {
     enum Mode {
         case new(games: [Game])
-        case rename(GameCollection)
+        case edit(GameCollection)
     }
 
     let id = UUID()
@@ -27,8 +28,8 @@ final class CollectionCoordinator {
         draft = CollectionDraft(mode: .new(games: games))
     }
 
-    func rename(_ collection: GameCollection) {
-        draft = CollectionDraft(mode: .rename(collection))
+    func edit(_ collection: GameCollection) {
+        draft = CollectionDraft(mode: .edit(collection))
     }
 }
 
@@ -65,86 +66,166 @@ struct AddToCollectionMenu: View {
     }
 }
 
-/// Names a new collection, or renames one. A new collection can also pick
-/// up every game whose title contains its name: "Zelda" gathers the whole
-/// series in one go, across systems.
+/// Makes a collection, or renames one and adds to it. Games are found by
+/// title: any of several terms ("Super Mario, Mario Bros"), none of some
+/// others ("Tennis, Kart"), optionally on one system — then each match can
+/// be unticked before they're added.
 struct CollectionEditorView: View {
     let draft: CollectionDraft
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Game.sortTitle) private var games: [Game]
+    @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @State private var name: String
-    @State private var addsMatchingGames = true
-    @State private var matchingCount = 0
+    @State private var search = CollectionSearch()
+    /// The search follows the name until it's edited itself.
+    @State private var searchFollowsName: Bool
+    @State private var system: CanonicalSystemID?
+    @State private var unticked: Set<PersistentIdentifier> = []
     var onCreate: (GameCollection) -> Void = { _ in }
 
     init(draft: CollectionDraft, onCreate: @escaping (GameCollection) -> Void = { _ in }) {
         self.draft = draft
         self.onCreate = onCreate
-        if case .rename(let collection) = draft.mode {
+        if case .edit(let collection) = draft.mode {
             _name = State(initialValue: collection.name)
+            _searchFollowsName = State(initialValue: false)
         } else {
             _name = State(initialValue: "")
+            _searchFollowsName = State(initialValue: true)
         }
     }
 
     private var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    private var isNew: Bool {
-        if case .new = draft.mode { true } else { false }
+    private var editedCollection: GameCollection? {
+        if case .edit(let collection) = draft.mode { collection } else { nil }
     }
 
+    /// Games given up front ("Add to New Collection…"), always added.
+    private var givenGames: [Game] {
+        if case .new(let games) = draft.mode { games } else { [] }
+    }
+
+    /// Games the search finds that aren't in the collection yet.
+    private var matches: [Game] {
+        guard !search.isEmpty else { return [] }
+        let skipped = Set((editedCollection?.games ?? []).map(\.persistentModelID))
+            .union(givenGames.map(\.persistentModelID))
+        return games.filter { game in
+            !skipped.contains(game.persistentModelID)
+                && (system == nil || game.systemCanonicalID == system?.rawValue)
+                && search.matches(game.title)
+        }
+    }
+
+    private var chosen: [Game] { matches.filter { !unticked.contains($0.persistentModelID) } }
+
     var body: some View {
+        let matches = self.matches
         Form {
             Section {
-                TextField("Name", text: $name, prompt: Text("e.g. Zelda"))
-                if isNew {
-                    Toggle(isOn: $addsMatchingGames) {
-                        Text("Add games with “\(trimmedName.isEmpty ? "…" : trimmedName)” in the title")
-                        Text(trimmedName.isEmpty ? String(localized: "Type a name to find matching games.") : String(localized: "\(matchingCount) games in your library"))
+                TextField("Name", text: $name, prompt: Text("e.g. Mario"))
+                    .onChange(of: name) {
+                        if searchFollowsName { search.including = trimmedName }
                     }
-                    .disabled(trimmedName.isEmpty)
+            } header: {
+                Text(editedCollection == nil ? String(localized: "New Collection") : String(localized: "Edit Collection"))
+                    .font(.headline)
+            }
+
+            Section {
+                TextField("Titles containing", text: Binding(
+                    get: { search.including },
+                    set: { search.including = $0; searchFollowsName = false }
+                ), prompt: Text("Super Mario, Mario Bros"))
+                TextField("But not", text: $search.excluding, prompt: Text("Tennis, Golf, Kart"))
+                Picker("On", selection: $system) {
+                    Text("All Systems").tag(CanonicalSystemID?.none)
+                    Divider()
+                    ForEach(systems.filter { $0.gameCount > 0 }) { system in
+                        Text(system.displayName).tag(Optional(system.systemID))
+                    }
                 }
             } header: {
-                Text(isNew ? String(localized: "New Collection") : String(localized: "Rename Collection"))
-                    .font(.headline)
+                Text(editedCollection == nil ? String(localized: "Add Games") : String(localized: "Add More Games"))
+            } footer: {
+                Text("Separate several words with commas: a game is added when its title contains any of the first ones and none of the others.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if !matches.isEmpty {
+                Section {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 6) {
+                            ForEach(matches) { game in
+                                Toggle(isOn: Binding(
+                                    get: { !unticked.contains(game.persistentModelID) },
+                                    set: { if $0 { unticked.remove(game.persistentModelID) } else { unticked.insert(game.persistentModelID) } }
+                                )) {
+                                    HStack {
+                                        Text(game.title).lineLimit(1)
+                                        Spacer()
+                                        Text(game.system?.displayName ?? game.systemCanonicalID)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
+                                .toggleStyle(.checkbox)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .frame(height: 240)
+                } header: {
+                    HStack {
+                        Text("\(chosen.count) of \(matches.count) games")
+                        Spacer()
+                        Button("All") { unticked = [] }
+                        Button("None") { unticked = Set(matches.map(\.persistentModelID)) }
+                    }
+                    .buttonStyle(.link)
+                }
+            } else if !search.isEmpty {
+                Text("No other games match.")
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420)
+        .frame(width: 520)
         .fixedSize(horizontal: false, vertical: true)
-        .navigationTitle(isNew ? String(localized: "New Collection") : String(localized: "Rename Collection"))
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button(isNew ? String(localized: "Create") : String(localized: "Rename")) { save() }
+                Button(confirmTitle) { save() }
                     .disabled(trimmedName.isEmpty)
             }
         }
-        .task(id: trimmedName) {
-            matchingCount = trimmedName.isEmpty ? 0 : ((try? modelContext.fetchCount(FetchDescriptor(predicate: Self.titleContains(trimmedName)))) ?? 0)
-        }
+        .onChange(of: search) { unticked = [] }
+        .onChange(of: system) { unticked = [] }
     }
 
-    private static func titleContains(_ text: String) -> Predicate<Game> {
-        #Predicate<Game> { $0.title.localizedStandardContains(text) }
+    private var confirmTitle: String {
+        let count = chosen.count
+        if editedCollection != nil {
+            return count == 0 ? String(localized: "Save") : String(localized: "Save and Add \(count)")
+        }
+        return String(localized: "Create")
     }
 
     private func save() {
-        switch draft.mode {
-        case .rename(let collection):
+        let added = chosen
+        if let collection = editedCollection {
             collection.name = trimmedName
-        case .new(let games):
-            var members = games
-            if addsMatchingGames, let matching = try? modelContext.fetch(FetchDescriptor(predicate: Self.titleContains(trimmedName))) {
-                let existing = Set(members.map(\.persistentModelID))
-                members += matching.filter { !existing.contains($0.persistentModelID) }
-            }
+            for game in added { collection.setContains(game, true) }
+        } else {
             let collection = GameCollection(name: trimmedName)
             modelContext.insert(collection)
-            collection.games = members
+            collection.games = givenGames + added
             try? modelContext.save()
             onCreate(collection)
         }
