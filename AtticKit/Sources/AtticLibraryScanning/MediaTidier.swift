@@ -29,6 +29,8 @@ public struct MediaTidyPlan: Sendable {
     /// Heavy scanned manuals to redraw lighter (see
     /// `MediaFolder.compressManual`).
     public var manuals: [URL] = []
+    /// For each duplicate game going to the Trash, the copy kept.
+    public var keptCopies: [URL: URL] = [:]
     /// What `trash` takes up.
     public var trashBytes: Int64 { trashed.reduce(0) { $0 + $1.bytes } }
 
@@ -49,6 +51,10 @@ public struct MediaTidyPlan: Sendable {
         case missingGames
         /// What's left in Batocera's media folders once the rest has moved.
         case leftoverMedia
+        /// Other copies of a game (region, revision, beta), with their
+        /// media — the one kind that touches games, so the report leaves
+        /// it unticked.
+        case duplicates
     }
 
     public struct Trashed: Sendable, Equatable {
@@ -248,6 +254,26 @@ public enum MediaTidier {
             }
 
             let systemMedia = mediaRoot.appending(path: name, directoryHint: .isDirectory)
+            // Arcade romsets come in parents and clones on purpose.
+            if SystemTaxonomy.system(forShortName: name)?.category != .arcade {
+                for group in DuplicateFinder.groups(in: folder) {
+                    for copy in group.others {
+                        plan.discard(copy, .duplicates)
+                        plan.keptCopies[copy] = group.keep
+                        // A zipped copy shares the kept game's name, and so
+                        // its media.
+                        let stem = copy.deletingPathExtension().lastPathComponent
+                        guard stem != group.keep.deletingPathExtension().lastPathComponent else { continue }
+                        for kind in MediaKind.allCases {
+                            let base = systemMedia.appending(path: kind.rawValue).appending(path: copy.deletingPathExtension().lastPathComponent)
+                            for media in MediaFolder.existingFiles(base: base) + [base.appendingPathExtension("pdf")]
+                            where FileManager.default.fileExists(atPath: media.path) {
+                                plan.discard(media, .duplicates)
+                            }
+                        }
+                    }
+                }
+            }
             planInFolderMedia(in: folder, games: games, systemMedia: systemMedia, into: &plan)
             planDownloadedMedia(systemMedia, games: games, into: &plan)
         }

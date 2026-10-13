@@ -16,7 +16,7 @@ struct TidyReportView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Tidy Up Report")
                     .font(.title2.bold())
-                Text("Nothing has changed yet. Untick what you'd rather keep as it is, then tidy up. Everything removed goes to the Trash, and your games, saves and BIOS files aren't touched.")
+                Text("Nothing has changed yet. Untick what you'd rather keep as it is, then tidy up. Everything removed goes to the Trash. Your saves and BIOS files aren't touched, and your games only if you tick Duplicate games.")
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -78,7 +78,8 @@ struct TidyReportView: View {
             .padding(20)
         }
         .frame(width: 640, height: 600)
-        .onAppear { selected = Set(plan.steps) }
+        // Duplicates are games: only removed when asked for.
+        .onAppear { selected = Set(plan.steps).subtracting([.trash(.duplicates)]) }
     }
 
     private var selectedTrash: MediaTidyPlan { plan.only(selected) }
@@ -104,6 +105,7 @@ struct TidyReportView: View {
         case .trash(.unshownMedia): String(localized: "Media Attic doesn't show")
         case .trash(.missingGames): String(localized: "Media for games that aren't there")
         case .trash(.leftoverMedia): String(localized: "What's left in Batocera's media folders")
+        case .trash(.duplicates): String(localized: "Duplicate games")
         }
     }
 
@@ -128,6 +130,7 @@ struct TidyReportView: View {
             case .unshownMedia: return String(localized: "\(count) items, \(size): fan art, marquees, 3D boxes, mix images, title screens…")
             case .missingGames: return String(localized: "\(count) items, \(size).")
             case .leftoverMedia: return String(localized: "\(count) items, \(size): marquees, fan art and the like, once the rest has moved.")
+            case .duplicates: return String(localized: "\(count) items, \(size): other regions, revisions and betas of games you have, with their media. The kept copy is a finished release: World, then USA, Europe, Japan, then the latest revision. Your games themselves, so it's off unless you tick it.")
             }
         }
     }
@@ -151,7 +154,10 @@ struct TidyReportView: View {
         case .compressManuals:
             plan.manuals.map { Row(text: short($0), url: $0, bytes: Int64((try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)) }
         case .trash(let reason):
-            plan.trashed.filter { $0.reason == reason }.map { Row(text: short($0.url), url: $0.url, bytes: $0.bytes) }
+            plan.trashed.filter { $0.reason == reason }.map { trashed in
+                let kept = plan.keptCopies[trashed.url].map { String(localized: " (keeps \($0.lastPathComponent))") } ?? ""
+                return Row(text: short(trashed.url) + kept, url: trashed.url, bytes: trashed.bytes)
+            }
         }
     }
 

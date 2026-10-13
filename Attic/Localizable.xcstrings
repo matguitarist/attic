@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    " (keeps %@)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " (garde %@)"
+          }
+        }
+      }
+    },
     "%@ (Recommended)": {
       "localizations": {
         "fr": {
@@ -370,6 +380,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld éléments, %2$@ : marquees, fan art et autres, une fois le reste déplacé."
+          }
+        }
+      }
+    },
+    "%lld items, %@: other regions, revisions and betas of games you have, with their media. The kept copy is a finished release: World, then USA, Europe, Japan, then the latest revision. Your games themselves, so it's off unless you tick it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: other regions, revisions and betas of games you have, with their media. The kept copy is a finished release: World, then USA, Europe, Japan, then the latest revision. Your games themselves, so it's off unless you tick it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : autres régions, révisions et bêtas de jeux que vous avez, avec leurs médias. La copie gardée est une version finale : World, puis USA, Europe, Japon, puis la dernière révision. Ce sont vos jeux, donc c’est décoché sauf si vous le cochez."
           }
         }
       }
@@ -2045,6 +2071,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les dumps fonctionnent le mieux en .rvz (compressé, sans perte), .wbfs ou .iso."
+          }
+        }
+      }
+    },
+    "Duplicate games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux en double"
           }
         }
       }
@@ -3815,12 +3851,12 @@
         }
       }
     },
-    "Nothing has changed yet. Untick what you'd rather keep as it is, then tidy up. Everything removed goes to the Trash, and your games, saves and BIOS files aren't touched.": {
+    "Nothing has changed yet. Untick what you'd rather keep as it is, then tidy up. Everything removed goes to the Trash. Your saves and BIOS files aren't touched, and your games only if you tick Duplicate games.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rien n’a encore changé. Décochez ce que vous préférez garder tel quel, puis rangez. Tout ce qui est retiré va à la corbeille, et vos jeux, sauvegardes et fichiers BIOS ne sont pas touchés."
+            "value": "Rien n’a encore changé. Décochez ce que vous préférez garder tel quel, puis rangez. Tout ce qui est retiré va à la corbeille. Vos sauvegardes et fichiers BIOS ne sont pas touchés, et vos jeux seulement si vous cochez Jeux en double."
           }
         }
       }

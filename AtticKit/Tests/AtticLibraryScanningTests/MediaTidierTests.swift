@@ -137,6 +137,23 @@ struct MediaTidierTests {
         #expect(onlyReadme.moves.count == 1)
     }
 
+    @Test func duplicatesGoWithTheirMediaButNotTheKeptGames() throws {
+        try touch(roms.appending(path: "nes/Zelda (USA).nes"))
+        try touch(roms.appending(path: "nes/Zelda (Europe).nes"))
+        try touch(roms.appending(path: "nes/Runner (USA).nes"))
+        try touch(roms.appending(path: "nes/Runner (USA).zip"))
+        try touch(media.appending(path: "nes/covers/Zelda (Europe).heic"))
+        try touch(media.appending(path: "nes/covers/Zelda (USA).heic"))
+        try touch(media.appending(path: "nes/covers/Runner (USA).heic"))
+
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        let duplicates = plan.trashed.filter { $0.reason == .duplicates }.map(\.url.lastPathComponent)
+        #expect(Set(duplicates) == ["Zelda (Europe).nes", "Zelda (Europe).heic", "Runner (USA).zip"])
+        #expect(plan.keptCopies.values.map(\.lastPathComponent).sorted() == ["Runner (USA).nes", "Zelda (USA).nes"])
+        // Off unless asked for.
+        #expect(plan.only(Set(plan.steps).subtracting([.trash(.duplicates)])).trashed.isEmpty)
+    }
+
     @Test func leftoversOfOtherAppsGo() throws {
         let cps2 = roms.appending(path: "cps2")
         try touch(cps2.appending(path: "sf2.zip"))
