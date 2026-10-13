@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.16.0</title>
+            <pubDate>Tue, 13 Oct 2026 11:53:12 -0400</pubDate>
+            <sparkle:version>22</sparkle:version>
+            <sparkle:shortVersionString>1.16.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Tools › Verify Games checks each game against No-Intro&#x27;s DAT files (from DAT-o-MATIC, loose or as the daily pack&#x27;s zip, in the Emulation folder&#x27;s DATs folder): verified, differs from No-Intro&#x27;s dump, or not listed</li>
+<li>The verdict shows in the game panel; the report lists the games to look at, system by system</li>
+<li>Good dumps filed under names of their own can be renamed to No-Intro&#x27;s names, with their media, gamelist entries and saves, keeping play history and collections</li>
+<li>Zipped games are checked from the zip&#x27;s own checksums, without unpacking; cartridge headers (NES, SNES, Atari 7800, Lynx) are handled</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.16.0/Attic-1.16.0.zip" length="13001337" type="application/octet-stream" sparkle:edSignature="JEcWMJsyaf8TkhIboArQjZQyZsWeKXA9GT4YEWx+Y0VloEIdJJ1I96BUUVdEBZRhfqecjuH1gPnSrx+tY//uAw=="/>
+        </item>
+        <item>
             <title>1.15.0</title>
             <pubDate>Tue, 13 Oct 2026 11:21:27 -0400</pubDate>
             <sparkle:version>21</sparkle:version>
