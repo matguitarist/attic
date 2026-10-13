@@ -7,8 +7,8 @@ struct MediaTidierTests {
     /// `Emulation/` with a ROMs root, media and gamelists beside it.
     private let base: URL
     private var roms: URL { base.appending(path: "ROMs") }
-    private var media: URL { base.appending(path: "downloaded_media") }
-    private var gamelists: URL { base.appending(path: "gamelists") }
+    private var media: URL { base.appending(path: "Media") }
+    private var gamelists: URL { base.appending(path: "Gamelists") }
 
     init() throws {
         base = FileManager.default.temporaryDirectory.appending(path: "MediaTidierTests-\(UUID().uuidString)")
@@ -38,8 +38,8 @@ struct MediaTidierTests {
         #expect(!plan.trash.contains { $0.lastPathComponent == "snes" })
         #expect(!plan.trash.contains { $0.lastPathComponent == "x68000" || $0.lastPathComponent == "pc98" })
         #expect(plan.trash.contains { $0.path.hasSuffix("pc98/systeminfo.txt") })
-        #expect(plan.trash.contains { $0.path.hasSuffix("downloaded_media/steam") })
-        #expect(plan.trash.contains { $0.path.hasSuffix("gamelists/steam") })
+        #expect(plan.trash.contains { $0.path.hasSuffix("Media/steam") })
+        #expect(plan.trash.contains { $0.path.hasSuffix("Gamelists/steam") })
     }
 
     @Test func batoceraMediaIsRenamedIntoDownloadedMedia() throws {

@@ -104,3 +104,19 @@ struct NewSystemsCatalogTests {
         #expect(EmulatorCatalog.coreSystemFiles["scummvm_libretro"] == "ScummVM.zip")
     }
 }
+
+struct FolderNameTests {
+    @Test func esdeFoldersTakeAtticsNames() throws {
+        let parent = FileManager.default.temporaryDirectory.appending(path: "Layout-\(UUID().uuidString)")
+        for name in ["downloaded_media/snes/covers", "gamelists/snes", "collections/Mario"] {
+            try FileManager.default.createDirectory(at: parent.appending(path: name), withIntermediateDirectories: true)
+        }
+        let renamed = EmulationFolder.adoptFolderNames(in: parent)
+        #expect(renamed.count == 3)
+        let names = Set(try FileManager.default.contentsOfDirectory(atPath: parent.path))
+        #expect(names == ["Media", "Gamelists", "Collections"])
+        #expect(FileManager.default.fileExists(atPath: parent.appending(path: "Media/snes/covers").path))
+        // Already done: nothing more to do.
+        #expect(EmulationFolder.adoptFolderNames(in: parent).isEmpty)
+    }
+}

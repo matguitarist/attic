@@ -1,7 +1,7 @@
 import Foundation
 
 /// A collection as a file: `collection.json` in its folder
-/// (`Emulation/collections/<Name>/`, beside its `logo` and `artwork`),
+/// (`Emulation/Collections/<Name>/`, beside its `logo` and `artwork`),
 /// which is also what's exported and imported. Games are named by system
 /// and path in the system's ROMs folder, with their title to find them
 /// again in a library laid out differently.

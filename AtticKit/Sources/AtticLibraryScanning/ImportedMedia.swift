@@ -16,7 +16,7 @@ public enum ImportedMedia {
     ]
     /// Folders that hold media or other apps' files, never games.
     public static let nonGameFolderNames: Set<String> = Set(folderKinds.keys)
-        .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "html_arrm",
+        .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "collections", "html_arrm",
                 "marquees", "wheel", "fanart", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
                 "miximages", "mix", "mixrbv2", "titlescreens", "titles", "screenshot - game title",
                 // A whole Batocera or ES-DE folder's other parts.
@@ -35,12 +35,15 @@ public enum ImportedMedia {
 
     /// The best file of each kind found for the game `rom`, looking next
     /// to it, in media folders beside it, in Batocera's `images` folder,
-    /// and in an ES-DE `downloaded_media` tree beside its ROMs folder.
+    /// and in a `Media` (or ES-DE `downloaded_media`) tree beside its ROMs
+    /// folder.
     public static func media(forROM rom: URL, system: CanonicalSystemID?) -> [(file: URL, kind: MediaKind)] {
         let folder = rom.deletingLastPathComponent()
         let stem = rom.deletingPathExtension().lastPathComponent
-        let esdeMedia = folder.deletingLastPathComponent().deletingLastPathComponent()
-            .appending(path: MediaFolder.folderName).appending(path: folder.lastPathComponent)
+        let mediaTrees = EmulationLayout.mediaNames.map {
+            folder.deletingLastPathComponent().deletingLastPathComponent()
+                .appending(path: $0).appending(path: folder.lastPathComponent)
+        }
         let subfolders = children(of: folder).filter(isDirectory)
 
         var found: [MediaKind: URL] = [:]
@@ -53,7 +56,9 @@ public enum ImportedMedia {
             for media in subfolders where folderKinds[media.lastPathComponent.lowercased()] == kind {
                 offer(file(named: stem, in: media, extensions: extensions), as: kind)
             }
-            offer(file(named: stem, in: esdeMedia.appending(path: kind.rawValue), extensions: extensions), as: kind)
+            for tree in mediaTrees {
+                offer(file(named: stem, in: tree.appending(path: kind.rawValue), extensions: extensions), as: kind)
+            }
         }
         // Batocera: images/Game-boxart.png, videos/Game-video.mp4…
         for (suffix, kind) in MediaTidier.inFolderSuffixes.sorted(by: { $0.key < $1.key }) {
@@ -72,12 +77,14 @@ public enum ImportedMedia {
     }
 
     /// The gamelist that came with a folder of games: Batocera's, inside
-    /// it, or ES-DE's, in a `gamelists` tree beside its ROMs folder.
+    /// it, or ES-DE's, in a `Gamelists` (or `gamelists`) tree beside its
+    /// ROMs folder.
     public static func gamelist(near folder: URL) -> URL? {
-        [folder.appending(path: "gamelist.xml"),
-         folder.deletingLastPathComponent().deletingLastPathComponent()
-            .appending(path: "gamelists").appending(path: folder.lastPathComponent).appending(path: "gamelist.xml")]
-            .first { FileManager.default.fileExists(atPath: $0.path) }
+        let shared = folder.deletingLastPathComponent().deletingLastPathComponent()
+        return ([folder.appending(path: "gamelist.xml")] + EmulationLayout.gamelistsNames.map {
+            shared.appending(path: $0).appending(path: folder.lastPathComponent).appending(path: "gamelist.xml")
+        })
+        .first { FileManager.default.fileExists(atPath: $0.path) }
     }
 
     /// `incoming` merged into the system's gamelist (`existing`, if it has

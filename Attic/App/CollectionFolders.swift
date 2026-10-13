@@ -3,7 +3,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 
-/// Each collection also lives as a folder, `Emulation/collections/<Name>/`:
+/// Each collection also lives as a folder, `Emulation/Collections/<Name>/`:
 /// its `collection.json` (see `CollectionFile`), its `logo` and its
 /// `artwork`. Attic rewrites the file whenever the library is saved, so
 /// collections move and back up with the Emulation folder, come back if
@@ -11,7 +11,7 @@ import AtticPersistence
 @MainActor
 enum CollectionFolders {
     static func root(in emulationRoot: URL) -> URL {
-        emulationRoot.appending(path: "collections", directoryHint: .isDirectory)
+        emulationRoot.appending(path: EmulationLayout.collections, directoryHint: .isDirectory)
     }
 
     // MARK: - Keeping the folders up to date

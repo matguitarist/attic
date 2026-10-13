@@ -216,7 +216,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
                     String(localized: "Add your folder in Settings › General, then choose Rescan Library. Rescan again whenever you add or remove games.")
                 ]),
                 (String(localized: "Names and artwork"), [
-                    String(localized: "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in downloaded_media or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list."),
+                    String(localized: "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in a Media folder (ES-DE's downloaded_media) or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list."),
                     String(localized: "For anything still missing, see Game Info & Art.")
                 ]),
                 (String(localized: "Playing Games"), [

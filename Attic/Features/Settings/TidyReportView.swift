@@ -94,7 +94,7 @@ struct TidyReportView: View {
 
     private func title(for step: MediaTidyPlan.Step) -> String {
         switch step {
-        case .moveMedia: String(localized: "Move media into downloaded_media")
+        case .moveMedia: String(localized: "Move media into the Media folder")
         case .gamelists: String(localized: "Fix gamelists")
         case .compressCovers: String(localized: "Save covers as HEIC")
         case .compressManuals: String(localized: "Compress heavy manual scans")
@@ -113,7 +113,7 @@ struct TidyReportView: View {
         case .moveMedia:
             return String(localized: "\(count) files, renamed ES-DE style (Game-boxart.png becomes covers/Game.png).")
         case .gamelists:
-            return String(localized: "\(count) gamelists: Batocera's move to gamelists/, and old media paths and missing games come out.")
+            return String(localized: "\(count) gamelists: Batocera's move to Gamelists, and old media paths and missing games come out.")
         case .compressCovers:
             return String(localized: "\(count) PNG and JPEG covers, kept only when HEIC is smaller.")
         case .compressManuals:

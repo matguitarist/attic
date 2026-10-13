@@ -40,7 +40,7 @@ struct ImportedMediaTests {
         _ = try touch("Emulation/downloaded_media/nes/covers/Zelda.jpg")
         _ = try touch("Emulation/gamelists/nes/gamelist.xml")
         #expect(ImportedMedia.media(forROM: rom, system: .nes).map(\.kind) == [.covers])
-        #expect(ImportedMedia.gamelist(near: rom.deletingLastPathComponent())?.path.hasSuffix("gamelists/nes/gamelist.xml") == true)
+        #expect(ImportedMedia.gamelist(near: rom.deletingLastPathComponent())?.path.lowercased().hasSuffix("gamelists/nes/gamelist.xml") == true)
     }
 
     @Test func picoCartsAreGamesNotCovers() throws {

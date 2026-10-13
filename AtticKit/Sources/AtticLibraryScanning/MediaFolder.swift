@@ -1,4 +1,5 @@
 import Foundation
+import AtticModels
 import CoreGraphics
 import ImageIO
 import UniformTypeIdentifiers
@@ -15,17 +16,17 @@ public enum MediaKind: String, CaseIterable, Sendable {
 ///
 ///     Emulation/
 ///       ROMs/snes/Super Mario World (USA).sfc
-///       downloaded_media/snes/covers/Super Mario World (USA).heic
+///       Media/snes/covers/Super Mario World (USA).heic
 ///
 /// Attic's scraper, picked covers and the tidy-up all write here, and the
 /// scanner reads from here (see `ESDEMediaResolver`).
 public enum MediaFolder {
-    public static let folderName = "downloaded_media"
+    public static let folderName = EmulationLayout.media
     /// Most compact first, which is also the order new files are written in.
     public static let imageExtensions = ["heic", "webp", "png", "jpg", "jpeg"]
     public static let videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"]
 
-    /// `<shared parent>/downloaded_media/<system folder name>` for a
+    /// `<shared parent>/Media/<system folder name>` for a
     /// system's ROMs folder such as `Emulation/ROMs/snes`.
     public static func root(forSystemFolder systemFolder: URL) -> URL {
         systemFolder

@@ -42,6 +42,7 @@ struct AtticApp: App {
         // window open, and the folder must be ready before anything indexes
         // cores or launches a game.
         emulationFolderStore.prepare(romsRoots: romsRootsStore.rootURLs)
+        Self.followRenamedFolders(emulationFolderStore.renamedFolders, in: container)
         LegacyRomsBoxMigration.migrateFiles(emulationFolder: emulationFolderStore.folder, modelContainer: container)
         AppSupportMediaMigration.run(in: container)
         _romsRootsStore = State(initialValue: romsRootsStore)
@@ -127,6 +128,25 @@ struct AtticApp: App {
             withAppEnvironment(SettingsTabView())
                 .modelContainer(modelContainer)
         }
+    }
+
+    /// Games' media paths into folders renamed at launch (ES-DE's
+    /// downloaded_media is now Media).
+    private static func followRenamedFolders(_ renamed: [(from: URL, to: URL)], in container: ModelContainer) {
+        guard !renamed.isEmpty, let games = try? container.mainContext.fetch(FetchDescriptor<Game>()) else { return }
+        func moved(_ path: String?) -> String? {
+            guard let path else { return nil }
+            for (from, to) in renamed where path.hasPrefix(from.path + "/") {
+                return to.path + path.dropFirst(from.path.count)
+            }
+            return path
+        }
+        for game in games {
+            game.coverArtPath = moved(game.coverArtPath)
+            game.titleScreenPath = moved(game.titleScreenPath)
+            game.videoPath = moved(game.videoPath)
+        }
+        try? container.mainContext.save()
     }
 
     private func saveCollectionFolders() {

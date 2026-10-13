@@ -30,7 +30,7 @@ extension Game {
 
 /// Before 1.9.2, scraped and picked media went to Application Support,
 /// outside the Emulation folder. This moves what the library still uses
-/// into `downloaded_media` beside the games, once, and the rest to the
+/// into `Media` beside the games, once, and the rest to the
 /// Trash.
 enum AppSupportMediaMigration {
     private static var folders: [URL] {

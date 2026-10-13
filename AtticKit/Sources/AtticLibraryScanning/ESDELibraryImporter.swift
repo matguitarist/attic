@@ -92,7 +92,7 @@ public struct ESDELibraryImporter: LibraryImporter {
 
         return [
             sharedParent.appending(path: "ES-DE"), // packaged default: ~/ES-DE next to ~/ROMs
-            sharedParent, // flat layout: ~/Emulation/{ROMs,downloaded_media,gamelists}
+            sharedParent, // flat layout: ~/Emulation/{ROMs,Media,Gamelists} (or ES-DE's names)
             homeDirectoryURL.appending(path: "ES-DE") // ES-DE's untouched default
         ]
     }
@@ -101,9 +101,11 @@ public struct ESDELibraryImporter: LibraryImporter {
     private func gamelistURL(forSystemFolderURL systemFolderURL: URL) -> URL? {
         let systemName = systemFolderURL.lastPathComponent
         for root in candidateRoots(forSystemFolderURL: systemFolderURL) {
-            let url = root.appending(path: "gamelists").appending(path: systemName).appending(path: "gamelist.xml")
-            if FileManager.default.fileExists(atPath: url.path) {
-                return url
+            for folderName in EmulationLayout.gamelistsNames {
+                let url = root.appending(path: folderName).appending(path: systemName).appending(path: "gamelist.xml")
+                if FileManager.default.fileExists(atPath: url.path) {
+                    return url
+                }
             }
         }
         return nil
@@ -117,9 +119,11 @@ public struct ESDELibraryImporter: LibraryImporter {
         let fm = FileManager.default
         var isDirectory: ObjCBool = false
         for root in candidateRoots(forSystemFolderURL: systemFolderURL) {
-            let mediaDir = root.appending(path: "downloaded_media").appending(path: systemName)
-            if fm.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                return root
+            for folderName in EmulationLayout.mediaNames {
+                let mediaDir = root.appending(path: folderName).appending(path: systemName)
+                if fm.fileExists(atPath: mediaDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                    return root
+                }
             }
         }
         return nil

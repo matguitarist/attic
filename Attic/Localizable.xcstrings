@@ -234,12 +234,12 @@
         }
       }
     },
-    "%lld gamelists: Batocera's move to gamelists/, and old media paths and missing games come out.": {
+    "%lld gamelists: Batocera's move to Gamelists, and old media paths and missing games come out.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld gamelists : celles de Batocera vont dans gamelists/, et les anciens chemins de médias et les jeux absents en sont retirés."
+            "value": "%lld gamelists : celles de Batocera vont dans Gamelists, et les anciens chemins de médias et les jeux absents en sont retirés."
           }
         }
       }
@@ -2475,12 +2475,12 @@
         }
       }
     },
-    "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in downloaded_media or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list.": {
+    "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in a Media folder (ES-DE's downloaded_media) or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les noms, descriptions et illustrations déjà présents dans un gamelist.xml (d’ES-DE, Batocera ou RetroBat) et dans downloaded_media ou les dossiers images et videos d’un système sont repris automatiquement. Les jeux d’arcade reçoivent leur vrai titre depuis la liste de jeux de FinalBurn Neo."
+            "value": "Les noms, descriptions et illustrations déjà présents dans un gamelist.xml (d’ES-DE, Batocera ou RetroBat) et dans un dossier Media (downloaded_media d’ES-DE) ou les dossiers images et videos d’un système sont repris automatiquement. Les jeux d’arcade reçoivent leur vrai titre depuis la liste de jeux de FinalBurn Neo."
           }
         }
       }
@@ -3105,12 +3105,12 @@
         }
       }
     },
-    "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens.": {
+    "Keeps games in ROMs and their media in Media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Garde les jeux dans ROMs et leurs médias dans downloaded_media, et met à la corbeille ce que d’autres apps ont laissé. Vous voyez un rapport de chaque changement avant que rien ne se passe."
+            "value": "Garde les jeux dans ROMs et leurs médias dans Media, et met à la corbeille ce que d’autres apps ont laissé. Vous voyez un rapport de chaque changement avant que rien ne se passe."
           }
         }
       }
@@ -3385,12 +3385,12 @@
         }
       }
     },
-    "Move media into downloaded_media": {
+    "Move media into the Media folder": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Déplacer les médias dans downloaded_media"
+            "value": "Déplacer les médias dans le dossier Media"
           }
         }
       }

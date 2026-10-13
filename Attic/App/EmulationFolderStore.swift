@@ -18,6 +18,9 @@ final class EmulationFolderStore {
     /// What the last `prepare()` copied in, for showing the user.
     private(set) var lastImportSummary: String?
     private(set) var lastError: String?
+    /// ES-DE-named folders the last `prepare()` renamed to Attic's names,
+    /// whose paths the library then follows.
+    private(set) var renamedFolders: [(from: URL, to: URL)] = []
 
     init(userDefaults: UserDefaults = .standard, romsRoots: [URL]) {
         self.userDefaults = userDefaults
@@ -45,6 +48,10 @@ final class EmulationFolderStore {
             guard !romsRoots.isEmpty else { return }
             folder = EmulationFolder(root: EmulationFolder.defaultRoot(romsRoots: romsRoots))
         }
+        // Before the new folders exist, or they'd be made empty beside the
+        // old ones.
+        let parents = Set([folder.root] + romsRoots.map { $0.deletingLastPathComponent() })
+        renamedFolders = parents.flatMap { EmulationFolder.adoptFolderNames(in: $0) }
         do {
             try folder.createStructure()
             userDefaults.set(folder.root.path, forKey: Self.rootPathKey)

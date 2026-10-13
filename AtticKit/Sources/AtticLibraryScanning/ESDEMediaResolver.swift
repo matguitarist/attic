@@ -1,7 +1,9 @@
 import Foundation
+import AtticModels
 
 /// ES-DE has no media path tags in gamelist.xml at all — art is matched
-/// purely by filename against `<ES-DE root>/downloaded_media/<system>/<type>/`,
+/// purely by filename against `<root>/Media/<system>/<type>/` (ES-DE's
+/// `downloaded_media` too),
 /// so resolving art means probing the filesystem, unlike Batocera where the
 /// path comes straight out of the XML.
 ///
@@ -64,15 +66,18 @@ struct ESDEMediaResolver {
         return nil
     }
 
+    /// In Attic's `Media` folder, else ES-DE's `downloaded_media`.
     private func firstExistingFile(mediaType: String, nameNoExt: String, extensions: [String]) -> URL? {
-        let directory = esdeRoot
-            .appending(path: "downloaded_media")
-            .appending(path: systemName)
-            .appending(path: mediaType)
-        for ext in extensions {
-            let candidate = directory.appending(path: "\(nameNoExt).\(ext)")
-            if FileManager.default.fileExists(atPath: candidate.path) {
-                return candidate
+        for folderName in EmulationLayout.mediaNames {
+            let directory = esdeRoot
+                .appending(path: folderName)
+                .appending(path: systemName)
+                .appending(path: mediaType)
+            for ext in extensions {
+                let candidate = directory.appending(path: "\(nameNoExt).\(ext)")
+                if FileManager.default.fileExists(atPath: candidate.path) {
+                    return candidate
+                }
             }
         }
         return nil

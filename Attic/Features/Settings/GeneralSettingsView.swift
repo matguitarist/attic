@@ -79,7 +79,7 @@ struct GeneralSettingsView: View {
                         Text("Tidy up media and leftovers")
                         Text(isTidy
                              ? String(localized: "Everything's already in place.")
-                             : String(localized: "Keeps games in ROMs and their media in downloaded_media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens."))
+                             : String(localized: "Keeps games in ROMs and their media in Media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens."))
                     }
                 }
             }

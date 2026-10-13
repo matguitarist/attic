@@ -15,11 +15,11 @@ public struct MediaTidyPlan: Sendable {
         public let systemFolder: URL
     }
 
-    /// Batocera-style media in the ROM folders, going to `downloaded_media`.
+    /// Batocera-style media in the ROM folders, going to `Media`.
     public var moves: [Move] = []
     /// Gamelists to rewrite without media paths (which no longer hold)
     /// or entries for games that aren't there: Batocera-style ones in a
-    /// ROM folder go to ES-DE's `gamelists/<system>/`, others stay put.
+    /// ROM folder go to `Gamelists/<system>/`, others stay put.
     public var gamelists: [GamelistFix] = []
     /// Whole folders or single files, all going to the Trash, with why.
     public var trashed: [Trashed] = []
@@ -101,8 +101,8 @@ public struct MediaTidyPlan: Sendable {
 
 /// Leaves a ROMs folder and the media beside it the way Attic keeps them:
 /// games only in `ROMs/<system>/`, their metadata in
-/// `gamelists/<system>/gamelist.xml` and their media in
-/// `downloaded_media/<system>/<kind>/` (see `MediaFolder`). Everything else
+/// `Gamelists/<system>/gamelist.xml` and their media in
+/// `Media/<system>/<kind>/` (see `MediaFolder`). Everything else
 /// other front-ends and scrapers left goes to the Trash, so nothing is
 /// lost for good:
 ///
@@ -115,7 +115,7 @@ public struct MediaTidyPlan: Sendable {
 ///   media for games that aren't there any more.
 ///
 /// Batocera's in-folder media (`images/x-boxart.png`) is renamed into
-/// `downloaded_media` instead, and covers are rewritten as HEIC.
+/// `Media` instead, and covers are rewritten as HEIC.
 public enum MediaTidier {
     /// Other apps' notes, in a system folder or at a ROMs root.
     static let foreignFileNames: Set<String> = ["systeminfo.txt", "_info.txt", "readme.txt"]
@@ -201,7 +201,7 @@ public enum MediaTidier {
         let fileManager = FileManager.default
         let shared = root.deletingLastPathComponent()
         let mediaRoot = shared.appending(path: MediaFolder.folderName, directoryHint: .isDirectory)
-        let gamelistsRoot = shared.appending(path: "gamelists", directoryHint: .isDirectory)
+        let gamelistsRoot = shared.appending(path: EmulationLayout.gamelists, directoryHint: .isDirectory)
 
         for name in foreignRootFileNames {
             let url = root.appending(path: name)

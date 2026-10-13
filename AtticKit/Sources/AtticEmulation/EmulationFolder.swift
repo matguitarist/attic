@@ -6,7 +6,10 @@ import AtticModels
 /// up or moving to another Mac means copying a single folder.
 ///
 ///     Emulation/
-///       ROMs/ gamelists/ downloaded_media/   (ES-DE layout, untouched)
+///       ROMs/<system>/
+///       Media/<system>/<kind>/               (covers, screenshots, videos, manuals)
+///       Gamelists/<system>/gamelist.xml      (names and descriptions)
+///       Collections/<Name>/                  (collection.json, logo, artwork)
 ///       BIOS/
 ///       Saves/<system>/      States/<system>/
 ///       Cores/  Cores/Info/                  (RetroArch cores + .info)
@@ -31,6 +34,9 @@ public struct EmulationFolder: Sendable, Hashable {
     public var coreInfo: URL { cores.appending(path: "Info", directoryHint: .isDirectory) }
     public var config: URL { root.appending(path: "Config", directoryHint: .isDirectory) }
     public var emulators: URL { root.appending(path: "Emulators", directoryHint: .isDirectory) }
+    public var media: URL { root.appending(path: EmulationLayout.media, directoryHint: .isDirectory) }
+    public var gamelists: URL { root.appending(path: EmulationLayout.gamelists, directoryHint: .isDirectory) }
+    public var collections: URL { root.appending(path: EmulationLayout.collections, directoryHint: .isDirectory) }
 
     public var retroArchConfigDirectory: URL { config.appending(path: "RetroArch", directoryHint: .isDirectory) }
     /// RetroArch's main config when launched by Attic (`--config`).
@@ -62,10 +68,38 @@ public struct EmulationFolder: Sendable, Hashable {
         return FileManager.default.homeDirectoryForCurrentUser.appending(path: "Emulation", directoryHint: .isDirectory)
     }
 
+    /// Renames ES-DE's `downloaded_media` and `gamelists` (and Attic's own
+    /// earlier lowercase `collections`) in `parent` to Attic's names (see
+    /// `EmulationLayout`). Returns the renamed folders' old and new paths.
+    @discardableResult
+    public static func adoptFolderNames(in parent: URL) -> [(from: URL, to: URL)] {
+        let fileManager = FileManager.default
+        // Exact spellings: APFS ignores case, so `gamelists` "exists" as
+        // `Gamelists` too.
+        let names = Set((try? fileManager.contentsOfDirectory(atPath: parent.path)) ?? [])
+        var renamed: [(URL, URL)] = []
+        for (old, new) in [(EmulationLayout.esdeMedia, EmulationLayout.media),
+                           (EmulationLayout.esdeGamelists, EmulationLayout.gamelists),
+                           ("collections", EmulationLayout.collections)]
+        where names.contains(old) && !names.contains(new) {
+            let from = parent.appending(path: old, directoryHint: .isDirectory)
+            let to = parent.appending(path: new, directoryHint: .isDirectory)
+            // Through a temporary name, which a case-only rename needs.
+            let step = parent.appending(path: ".\(new)-\(UUID().uuidString)", directoryHint: .isDirectory)
+            guard (try? fileManager.moveItem(at: from, to: step)) != nil else { continue }
+            if (try? fileManager.moveItem(at: step, to: to)) != nil {
+                renamed.append((from, to))
+            } else {
+                try? fileManager.moveItem(at: step, to: from)
+            }
+        }
+        return renamed
+    }
+
     /// Creates any missing top-level folders. Existing ones (whatever their
     /// capitalization — APFS is case-insensitive) are left as they are.
     public func createStructure() throws {
-        for directory in [bios, saves, states, cores, coreInfo, config, retroArchConfigDirectory, emulators] {
+        for directory in [bios, saves, states, cores, coreInfo, config, retroArchConfigDirectory, emulators, media, gamelists, collections] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         }
     }

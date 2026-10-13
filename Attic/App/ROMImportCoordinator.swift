@@ -272,7 +272,7 @@ extension ROMImportCoordinator {
                   let incoming = try? String(contentsOf: gamelist, encoding: .utf8),
                   let folder = ROMImport.folder(for: system, romsRoots: romsRoots) else { continue }
             let destination = folder.deletingLastPathComponent().deletingLastPathComponent()
-                .appending(path: "gamelists").appending(path: folder.lastPathComponent).appending(path: "gamelist.xml")
+                .appending(path: EmulationLayout.gamelists).appending(path: folder.lastPathComponent).appending(path: "gamelist.xml")
             let existing = try? String(contentsOf: destination, encoding: .utf8)
             let merged = ImportedMedia.mergedGamelist(incoming, into: existing, systemFolder: folder)
             guard merged != existing else { continue }
