@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    " (and %lld tracks)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " (et %lld pistes)"
+          }
+        }
+      }
+    },
     " (keeps %@)": {
       "localizations": {
         "fr": {
@@ -316,6 +326,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld jeux sur %2$lld systèmes"
+          }
+        }
+      }
+    },
+    "%lld games, %@ now: each becomes one .chd, lossless and usually 30–60%% smaller, checked before the original files go to the Trash. Takes a few minutes per game.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games, %2$@ now: each becomes one .chd, lossless and usually 30–60%% smaller, checked before the original files go to the Trash. Takes a few minutes per game."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux, %2$@ actuellement : chacun devient un seul .chd, sans perte et en général 30 à 60 %% plus léger, vérifié avant que les fichiers d’origine aillent à la corbeille. Compte quelques minutes par jeu."
           }
         }
       }
@@ -1505,6 +1531,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Comparés à la dernière version de chaque projet lors de la vérification des cœurs. Les sauvegardes et réglages sont conservés lors d’une mise à jour."
+          }
+        }
+      }
+    },
+    "Compress disc games to CHD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser les jeux sur disque en CHD"
           }
         }
       }
@@ -2821,6 +2857,16 @@
         }
       }
     },
+    "Homebrew couldn't install rom-tools. Try “brew install rom-tools” in Terminal.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Homebrew n’a pas pu installer rom-tools. Essayez « brew install rom-tools » dans le Terminal."
+          }
+        }
+      }
+    },
     "Import": {
       "localizations": {
         "fr": {
@@ -2957,6 +3003,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Installer et choisir les émulateurs dans les Réglages…"
+          }
+        }
+      }
+    },
+    "Install chdman": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer chdman"
           }
         }
       }
@@ -3567,6 +3623,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "BIOS requis : %@"
+          }
+        }
+      }
+    },
+    "Needs MAME's chdman tool, which Homebrew can install.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nécessite l’outil chdman de MAME, que Homebrew peut installer."
+          }
+        }
+      }
+    },
+    "Needs MAME's chdman tool: install Homebrew (brew.sh), then run “brew install rom-tools” in Terminal.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nécessite l’outil chdman de MAME : installez Homebrew (brew.sh), puis lancez « brew install rom-tools » dans le Terminal."
           }
         }
       }

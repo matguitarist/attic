@@ -40,7 +40,8 @@ struct GeneralSettingsView: View {
         let progress = { @Sendable (value: Double) -> Void in
             Task { @MainActor in tidyProgress = value }
         }
-        _ = await Task.detached(priority: .userInitiated) { MediaTidier.apply(plan, progress: progress) }.value
+        let chdman = CHDConversion.findCHDMan()
+        _ = await Task.detached(priority: .userInitiated) { MediaTidier.apply(plan, chdman: chdman, progress: progress) }.value
         // Media and gamelists moved: the library picks up their new places.
         await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs)
         tidyProgress = nil
