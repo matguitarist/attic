@@ -40,8 +40,10 @@ final class ScanCoordinator {
 
         let scanner = self.scanner
         let result = await Task.detached(priority: .userInitiated) {
-            // Vita games installed in Vita3K since the last scan.
+            // Vita games installed in Vita3K since the last scan, and
+            // playlists for multi-disc games.
             Vita3KLibrary.addShortcuts(romsRoots: romsRootURLs)
+            DiscPlaylists.createMissing(romsRoots: romsRootURLs)
             return scanner.scan(romsRootURLs: romsRootURLs)
         }.value
         // Systems the user removed stay out until added back.

@@ -68,13 +68,18 @@ public struct LibraryScanner: Sendable {
 
             do {
                 let data = try importer.importSystem(systemFolderURL: folderURL, canonicalID: definition.canonicalID)
+                let discs = DiscPlaylists.listedFiles(in: folderURL)
                 // Only the system's own file types are games — gamelist
                 // entries included, since a gamelist can list anything.
                 systems.append(ImportedSystemData(
                     canonicalID: data.canonicalID,
                     libraryFormat: data.libraryFormat,
                     romsRootURL: data.romsRootURL,
-                    games: data.games.filter { SystemROMExtensions.accepts($0.romRelativePath, for: definition.canonicalID) }
+                    // …and discs a .m3u playlist lists are part of that game.
+                    games: data.games.filter { game in
+                        SystemROMExtensions.accepts(game.romRelativePath, for: definition.canonicalID)
+                            && !discs.contains(game.romRelativePath)
+                    }
                 ))
             } catch {
                 issues.append(ScanIssue(folderURL: folderURL, reason: .importFailed(String(describing: error))))
