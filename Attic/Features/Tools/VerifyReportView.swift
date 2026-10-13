@@ -125,6 +125,8 @@ struct VerifyReportView: View {
                     gameList(arcade ? String(localized: "Not in the DAT (\(system.unknown.count))") : String(localized: "Not in No-Intro's list (\(system.unknown.count))"), system.unknown,
                              help: arcade ? String(localized: "A set this emulator's version doesn't know by that name.")
                                           : String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
+                    gameList(String(localized: "Verified (\(system.verifiedGames.count))"), system.verifiedGames,
+                             help: String(localized: "Known good dumps, as the DAT lists them."))
                 } header: {
                     HStack {
                         Text(system.name)
@@ -198,18 +200,27 @@ struct VerifyReportView: View {
     private func gameList(_ title: String, _ games: [ToolsCoordinator.VerifyReport.Game], help: String) -> some View {
         if !games.isEmpty {
             DisclosureGroup {
-                ForEach(games.prefix(300), id: \.self) { game in
+                // By name, as the library shows them; the file under it.
+                let sorted = games.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
+                ForEach(sorted.prefix(300), id: \.self) { game in
                     HStack {
-                        Text(verbatim: URL(fileURLWithPath: game.path).lastPathComponent)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(verbatim: game.title)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Text(verbatim: URL(fileURLWithPath: game.path).lastPathComponent)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
                         Spacer()
                         if let detail = game.detail {
                             Text(verbatim: detail)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
                                 .truncationMode(.middle)
-                        } else if let name = game.datName {
+                        } else if let name = game.datName, name != game.title {
                             Text(verbatim: name)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)

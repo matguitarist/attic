@@ -4470,6 +4470,16 @@
         }
       }
     },
+    "Known good dumps, as the DAT lists them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De bons dumps connus, tels que le DAT les liste."
+          }
+        }
+      }
+    },
     "LB / RB": {
       "localizations": {
         "fr": {
@@ -8170,6 +8180,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifié"
+          }
+        }
+      }
+    },
+    "Verified (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifiés (%lld)"
           }
         }
       }

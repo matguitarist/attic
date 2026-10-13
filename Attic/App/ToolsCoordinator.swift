@@ -140,6 +140,7 @@ final class ToolsCoordinator {
             let id: CanonicalSystemID
             let name: String
             var verified = 0
+            var verifiedGames: [Game] = []
             /// Verified, but filed under a name of their own.
             var renamed: [Game] = []
             var differs: [Game] = []
@@ -326,6 +327,7 @@ final class ToolsCoordinator {
             switch check?.verdict {
             case .verified?:
                 system.verified += 1
+                system.verifiedGames.append(game)
                 // An arcade set keeps its set name: no renaming.
                 let stem = URL(fileURLWithPath: file.path).deletingPathExtension().lastPathComponent
                 if !isArcade(file.system), stem != check?.name { system.renamed.append(game) }
