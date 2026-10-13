@@ -112,7 +112,7 @@ enum SystemHelpContent {
                     notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name. The NAOMI 2 BIOS (naomi2.zip) goes in a dc folder inside the BIOS folder.")]),
         .naomigd: .init(manufacturer: "Sega", year: 2001, wikipediaTitle: "Sega_NAOMI",
                     controls: [coinControls],
-                    notes: [LocalizedStringResource("GD-ROM games are MAME romsets: keep each game's zip, and beside it the folder of the same name that holds its .chd. They boot from the NAOMI BIOS (naomi.zip), in a dc folder inside the BIOS folder.")]),
+                    notes: [LocalizedStringResource("GD-ROM games are MAME romsets: keep each game's zip, and beside it the folder of the same name that holds its .chd. They boot from the NAOMI BIOS (naomi.zip), or NAOMI 2's (naomi2.zip) for NAOMI 2 games, in a dc folder inside the BIOS folder.")]),
         .model2: .init(manufacturer: "Sega", year: 1993, wikipediaTitle: "Sega_Model_2",
                     controls: [coinControls],
                     notes: [romsetNote, mameVersionNote,

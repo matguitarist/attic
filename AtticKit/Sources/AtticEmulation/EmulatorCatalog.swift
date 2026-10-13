@@ -576,8 +576,12 @@ public enum EmulatorCatalog {
             BIOSRequirement("dc/f355dlx.zip", required: false, note: "Ferrari F355 Challenge, deluxe cabinet"),
             BIOSRequirement("dc/airlbios.zip", required: false, note: "Airline Pilots, deluxe cabinet")
         ], prefersStandalone: false),
-        // GD-ROM games boot from the NAOMI BIOS too.
-        .init(systemID: .naomigd, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi.zip")], prefersStandalone: false),
+        // GD-ROM games boot from the NAOMI BIOS too, NAOMI 2 ones from
+        // NAOMI 2's (Flycast picks the one each game needs).
+        .init(systemID: .naomigd, cores: [flycast], standalone: [], bios: [
+            BIOSRequirement("dc/naomi.zip"),
+            BIOSRequirement("dc/naomi2.zip", required: false, note: "NAOMI 2 GD-ROM games")
+        ], prefersStandalone: false),
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
         // MAME finds a board's BIOS set (stvbios.zip) beside the games.
