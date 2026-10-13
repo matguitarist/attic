@@ -3,6 +3,24 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.15.0</title>
+            <pubDate>Tue, 13 Oct 2026 11:21:27 -0400</pubDate>
+            <sparkle:version>21</sparkle:version>
+            <sparkle:shortVersionString>1.15.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Save backups: Tools › Back Up Saves, or weekly from Settings › General; a zip of saves, save states, collections and gamelists, the newest five kept</li>
+<li>File › Import Collection… (or a drop) reads ES-DE and Batocera custom collections (custom-Name.cfg)</li>
+<li>Collections can choose games by genre, players, release years and favorites, with or without title words</li>
+<li>A game taken out of a collection stays out after it&#x27;s compressed</li>
+<li>Unzipped copies of games are kept under 2 GB, the ones played longest ago going first</li>
+<li>ScreenScraper matches a zipped game by the ROM inside</li>
+<li>A deleted collection doesn&#x27;t come back from a leftover folder</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.15.0/Attic-1.15.0.zip" length="12744438" type="application/octet-stream" sparkle:edSignature="Zhu0ZEPaQ5sWsZoD3BhC5DuyMu3erHBMBR6aaLwFrET94CFTMIyIzdo4Hq+WnQmjBFOWTt4XHe8NgrlmaoZrDA=="/>
+        </item>
+        <item>
             <title>1.14.1</title>
             <pubDate>Tue, 13 Oct 2026 08:40:28 -0400</pubDate>
             <sparkle:version>20</sparkle:version>
