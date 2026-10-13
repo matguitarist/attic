@@ -102,7 +102,7 @@ public struct ArcadeNameIndex: Sendable, Codable, Equatable {
     /// "(World 900227)", "(NGM-056)", "(set 1)" — which are noise in a
     /// library with one file per game, so every trailing tag is dropped
     /// (unless that would leave nothing).
-    static func cleanedTitle(_ description: String) -> String {
+    public static func cleanedTitle(_ description: String) -> String {
         let trimmed = description.trimmingCharacters(in: .whitespacesAndNewlines)
         let stripped = trimmed
             .replacing(#/(\s*[\(\[][^\(\)\[\]]*[\)\]])+$/#, with: "")

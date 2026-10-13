@@ -1,6 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import AtticModels
+import AtticEmulation
 
 /// What checking the games against No-Intro's DATs found, system by
 /// system; or, before there are any DATs, where to get them.
@@ -9,6 +10,8 @@ struct VerifyReportView: View {
     let datsFolder: URL
     /// Runs the check again, after DATs were added.
     let onVerifyAgain: () -> Void
+    /// Downloads FinalBurn Neo's or MAME's DAT, then checks again.
+    let onDownload: (ArcadeVerifier.Source) -> Void
     /// Gives these games No-Intro's names.
     let onRename: ([ToolsCoordinator.VerifyReport.Game]) -> Void
     @Environment(\.dismiss) private var dismiss
@@ -34,7 +37,7 @@ struct VerifyReportView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
 
-            if report.datCount == 0 {
+            if report.datCount == 0 && report.missingArcadeDATs.isEmpty {
                 noDATs
             } else {
                 results
@@ -84,17 +87,49 @@ struct VerifyReportView: View {
 
     private var results: some View {
         Form {
-            ForEach(report.systems) { system in
+            if !report.missingArcadeDATs.isEmpty {
                 Section {
-                    gameList(String(localized: "Differ from No-Intro's (\(system.differs.count))"), system.differs,
-                             help: String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
-                    gameList(String(localized: "Not in No-Intro's list (\(system.unknown.count))"), system.unknown,
-                             help: String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
+                    ForEach(report.missingArcadeDATs, id: \.self) { source in
+                        LabeledContent {
+                            Button("Download") {
+                                dismiss()
+                                onDownload(source)
+                            }
+                        } label: {
+                            switch source {
+                            case .fbneo:
+                                Text("FinalBurn Neo's DAT")
+                                Text("For Neo Geo, CPS-1, CPS-2, CPS-3 and FinalBurn Neo's other boards. About 14 MB, from FinalBurn Neo's repository.")
+                            case .mame:
+                                Text("MAME's game list")
+                                Text("For MAME, NAOMI, Atomiswave, Model 2 and 3, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.")
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Arcade DATs")
+                } footer: {
+                    Text("Arcade sets are checked against the version of the emulator that runs them: chip by chip, with what a clone takes from its parent and a game from its BIOS set, and each disc image.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            ForEach(report.systems) { system in
+                let arcade = ToolsCoordinator.isArcade(system.id)
+                Section {
+                    gameList(String(localized: "Incomplete (\(system.incomplete.count))"), system.incomplete,
+                             help: String(localized: "Chips or a disc image are missing: the game may not start."))
+                    gameList(arcade ? String(localized: "From another version (\(system.differs.count))") : String(localized: "Differ from No-Intro's (\(system.differs.count))"), system.differs,
+                             help: arcade ? String(localized: "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.")
+                                          : String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
+                    gameList(arcade ? String(localized: "Not in the DAT (\(system.unknown.count))") : String(localized: "Not in No-Intro's list (\(system.unknown.count))"), system.unknown,
+                             help: arcade ? String(localized: "A set this emulator's version doesn't know by that name.")
+                                          : String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
                 } header: {
                     HStack {
                         Text(system.name)
                         Spacer()
-                        let checked = system.verified + system.differs.count + system.unknown.count
+                        let checked = system.verified + system.differs.count + system.unknown.count + system.incomplete.count
                         Label(String(localized: "\(system.verified) of \(checked) verified"),
                               systemImage: system.verified == checked ? "checkmark.seal.fill" : "checkmark.seal")
                             .foregroundStyle(system.verified == checked ? .green : .secondary)
@@ -169,7 +204,12 @@ struct VerifyReportView: View {
                             .lineLimit(1)
                             .truncationMode(.middle)
                         Spacer()
-                        if let name = game.datName {
+                        if let detail = game.detail {
+                            Text(verbatim: detail)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        } else if let name = game.datName {
                             Text(verbatim: name)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)

@@ -910,6 +910,16 @@
         }
       }
     },
+    "A set this emulator's version doesn't know by that name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un set que cette version de l’émulateur ne connaît pas sous ce nom."
+          }
+        }
+      }
+    },
     "A zip of your saves, save states, collections and gamelists. The newest %lld are kept. Another drive or a synced folder keeps them safest.": {
       "localizations": {
         "fr": {
@@ -1398,6 +1408,26 @@
         }
       }
     },
+    "Arcade DATs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DAT arcade"
+          }
+        }
+      }
+    },
+    "Arcade sets are checked against the version of the emulator that runs them: chip by chip, with what a clone takes from its parent and a game from its BIOS set, and each disc image.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sets arcade sont vérifiés d’après la version de l’émulateur qui les lance : puce par puce, avec ce qu’un clone prend à son parent et un jeu à son set BIOS, et chaque image disque."
+          }
+        }
+      }
+    },
     "Arguments": {
       "localizations": {
         "fr": {
@@ -1874,6 +1904,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifie vos jeux d’après les listes de bons dumps de No-Intro."
+          }
+        }
+      }
+    },
+    "Chips or a disc image are missing: the game may not start.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il manque des puces ou une image disque : le jeu risque de ne pas démarrer."
+          }
+        }
+      }
+    },
+    "Chips or a disc image are missing: the game may not start. Tools › Verify Games says which.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il manque des puces ou une image disque : le jeu risque de ne pas démarrer. Outils › Vérifier les jeux dit lesquelles."
           }
         }
       }
@@ -2844,6 +2894,16 @@
         }
       }
     },
+    "Download": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharger"
+          }
+        }
+      }
+    },
     "Download (54 MB)": {
       "localizations": {
         "fr": {
@@ -2890,6 +2950,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Téléchargez-les sur DAT-o-MATIC, le site de No-Intro : le pack quotidien contient tous les systèmes, ou choisissez le DAT standard d’un système. Ajoutez ensuite les fichiers, ou le zip du pack tel quel."
+          }
+        }
+      }
+    },
+    "Downloading FinalBurn Neo's DAT…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargement du DAT de FinalBurn Neo…"
+          }
+        }
+      }
+    },
+    "Downloading MAME's game list…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargement de la liste de jeux de MAME…"
           }
         }
       }
@@ -3164,6 +3244,16 @@
         }
       }
     },
+    "Every chip, and disc image, its emulator's version expects.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque puce, et image disque, qu’attend la version de son émulateur."
+          }
+        }
+      }
+    },
     "Every game in this list already has info": {
       "localizations": {
         "fr": {
@@ -3390,6 +3480,16 @@
         }
       }
     },
+    "FinalBurn Neo's DAT": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le DAT de FinalBurn Neo"
+          }
+        }
+      }
+    },
     "Fix gamelists": {
       "localizations": {
         "fr": {
@@ -3426,6 +3526,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dossiers qu’Attic n’utilise pas"
+          }
+        }
+      }
+    },
+    "For MAME, NAOMI, Atomiswave, Model 2 and 3, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour MAME, NAOMI, Atomiswave, Model 2 et 3, ST-V et les autres cartes que lance MAME. Environ 20 Mo, depuis la dernière version de MAME."
+          }
+        }
+      }
+    },
+    "For Neo Geo, CPS-1, CPS-2, CPS-3 and FinalBurn Neo's other boards. About 14 MB, from FinalBurn Neo's repository.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour Neo Geo, CPS-1, CPS-2, CPS-3 et les autres cartes de FinalBurn Neo. Environ 14 Mo, depuis le dépôt de FinalBurn Neo."
           }
         }
       }
@@ -3526,6 +3646,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Depuis %@"
+          }
+        }
+      }
+    },
+    "From another version (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D’une autre version (%lld)"
           }
         }
       }
@@ -3966,6 +4096,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dans la bibliothèque"
+          }
+        }
+      }
+    },
+    "Incomplete": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplet"
+          }
+        }
+      }
+    },
+    "Incomplete (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplets (%lld)"
           }
         }
       }
@@ -4526,6 +4676,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Examen des dossiers ROMs…"
+          }
+        }
+      }
+    },
+    "MAME's game list": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La liste de jeux de MAME"
           }
         }
       }
@@ -5150,6 +5310,16 @@
         }
       }
     },
+    "Not in the DAT (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absents du DAT (%lld)"
+          }
+        }
+      }
+    },
     "Not installed": {
       "localizations": {
         "fr": {
@@ -5356,6 +5526,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autres"
+          }
+        }
+      }
+    },
+    "Other Version": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autre version"
           }
         }
       }
@@ -6376,6 +6556,16 @@
         }
       }
     },
+    "Romset": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Romset"
+          }
+        }
+      }
+    },
     "Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.": {
       "localizations": {
         "fr": {
@@ -7048,6 +7238,16 @@
         }
       }
     },
+    "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certaines puces ne sont pas celles qu’attend cette version de l’émulateur : le set vient d’une autre version de MAME ou de FinalBurn Neo."
+          }
+        }
+      }
+    },
     "Some games need system modules dumped from your PS4, in shadPS4's sys_modules folder (~/Library/Application Support/shadPS4).": {
       "localizations": {
         "fr": {
@@ -7324,6 +7524,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur %@ n’est pas installé."
+          }
+        }
+      }
+    },
+    "The DAT couldn't be downloaded. Check the connection and try again.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le DAT n’a pas pu être téléchargé. Vérifiez la connexion et réessayez."
           }
         }
       }

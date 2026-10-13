@@ -20,13 +20,13 @@ let package = Package(
         .target(name: "AtticLibraryScanning", dependencies: ["AtticModels"]),
         // Resources holds the String Catalog for user-visible text
         // (emulator descriptions, install errors).
-        .target(name: "AtticEmulation", dependencies: ["AtticModels"], resources: [.process("Resources")]),
+        .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning"], resources: [.process("Resources")]),
         .target(name: "AtticScraping", dependencies: ["AtticModels"]),
 
         .testTarget(name: "AtticModelsTests", dependencies: ["AtticModels"]),
         .testTarget(name: "AtticPersistenceTests", dependencies: ["AtticPersistence"]),
         .testTarget(name: "AtticLibraryScanningTests", dependencies: ["AtticLibraryScanning"]),
-        .testTarget(name: "AtticEmulationTests", dependencies: ["AtticEmulation"]),
+        .testTarget(name: "AtticEmulationTests", dependencies: ["AtticEmulation", "AtticLibraryScanning"]),
         .testTarget(name: "AtticScrapingTests", dependencies: ["AtticScraping"])
     ]
 )

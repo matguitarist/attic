@@ -1,6 +1,86 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lld ROMs from another version": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM from another version"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROMs from another version"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM d’une autre version"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM d’une autre version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld ROMs missing": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM missing"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROMs missing"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM manquante"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM manquantes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Accurate ColecoVision core.": {
       "localizations": {
         "fr": {
@@ -187,6 +267,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Famille Atari 8 bits, 5200 compris."
+          }
+        }
+      }
+    },
+    "BIOS set %@.zip missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "set BIOS %@.zip manquant"
           }
         }
       }
@@ -1073,6 +1163,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Très précis, avec mise à l’échelle."
+          }
+        }
+      }
+    },
+    "disc image %@ from another version": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "image disque %@ d’une autre version"
+          }
+        }
+      }
+    },
+    "disc image %@.chd missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "image disque %@.chd manquante"
           }
         }
       }

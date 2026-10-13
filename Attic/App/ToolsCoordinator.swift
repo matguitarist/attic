@@ -119,6 +119,8 @@ final class ToolsCoordinator {
             let system: CanonicalSystemID
             let title: String
             let datName: String?
+            /// What's wrong with an arcade set.
+            var detail: String?
 
             var stem: String { URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent }
 
@@ -142,6 +144,8 @@ final class ToolsCoordinator {
             var renamed: [Game] = []
             var differs: [Game] = []
             var unknown: [Game] = []
+            /// Arcade sets missing chips or their disc image.
+            var incomplete: [Game] = []
             /// Arcade romsets, discs: not checked.
             var skipped = 0
         }
@@ -154,12 +158,28 @@ final class ToolsCoordinator {
         var datCount = 0
         /// The one system checked, when it wasn't the whole library.
         var system: CanonicalSystemID?
+        /// Arcade DATs that would check games here, and aren't there.
+        var missingArcadeDATs: [ArcadeVerifier.Source] = []
     }
 
-    /// Whether a system's games are ones No-Intro catalogues (not arcade
-    /// romsets or hacks), so checking them can mean something.
-    static func canVerify(_ system: CanonicalSystemID) -> Bool {
-        SystemTaxonomy.definition(for: system)?.category != .arcade && ROMHacks.base(of: system) == nil
+    /// Whether a system's games are in a DAT: not hack folders.
+    nonisolated static func canVerify(_ system: CanonicalSystemID) -> Bool {
+        ROMHacks.base(of: system) == nil
+    }
+
+    nonisolated static func isArcade(_ system: CanonicalSystemID) -> Bool {
+        SystemTaxonomy.definition(for: system)?.category == .arcade
+    }
+
+    /// The arcade DAT for a system's emulator: FinalBurn Neo's for the
+    /// boards it runs, MAME's for the rest (Flycast and Supermodel take
+    /// MAME's sets).
+    nonisolated static func arcadeSource(for system: CanonicalSystemID) -> ArcadeVerifier.Source {
+        EmulatorCatalog.recommendation(for: system)?.recommendedCore?.coreIdentifier == "fbneo_libretro" ? .fbneo : .mame
+    }
+
+    nonisolated private static var arcadeCache: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appending(path: "Attic/ArcadeDATs")
     }
 
     /// Checks every game (or one system's) against the DATs in the
@@ -170,8 +190,15 @@ final class ToolsCoordinator {
         reportHost = host
         try? FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
         activity = Activity(title: String(localized: "Reading DAT files…"))
-        let verifier = await Task.detached(priority: .userInitiated) { DATVerifier.load(from: datsFolder) }.value
-        let files = await scanCoordinator.gameFiles().filter { system == nil || $0.system == system }
+        let files = await scanCoordinator.gameFiles().filter { (system == nil || $0.system == system) && Self.canVerify($0.system) }
+        // Arcade sets by name: only those in the library are read from
+        // MAME's list, which has some 50,000.
+        let wanted = Set(files.filter { Self.isArcade($0.system) }.map { URL(fileURLWithPath: $0.path).deletingPathExtension().lastPathComponent })
+        let biosDirectory = datsFolder.deletingLastPathComponent().appending(path: "BIOS", directoryHint: .isDirectory)
+        let (verifier, arcade) = await Task.detached(priority: .userInitiated) {
+            (DATVerifier.load(from: datsFolder),
+             wanted.isEmpty ? ArcadeVerifier.none : ArcadeVerifier.load(from: datsFolder, wanted: wanted, cacheDirectory: Self.arcadeCache))
+        }.value
         activity = Activity(title: String(localized: "Verifying games…"), fraction: 0)
         let progress = { @Sendable (value: Double, name: String) -> Void in
             Task { @MainActor in
@@ -183,8 +210,14 @@ final class ToolsCoordinator {
             var checks: [String: DATVerifier.Check?] = [:]
             for (index, file) in files.enumerated() {
                 if index % 20 == 0 { progress(Double(index) / Double(max(files.count, 1)), file.title) }
+                let url = URL(fileURLWithPath: file.path)
+                if Self.isArcade(file.system) {
+                    guard !arcade.sources.isEmpty else { continue }
+                    checks[file.path] = .some(arcade.check(url, preferring: Self.arcadeSource(for: file.system), biosDirectory: biosDirectory))
+                    continue
+                }
                 guard verifier.systems.contains(file.system) else { continue }
-                checks[file.path] = .some(verifier.check(URL(fileURLWithPath: file.path), system: file.system))
+                checks[file.path] = .some(verifier.check(url, system: file.system))
             }
             return checks
         }.value
@@ -192,7 +225,56 @@ final class ToolsCoordinator {
         activity = nil
         var result = Self.report(files: files, checks: checks, verifier: verifier)
         result.system = system
+        result.datCount += arcade.names.count
+        let arcadeSystems = Set(files.map(\.system).filter(Self.isArcade))
+        result.missingArcadeDATs = ArcadeVerifier.Source.allCases.filter { source in
+            !arcade.sources.contains(source) && arcadeSystems.contains { Self.arcadeSource(for: $0) == source }
+        }
         report = .verify(result)
+    }
+
+    /// Downloads an arcade DAT into the DATs folder, from FinalBurn Neo's
+    /// repository or MAME's latest release, then checks again.
+    func downloadArcadeDAT(_ source: ArcadeVerifier.Source, datsFolder: URL, scanCoordinator: ScanCoordinator, system: CanonicalSystemID?) async {
+        guard !isBusy else { return }
+        activity = Activity(title: source == .fbneo
+                            ? String(localized: "Downloading FinalBurn Neo's DAT…")
+                            : String(localized: "Downloading MAME's game list…"))
+        let saved: Bool
+        do {
+            try FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
+            switch source {
+            case .fbneo:
+                let (data, response) = try await URLSession.shared.data(from: ArcadeNameIndex.datURL)
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                try data.write(to: datsFolder.appending(path: "FinalBurn Neo (Arcade only).dat"), options: .atomic)
+            case .mame:
+                // The newest release's -listxml, as MAME publishes it.
+                let latest = URL(string: "https://api.github.com/repos/mamedev/mame/releases/latest")!
+                let (json, _) = try await URLSession.shared.data(from: latest)
+                struct Release: Decodable {
+                    struct Asset: Decodable { let name: String; let browser_download_url: URL }
+                    let assets: [Asset]
+                }
+                guard let asset = try JSONDecoder().decode(Release.self, from: json).assets.first(where: { ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: $0.name)) }) else {
+                    throw URLError(.resourceUnavailable)
+                }
+                let (file, response) = try await URLSession.shared.download(from: asset.browser_download_url)
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                let target = datsFolder.appending(path: asset.name)
+                try? FileManager.default.removeItem(at: target)
+                try FileManager.default.moveItem(at: file, to: target)
+            }
+            saved = true
+        } catch {
+            saved = false
+        }
+        activity = nil
+        guard saved else {
+            outcome = Outcome(title: String(localized: "Verify Games"), message: String(localized: "The DAT couldn't be downloaded. Check the connection and try again."))
+            return
+        }
+        await verify(datsFolder: datsFolder, scanCoordinator: scanCoordinator, from: reportHost, system: system)
     }
 
     /// Gives the games No-Intro's names for them, with what's named
@@ -234,21 +316,22 @@ final class ToolsCoordinator {
             guard let check = checks[file.path] else {
                 // Not what No-Intro catalogues: arcade romsets, hacks,
                 // discs (Redump's).
-                if SystemTaxonomy.definition(for: file.system)?.category != .arcade, ROMHacks.base(of: file.system) == nil,
-                   DATVerifier.canCheck(URL(fileURLWithPath: file.path)) {
+                if ROMHacks.base(of: file.system) == nil, isArcade(file.system) || DATVerifier.canCheck(URL(fileURLWithPath: file.path)) {
                     withoutDAT[file.system, default: 0] += 1
                 }
                 continue
             }
             var system = systems[file.system] ?? VerifyReport.System(id: file.system, name: name(file.system))
-            let game = VerifyReport.Game(path: file.path, relativePath: file.relativePath, system: file.system, title: file.title, datName: check?.name)
+            let game = VerifyReport.Game(path: file.path, relativePath: file.relativePath, system: file.system, title: file.title, datName: check?.name, detail: check?.detail)
             switch check?.verdict {
             case .verified?:
                 system.verified += 1
+                // An arcade set keeps its set name: no renaming.
                 let stem = URL(fileURLWithPath: file.path).deletingPathExtension().lastPathComponent
-                if stem != check?.name { system.renamed.append(game) }
+                if !isArcade(file.system), stem != check?.name { system.renamed.append(game) }
             case .differs?: system.differs.append(game)
             case .unknown?: system.unknown.append(game)
+            case .incomplete?: system.incomplete.append(game)
             case nil: system.skipped += 1
             }
             systems[file.system] = system

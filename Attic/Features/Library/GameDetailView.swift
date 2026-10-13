@@ -322,29 +322,42 @@ struct GameDetailView: View {
     }
 }
 
-/// What Tools › Verify Games found for the game, once it's been run.
+/// What Tools › Verify Games found for the game, once it's been run:
+/// against No-Intro's DAT, or for an arcade set its emulator's.
 private struct DATVerdictRow: View {
     let game: Game
+
+    private var isArcade: Bool { ToolsCoordinator.isArcade(CanonicalSystemID(game.systemCanonicalID)) }
+    private var label: LocalizedStringKey { isArcade ? "Romset" : "No-Intro" }
 
     var body: some View {
         switch game.datVerdict {
         case "verified":
-            LabeledContent("No-Intro") {
+            LabeledContent(label) {
                 Label("Verified", systemImage: "checkmark.seal.fill")
                     .foregroundStyle(.green)
             }
-            .help(game.datName.map { String(localized: "A good dump of \($0).") } ?? "")
-        case "differs":
-            LabeledContent("No-Intro") {
-                Label("Differs", systemImage: "exclamationmark.triangle")
+            .help(isArcade ? String(localized: "Every chip, and disc image, its emulator's version expects.")
+                           : game.datName.map { String(localized: "A good dump of \($0).") } ?? "")
+        case "incomplete":
+            LabeledContent(label) {
+                Label("Incomplete", systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.orange)
             }
-            .help(String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
+            .help(String(localized: "Chips or a disc image are missing: the game may not start. Tools › Verify Games says which."))
+        case "differs":
+            LabeledContent(label) {
+                Label(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.orange)
+            }
+            .help(isArcade ? String(localized: "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.")
+                           : String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
         case "unknown":
-            LabeledContent("No-Intro") {
+            LabeledContent(label) {
                 Text("Not listed").foregroundStyle(.secondary)
             }
-            .help(String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
+            .help(isArcade ? String(localized: "A set this emulator's version doesn't know by that name.")
+                           : String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
         default:
             EmptyView()
         }

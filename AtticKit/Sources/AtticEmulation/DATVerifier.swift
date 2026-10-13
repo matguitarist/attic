@@ -14,6 +14,8 @@ public struct DATVerifier: Sendable {
         /// Neither its data nor its name is in the DAT: homebrew, a
         /// hack, a translation, an unlisted dump.
         case unknown
+        /// An arcade set missing chips or its disc image.
+        case incomplete
     }
 
     public struct Check: Equatable, Sendable {
@@ -21,10 +23,13 @@ public struct DATVerifier: Sendable {
         /// The DAT's name for the game: the one it's verified as, or the
         /// one its name matches.
         public let name: String?
+        /// What's wrong with an arcade set: "MAME 0.289: 2 ROMs missing".
+        public let detail: String?
 
-        public init(verdict: Verdict, name: String?) {
+        public init(verdict: Verdict, name: String?, detail: String? = nil) {
             self.verdict = verdict
             self.name = name
+            self.detail = detail
         }
     }
 
@@ -68,8 +73,15 @@ public struct DATVerifier: Sendable {
         let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
         var dats: [DATFile] = []
         for file in files.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            // Arcade DATs (MAME's, FinalBurn Neo's) are ArcadeVerifier's.
+            if ArcadeVerifier.isArcadeZip(file) { continue }
             switch file.pathExtension.lowercased() {
             case "dat", "xml":
+                if let handle = try? FileHandle(forReadingFrom: file), let head = try? handle.read(upToCount: 4096),
+                   ArcadeVerifier.isArcade(head: String(decoding: head, as: UTF8.self)) {
+                    try? handle.close()
+                    continue
+                }
                 if let dat = DATFile.read(file) { dats.append(dat) }
             case "zip":
                 for name in zipListing(file) where ["dat", "xml"].contains((name as NSString).pathExtension.lowercased()) {
