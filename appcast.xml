@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.14.1</title>
+            <pubDate>Tue, 13 Oct 2026 08:40:28 -0400</pubDate>
+            <sparkle:version>20</sparkle:version>
+            <sparkle:shortVersionString>1.14.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Collections can take their logo from a folder of series logos (Settings › General › Collections), named like ES-DE and Batocera themes&#x27; (mario.png, zelda.png…).</li>
+<li>Click a collection&#x27;s logo to replace it, drop a picture on it, or use Add Logo… when it has none.</li>
+<li>Drop an exported collection folder, or its collection.json, on the library to import it; a folder copied into Emulation/Collections joins the library by itself, with its logo.</li>
+<li>A picture dropped on the library by mistake is no longer imported as a PICO-8 game.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.14.1/Attic-1.14.1.zip" length="12583533" type="application/octet-stream" sparkle:edSignature="H1pCkc6a/qihtImpabsROmi7BO0eeWyDgCZr+3wCN5Fvst5O6OcCSa1T3BuSeP3XcfIuU29901nV0raz2VxSDA=="/>
+        </item>
+        <item>
             <title>1.14.0</title>
             <pubDate>Tue, 13 Oct 2026 07:54:29 -0400</pubDate>
             <sparkle:version>19</sparkle:version>
