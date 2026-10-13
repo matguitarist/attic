@@ -4,6 +4,13 @@ import Foundation
 /// tests can hand back local fixture archives instead of hitting the network.
 public protocol FileDownloading: Sendable {
     func download(from url: URL) async throws -> URL
+    /// What identifies the file now at `url` (its ETag or date), to tell a
+    /// new build behind a fixed link; nil when unknown.
+    func stamp(of url: URL) async -> String?
+}
+
+public extension FileDownloading {
+    func stamp(of url: URL) async -> String? { nil }
 }
 
 public struct URLSessionDownloader: FileDownloading {
@@ -20,6 +27,27 @@ public struct URLSessionDownloader: FileDownloading {
         try FileManager.default.moveItem(at: temporaryURL, to: keptURL)
         return keptURL
     }
+
+    public func stamp(of url: URL) async -> String? {
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        guard let (_, response) = try? await URLSession.shared.data(for: request),
+              let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { return nil }
+        let parts = [http.value(forHTTPHeaderField: "ETag"), http.value(forHTTPHeaderField: "Last-Modified")].compactMap { $0 }
+        return parts.isEmpty ? nil : parts.joined(separator: " ")
+    }
+}
+
+/// An emulator's current release upstream: what identifies the build (to
+/// tell when there's a newer one) and where to download it.
+public struct StandaloneRelease: Sendable, Equatable, Codable {
+    /// Changes with every new build.
+    public let identity: String
+    /// The release's name, when it has one ("v2.8.2").
+    public let version: String?
+    let downloadURL: URL
+    /// The downloaded file's name, which often holds the version too.
+    public let fileName: String
 }
 
 /// Installs emulators from their official distribution points: RetroArch
@@ -202,33 +230,61 @@ public struct EmulatorInstaller: Sendable {
             .first { FileManager.default.fileExists(atPath: $0.appending(path: emulator.executableRelativePath).path) }
     }
 
-    @discardableResult
-    @concurrent public func installStandalone(_ emulator: StandaloneEmulator) async throws -> URL {
-        let destination = appDirectory(for: emulator)
-        let staging: URL
+    /// The emulator's current release, without downloading it.
+    @concurrent public func latestRelease(of emulator: StandaloneEmulator) async throws -> StandaloneRelease {
         switch emulator.archive {
         case .zip:
-            let archive = try await downloader.download(from: emulator.downloadURL)
-            defer { try? FileManager.default.removeItem(at: archive) }
-            staging = try extractToStaging(archive, near: destination)
+            // A fixed link to the latest build: its file date tells builds apart.
+            let stamp = await downloader.stamp(of: emulator.downloadURL)
+            return StandaloneRelease(identity: stamp ?? emulator.downloadURL.absoluteString, version: nil,
+                                     downloadURL: emulator.downloadURL, fileName: emulator.downloadURL.lastPathComponent)
         case .dolphinReleaseFeed:
             let feed = try await downloader.download(from: emulator.downloadURL)
             defer { try? FileManager.default.removeItem(at: feed) }
             guard let dmgURL = Self.macOSDiskImageURL(inDolphinReleaseFeed: try Data(contentsOf: feed)) else {
                 throw InstallError.releaseNotFound(emulator.name)
             }
-            let dmg = try await downloader.download(from: dmgURL)
-            defer { try? FileManager.default.removeItem(at: dmg) }
-            staging = try Self.copyApp(named: emulator.appBundleName, fromDiskImage: dmg, near: destination)
+            let version = dmgURL.deletingPathExtension().lastPathComponent.replacingOccurrences(of: "dolphin-", with: "")
+            return StandaloneRelease(identity: dmgURL.absoluteString, version: version, downloadURL: dmgURL, fileName: dmgURL.lastPathComponent)
         case .githubRelease(let assetSuffix):
-            let release = try await downloader.download(from: emulator.downloadURL)
-            defer { try? FileManager.default.removeItem(at: release) }
-            guard let assetURL = Self.assetURL(inGitHubRelease: try Data(contentsOf: release), suffix: assetSuffix) else {
+            let feed = try await downloader.download(from: emulator.downloadURL)
+            defer { try? FileManager.default.removeItem(at: feed) }
+            guard let release = Self.release(inGitHubRelease: try Data(contentsOf: feed), suffix: assetSuffix) else {
                 throw InstallError.releaseNotFound(emulator.name)
             }
-            let asset = try await downloader.download(from: assetURL)
-            defer { try? FileManager.default.removeItem(at: asset) }
-            staging = try extractAnyArchive(asset, named: assetURL.lastPathComponent, appName: emulator.appBundleName, near: destination)
+            return release
+        }
+    }
+
+    /// The release an emulator was installed from, recorded at install.
+    public func installedRelease(of emulator: StandaloneEmulator) -> StandaloneRelease? {
+        (try? Data(contentsOf: releaseRecord(for: emulator))).flatMap { try? JSONDecoder().decode(StandaloneRelease.self, from: $0) }
+    }
+
+    /// Records `release` as installed, for an emulator installed before
+    /// Attic kept track (taken as current).
+    public func recordInstalledRelease(_ release: StandaloneRelease, of emulator: StandaloneEmulator) {
+        try? JSONEncoder().encode(release).write(to: releaseRecord(for: emulator), options: .atomic)
+    }
+
+    private func releaseRecord(for emulator: StandaloneEmulator) -> URL {
+        appDirectory(for: emulator).appending(path: ".attic-release.json")
+    }
+
+    @discardableResult
+    @concurrent public func installStandalone(_ emulator: StandaloneEmulator) async throws -> URL {
+        let destination = appDirectory(for: emulator)
+        let release = try await latestRelease(of: emulator)
+        let asset = try await downloader.download(from: release.downloadURL)
+        defer { try? FileManager.default.removeItem(at: asset) }
+        let staging: URL
+        switch emulator.archive {
+        case .zip:
+            staging = try extractToStaging(asset, near: destination)
+        case .dolphinReleaseFeed:
+            staging = try Self.copyApp(named: emulator.appBundleName, fromDiskImage: asset, near: destination)
+        case .githubRelease:
+            staging = try extractAnyArchive(asset, named: release.fileName, appName: emulator.appBundleName, near: destination)
         }
         defer { try? FileManager.default.removeItem(at: staging) }
 
@@ -239,7 +295,9 @@ public struct EmulatorInstaller: Sendable {
                 throw InstallError.missingFileInArchive(emulator.executableRelativePath)
             }
             try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
-            return try moveIntoPlace(staging, in: destination, as: emulator.appBundleName)
+            let installed = try moveIntoPlace(staging, in: destination, as: emulator.appBundleName)
+            recordInstalledRelease(release, of: emulator)
+            return installed
         }
 
         // Archives put the app at the top or inside a folder — look a few
@@ -248,7 +306,9 @@ public struct EmulatorInstaller: Sendable {
               FileManager.default.fileExists(atPath: app.appending(path: emulator.executableRelativePath).path) else {
             throw InstallError.missingFileInArchive(emulator.appBundleName)
         }
-        return try moveIntoPlace(app, in: destination, as: emulator.appBundleName)
+        let installed = try moveIntoPlace(app, in: destination, as: emulator.appBundleName)
+        recordInstalledRelease(release, of: emulator)
+        return installed
     }
 
     // MARK: - RetroArch itself
@@ -312,6 +372,26 @@ public struct EmulatorInstaller: Sendable {
         return (try? JSONDecoder().decode(Release.self, from: data))?.assets
             .first { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") }?
             .browser_download_url
+    }
+
+    /// The asset of a GitHub "latest release" API response whose name ends
+    /// with `suffix`, as a release (identified by the asset's ID and date).
+    static func release(inGitHubRelease data: Data, suffix: String) -> StandaloneRelease? {
+        struct Release: Decodable {
+            struct Asset: Decodable {
+                let id: Int
+                let name: String
+                let browser_download_url: URL
+                let updated_at: String?
+            }
+            let tag_name: String?
+            let assets: [Asset]
+        }
+        guard let release = try? JSONDecoder().decode(Release.self, from: data),
+              let asset = release.assets.first(where: { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") })
+        else { return nil }
+        return StandaloneRelease(identity: "\(asset.id) \(asset.updated_at ?? "")", version: release.tag_name,
+                                 downloadURL: asset.browser_download_url, fileName: asset.name)
     }
 
     /// `suffix` ends the name; a `*` in it matches anything (a version).

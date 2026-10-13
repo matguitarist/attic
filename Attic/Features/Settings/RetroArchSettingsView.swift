@@ -23,6 +23,10 @@ struct RetroArchSettingsView: View {
                 installedCoresSection
             }
 
+            if !setup.managedStandaloneEmulators.isEmpty {
+                standaloneSection
+            }
+
             if !systems.isEmpty {
                 setUpAllSection
 
@@ -158,6 +162,36 @@ struct RetroArchSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    private var standaloneSection: some View {
+        Section {
+            ForEach(setup.managedStandaloneEmulators) { emulator in
+                LabeledContent {
+                    if setup.isInstalling(EmulatorSetupCoordinator.key(forStandalone: emulator)) {
+                        ProgressView().controlSize(.small)
+                    } else if let update = setup.standaloneUpdates[emulator.id] {
+                        Button(update.version.map { String(localized: "Update to \($0)") } ?? String(localized: "Update")) {
+                            Task { await setup.updateStandalone(emulator) }
+                        }
+                        .disabled(setup.isBusy)
+                    } else {
+                        Text("Up to date").foregroundStyle(.secondary)
+                    }
+                } label: {
+                    Text(emulator.name)
+                    if let version = setup.installedVersion(of: emulator) {
+                        Text(version)
+                    }
+                }
+            }
+        } header: {
+            Text("Standalone Emulators")
+        } footer: {
+            Text("Compared with each project's latest release when cores are checked. Saves and settings are kept when one updates.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 

@@ -115,6 +115,28 @@ struct EmulatorInstallerTests {
         #expect(installer.installedAppURL(for: emulator) == app)
     }
 
+    @Test func readsAGitHubReleaseAsset() throws {
+        let json = Data("""
+        {"tag_name": "v2.8.2", "assets": [
+          {"id": 1, "name": "pcsx2-v2.8.2-windows.zip", "browser_download_url": "https://example.com/w.zip", "updated_at": "2026-10-01T00:00:00Z"},
+          {"id": 2, "name": "pcsx2-v2.8.2-macos-Qt.tar.xz", "browser_download_url": "https://example.com/m.tar.xz", "updated_at": "2026-10-02T00:00:00Z"}
+        ]}
+        """.utf8)
+        let release = try #require(EmulatorInstaller.release(inGitHubRelease: json, suffix: "-macos-Qt.tar.xz"))
+        #expect(release.version == "v2.8.2")
+        #expect(release.fileName == "pcsx2-v2.8.2-macos-Qt.tar.xz")
+        #expect(release.identity == "2 2026-10-02T00:00:00Z")
+    }
+
+    @Test func remembersWhatItInstalled() async throws {
+        let emulator = EmulatorCatalog.duckStation
+        let zip = try makeZip(["DuckStation.app/Contents/MacOS/DuckStation": "binary"])
+        let installer = EmulatorInstaller(paths: paths, downloader: FixtureDownloader(archivesByURL: [emulator.downloadURL: zip]))
+        #expect(installer.installedRelease(of: emulator) == nil)
+        try await installer.installStandalone(emulator)
+        #expect(installer.installedRelease(of: emulator) == (try await installer.latestRelease(of: emulator)))
+    }
+
     @Test func picksHighestStableRetroArchVersion() {
         let html = """
         <a href="/stable/1.9.14/">1.9.14</a>

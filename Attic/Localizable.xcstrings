@@ -1479,6 +1479,16 @@
         }
       }
     },
+    "Compared with each project's latest release when cores are checked. Saves and settings are kept when one updates.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comparés à la dernière version de chaque projet lors de la vérification des cœurs. Les sauvegardes et réglages sont conservés lors d’une mise à jour."
+          }
+        }
+      }
+    },
     "Compress heavy manual scans": {
       "localizations": {
         "fr": {
@@ -5929,6 +5939,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mise à jour disponible. Version installée compilée le %@."
+          }
+        }
+      }
+    },
+    "Update to %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettre à jour vers %@"
           }
         }
       }

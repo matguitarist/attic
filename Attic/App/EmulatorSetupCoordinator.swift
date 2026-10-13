@@ -326,8 +326,62 @@ final class EmulatorSetupCoordinator {
             return
         }
         await recomputeStatuses(for: retroArchStore.cores)
+        await checkForStandaloneUpdates()
         lastCoreUpdateCheck = .now
         UserDefaults.standard.set(Date.now, forKey: Self.lastCoreUpdateCheckKey)
+    }
+
+    // MARK: - Standalone emulator updates
+
+    /// Newer releases of the standalone emulators Attic installed, by
+    /// emulator ID, from the last check.
+    private(set) var standaloneUpdates: [String: StandaloneRelease] = [:]
+
+    /// The standalone emulators installed in the Emulation folder (copies
+    /// the user put in /Applications update themselves).
+    var managedStandaloneEmulators: [StandaloneEmulator] {
+        EmulatorCatalog.standaloneEmulators.filter { emulator in
+            installer.installedAppURL(for: emulator)?.path.hasPrefix(installer.appDirectory(for: emulator).path) == true
+        }
+    }
+
+    /// The version an installed emulator shows: the app's own, else the
+    /// release it came from.
+    func installedVersion(of emulator: StandaloneEmulator) -> String? {
+        if let app = installer.installedAppURL(for: emulator),
+           let version = Bundle(url: app)?.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return version
+        }
+        return installer.installedRelease(of: emulator)?.version
+    }
+
+    /// Compares each managed emulator's installed release with its latest.
+    /// One installed before Attic kept track counts as current when its
+    /// version is in the latest release's name (or there's none to compare).
+    func checkForStandaloneUpdates() async {
+        var updates: [String: StandaloneRelease] = [:]
+        for emulator in managedStandaloneEmulators {
+            guard let latest = try? await installer.latestRelease(of: emulator) else { continue }
+            if let installed = installer.installedRelease(of: emulator) {
+                if installed.identity != latest.identity { updates[emulator.id] = latest }
+            } else {
+                // RPCS3 names releases by build hash, but its file by version.
+                let name = (latest.version ?? "") + " " + latest.fileName
+                if latest.version == nil || installedVersion(of: emulator).map({ name.contains($0) }) == true {
+                    installer.recordInstalledRelease(latest, of: emulator)
+                } else {
+                    updates[emulator.id] = latest
+                }
+            }
+        }
+        standaloneUpdates = updates
+    }
+
+    func updateStandalone(_ emulator: StandaloneEmulator) async {
+        await run(Self.key(forStandalone: emulator), label: String(localized: "Updating \(emulator.name)…"), failure: String(localized: "Couldn't update \(emulator.name)")) {
+            try await self.installer.installStandalone(emulator)
+            self.standaloneUpdates[emulator.id] = nil
+        }
     }
 
     /// Once a day at most, quietly — called at launch.
@@ -338,6 +392,7 @@ final class EmulatorSetupCoordinator {
                 remoteCoreChecksums = checksums
                 await recomputeStatuses(for: retroArchStore.cores)
             }
+            await checkForStandaloneUpdates()
             return
         }
         await checkForCoreUpdates(retroArchStore: retroArchStore, quiet: true)
