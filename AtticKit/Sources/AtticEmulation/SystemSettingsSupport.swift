@@ -35,7 +35,7 @@ public enum SystemSettingsSupport {
     static let threeDSystems: Set<CanonicalSystemID> = [
         .psx, .n64, .saturn, .dreamcast, .naomi, .atomiswave, .ps2, .psp, .nds, .n3ds,
         .gamecube, .wii, .wiiu, .ps3, .ps4, .psvita, .xbox, .model3, .triforce,
-        .naomi2, .model2, .gaelco, .n64dd
+        .naomi2, .naomigd, .model2, .gaelco, .n64dd
     ]
 
     public static func settings(for system: CanonicalSystemID, backend: SystemSettingsBackend) -> [SystemSetting] {

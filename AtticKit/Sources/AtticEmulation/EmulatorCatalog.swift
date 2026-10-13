@@ -568,7 +568,16 @@ public enum EmulatorCatalog {
         .init(systemID: .pokemini, cores: [RecommendedCore("pokemini_libretro", "PokeMini", String(localized: "The Pokémon Mini core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios.min", required: false, note: "Optional; a free replacement is built in")], prefersStandalone: false),
         .init(systemID: .gameandwatch, cores: [RecommendedCore("gw_libretro", "Game & Watch", String(localized: "Plays Game & Watch .mgw files.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .sg1000, cores: [genesisPlusGX, RecommendedCore("gearsystem_libretro", "Gearsystem", String(localized: "Accurate Sega 8-bit core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
-        .init(systemID: .naomi, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi.zip")], prefersStandalone: false),
+        // A few NAOMI games came in cabinets with a BIOS of their own.
+        .init(systemID: .naomi, cores: [flycast], standalone: [], bios: [
+            BIOSRequirement("dc/naomi.zip"),
+            BIOSRequirement("dc/hod2bios.zip", required: false, note: "The House of the Dead 2"),
+            BIOSRequirement("dc/f355bios.zip", required: false, note: "Ferrari F355 Challenge"),
+            BIOSRequirement("dc/f355dlx.zip", required: false, note: "Ferrari F355 Challenge, deluxe cabinet"),
+            BIOSRequirement("dc/airlbios.zip", required: false, note: "Airline Pilots, deluxe cabinet")
+        ], prefersStandalone: false),
+        // GD-ROM games boot from the NAOMI BIOS too.
+        .init(systemID: .naomigd, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi.zip")], prefersStandalone: false),
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
         // MAME finds a board's BIOS set (stvbios.zip) beside the games.

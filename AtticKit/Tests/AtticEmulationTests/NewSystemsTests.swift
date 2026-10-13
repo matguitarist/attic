@@ -5,7 +5,7 @@ import AtticModels
 
 @Suite("Arcade boards and add-ons")
 struct NewSystemsTests {
-    private let systems: [CanonicalSystemID] = [.naomi2, .model2, .stv, .gaelco, .n64dd, .satellaview, .sufami]
+    private let systems: [CanonicalSystemID] = [.naomi2, .naomigd, .model2, .stv, .gaelco, .n64dd, .satellaview, .sufami]
 
     @Test func eachIsAFullSystem() throws {
         for system in systems {
@@ -19,9 +19,10 @@ struct NewSystemsTests {
         }
     }
 
-    @Test func naomi2IsntNaomiAnyMore() {
+    @Test func naomi2AndGDROMArentNaomi() {
         #expect(SystemTaxonomy.system(forShortName: "naomi2")?.canonicalID == .naomi2)
-        #expect(SystemTaxonomy.system(forShortName: "naomigd")?.canonicalID == .naomi)
+        #expect(SystemTaxonomy.system(forShortName: "naomigd")?.canonicalID == .naomigd)
+        #expect(SystemTaxonomy.system(forShortName: "naomi")?.canonicalID == .naomi)
     }
 
     @Test func addOnFilesGoToTheirSystem() {

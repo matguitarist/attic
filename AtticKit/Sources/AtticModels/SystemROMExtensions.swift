@@ -53,6 +53,7 @@ public enum SystemROMExtensions {
         .naomi: ["7z", "bin", "dat", "elf", "lst", "zip"],
         .atomiswave: ["7z", "bin", "dat", "elf", "lst", "zip"],
         .naomi2: ["7z", "bin", "dat", "elf", "lst", "zip"],
+        .naomigd: ["7z", "bin", "dat", "elf", "lst", "zip"],
         .model2: ["7z", "zip"],
         .stv: ["7z", "zip"],
         .gaelco: ["7z", "zip"],

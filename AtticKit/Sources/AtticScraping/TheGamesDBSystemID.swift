@@ -40,6 +40,7 @@ public enum TheGamesDBSystemID {
         .naomi: 23,
         .atomiswave: 23,
         .naomi2: 23,
+        .naomigd: 23,
         .model2: 23,
         .stv: 23,
         .gaelco: 23,

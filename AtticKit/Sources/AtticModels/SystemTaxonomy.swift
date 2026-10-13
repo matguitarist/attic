@@ -405,7 +405,15 @@ public enum SystemTaxonomy {
             batoceraShortName: "naomi",
             esdeShortName: "naomi",
             retroArchSystemIDs: ["naomi"],
-            category: .arcade, otherShortNames: ["naomigd"]
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .naomigd,
+            displayName: "Sega NAOMI GD-ROM",
+            batoceraShortName: "naomigd",
+            esdeShortName: "naomigd",
+            retroArchSystemIDs: ["naomigd"],
+            category: .arcade
         ),
         SystemDefinition(
             canonicalID: .atomiswave,

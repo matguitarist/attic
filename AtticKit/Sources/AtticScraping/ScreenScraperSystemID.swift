@@ -42,6 +42,7 @@ public enum ScreenScraperSystemID {
         .atomiswave: 53,
         // ScreenScraper files these boards under arcade, as ES-DE does.
         .naomi2: 75,
+        .naomigd: 75,
         .model2: 75,
         .stv: 75,
         .gaelco: 75,

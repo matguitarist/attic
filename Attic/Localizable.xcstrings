@@ -3540,6 +3540,16 @@
         }
       }
     },
+    "GD-ROM games are MAME romsets: keep each game's zip, and beside it the folder of the same name that holds its .chd. They boot from the NAOMI BIOS (naomi.zip), in a dc folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux GD-ROM sont des romsets MAME : gardez le zip de chaque jeu et, à côté, le dossier du même nom qui contient son .chd. Ils démarrent avec le BIOS NAOMI (naomi.zip), dans un dossier dc du dossier BIOS."
+          }
+        }
+      }
+    },
     "Game": {
       "localizations": {
         "fr": {
@@ -6924,6 +6934,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Show systems without games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les systèmes sans jeux"
           }
         }
       }

@@ -80,6 +80,7 @@ public extension CanonicalSystemID {
     static let naomi = CanonicalSystemID("naomi")
     static let atomiswave = CanonicalSystemID("atomiswave")
     static let naomi2 = CanonicalSystemID("naomi2")
+    static let naomigd = CanonicalSystemID("naomigd")
     static let model2 = CanonicalSystemID("model2")
     static let stv = CanonicalSystemID("stv")
     static let gaelco = CanonicalSystemID("gaelco")

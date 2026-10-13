@@ -61,6 +61,8 @@ LOGOS = {
     "atomiswave": "Arcade/Sammy Atomiswave",
     "model3": "Arcade/Sega Model 3",
     "naomi2": "Arcade/Sega Naomi 2",
+    # No GD-ROM logo in the set: NAOMI's.
+    "naomigd": "Arcade/Sega Naomi",
     "model2": "Arcade/Sega Model 2",
     "stv": "Arcade/SEGA ST-V",
     "gaelco": "Arcade/Gaelco",

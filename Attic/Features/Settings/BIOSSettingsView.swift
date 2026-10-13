@@ -14,6 +14,7 @@ struct BIOSSettingsView: View {
     /// Bumped when Attic comes back to the front, so files added in the
     /// Finder show up.
     @State private var check = 0
+    @AppStorage("biosShowsAllSystems") private var showsAllSystems = false
 
     private struct Row: Identifiable {
         let system: GameSystem
@@ -28,7 +29,9 @@ struct BIOSSettingsView: View {
     private var rows: [Row] {
         let _ = check
         let bios = emulationFolderStore.folder.bios
-        return systems.filter { $0.gameCount > 0 }.sorted(by: GameSystem.displayOrder).map { system in
+        // Hack folders run on their base system's BIOS, already listed.
+        let shown = showsAllSystems ? systems.filter { !$0.systemID.isROMHacks } : systems.filter { $0.gameCount > 0 }
+        return shown.sorted(by: GameSystem.displayOrder).map { system in
             let requirements = EmulatorSetupCoordinator.biosRequirements(for: system)
             return Row(system: system, requirements: requirements, files: requirements.statuses(in: bios))
         }
@@ -49,6 +52,7 @@ struct BIOSSettingsView: View {
                         .foregroundStyle(missing.isEmpty ? .green : .orange)
                 }
                 Button("Show BIOS Folder") { NSWorkspace.shared.open(emulationFolderStore.folder.bios) }
+                Toggle("Show systems without games", isOn: $showsAllSystems)
             } footer: {
                 Text("Dump BIOS files from hardware you own; Attic never downloads them. What's needed follows each system's chosen emulator.")
                     .font(.caption)
