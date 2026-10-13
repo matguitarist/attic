@@ -153,4 +153,31 @@ import Testing
     @Test func chooseROMEntryReturnsNilForNoEntries() {
         #expect(ZippedROMExtractor.chooseROMEntry(from: []) == nil)
     }
+
+    @Test func oldestCopiesGoPastTheLimit() throws {
+        let cache = isolatedCacheDirectory()
+        // Room for two 100 KB games.
+        let extractor = ZippedROMExtractor(cacheDirectory: cache, cacheLimitBytes: 250_000)
+        let rom = Data((0..<100_000).map { _ in UInt8.random(in: 0...255) })
+        let first = extractor.resolvedROMURL(for: try makeZip(named: "A.zip", containing: ["A.sfc": rom]))
+        Thread.sleep(forTimeInterval: 1.1)
+        let second = extractor.resolvedROMURL(for: try makeZip(named: "B.zip", containing: ["B.sfc": rom]))
+        Thread.sleep(forTimeInterval: 1.1)
+        // Playing A again makes B the oldest.
+        _ = extractor.resolvedROMURL(for: try makeZip(named: "A.zip", containing: ["A.sfc": rom]))
+        Thread.sleep(forTimeInterval: 1.1)
+        let third = extractor.resolvedROMURL(for: try makeZip(named: "C.zip", containing: ["C.sfc": rom]))
+        #expect(FileManager.default.fileExists(atPath: first.path))
+        #expect(!FileManager.default.fileExists(atPath: second.path))
+        #expect(FileManager.default.fileExists(atPath: third.path))
+    }
+
+    @Test func readsAZipsOneGameWithoutUnpacking() throws {
+        let rom = Data(repeating: 7, count: 123_456)
+        let zip = try makeZip(named: "Zelda (USA).zip", containing: ["Zelda (USA).sfc": rom])
+        #expect(ZipContents.singleEntry(of: zip) == ZipContents.Entry(name: "Zelda (USA).sfc", size: 123_456))
+        let set = try makeZip(named: "romset.zip", containing: ["a.bin": rom, "b.bin": rom])
+        #expect(ZipContents.singleEntry(of: set) == nil)
+        #expect(ZipContents.entries(of: set)?.count == 2)
+    }
 }

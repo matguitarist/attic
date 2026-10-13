@@ -71,6 +71,9 @@ import Testing
         ]), displayName: "SNES")
         let context = ModelContext(container)
         for game in try context.fetch(FetchDescriptor<Game>()) { game.favorite = true }
+        let collection = GameCollection(name: "Nintendo")
+        collection.excludedGameKeys = ["snes/Zelda.sfc"]
+        context.insert(collection)
         try context.save()
 
         // Zelda was zipped; which Mario became the zip can't be told.
@@ -83,6 +86,8 @@ import Testing
         #expect(games.first { $0.romRelativePath == "Zelda.zip" }?.favorite == true)
         #expect(games.first { $0.romRelativePath == "Zelda.zip" }?.romAbsolutePath == "/tmp/roms/snes/Zelda.zip")
         #expect(games.first { $0.romRelativePath == "Mario.zip" }?.favorite == false)
+        // Taken out of a collection by hand, it stays out once zipped.
+        #expect(try ModelContext(container).fetch(FetchDescriptor<GameCollection>()).first?.excludedGameKeys == ["snes/Zelda.zip"])
     }
 
     @Test func firstScanInsertsSystemAndGames() async throws {

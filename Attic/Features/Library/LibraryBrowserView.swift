@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import SwiftData
 import AtticPersistence
 import AtticModels
@@ -203,13 +204,21 @@ struct LibraryBrowserView: View {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.canChooseDirectories = true
-        panel.allowedContentTypes = [.json, .folder]
+        panel.allowsMultipleSelection = true
+        panel.allowedContentTypes = [.json, .folder] + [UTType(filenameExtension: "cfg")].compactMap { $0 }
         panel.prompt = String(localized: "Import")
-        panel.message = String(localized: "Choose an exported collection folder, or its collection.json.")
+        panel.message = String(localized: "Choose an exported collection folder or its collection.json, or ES-DE custom collections (custom-Name.cfg, in ES-DE's collections folder).")
+        panel.directoryURL = Self.esdeCollectionsFolder
         panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            importCollection(from: url)
+            guard response == .OK else { return }
+            for url in panel.urls { importCollection(from: url) }
         }
+    }
+
+    /// ES-DE's custom collections, when it's been used here.
+    private static var esdeCollectionsFolder: URL? {
+        let folder = FileManager.default.homeDirectoryForCurrentUser.appending(path: "ES-DE/collections", directoryHint: .isDirectory)
+        return FileManager.default.fileExists(atPath: folder.path) ? folder : nil
     }
 
     /// Imports the collection folder (or collection.json) at `url`, and

@@ -2,6 +2,7 @@ import AppKit
 import SwiftData
 import AtticModels
 import AtticPersistence
+import AtticLibraryScanning
 
 /// Each collection also lives as a folder, `Emulation/Collections/<Name>/`:
 /// its `collection.json` (see `CollectionFile`), its `logo` and its
@@ -38,9 +39,18 @@ enum CollectionFolders {
         }
     }
 
+    /// Collections deleted here, so a folder that couldn't go to the Trash
+    /// (on a network share, say) doesn't bring one back.
+    static let deletedIDsKey = "deletedCollectionIDs"
+
+    static var deletedIDs: Set<UUID> {
+        Set((UserDefaults.standard.stringArray(forKey: deletedIDsKey) ?? []).compactMap(UUID.init(uuidString:)))
+    }
+
     /// Moves a deleted collection's folder to the Trash.
     static func remove(_ collection: GameCollection, root: URL) {
         defer { cachedFolders = nil }
+        UserDefaults.standard.set(Array(deletedIDs.union([collection.collectionID])).map(\.uuidString), forKey: deletedIDsKey)
         guard let folder = foldersByID(in: root)[collection.collectionID] else { return }
         try? FileManager.default.trashItem(at: folder, resultingItemURL: nil)
     }
@@ -54,7 +64,7 @@ enum CollectionFolders {
         cachedFolders = nil
         guard (try? context.fetchCount(FetchDescriptor<Game>())) ?? 0 > 0,
               let existing = try? context.fetch(FetchDescriptor<GameCollection>()) else { return 0 }
-        let known = Set(existing.map(\.collectionID))
+        let known = Set(existing.map(\.collectionID)).union(deletedIDs)
         var loaded = 0
         for (id, folder) in foldersByID(in: root) where !known.contains(id) {
             if importCollection(from: folder, context: context, root: root, keepID: true) != nil { loaded += 1 }
@@ -67,7 +77,8 @@ enum CollectionFolders {
     /// Whether `url` is an exported collection: a folder with a
     /// collection.json, or the file itself.
     static func isCollection(_ url: URL) -> Bool {
-        url.lastPathComponent.lowercased() == CollectionFile.fileName.lowercased()
+        ESDECustomCollection.isCollectionFile(url)
+            || url.lastPathComponent.lowercased() == CollectionFile.fileName.lowercased()
             || FileManager.default.fileExists(atPath: url.appending(path: CollectionFile.fileName).path)
     }
 
@@ -81,6 +92,7 @@ enum CollectionFolders {
     /// games by system and path, else by title. Its pictures come along.
     @discardableResult
     static func importCollection(from url: URL, context: ModelContext, root: URL, keepID: Bool = false) -> ImportResult? {
+        if ESDECustomCollection.isCollectionFile(url) { return importESDECollection(from: url, context: context, root: root) }
         let isFolder = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
         let folder = isFolder ? url : url.deletingLastPathComponent()
         let fileURL = isFolder ? url.appending(path: CollectionFile.fileName) : url
@@ -101,14 +113,7 @@ enum CollectionFolders {
             }
         }
 
-        let names = Set(existing.map(\.name))
-        var name = file.name
-        var number = 2
-        while names.contains(name) {
-            name = "\(file.name) \(number)"
-            number += 1
-        }
-        let collection = GameCollection(name: name)
+        let collection = GameCollection(name: uniqueName(file.name, among: existing))
         if keepID, !existing.contains(where: { $0.collectionID == file.id }) {
             collection.collectionID = file.id
         }
@@ -133,6 +138,54 @@ enum CollectionFolders {
             }
         }
         return ImportResult(collection: collection, found: found.count, missing: missing)
+    }
+
+    /// An ES-DE (or Batocera) custom collection: its games found by their
+    /// system folder and path, else by file name; its logo from the logos
+    /// folder, if there's one for its name.
+    static func importESDECollection(from url: URL, context: ModelContext, root: URL) -> ImportResult? {
+        guard let file = ESDECustomCollection.read(url), !file.entries.isEmpty,
+              let games = try? context.fetch(FetchDescriptor<Game>()),
+              let existing = try? context.fetch(FetchDescriptor<GameCollection>()) else { return nil }
+
+        func stem(_ path: String) -> String { ((path as NSString).lastPathComponent as NSString).deletingPathExtension.lowercased() }
+        let byPath = Dictionary(games.map { ("\($0.systemFolderURL.lastPathComponent.lowercased())/\($0.romRelativePath.lowercased())", $0) },
+                                uniquingKeysWith: { first, _ in first })
+        let byFolderStem = Dictionary(games.map { ("\($0.systemFolderURL.lastPathComponent.lowercased())/\(stem($0.romRelativePath))", $0) },
+                                      uniquingKeysWith: { first, _ in first })
+        let byStem = Dictionary(games.map { (stem($0.romRelativePath), $0) }, uniquingKeysWith: { first, _ in first })
+        var found: [Game] = []
+        var missing = 0
+        for entry in file.entries {
+            let folder = entry.systemFolder.lowercased()
+            if let game = byPath["\(folder)/\(entry.path.lowercased())"] ?? byFolderStem["\(folder)/\(stem(entry.path))"] ?? byStem[stem(entry.path)] {
+                if !found.contains(where: { $0.persistentModelID == game.persistentModelID }) { found.append(game) }
+            } else {
+                missing += 1
+            }
+        }
+
+        let collection = GameCollection(name: uniqueName(file.name, among: existing))
+        context.insert(collection)
+        collection.games = found
+        try? context.save()
+        save([collection], root: root)
+        if let logo = CollectionLogos.logo(forCollectionNamed: file.name) {
+            setImage(logo, as: CollectionFile.logoName, for: collection, root: root)
+        }
+        return ImportResult(collection: collection, found: found.count, missing: missing)
+    }
+
+    /// `name`, numbered when a collection already has it.
+    private static func uniqueName(_ name: String, among existing: [GameCollection]) -> String {
+        let names = Set(existing.map(\.name))
+        var unique = name
+        var number = 2
+        while names.contains(unique) {
+            unique = "\(name) \(number)"
+            number += 1
+        }
+        return unique
     }
 
     /// Asks where to put a copy of the collection's folder, and puts it there.

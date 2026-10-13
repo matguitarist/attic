@@ -1,4 +1,5 @@
 import Foundation
+import AtticEmulation
 import AtticLibraryScanning
 import Observation
 import AtticModels
@@ -116,11 +117,19 @@ final class ScrapeCoordinator {
 
         state = .scraping
         let romURL = game.romAbsoluteURL
-        let romSizeBytes = (try? FileManager.default.attributesOfItem(atPath: romURL.path))?[.size] as? Int
+        var romFilename = romURL.lastPathComponent
+        var romSizeBytes = (try? FileManager.default.attributesOfItem(atPath: romURL.path))?[.size] as? Int
+        // A zipped cartridge is matched by the game inside, its own name
+        // and size; an arcade romset is known by its zip.
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        if SystemTaxonomy.definition(for: system)?.category != .arcade, let entry = ZipContents.singleEntry(of: romURL) {
+            romFilename = (entry.name as NSString).lastPathComponent
+            romSizeBytes = entry.size
+        }
 
         do {
             let info = try await screenScraperClient.fetchGameInfo(
-                romFilename: romURL.lastPathComponent,
+                romFilename: romFilename,
                 romSizeBytes: romSizeBytes,
                 systemeID: systemeID,
                 credentials: credentials

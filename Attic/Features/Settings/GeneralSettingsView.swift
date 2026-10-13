@@ -3,6 +3,7 @@ import SwiftData
 import AtticPersistence
 import AtticModels
 import AtticLibraryScanning
+import AtticEmulation
 
 struct GeneralSettingsView: View {
     @Environment(RomsRootsStore.self) private var romsRootsStore
@@ -20,6 +21,8 @@ struct GeneralSettingsView: View {
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage(CollectionLogos.folderKey) private var logosFolder = ""
+    @AppStorage(ToolsCoordinator.backupFolderKey) private var backupFolder = ""
+    @AppStorage(ToolsCoordinator.backsUpWeeklyKey) private var backsUpWeekly = false
     @State private var logosResult: String?
     @Query private var collections: [GameCollection]
 
@@ -205,6 +208,35 @@ struct GeneralSettingsView: View {
                 Text("Emulation Folder")
             } footer: {
                 Text("BIOS, saves, save states, RetroArch cores and settings, and emulators installed by Attic all live here — back up or move this one folder to take everything with you.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                LabeledContent {
+                    HStack {
+                        Button("Back Up Now") {
+                            Task { await tools.backUp(emulationRoot: emulationFolderStore.folder.root, from: .settings) }
+                        }
+                        .disabled(tools.isBusy)
+                        Button("Choose…") {
+                            if let folder = tools.chooseBackupFolder() { backupFolder = folder.path }
+                        }
+                    }
+                } label: {
+                    Text(backupFolder.isEmpty ? String(localized: "No backup folder") : backupFolder)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    if let last = ToolsCoordinator.lastBackup {
+                        Text("Last backup \(last.formatted(.relative(presentation: .named)))")
+                    }
+                }
+                Toggle("Back up every week", isOn: $backsUpWeekly)
+                    .disabled(backupFolder.isEmpty)
+            } header: {
+                Text("Save Backups")
+            } footer: {
+                Text("A zip of your saves, save states, collections and gamelists. The newest \(SaveBackup.keptCount) are kept. Another drive or a synced folder keeps them safest.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

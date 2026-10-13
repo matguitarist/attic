@@ -199,6 +199,70 @@ final class ToolsCoordinator {
         }
     }
 
+    // MARK: - Backups
+
+    static let backupFolderKey = "backupFolder"
+    static let backsUpWeeklyKey = "backsUpWeekly"
+    static let lastBackupKey = "lastBackupDate"
+
+    static var backupFolder: URL? {
+        guard let path = UserDefaults.standard.string(forKey: backupFolderKey), !path.isEmpty else { return nil }
+        return URL(fileURLWithPath: path, isDirectory: true)
+    }
+
+    static var lastBackup: Date? {
+        UserDefaults.standard.object(forKey: lastBackupKey) as? Date
+    }
+
+    /// Asks where backups go; nil if cancelled.
+    @discardableResult
+    func chooseBackupFolder() -> URL? {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.canCreateDirectories = true
+        panel.prompt = String(localized: "Choose")
+        panel.message = String(localized: "Choose where Attic keeps backups of your saves. Another drive or a synced folder keeps them safest.")
+        guard panel.runModal() == .OK, let url = panel.url else { return nil }
+        UserDefaults.standard.set(url.path, forKey: Self.backupFolderKey)
+        return url
+    }
+
+    /// Zips saves, states, collections and gamelists into the backup
+    /// folder (asking for one first if there's none). `quietly`, for the
+    /// weekly backup: no questions, and only a failure is told.
+    func backUp(emulationRoot: URL, quietly: Bool = false, from host: Host = .library) async {
+        guard !isBusy else { return }
+        guard let folder = Self.backupFolder ?? (quietly ? nil : chooseBackupFolder()) else { return }
+        // A drive or share that isn't there now: next time.
+        if quietly, !FileManager.default.fileExists(atPath: folder.deletingLastPathComponent().path) { return }
+        reportHost = host
+        activity = Activity(title: String(localized: "Backing up saves…"))
+        let result = await Task.detached(priority: .utility) { () -> Result<URL, Error> in
+            Result { try SaveBackup.create(from: emulationRoot, to: folder) }
+        }.value
+        activity = nil
+        switch result {
+        case .success(let zip):
+            UserDefaults.standard.set(Date(), forKey: Self.lastBackupKey)
+            if !quietly {
+                let size = ByteCountFormatter.string(fromByteCount: MediaFolder.fileSize(zip), countStyle: .file)
+                outcome = Outcome(title: String(localized: "Saves Backed Up"),
+                                  message: String(localized: "\(zip.lastPathComponent), \(size), in \(folder.path). The newest \(SaveBackup.keptCount) backups are kept."))
+            }
+        case .failure:
+            outcome = Outcome(title: String(localized: "Backup Failed"),
+                              message: String(localized: "Attic couldn't write a backup to \(folder.path). Check that the folder is there and has room."))
+        }
+    }
+
+    /// The weekly backup, when it's on and due.
+    func backUpIfDue(emulationRoot: URL) async {
+        guard UserDefaults.standard.bool(forKey: Self.backsUpWeeklyKey), Self.backupFolder != nil,
+              SaveBackup.isDue(lastBackup: Self.lastBackup) else { return }
+        await backUp(emulationRoot: emulationRoot, quietly: true)
+    }
+
     // MARK: - Unzipped games
 
     /// What zipped games take up once unzipped to be played.

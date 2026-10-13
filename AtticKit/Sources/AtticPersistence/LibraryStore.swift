@@ -70,13 +70,16 @@ public actor LibraryStore {
         // to a .chd or .zip, or back) stays the same game: its favorite,
         // play history and collections carry over. Only when the name
         // leaves no doubt which game it was.
+        var renamedKeys: [String: String] = [:]
         let newStems = Dictionary(grouping: unmatched) { Self.stem($0.romRelativePath) }
         let oldStems = Dictionary(grouping: existingByPath.values) { Self.stem($0.romRelativePath) }
         for record in unmatched {
             let stem = Self.stem(record.romRelativePath)
             if newStems[stem]?.count == 1, let old = oldStems[stem], old.count == 1, let existing = old.first,
                existingByPath.removeValue(forKey: existing.romRelativePath) != nil {
+                let oldKey = existing.collectionKey
                 existing.romRelativePath = record.romRelativePath
+                renamedKeys[oldKey] = existing.collectionKey
                 existing.applyRescannedMetadata(record, romsRootURL: data.romsRootURL)
                 updated += 1
             } else {
@@ -88,6 +91,15 @@ public actor LibraryStore {
                 )
                 modelContext.insert(game)
                 inserted += 1
+            }
+        }
+
+        // Games taken out of a collection by hand stay out under their new
+        // file name.
+        if !renamedKeys.isEmpty {
+            for collection in try modelContext.fetch(FetchDescriptor<GameCollection>()) {
+                let keys = collection.excludedGameKeys.map { renamedKeys[$0] ?? $0 }
+                if keys != collection.excludedGameKeys { collection.excludedGameKeys = keys }
             }
         }
 

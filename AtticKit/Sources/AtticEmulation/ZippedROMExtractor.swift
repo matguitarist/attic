@@ -17,15 +17,23 @@ public struct ZippedROMExtractor: Sendable {
     private let cacheDirectory: URL
     private let unzipBinaryURL: URL
     private let tarBinaryURL: URL
+    /// How much the unzipped copies may take up: past it, the copies of
+    /// the games played longest ago are removed (they unzip again when
+    /// next played).
+    private let cacheLimitBytes: Int64
+
+    public static let defaultCacheLimitBytes: Int64 = 2_000_000_000
 
     public init(
         cacheDirectory: URL = ZippedROMExtractor.defaultCacheDirectory,
         unzipBinaryURL: URL = URL(fileURLWithPath: "/usr/bin/unzip"),
-        tarBinaryURL: URL = URL(fileURLWithPath: "/usr/bin/tar")
+        tarBinaryURL: URL = URL(fileURLWithPath: "/usr/bin/tar"),
+        cacheLimitBytes: Int64 = ZippedROMExtractor.defaultCacheLimitBytes
     ) {
         self.cacheDirectory = cacheDirectory
         self.unzipBinaryURL = unzipBinaryURL
         self.tarBinaryURL = tarBinaryURL
+        self.cacheLimitBytes = cacheLimitBytes
     }
 
     private enum ArchiveKind {
@@ -64,6 +72,7 @@ public struct ZippedROMExtractor: Sendable {
         let destination = destinationDirectory.appending(path: romEntry)
 
         if FileManager.default.fileExists(atPath: destination.path) {
+            markUsed(destinationDirectory)
             return destination
         }
 
@@ -72,7 +81,40 @@ public struct ZippedROMExtractor: Sendable {
               FileManager.default.fileExists(atPath: destination.path) else {
             return romURL
         }
+        markUsed(destinationDirectory)
+        trimCache(keeping: destinationDirectory)
         return destination
+    }
+
+    /// Dates a game's copy as just played, for `trimCache`.
+    private func markUsed(_ folder: URL) {
+        try? FileManager.default.setAttributes([.modificationDate: Date()], ofItemAtPath: folder.path)
+    }
+
+    /// Removes the copies of the games played longest ago until the rest
+    /// fit in the limit, never `kept` (the one about to start).
+    func trimCache(keeping kept: URL) {
+        let fileManager = FileManager.default
+        let folders = (try? fileManager.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: [.contentModificationDateKey], options: .skipsHiddenFiles)) ?? []
+        let dated = folders.map { folder in
+            (folder: folder,
+             used: (try? folder.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast,
+             bytes: Self.size(of: folder))
+        }
+        .sorted { $0.used > $1.used }
+        var total: Int64 = 0
+        for copy in dated {
+            total += copy.bytes
+            if total > cacheLimitBytes, copy.folder.standardizedFileURL != kept.standardizedFileURL {
+                try? fileManager.removeItem(at: copy.folder)
+                total -= copy.bytes
+            }
+        }
+    }
+
+    private static func size(of folder: URL) -> Int64 {
+        let files = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.fileSizeKey])?.allObjects as? [URL] ?? []
+        return files.reduce(0) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
     }
 
     private func listEntries(in archiveURL: URL, kind: ArchiveKind) throws -> [String] {

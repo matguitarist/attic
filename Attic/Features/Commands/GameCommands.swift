@@ -145,6 +145,7 @@ struct ToolsCommands: Commands {
     let tools: ToolsCoordinator
     let scanCoordinator: ScanCoordinator
     let romsRootsStore: RomsRootsStore
+    let emulationFolderStore: EmulationFolderStore
 
     @FocusedValue(\.selectedGame) private var game
     @Environment(\.openSettings) private var openSettings
@@ -176,6 +177,12 @@ struct ToolsCommands: Commands {
             }
             .disabled(unzipped == 0)
             .help("Zipped games are unzipped to be played. The copies can go: a game unzips again when it next starts.")
+
+            Button("Back Up Saves") {
+                Task { await tools.backUp(emulationRoot: emulationFolderStore.folder.root) }
+            }
+            .disabled(tools.isBusy)
+            .help("Zips your saves, save states, collections and gamelists into your backup folder.")
 
             Button("Check BIOS Files…") {
                 settingsTab = .bios

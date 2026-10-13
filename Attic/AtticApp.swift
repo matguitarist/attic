@@ -75,6 +75,11 @@ struct AtticApp: App {
                 // launch for a window saved at 900 points wide).
                 .frame(minWidth: 1040, minHeight: 560)
                 .task { await scanCoordinator.refreshGameCounts() }
+                // The weekly save backup, a minute in so launch stays quick.
+                .task {
+                    try? await Task.sleep(for: .seconds(60))
+                    await toolsCoordinator.backUpIfDue(emulationRoot: emulationFolderStore.folder.root)
+                }
                 // Each collection's folder follows every save of the library.
                 .task {
                     let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
@@ -111,7 +116,7 @@ struct AtticApp: App {
             CabinetCommands()
             LibraryCommands(scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
-            ToolsCommands(tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
+            ToolsCommands(tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore, emulationFolderStore: emulationFolderStore)
             HelpCommands(navigator: helpNavigator)
         }
 
