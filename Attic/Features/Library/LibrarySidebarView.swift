@@ -37,6 +37,8 @@ struct LibrarySidebarView: View {
                     .tag(LibrarySelection.favorites)
                 Label("Recently Played", systemImage: "clock")
                     .tag(LibrarySelection.recentlyPlayed)
+                Label("Recently Added", systemImage: "sparkles")
+                    .tag(LibrarySelection.recentlyAdded)
             }
 
             Section {

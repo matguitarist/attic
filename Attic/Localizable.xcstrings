@@ -696,6 +696,16 @@
         }
       }
     },
+    "%lld sessions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sessions"
+          }
+        }
+      }
+    },
     "%lld stars": {
       "localizations": {
         "fr": {
@@ -1175,6 +1185,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajoutés à %@."
+          }
+        }
+      }
+    },
+    "Added, Last 30 Days": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutés ces 30 derniers jours"
           }
         }
       }
@@ -2533,6 +2553,16 @@
         }
       }
     },
+    "Date Added": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date d’ajout"
+          }
+        }
+      }
+    },
     "Default": {
       "localizations": {
         "fr": {
@@ -3479,6 +3509,16 @@
         }
       }
     },
+    "Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux"
+          }
+        }
+      }
+    },
     "Games Added": {
       "localizations": {
         "fr": {
@@ -3745,6 +3785,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Homebrews, hacks, traductions, prototypes, ou dumps que No-Intro ne liste pas."
+          }
+        }
+      }
+    },
+    "Hours": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heures"
           }
         }
       }
@@ -4279,6 +4329,16 @@
         }
       }
     },
+    "Library Statistics": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistiques de la bibliothèque"
+          }
+        }
+      }
+    },
     "License for “%@”": {
       "localizations": {
         "fr": {
@@ -4439,6 +4499,16 @@
         }
       }
     },
+    "Month": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mois"
+          }
+        }
+      }
+    },
     "More": {
       "localizations": {
         "fr": {
@@ -4465,6 +4535,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plus d’options…"
+          }
+        }
+      }
+    },
+    "Most Played": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les plus joués"
           }
         }
       }
@@ -5069,6 +5149,16 @@
         }
       }
     },
+    "On Disk": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sur le disque"
+          }
+        }
+      }
+    },
     "Only": {
       "localizations": {
         "fr": {
@@ -5179,6 +5269,16 @@
         }
       }
     },
+    "Pick a game at random from the ones shown (⌥⌘R)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisit un jeu au hasard parmi ceux affichés (⌥⌘R)"
+          }
+        }
+      }
+    },
     "Picture": {
       "localizations": {
         "fr": {
@@ -5269,6 +5369,26 @@
         }
       }
     },
+    "Play Time": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temps de jeu"
+          }
+        }
+      }
+    },
+    "Play Time, Last 12 Months": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temps de jeu, 12 derniers mois"
+          }
+        }
+      }
+    },
     "Play the video's sound": {
       "localizations": {
         "fr": {
@@ -5285,6 +5405,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lire les aperçus vidéo"
+          }
+        }
+      }
+    },
+    "Played": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joués"
           }
         }
       }
@@ -5469,6 +5599,16 @@
         }
       }
     },
+    "Random Game": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu au hasard"
+          }
+        }
+      }
+    },
     "Rating": {
       "localizations": {
         "fr": {
@@ -5525,6 +5665,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prêt, des fichiers facultatifs manquent"
+          }
+        }
+      }
+    },
+    "Recently Added": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutés récemment"
           }
         }
       }
@@ -7589,6 +7739,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifié"
+          }
+        }
+      }
+    },
+    "Verified Dumps": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dumps vérifiés"
           }
         }
       }

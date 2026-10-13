@@ -50,6 +50,10 @@ public final class Game {
     /// like one.
     public var datName: String?
 
+    /// When the game joined the library, for Recently Added. Games from
+    /// before there was one take the day their file went in its folder.
+    public var dateAdded: Date?
+
     public var coverArtPath: String?
     public var titleScreenPath: String?
     public var videoPath: String?

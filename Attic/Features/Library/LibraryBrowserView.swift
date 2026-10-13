@@ -19,6 +19,8 @@ struct LibraryBrowserView: View {
     @AppStorage("collectionSortOrder") private var collectionSortOrder = GameSortOrder.systemThenRelease
     @State private var selectedGame: Game?
     @State private var multiSelection: [Game] = []
+    /// Bumped to have the grid pick a game at random.
+    @State private var randomPicks = 0
     @AppStorage("gridCellScale") private var cellScale: Double = 1.0
     @AppStorage("showsGameInspector") private var showsInspector = true
     @State private var showsControllerHelp = false
@@ -52,7 +54,8 @@ struct LibraryBrowserView: View {
                 sortOrder: shownSortOrder.wrappedValue,
                 cellScale: CGFloat(cellScale),
                 selectedGame: $selectedGame,
-                multiSelection: $multiSelection
+                multiSelection: $multiSelection,
+                randomPicks: randomPicks
             )
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 VStack(spacing: 0) {
@@ -328,6 +331,16 @@ struct LibraryBrowserView: View {
         }
 
         ToolbarItem {
+            Button {
+                randomPicks += 1
+            } label: {
+                Label("Random Game", systemImage: "dice")
+            }
+            .keyboardShortcut("r", modifiers: [.command, .option])
+            .help("Pick a game at random from the ones shown (⌥⌘R)")
+        }
+
+        ToolbarItem {
             ScrapeMissingButton(selection: currentSelection)
         }
 
@@ -383,7 +396,7 @@ struct LibraryBrowserView: View {
     /// Same order the sidebar lists them in, wrapping at either end so a
     /// shoulder button can cycle through everything without a dead stop.
     private func stepSection(by offset: Int) {
-        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed]
+        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed, .recentlyAdded]
             + collections.map { .collection($0.collectionID) }
             + shownSystems.orderedByCategory().map { .system($0.systemID) }
         let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
@@ -396,6 +409,7 @@ struct LibraryBrowserView: View {
         case .allGames: String(localized: "All Games")
         case .favorites: String(localized: "Favorites")
         case .recentlyPlayed: String(localized: "Recently Played")
+        case .recentlyAdded: String(localized: "Recently Added")
         case .system(let canonicalID):
             systems.first { $0.systemID == canonicalID }?.displayName ?? canonicalID.rawValue
         case .collection(let collectionID):

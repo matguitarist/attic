@@ -116,6 +116,22 @@ import Testing
         #expect(try ModelContext(container).fetch(FetchDescriptor<GameCollection>()).first?.excludedGameKeys == ["snes/WildSnake (USA).zip"])
     }
 
+    @Test func gamesKnowWhenTheyWereAdded() async throws {
+        let container = try AtticModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        let before = Date()
+        _ = try await store.upsertSystem(sampleSystemData(games: [sampleRecord(path: "a.sfc", title: "A")]), displayName: "SNES")
+        let context = ModelContext(container)
+        let game = try #require(try context.fetch(FetchDescriptor<Game>()).first)
+        #expect((game.dateAdded ?? .distantPast) >= before)
+
+        // One from before the field: its file's date, else now.
+        game.dateAdded = nil
+        try context.save()
+        try await store.backfillDatesAdded()
+        #expect(try ModelContext(container).fetch(FetchDescriptor<Game>()).first?.dateAdded != nil)
+    }
+
     @Test func firstScanInsertsSystemAndGames() async throws {
         let store = try makeStore()
         let data = sampleSystemData(games: [

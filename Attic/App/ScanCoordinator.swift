@@ -32,6 +32,7 @@ final class ScanCoordinator {
     /// field existed — see `LibraryStore.refreshGameCounts()`.
     func refreshGameCounts() async {
         try? await libraryStore.refreshGameCounts()
+        try? await libraryStore.backfillDatesAdded()
     }
 
     func gameFiles() async -> [LibraryStore.GameFile] {

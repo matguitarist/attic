@@ -35,6 +35,7 @@ struct LibraryCommands: Commands {
     @FocusedValue(\.importCollection) private var importCollection
     @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
+    @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
@@ -60,6 +61,8 @@ struct LibraryCommands: Commands {
             Button("Refresh Library") { refresh() }
                 .keyboardShortcut("r")
                 .disabled(romsRootsStore.rootURLs.isEmpty || scanCoordinator.state == .scanning)
+
+            Button("Library Statistics") { openWindow(id: LibraryStatsView.windowID) }
 
             Button("Show ROMs Folder") {
                 if let root = romsRootsStore.rootURLs.first { NSWorkspace.shared.open(root) }

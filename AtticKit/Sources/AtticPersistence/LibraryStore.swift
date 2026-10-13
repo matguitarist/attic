@@ -89,6 +89,7 @@ public actor LibraryStore {
                     romsRootURL: data.romsRootURL,
                     record: record
                 )
+                game.dateAdded = Date()
                 modelContext.insert(game)
                 inserted += 1
             }
@@ -130,6 +131,20 @@ public actor LibraryStore {
         if modelContext.hasChanges {
             try modelContext.save()
         }
+    }
+
+    /// Gives games from before Recently Added existed the day their file
+    /// was put in its folder (or made), so the list means something from
+    /// the start.
+    public func backfillDatesAdded() throws {
+        let games = try modelContext.fetch(FetchDescriptor<Game>(predicate: #Predicate { $0.dateAdded == nil }))
+        guard !games.isEmpty else { return }
+        let now = Date()
+        for game in games {
+            let values = try? game.romAbsoluteURL.resourceValues(forKeys: [.addedToDirectoryDateKey, .creationDateKey])
+            game.dateAdded = values?.addedToDirectoryDate ?? values?.creationDate ?? now
+        }
+        try modelContext.save()
     }
 
     /// Adds to each collection that keeps itself up to date the games its

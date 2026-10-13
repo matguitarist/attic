@@ -112,7 +112,8 @@ struct CabinetView: View {
         [
             CabinetSection(selection: .allGames, title: String(localized: "All Games")),
             CabinetSection(selection: .favorites, title: String(localized: "Favorites")),
-            CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played"))
+            CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played")),
+            CabinetSection(selection: .recentlyAdded, title: String(localized: "Recently Added"))
         ] + collections
             .filter { !$0.games.isEmpty }
             .map { collection in
@@ -166,10 +167,13 @@ private struct CabinetShelf: View {
     @Query private var queriedGames: [Game]
     /// Collections follow the library window's collection order.
     private let sortsBySystem: Bool
+    /// Recently Added shows only the newest.
+    private let limit: Bool
     @AppStorage("collectionSortOrder") private var collectionSortOrder = GameSortOrder.systemThenRelease
 
     private var games: [Game] {
-        sortsBySystem && collectionSortOrder == .systemThenRelease ? GameGridView.bySystemThenRelease(queriedGames) : queriedGames
+        if limit { return Array(queriedGames.prefix(GameGridView.recentlyAddedCount)) }
+        return sortsBySystem && collectionSortOrder == .systemThenRelease ? GameGridView.bySystemThenRelease(queriedGames) : queriedGames
     }
     let event: CabinetEvent?
     @Binding var focusedGame: Game?
@@ -179,11 +183,14 @@ private struct CabinetShelf: View {
     @State private var scrolledID: PersistentIdentifier?
 
     init(selection: LibrarySelection, event: CabinetEvent?, focusedGame: Binding<Game?>) {
-        let sort: [SortDescriptor<Game>] = selection == .recentlyPlayed
-            ? [SortDescriptor(\.lastPlayedDate, order: .reverse)]
-            : [SortDescriptor(\.sortTitle)]
+        let sort: [SortDescriptor<Game>] = switch selection {
+        case .recentlyPlayed: [SortDescriptor(\.lastPlayedDate, order: .reverse)]
+        case .recentlyAdded: [SortDescriptor(\.dateAdded, order: .reverse), SortDescriptor(\.sortTitle)]
+        default: [SortDescriptor(\.sortTitle)]
+        }
         _queriedGames = Query(filter: GameGridView.selectionPredicate(selection), sort: sort)
         if case .collection = selection { sortsBySystem = true } else { sortsBySystem = false }
+        limit = selection == .recentlyAdded
         self.event = event
         _focusedGame = focusedGame
     }

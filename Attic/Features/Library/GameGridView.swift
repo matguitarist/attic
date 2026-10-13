@@ -48,12 +48,20 @@ struct GameGridView: View {
         GridNavigation.columnCount(availableWidth: availableWidth - Self.padding * 2, cellWidth: cellWidth, spacing: Self.spacing)
     }
 
-    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>, multiSelection: Binding<[Game]>) {
+    /// Each change picks a game at random.
+    private let randomPicks: Int
+
+    init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>, multiSelection: Binding<[Game]>, randomPicks: Int = 0) {
         _multiSelection = multiSelection
+        self.randomPicks = randomPicks
         self.cellScale = cellScale
         // Recently Played always shows most-recent-first, regardless of the
         // toolbar's sort picker — that's the one thing that view is for.
-        let effectiveSortOrder: GameSortOrder = selection == .recentlyPlayed ? .lastPlayed : sortOrder
+        let effectiveSortOrder: GameSortOrder = switch selection {
+        case .recentlyPlayed: .lastPlayed
+        case .recentlyAdded: .dateAdded
+        default: sortOrder
+        }
 
         // `Bool` isn't `Comparable`, so SwiftData's SortDescriptor can't sort
         // by `favorite` directly — fetch title-sorted and, for
@@ -64,12 +72,18 @@ struct GameGridView: View {
         )
         _selectedGame = selectedGame
         self.sortOrder = effectiveSortOrder
+        limit = selection == .recentlyAdded ? Self.recentlyAddedCount : nil
         // Only matches when a collection is showing, for "Remove from…".
         let collectionID: UUID = if case .collection(let id) = selection { id } else { UUID() }
         _shownCollection = Query(filter: #Predicate<GameCollection> { $0.collectionID == collectionID })
     }
 
+    /// How many games Recently Added shows.
+    static let recentlyAddedCount = 100
+    private let limit: Int?
+
     private var displayedGames: [Game] {
+        if let limit { return Array(games.prefix(limit)) }
         if sortOrder == .systemThenRelease { return Self.bySystemThenRelease(games) }
         guard sortOrder == .favoriteFirst else { return games }
         return games.enumerated()
@@ -114,6 +128,7 @@ struct GameGridView: View {
                     guard let event, !gamepad.isCabinetActive else { return }
                     handle(event.command, proxy: proxy)
                 }
+                .onChange(of: randomPicks) { pickRandom(proxy: proxy) }
         }
     }
 
@@ -199,6 +214,20 @@ struct GameGridView: View {
         // rather than snapping every move to the top or center.
         withAnimation(.easeOut(duration: 0.15)) {
             proxy.scrollTo(game.persistentModelID, anchor: nil)
+        }
+    }
+
+    /// Selects a game at random among those shown (another than the one
+    /// selected), and brings it into view.
+    private func pickRandom(proxy: ScrollViewProxy) {
+        let items = displayedGames
+        let others = items.count > 1 ? items.filter { $0.persistentModelID != selectedGame?.persistentModelID } : items
+        guard let game = others.randomElement() else { return }
+        multiSelection = []
+        selectedGame = game
+        isGridFocused = true
+        withAnimation(.easeInOut(duration: 0.3)) {
+            proxy.scrollTo(game.persistentModelID, anchor: .center)
         }
     }
 
@@ -338,6 +367,8 @@ struct GameGridView: View {
             return #Predicate<Game> { $0.favorite }
         case .recentlyPlayed:
             return #Predicate<Game> { $0.lastPlayedDate != nil }
+        case .recentlyAdded:
+            return #Predicate<Game> { $0.dateAdded != nil }
         case .system(let canonicalID):
             let systemID = canonicalID.rawValue
             return #Predicate<Game> { $0.systemCanonicalID == systemID }
@@ -365,6 +396,11 @@ struct GameGridView: View {
                 return #Predicate<Game> { $0.lastPlayedDate != nil }
             }
             return #Predicate<Game> { $0.lastPlayedDate != nil && $0.title.localizedStandardContains(query) }
+        case .recentlyAdded:
+            if query.isEmpty {
+                return #Predicate<Game> { $0.dateAdded != nil }
+            }
+            return #Predicate<Game> { $0.dateAdded != nil && $0.title.localizedStandardContains(query) }
         case .system(let canonicalID):
             let systemID = canonicalID.rawValue
             if query.isEmpty {
@@ -407,6 +443,8 @@ struct GameGridView: View {
             [SortDescriptor(\.sortTitle)]
         case .lastPlayed:
             [SortDescriptor(\.lastPlayedDate, order: .reverse)]
+        case .dateAdded:
+            [SortDescriptor(\.dateAdded, order: .reverse), SortDescriptor(\.sortTitle)]
         }
     }
 }

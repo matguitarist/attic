@@ -135,6 +135,15 @@ struct AtticApp: App {
         .restorationBehavior(.disabled)
         .modelContainer(modelContainer)
 
+        Window("Library Statistics", id: LibraryStatsView.windowID) {
+            withAppEnvironment(LibraryStatsView())
+                .frame(minWidth: 560, minHeight: 480)
+        }
+        .defaultSize(width: 760, height: 720)
+        .defaultLaunchBehavior(.suppressed)
+        .restorationBehavior(.disabled)
+        .modelContainer(modelContainer)
+
         Window("Attic Help", id: HelpView.windowID) {
             withAppEnvironment(HelpView())
                 .frame(minWidth: 760, minHeight: 500)
