@@ -66,10 +66,13 @@ struct AddToCollectionMenu: View {
     }
 }
 
-/// Makes a collection, or renames one and adds to it. Games are found by
-/// title: any of several terms ("Super Mario, Mario Bros"), none of some
-/// others ("Tennis, Kart"), optionally on one system — then each match can
-/// be unticked before they're added.
+/// Makes or edits a collection. Games are found by title: any of several
+/// terms ("Super Mario, Mario Bros"), none of some others ("Tennis,
+/// Kart"), optionally on one system. The collection keeps its search, so
+/// editing it later runs it again (after adding a system, say) or changes
+/// it, and it can add new matches by itself after each library scan.
+/// Every game listed can be unticked: a member to take it out, a match to
+/// leave it out — either way the search won't add it back.
 struct CollectionEditorView: View {
     let draft: CollectionDraft
 
@@ -78,10 +81,12 @@ struct CollectionEditorView: View {
     @Query(sort: \Game.sortTitle) private var games: [Game]
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @State private var name: String
-    @State private var search = CollectionSearch()
+    @State private var search: CollectionSearch
     /// The search follows the name until it's edited itself.
     @State private var searchFollowsName: Bool
     @State private var system: CanonicalSystemID?
+    @State private var addsMatchingGames: Bool
+    /// Listed games left unticked: members to take out, matches to skip.
     @State private var unticked: Set<PersistentIdentifier> = []
     var onCreate: (GameCollection) -> Void = { _ in }
 
@@ -90,10 +95,15 @@ struct CollectionEditorView: View {
         self.onCreate = onCreate
         if case .edit(let collection) = draft.mode {
             _name = State(initialValue: collection.name)
+            _search = State(initialValue: collection.search)
             _searchFollowsName = State(initialValue: false)
+            _system = State(initialValue: collection.searchSystemID.map { CanonicalSystemID($0) })
+            _addsMatchingGames = State(initialValue: collection.addsMatchingGames)
         } else {
             _name = State(initialValue: "")
+            _search = State(initialValue: CollectionSearch())
             _searchFollowsName = State(initialValue: true)
+            _addsMatchingGames = State(initialValue: false)
         }
     }
 
@@ -103,26 +113,30 @@ struct CollectionEditorView: View {
         if case .edit(let collection) = draft.mode { collection } else { nil }
     }
 
-    /// Games given up front ("Add to New Collection…"), always added.
-    private var givenGames: [Game] {
-        if case .new(let games) = draft.mode { games } else { [] }
+    /// The collection's games, or those given up front ("Add to New
+    /// Collection…").
+    private var members: [Game] {
+        switch draft.mode {
+        case .edit(let collection): collection.games.sorted { $0.sortTitle.localizedStandardCompare($1.sortTitle) == .orderedAscending }
+        case .new(let games): games
+        }
     }
 
-    /// Games the search finds that aren't in the collection yet.
+    /// Games the search finds that aren't members yet.
     private var matches: [Game] {
         guard !search.isEmpty else { return [] }
-        let skipped = Set((editedCollection?.games ?? []).map(\.persistentModelID))
-            .union(givenGames.map(\.persistentModelID))
+        let memberIDs = Set(members.map(\.persistentModelID))
         return games.filter { game in
-            !skipped.contains(game.persistentModelID)
+            !memberIDs.contains(game.persistentModelID)
                 && (system == nil || game.systemCanonicalID == system?.rawValue)
                 && search.matches(game.title)
         }
     }
 
-    private var chosen: [Game] { matches.filter { !unticked.contains($0.persistentModelID) } }
+    private func isTicked(_ game: Game) -> Bool { !unticked.contains(game.persistentModelID) }
 
     var body: some View {
+        let members = self.members
         let matches = self.matches
         Form {
             Section {
@@ -148,88 +162,121 @@ struct CollectionEditorView: View {
                         Text(system.displayName).tag(Optional(system.systemID))
                     }
                 }
+                Toggle(isOn: $addsMatchingGames) {
+                    Text("Add new matching games automatically")
+                    Text("After each library scan, for instance once you've added a system.")
+                }
+                .disabled(search.isEmpty)
             } header: {
-                Text(editedCollection == nil ? String(localized: "Add Games") : String(localized: "Add More Games"))
+                Text("Search")
             } footer: {
-                Text("Separate several words with commas: a game is added when its title contains any of the first ones and none of the others.")
+                Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
-            if !matches.isEmpty {
+            if !members.isEmpty || !matches.isEmpty {
                 Section {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 6) {
-                            ForEach(matches) { game in
-                                Toggle(isOn: Binding(
-                                    get: { !unticked.contains(game.persistentModelID) },
-                                    set: { if $0 { unticked.remove(game.persistentModelID) } else { unticked.insert(game.persistentModelID) } }
-                                )) {
-                                    HStack {
-                                        Text(game.title).lineLimit(1)
-                                        Spacer()
-                                        Text(game.system?.displayName ?? game.systemCanonicalID)
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(1)
-                                    }
-                                }
-                                .toggleStyle(.checkbox)
+                            if !members.isEmpty, !matches.isEmpty {
+                                Text(editedCollection == nil ? String(localized: "Chosen") : String(localized: "In the collection"))
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
                             }
+                            ForEach(members) { row($0) }
+                            if !members.isEmpty, !matches.isEmpty {
+                                Text("Found by the search")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.top, 6)
+                            }
+                            ForEach(matches) { row($0) }
                         }
                         .padding(.vertical, 4)
                     }
-                    .frame(height: 240)
+                    .frame(height: 260)
                 } header: {
                     HStack {
-                        Text("\(chosen.count) of \(matches.count) games")
+                        Text(String(localized: "\((members + matches).count { isTicked($0) }) of \(members.count + matches.count) games"))
                         Spacer()
                         Button("All") { unticked = [] }
-                        Button("None") { unticked = Set(matches.map(\.persistentModelID)) }
+                        Button("None") { unticked = Set((members + matches).map(\.persistentModelID)) }
                     }
                     .buttonStyle(.link)
                 }
             } else if !search.isEmpty {
-                Text("No other games match.")
+                Text("No games match.")
                     .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 520)
+        .frame(width: 540)
         .fixedSize(horizontal: false, vertical: true)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button(confirmTitle) { save() }
+                Button(editedCollection == nil ? String(localized: "Create") : String(localized: "Save")) { save() }
                     .disabled(trimmedName.isEmpty)
             }
         }
-        .onChange(of: search) { unticked = [] }
-        .onChange(of: system) { unticked = [] }
+        // Games left out before start unticked, so they can be put back.
+        .task(id: search) { untickExcluded() }
+        .onChange(of: system) { untickExcluded() }
     }
 
-    private var confirmTitle: String {
-        let count = chosen.count
-        if editedCollection != nil {
-            return count == 0 ? String(localized: "Save") : String(localized: "Save and Add \(count)")
+    private func row(_ game: Game) -> some View {
+        Toggle(isOn: Binding(
+            get: { isTicked(game) },
+            set: { if $0 { unticked.remove(game.persistentModelID) } else { unticked.insert(game.persistentModelID) } }
+        )) {
+            HStack {
+                Text(game.title).lineLimit(1)
+                Spacer()
+                Text(game.system?.displayName ?? game.systemCanonicalID)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
         }
-        return String(localized: "Create")
+        .toggleStyle(.checkbox)
+    }
+
+    private func untickExcluded() {
+        let excluded = Set(editedCollection?.excludedGameKeys ?? [])
+        let memberIDs = Set(unticked.filter { id in members.contains { $0.persistentModelID == id } })
+        unticked = memberIDs.union(matches.filter { excluded.contains($0.collectionKey) }.map(\.persistentModelID))
     }
 
     private func save() {
-        let added = chosen
-        if let collection = editedCollection {
-            collection.name = trimmedName
-            for game in added { collection.setContains(game, true) }
+        let members = self.members
+        let matches = self.matches
+        let collection: GameCollection
+        if let editedCollection {
+            collection = editedCollection
         } else {
-            let collection = GameCollection(name: trimmedName)
+            collection = GameCollection(name: trimmedName)
             modelContext.insert(collection)
-            collection.games = givenGames + added
-            try? modelContext.save()
-            onCreate(collection)
         }
+        collection.name = trimmedName
+        collection.search = search
+        collection.searchSystemID = system?.rawValue
+        collection.addsMatchingGames = addsMatchingGames && !search.isEmpty
+
+        var excluded = Set(collection.excludedGameKeys)
+        for game in members + matches {
+            if isTicked(game) {
+                collection.setContains(game, true)
+                excluded.remove(game.collectionKey)
+            } else {
+                collection.setContains(game, false)
+                excluded.insert(game.collectionKey)
+            }
+        }
+        collection.excludedGameKeys = excluded.sorted()
         try? modelContext.save()
+        if editedCollection == nil { onCreate(collection) }
         dismiss()
     }
 }

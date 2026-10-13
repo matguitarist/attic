@@ -67,6 +67,9 @@ final class ScanCoordinator {
             }
         }
 
+        // Collections that keep themselves up to date pick up new games.
+        try? await libraryStore.addMatchingGamesToCollections()
+
         var summary = "\(systemsSaved) system(s) scanned — \(gamesInserted) new, \(gamesUpdated) updated"
         if gamesRemoved > 0 {
             summary += ", \(gamesRemoved) removed"

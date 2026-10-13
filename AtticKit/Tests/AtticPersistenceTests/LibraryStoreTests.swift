@@ -26,6 +26,41 @@ import Testing
         )
     }
 
+    @Test func collectionsThatKeepUpPickUpNewMatches() async throws {
+        let container = try AtticModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "smw.sfc", title: "Super Mario World"),
+        ]), displayName: "SNES")
+
+        let context = ModelContext(container)
+        let collection = GameCollection(name: "Mario")
+        collection.search = CollectionSearch(including: "Super Mario, Mario Bros", excluding: "Kart")
+        collection.addsMatchingGames = true
+        // Taken out by hand earlier: never comes back.
+        collection.excludedGameKeys = ["snes/allstars.sfc"]
+        context.insert(collection)
+        let frozen = GameCollection(name: "Frozen")
+        frozen.search = CollectionSearch(including: "Mario")
+        context.insert(frozen)
+        try context.save()
+
+        // A rescan finds more games.
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "smw.sfc", title: "Super Mario World"),
+            sampleRecord(path: "kart.sfc", title: "Super Mario Kart"),
+            sampleRecord(path: "allstars.sfc", title: "Super Mario All-Stars"),
+            sampleRecord(path: "rpg.sfc", title: "Super Mario RPG"),
+        ]), displayName: "SNES")
+        #expect(try await store.addMatchingGamesToCollections() == 2)
+
+        let fresh = ModelContext(container)
+        let collections = try fresh.fetch(FetchDescriptor<GameCollection>())
+        let mario = try #require(collections.first { $0.name == "Mario" })
+        #expect(Set(mario.games.map(\.title)) == ["Super Mario World", "Super Mario RPG"])
+        #expect(collections.first { $0.name == "Frozen" }?.games.isEmpty == true)
+    }
+
     @Test func firstScanInsertsSystemAndGames() async throws {
         let store = try makeStore()
         let data = sampleSystemData(games: [

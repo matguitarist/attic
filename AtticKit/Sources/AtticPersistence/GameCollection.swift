@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import AtticModels
 
 /// A user-made group of games ("Zelda", "Castlevania", "Couch co-op"…),
 /// across any systems. A game can be in any number of collections; deleting
@@ -15,11 +16,38 @@ public final class GameCollection {
     @Relationship(deleteRule: .nullify, inverse: \Game.collections)
     public var games: [Game] = []
 
+    /// The search that found its games, kept so it can be run again or
+    /// changed later (see `CollectionSearch`).
+    public var searchIncluding: String = ""
+    public var searchExcluding: String = ""
+    /// Only games of this system, when set.
+    public var searchSystemID: String?
+    /// New games the search finds are added after each library scan.
+    public var addsMatchingGames: Bool = false
+    /// Games taken out of the collection or unticked from its search, as
+    /// `Game.collectionKey`, so the search never adds them back.
+    public var excludedGameKeys: [String] = []
+
     public init(name: String, games: [Game] = []) {
         self.collectionID = UUID()
         self.name = name
         self.createdDate = .now
         self.games = games
+    }
+
+    public var search: CollectionSearch {
+        get { CollectionSearch(including: searchIncluding, excluding: searchExcluding) }
+        set {
+            searchIncluding = newValue.including
+            searchExcluding = newValue.excluding
+        }
+    }
+
+    /// Whether the collection's search would add `game`.
+    public func searchMatches(_ game: Game) -> Bool {
+        (searchSystemID == nil || game.systemCanonicalID == searchSystemID)
+            && search.matches(game.title)
+            && !excludedGameKeys.contains(game.collectionKey)
     }
 
     public func contains(_ game: Game) -> Bool {

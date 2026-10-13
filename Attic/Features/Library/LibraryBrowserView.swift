@@ -85,7 +85,8 @@ struct LibraryBrowserView: View {
             }
         }
         .focusedSceneValue(\.selectedGame, selectedGame)
-        .focusedSceneValue(\.addGames, AddGamesAction { chooseGamesToAdd() })
+        .focusedSceneValue(\.addGames, MenuAction { chooseGamesToAdd() })
+        .focusedSceneValue(\.editCollection, shownCollection.map { collection in MenuAction { collectionCoordinator.edit(collection) } })
         .focusedSceneValue(\.gameInfoEditor, infoEditor)
         .environment(infoEditor)
         .focusedSceneValue(\.collectionCoordinator, collectionCoordinator)
@@ -165,6 +166,12 @@ struct LibraryBrowserView: View {
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
 
+    /// The collection shown, when the sidebar selection is one.
+    private var shownCollection: GameCollection? {
+        guard case .collection(let id) = currentSelection else { return nil }
+        return collections.first { $0.collectionID == id }
+    }
+
     /// File › Add Games…: the same import as dropping them on the window.
     private func chooseGamesToAdd() {
         let panel = NSOpenPanel()
@@ -239,6 +246,17 @@ struct LibraryBrowserView: View {
                 Label("Sort By", systemImage: "arrow.up.arrow.down")
             }
             .help("Sort by")
+        }
+
+        if let collection = shownCollection {
+            ToolbarItem {
+                Button {
+                    collectionCoordinator.edit(collection)
+                } label: {
+                    Label("Edit Collection", systemImage: "slider.horizontal.3")
+                }
+                .help("Rename this collection, change its search or add and remove games")
+            }
         }
 
         ToolbarItem {

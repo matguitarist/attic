@@ -8,10 +8,13 @@ extension FocusedValues {
     @Entry var selectedGame: Game?
     /// File › Add Games…, from the library window (which shows the
     /// import's questions and progress).
-    @Entry var addGames: AddGamesAction?
+    @Entry var addGames: MenuAction?
+    /// File › Edit Collection…, while a collection is shown.
+    @Entry var editCollection: MenuAction?
 }
 
-struct AddGamesAction {
+/// A menu bar action a window publishes for the commands to call.
+struct MenuAction {
     let run: () -> Void
     func callAsFunction() { run() }
 }
@@ -24,6 +27,7 @@ struct LibraryCommands: Commands {
     let romsRootsStore: RomsRootsStore
 
     @FocusedValue(\.addGames) private var addGames
+    @FocusedValue(\.editCollection) private var editCollection
     @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
 
@@ -38,6 +42,9 @@ struct LibraryCommands: Commands {
             }
             .keyboardShortcut("n", modifiers: [.command, .shift])
             .disabled(collectionCoordinator == nil)
+
+            Button("Edit Collection…") { editCollection?() }
+                .disabled(editCollection == nil)
 
             Divider()
 

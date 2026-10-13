@@ -599,32 +599,12 @@
         }
       }
     },
-    "Add Games": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter des jeux"
-          }
-        }
-      }
-    },
     "Add Games…": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter des jeux…"
-          }
-        }
-      }
-    },
-    "Add More Games": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter d’autres jeux"
           }
         }
       }
@@ -665,6 +645,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajoutez vos identifiants dans Réglages › ScreenScraper ou TheGamesDB, puis utilisez Récupérer les manquants dans la barre d’outils, ou Récupérer les infos sur un seul jeu."
+          }
+        }
+      }
+    },
+    "Add new matching games automatically": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter automatiquement les nouveaux jeux qui correspondent"
           }
         }
       }
@@ -761,6 +751,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter votre compte membre ScreenScraper augmente votre quota de requêtes et le nombre de requêtes simultanées."
+          }
+        }
+      }
+    },
+    "After each library scan, for instance once you've added a system.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après chaque analyse de la bibliothèque, par exemple une fois un système ajouté."
           }
         }
       }
@@ -1303,6 +1303,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisir…"
+          }
+        }
+      }
+    },
+    "Chosen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisis"
           }
         }
       }
@@ -2299,6 +2309,16 @@
         }
       }
     },
+    "Found by the search": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trouvés par la recherche"
+          }
+        }
+      }
+    },
     "Free play is on by default (Settings › General › Arcade), so Start begins a game without coins. Games first show the Neo Geo boot screen for about 10 seconds.": {
       "localizations": {
         "fr": {
@@ -2615,6 +2635,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En jeu"
+          }
+        }
+      }
+    },
+    "In the collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans la collection"
           }
         }
       }
@@ -3449,6 +3479,16 @@
         }
       }
     },
+    "No games match.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu ne correspond."
+          }
+        }
+      }
+    },
     "No match found on ScreenScraper for this ROM.": {
       "localizations": {
         "fr": {
@@ -3465,16 +3505,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucune correspondance trouvée sur TheGamesDB pour cette ROM."
-          }
-        }
-      }
-    },
-    "No other games match.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun autre jeu ne correspond."
           }
         }
       }
@@ -4199,6 +4229,16 @@
         }
       }
     },
+    "Rename this collection, change its search or add and remove games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer cette collection, changer sa recherche ou ajouter et retirer des jeux"
+          }
+        }
+      }
+    },
     "Replace Existing Info": {
       "localizations": {
         "fr": {
@@ -4499,16 +4539,6 @@
         }
       }
     },
-    "Save and Add %lld": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enregistrer et ajouter %lld"
-          }
-        }
-      }
-    },
     "Save covers as HEIC": {
       "localizations": {
         "fr": {
@@ -4751,6 +4781,16 @@
         }
       }
     },
+    "Search": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche"
+          }
+        }
+      }
+    },
     "Search Games": {
       "localizations": {
         "fr": {
@@ -4811,12 +4851,12 @@
         }
       }
     },
-    "Separate several words with commas: a game is added when its title contains any of the first ones and none of the others.": {
+    "Separate several words with commas: a game is found when its title contains any of the first ones and none of the others.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Séparez plusieurs mots par des virgules : un jeu est ajouté si son titre contient l’un des premiers et aucun des autres."
+            "value": "Séparez plusieurs mots par des virgules : un jeu est trouvé si son titre contient l’un des premiers et aucun des autres."
           }
         }
       }

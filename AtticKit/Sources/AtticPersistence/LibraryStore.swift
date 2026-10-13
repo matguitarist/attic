@@ -101,6 +101,25 @@ public actor LibraryStore {
         }
     }
 
+    /// Adds to each collection that keeps itself up to date the games its
+    /// search now finds (after a scan brought new ones). Returns how many.
+    @discardableResult
+    public func addMatchingGamesToCollections() throws -> Int {
+        let collections = try modelContext.fetch(FetchDescriptor<GameCollection>(predicate: #Predicate { $0.addsMatchingGames }))
+        guard !collections.isEmpty else { return 0 }
+        let games = try modelContext.fetch(FetchDescriptor<Game>())
+        var added = 0
+        for collection in collections where !collection.search.isEmpty {
+            let members = Set(collection.games.map(\.persistentModelID))
+            for game in games where !members.contains(game.persistentModelID) && collection.searchMatches(game) {
+                collection.games.append(game)
+                added += 1
+            }
+        }
+        if modelContext.hasChanges { try modelContext.save() }
+        return added
+    }
+
     public func systemCount() throws -> Int {
         try modelContext.fetchCount(FetchDescriptor<GameSystem>())
     }

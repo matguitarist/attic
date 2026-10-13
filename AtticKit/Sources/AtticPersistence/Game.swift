@@ -157,6 +157,10 @@ extension Game {
     }
 
     public var romAbsoluteURL: URL { URL(fileURLWithPath: romAbsolutePath) }
+
+    /// Names the game across rescans (which recreate removed-then-found
+    /// games): its system and its path in the system's folder.
+    public var collectionKey: String { "\(systemCanonicalID)/\(romRelativePath)" }
     public var coverArtURL: URL? { coverArtPath.map { URL(fileURLWithPath: $0) } }
     public var titleScreenURL: URL? { titleScreenPath.map { URL(fileURLWithPath: $0) } }
     public var videoURL: URL? { videoPath.map { URL(fileURLWithPath: $0) } }
