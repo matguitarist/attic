@@ -70,6 +70,7 @@ struct GameGridView: View {
     }
 
     private var displayedGames: [Game] {
+        if sortOrder == .systemThenRelease { return Self.bySystemThenRelease(games) }
         guard sortOrder == .favoriteFirst else { return games }
         return games.enumerated()
             .sorted { lhs, rhs in
@@ -380,9 +381,29 @@ struct GameGridView: View {
         }
     }
 
+    /// Grouped by system in the sidebar's order, oldest first within each;
+    /// games with no release date after the dated ones, by title (the
+    /// query's order).
+    static func bySystemThenRelease(_ games: [Game]) -> [Game] {
+        let systems = Dictionary(games.compactMap(\.system).map { ($0.canonicalID, $0) }, uniquingKeysWith: { first, _ in first })
+        let order = Dictionary(uniqueKeysWithValues: systems.values.sorted(by: GameSystem.displayOrder).enumerated().map { ($1.canonicalID, $0) })
+        return games.enumerated().sorted { lhs, rhs in
+            let (a, b) = (lhs.element, rhs.element)
+            let (systemA, systemB) = (order[a.systemCanonicalID] ?? .max, order[b.systemCanonicalID] ?? .max)
+            if systemA != systemB { return systemA < systemB }
+            switch (a.releaseDate, b.releaseDate) {
+            case let (dateA?, dateB?) where dateA != dateB: return dateA < dateB
+            case (.some, nil): return true
+            case (nil, .some): return false
+            default: return lhs.offset < rhs.offset
+            }
+        }
+        .map(\.element)
+    }
+
     private static func sortDescriptors(for order: GameSortOrder) -> [SortDescriptor<Game>] {
         switch order {
-        case .title, .favoriteFirst:
+        case .title, .favoriteFirst, .systemThenRelease:
             [SortDescriptor(\.sortTitle)]
         case .lastPlayed:
             [SortDescriptor(\.lastPlayedDate, order: .reverse)]

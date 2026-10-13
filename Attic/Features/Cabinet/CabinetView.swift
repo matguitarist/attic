@@ -157,7 +157,14 @@ struct CabinetSection: Identifiable, Hashable {
 /// The covers carousel and focused game's details for one section. Owns
 /// the section's query, so switching sections swaps the whole shelf.
 private struct CabinetShelf: View {
-    @Query private var games: [Game]
+    @Query private var queriedGames: [Game]
+    /// Collections follow the library window's collection order.
+    private let sortsBySystem: Bool
+    @AppStorage("collectionSortOrder") private var collectionSortOrder = GameSortOrder.systemThenRelease
+
+    private var games: [Game] {
+        sortsBySystem && collectionSortOrder == .systemThenRelease ? GameGridView.bySystemThenRelease(queriedGames) : queriedGames
+    }
     let event: CabinetEvent?
     @Binding var focusedGame: Game?
 
@@ -169,7 +176,8 @@ private struct CabinetShelf: View {
         let sort: [SortDescriptor<Game>] = selection == .recentlyPlayed
             ? [SortDescriptor(\.lastPlayedDate, order: .reverse)]
             : [SortDescriptor(\.sortTitle)]
-        _games = Query(filter: GameGridView.selectionPredicate(selection), sort: sort)
+        _queriedGames = Query(filter: GameGridView.selectionPredicate(selection), sort: sort)
+        if case .collection = selection { sortsBySystem = true } else { sortsBySystem = false }
         self.event = event
         _focusedGame = focusedGame
     }

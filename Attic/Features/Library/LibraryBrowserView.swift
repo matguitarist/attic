@@ -13,6 +13,9 @@ struct LibraryBrowserView: View {
     @State private var selection: LibrarySelection? = .allGames
     @State private var searchText = ""
     @State private var sortOrder: GameSortOrder = .title
+    /// Collections keep their own order, by system then release date
+    /// unless changed, so a series reads in order.
+    @AppStorage("collectionSortOrder") private var collectionSortOrder = GameSortOrder.systemThenRelease
     @State private var selectedGame: Game?
     @State private var multiSelection: [Game] = []
     @AppStorage("gridCellScale") private var cellScale: Double = 1.0
@@ -42,7 +45,7 @@ struct LibraryBrowserView: View {
             GameGridView(
                 selection: currentSelection,
                 searchText: searchText,
-                sortOrder: sortOrder,
+                sortOrder: shownSortOrder.wrappedValue,
                 cellScale: CGFloat(cellScale),
                 selectedGame: $selectedGame,
                 multiSelection: $multiSelection
@@ -166,6 +169,12 @@ struct LibraryBrowserView: View {
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
 
+    /// The sort the toolbar shows and changes: the collections' own while
+    /// one is shown.
+    private var shownSortOrder: Binding<GameSortOrder> {
+        if case .collection = currentSelection { $collectionSortOrder } else { $sortOrder }
+    }
+
     /// The collection shown, when the sidebar selection is one.
     private var shownCollection: GameCollection? {
         guard case .collection(let id) = currentSelection else { return nil }
@@ -236,7 +245,7 @@ struct LibraryBrowserView: View {
 
         ToolbarItem {
             Menu {
-                Picker("Sort By", selection: $sortOrder) {
+                Picker("Sort By", selection: shownSortOrder) {
                     ForEach(GameSortOrder.allCases) { order in
                         Text(order.label).tag(order)
                     }

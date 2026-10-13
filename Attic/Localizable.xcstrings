@@ -5181,6 +5181,16 @@
         }
       }
     },
+    "System, then Release Date": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système, puis date de sortie"
+          }
+        }
+      }
+    },
     "Systems": {
       "localizations": {
         "fr": {
