@@ -125,7 +125,7 @@ struct GameDetailView: View {
             // shows; box art is the fallback. 4:3 like the screens of most
             // of these systems, and GameCoverArtView fits rather than crops
             // anything shaped otherwise.
-            GameCoverArtView(url: Self.headerImageURL(for: game), title: game.title, showBackground: false)
+            GameHeaderMedia(imageURL: Self.headerImageURL(for: game), videoURL: game.previewVideoURL, title: game.title)
                 .aspectRatio(4.0 / 3.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))

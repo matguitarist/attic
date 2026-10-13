@@ -12,6 +12,15 @@ extension Game {
         return url
     }
 
+    /// The game's video: the one the scan found, else one in its media
+    /// folder (added since).
+    var previewVideoURL: URL? {
+        if let videoURL, FileManager.default.fileExists(atPath: videoURL.path) { return videoURL }
+        let base = MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .videos)
+        return MediaFolder.videoExtensions.map { base.appendingPathExtension($0) }
+            .first { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
     /// The game's manual, when there's one in its media folder.
     var manualURL: URL? {
         let base = MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .manuals)

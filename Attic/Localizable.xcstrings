@@ -525,6 +525,16 @@
         }
       }
     },
+    "A game's video plays, muted, in the side panel after a moment on it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vidéo d’un jeu se lit, sans le son, dans le panneau latéral après un instant sur ce jeu."
+          }
+        }
+      }
+    },
     "A/B swapped in games": {
       "localizations": {
         "fr": {
@@ -3405,6 +3415,16 @@
         }
       }
     },
+    "Mute the video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couper le son de la vidéo"
+          }
+        }
+      }
+    },
     "Name": {
       "localizations": {
         "fr": {
@@ -3971,6 +3991,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Historique de jeu"
+          }
+        }
+      }
+    },
+    "Play the video's sound": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activer le son de la vidéo"
+          }
+        }
+      }
+    },
+    "Play video previews": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lire les aperçus vidéo"
           }
         }
       }
@@ -5253,6 +5293,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trier les systèmes, ou masquer ceux qui sont vides"
+          }
+        }
+      }
+    },
+    "Sound Off": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couper le son"
+          }
+        }
+      }
+    },
+    "Sound On": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activer le son"
           }
         }
       }

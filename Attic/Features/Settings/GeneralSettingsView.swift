@@ -22,6 +22,7 @@ struct GeneralSettingsView: View {
     @State private var tidyProgress: Double?
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
+    @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
 
     /// A dry run: works out what Tidy Up would do and shows it, changing nothing.
     private func analyze() async {
@@ -66,6 +67,10 @@ struct GeneralSettingsView: View {
                 }
                 Button("Add Folder…") { isChoosingFolder = true }
                 Toggle("Hide systems with no games", isOn: $hidesEmptySystems)
+                Toggle(isOn: $playsVideoPreviews) {
+                    Text("Play video previews")
+                    Text("A game's video plays, muted, in the side panel after a moment on it.")
+                }
                 if let tidyProgress {
                     ProgressView("Tidying up…", value: tidyProgress)
                 } else if !romsRootsStore.rootURLs.isEmpty {
