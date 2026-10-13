@@ -482,6 +482,16 @@
         }
       }
     },
+    "%lld systems are missing a BIOS file they need, so their games won't start.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld systèmes n’ont pas un fichier BIOS nécessaire : leurs jeux ne démarreront pas."
+          }
+        }
+      }
+    },
     "%lld were already in your ROMs folder.": {
       "localizations": {
         "fr": {
@@ -2009,6 +2019,16 @@
         }
       }
     },
+    "Dump BIOS files from hardware you own; Attic never downloads them. What's needed follows each system's chosen emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extrayez les fichiers BIOS de matériel que vous possédez ; Attic ne les télécharge jamais. Ce qui est nécessaire dépend de l’émulateur choisi pour chaque système."
+          }
+        }
+      }
+    },
     "Dumps work best as .rvz (compressed, lossless) or .iso.": {
       "localizations": {
         "fr": {
@@ -2215,6 +2235,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chaque système a un émulateur"
+          }
+        }
+      }
+    },
+    "Every system you have games for has the BIOS files it needs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque système dont vous avez des jeux a les fichiers BIOS dont il a besoin."
           }
         }
       }
@@ -3555,6 +3585,16 @@
         }
       }
     },
+    "No BIOS Needed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun BIOS nécessaire"
+          }
+        }
+      }
+    },
     "No BIOS needed.": {
       "localizations": {
         "fr": {
@@ -4205,12 +4245,32 @@
         }
       }
     },
+    "Ready": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt"
+          }
+        }
+      }
+    },
     "Ready to scrape.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Prêt à récupérer les infos."
+          }
+        }
+      }
+    },
+    "Ready, some optional files missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt, des fichiers facultatifs manquent"
           }
         }
       }

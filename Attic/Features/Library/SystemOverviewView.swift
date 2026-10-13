@@ -158,26 +158,10 @@ struct SystemOverviewView: View {
         Section {
             let _ = biosCheck
             ForEach(biosRequirements.statuses(in: emulationFolderStore.folder.bios)) { file in
-                LabeledContent {
-                    Label(file.isPresent ? "Found" : "Missing",
-                          systemImage: file.isPresent ? "checkmark.circle.fill" : (file.required ? "exclamationmark.triangle.fill" : "circle"))
-                        .foregroundStyle(file.isPresent ? .green : (file.required ? .orange : .secondary))
-                } label: {
-                    Tag(file.fileName)
-                    Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
-                        .compactMap { $0 }
-                        .joined(separator: " · "))
-                }
+                BIOSFileRow(file: file)
             }
             Button("Show BIOS Folder") {
-                // Where this system's files go, which isn't always BIOS/
-                // itself: the first missing required file's folder, else
-                // the first file's.
-                let bios = emulationFolderStore.folder.bios
-                let requirement = biosRequirements.first { $0.required && !$0.isPresent(in: bios) } ?? biosRequirements[0]
-                let folder = requirement.folder(in: bios)
-                try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-                NSWorkspace.shared.open(folder)
+                BIOSFileRow.showFolder(for: biosRequirements, bios: emulationFolderStore.folder.bios)
             }
         } header: {
             Text("BIOS")
@@ -299,5 +283,33 @@ struct FlowLayout: Layout {
             x += size.width + spacing
         }
         return rows
+    }
+}
+
+/// One BIOS file's row: its name, whether it's required, and whether
+/// it's there. Shared by the system panel and Settings › BIOS.
+struct BIOSFileRow: View {
+    let file: BIOSFileStatus
+
+    var body: some View {
+        LabeledContent {
+            Label(file.isPresent ? "Found" : "Missing",
+                  systemImage: file.isPresent ? "checkmark.circle.fill" : (file.required ? "exclamationmark.triangle.fill" : "circle"))
+                .foregroundStyle(file.isPresent ? .green : (file.required ? .orange : .secondary))
+        } label: {
+            Tag(file.fileName)
+            Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
+                .compactMap { $0 }
+                .joined(separator: " · "))
+        }
+    }
+
+    /// Opens where the system's files go, which isn't always BIOS/ itself:
+    /// the first missing required file's folder, else the first file's.
+    static func showFolder(for requirements: [BIOSRequirement], bios: URL) {
+        guard let requirement = requirements.first(where: { $0.required && !$0.isPresent(in: bios) }) ?? requirements.first else { return }
+        let folder = requirement.folder(in: bios)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        NSWorkspace.shared.open(folder)
     }
 }
