@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.10.1</title>
+            <pubDate>Mon, 12 Oct 2026 20:09:36 -0400</pubDate>
+            <sparkle:version>15</sparkle:version>
+            <sparkle:shortVersionString>1.10.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Tidy Up starts with Analyze…: a dry run that lists every change (media to move, gamelists to fix, covers and manuals to compress, and what goes to the Trash and why, with sizes). Untick any part, then tidy up.</li>
+<li>Games show their box art again instead of ES-DE&#x27;s mix image; mix images and title screens are no longer kept (a game with nothing else keeps one as its cover or screenshot).</li>
+<li>Dropped folders no longer bring mix images or title screens along.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.10.1/Attic-1.10.1.zip" length="11535318" type="application/octet-stream" sparkle:edSignature="mSZWbkKmGmX/7WB3QxV5gnGgf2PUpdNqJRaojWu5JZ6P7BnyttGDQKnCWcnUXMxOK8++yTP2Vv4uTmYfVFWrAA=="/>
+        </item>
+        <item>
             <title>1.10.0</title>
             <pubDate>Mon, 12 Oct 2026 19:16:10 -0400</pubDate>
             <sparkle:version>14</sparkle:version>
