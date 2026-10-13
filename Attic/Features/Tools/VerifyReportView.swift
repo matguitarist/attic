@@ -8,7 +8,15 @@ struct VerifyReportView: View {
     let datsFolder: URL
     /// Runs the check again, after DATs were added.
     let onVerifyAgain: () -> Void
+    /// Gives these games No-Intro's names.
+    let onRename: ([ToolsCoordinator.VerifyReport.Game]) -> Void
     @Environment(\.dismiss) private var dismiss
+    /// The games to rename, by path.
+    @State private var toRename: Set<String> = []
+
+    private var renamable: [ToolsCoordinator.VerifyReport.Game] {
+        report.systems.flatMap(\.renamed)
+    }
 
     static let datomatic = URL(string: "https://datomatic.no-intro.org/index.php?page=download")!
 
@@ -35,12 +43,23 @@ struct VerifyReportView: View {
                 Button("Add DAT Files…") { addDATs() }
                 Button("Show DATs Folder") { NSWorkspace.shared.activateFileViewerSelecting([datsFolder]) }
                 Spacer()
-                Button("Done") { dismiss() }
+                if toRename.isEmpty {
+                    Button("Done") { dismiss() }
+                        .keyboardShortcut(.defaultAction)
+                } else {
+                    Button("Cancel") { dismiss() }
+                        .keyboardShortcut(.cancelAction)
+                    Button(String(localized: "Rename \(toRename.count) Games")) {
+                        onRename(renamable.filter { toRename.contains($0.path) })
+                        dismiss()
+                    }
                     .keyboardShortcut(.defaultAction)
+                }
             }
             .padding(20)
         }
         .frame(width: 680, height: 600)
+        .onAppear { toRename = Set(renamable.filter(\.isPlainRename).map(\.path)) }
     }
 
     private var noDATs: some View {
@@ -70,8 +89,6 @@ struct VerifyReportView: View {
                              help: String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
                     gameList(String(localized: "Not in No-Intro's list (\(system.unknown.count))"), system.unknown,
                              help: String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
-                    gameList(String(localized: "Verified under another name (\(system.renamed.count))"), system.renamed,
-                             help: String(localized: "Good dumps, with file names of their own."))
                 } header: {
                     HStack {
                         Text(system.name)
@@ -81,6 +98,38 @@ struct VerifyReportView: View {
                               systemImage: system.verified == checked ? "checkmark.seal.fill" : "checkmark.seal")
                             .foregroundStyle(system.verified == checked ? .green : .secondary)
                     }
+                }
+            }
+
+            if !renamable.isEmpty {
+                Section {
+                    DisclosureGroup {
+                        ForEach(renamable, id: \.path) { game in
+                            Toggle(isOn: Binding(
+                                get: { toRename.contains(game.path) },
+                                set: { if $0 { toRename.insert(game.path) } else { toRename.remove(game.path) } }
+                            )) {
+                                Text(verbatim: game.stem)
+                                Text(verbatim: "→ \(game.datName ?? "")")
+                            }
+                            .font(.callout)
+                        }
+                    } label: {
+                        Text("Rename to No-Intro's names (\(toRename.count) of \(renamable.count))")
+                        Text("Good dumps with file names of their own. Their media, gamelist entries and saves follow, and they keep their play history and collections.")
+                    }
+                    HStack {
+                        Spacer()
+                        Button("Select All") { toRename = Set(renamable.map(\.path)) }
+                        Button("Select None") { toRename = [] }
+                    }
+                    .controlSize(.small)
+                } header: {
+                    Text("File Names")
+                } footer: {
+                    Text("Names that would add a release tag such as (Proto) or (Virtual Console) aren't ticked: No-Intro sometimes lists the same data under several releases.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
 

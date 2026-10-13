@@ -28,6 +28,11 @@ struct ToolsReports: ViewModifier {
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {
                         Task { await tools.verify(datsFolder: dats, scanCoordinator: scanCoordinator, from: host) }
+                    } onRename: { games in
+                        Task {
+                            await tools.rename(games, emulationFolder: emulationFolderStore.folder,
+                                               romsRoots: roots, scanCoordinator: scanCoordinator)
+                        }
                     }
                 }
             }

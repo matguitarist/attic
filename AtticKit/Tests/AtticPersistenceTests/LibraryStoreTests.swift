@@ -90,6 +90,32 @@ import Testing
         #expect(try ModelContext(container).fetch(FetchDescriptor<GameCollection>()).first?.excludedGameKeys == ["snes/Zelda.zip"])
     }
 
+    @Test func aRenamedGameKeepsItsRecord() async throws {
+        let container = try AtticModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        _ = try await store.upsertSystem(sampleSystemData(games: [sampleRecord(path: "Wild Snake (USA).zip", title: "Wild Snake")]), displayName: "SNES")
+        let context = ModelContext(container)
+        let game = try #require(try context.fetch(FetchDescriptor<Game>()).first)
+        game.favorite = true
+        game.coverArtPath = "/tmp/media/snes/covers/Wild Snake (USA).heic"
+        let collection = GameCollection(name: "Snakes")
+        collection.excludedGameKeys = ["snes/Wild Snake (USA).zip"]
+        context.insert(collection)
+        try context.save()
+
+        try await store.applyRenames([.init(
+            from: "/tmp/roms/snes/Wild Snake (USA).zip", to: "/tmp/roms/snes/WildSnake (USA).zip",
+            media: [URL(fileURLWithPath: "/tmp/media/snes/covers/Wild Snake (USA).heic").resolvingSymlinksInPath().path: "/tmp/media/snes/covers/WildSnake (USA).heic"]
+        )])
+
+        let renamed = try #require(try ModelContext(container).fetch(FetchDescriptor<Game>()).first)
+        #expect(renamed.romRelativePath == "WildSnake (USA).zip")
+        #expect(renamed.romAbsolutePath == "/tmp/roms/snes/WildSnake (USA).zip")
+        #expect(renamed.favorite)
+        #expect(renamed.coverArtPath == "/tmp/media/snes/covers/WildSnake (USA).heic")
+        #expect(try ModelContext(container).fetch(FetchDescriptor<GameCollection>()).first?.excludedGameKeys == ["snes/WildSnake (USA).zip"])
+    }
+
     @Test func firstScanInsertsSystemAndGames() async throws {
         let store = try makeStore()
         let data = sampleSystemData(games: [

@@ -34,7 +34,8 @@ public struct DATVerifier: Sendable {
     }
 
     private struct Index: Sendable {
-        var byFingerprint: [Fingerprint: String] = [:]
+        /// Several games can share a dump (a re-release of the same ROM).
+        var byFingerprint: [Fingerprint: [String]] = [:]
         var byName: [String: String] = [:]
     }
 
@@ -51,7 +52,10 @@ public struct DATVerifier: Sendable {
             guard let system = dat.system else { continue }
             var index = indexes[system] ?? Index()
             for rom in dat.roms {
-                index.byFingerprint[Fingerprint(size: rom.size, crc: rom.crc)] = rom.game
+                let fingerprint = Fingerprint(size: rom.size, crc: rom.crc)
+                if !(index.byFingerprint[fingerprint] ?? []).contains(rom.game) {
+                    index.byFingerprint[fingerprint, default: []].append(rom.game)
+                }
                 index.byName[rom.game.lowercased()] = rom.game
             }
             indexes[system] = index
@@ -86,13 +90,29 @@ public struct DATVerifier: Sendable {
         guard let index = indexes[system] else { return nil }
         let stem = url.deletingPathExtension().lastPathComponent
         guard let fingerprints = Self.fingerprints(of: url, system: system, isKnown: { index.byFingerprint[$0] != nil }) else { return nil }
-        if let game = fingerprints.lazy.compactMap({ index.byFingerprint[$0] }).first {
-            return Check(verdict: .verified, name: game)
+        if let games = fingerprints.lazy.compactMap({ index.byFingerprint[$0] }).first {
+            return Check(verdict: .verified, name: Self.closest(to: stem, among: games))
         }
         if let game = index.byName[stem.lowercased()] {
             return Check(verdict: .differs, name: game)
         }
         return Check(verdict: .unknown, name: nil)
+    }
+
+    /// The game's own name when it's one of them, else the one sharing
+    /// the most words with it: a dump the DAT lists as both a release and
+    /// its Virtual Console re-release keeps the name it has.
+    static func closest(to stem: String, among games: [String]) -> String {
+        if let same = games.first(where: { $0.caseInsensitiveCompare(stem) == .orderedSame }) { return same }
+        func words(_ name: String) -> Set<String> {
+            Set(name.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
+        }
+        let own = words(stem)
+        return games.max { a, b in
+            let (wa, wb) = (words(a), words(b))
+            let (sa, sb) = (wa.intersection(own).count * 2 - wa.count, wb.intersection(own).count * 2 - wb.count)
+            return sa != sb ? sa < sb : a.count > b.count
+        } ?? games[0]
     }
 
     // MARK: - Fingerprints

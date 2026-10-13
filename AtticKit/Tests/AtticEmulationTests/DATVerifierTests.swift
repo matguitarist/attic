@@ -199,6 +199,14 @@ struct DATVerifierTests {
         #expect(verifier.check(other, system: .nes) == nil)
     }
 
+    @Test func aDumpListedUnderSeveralNamesKeepsTheOneItHas() {
+        let names = ["Life Force (USA) (Rev 1)", "Life Force (USA) (Rev 1) (Virtual Console)"]
+        #expect(DATVerifier.closest(to: "Life Force (USA) (Rev 1) (Virtual Console)", among: names) == names[1])
+        #expect(DATVerifier.closest(to: "life force (usa) (rev 1)", among: names) == names[0])
+        // Otherwise the nearest name, with the fewest extras.
+        #expect(DATVerifier.closest(to: "Life Force (USA)", among: names) == names[0])
+    }
+
     @Test func skipsDiscsAndRomsets() throws {
         try xml(name: "Sony - PlayStation", games: [("Game", "Game.bin", Data([1]))]).write(to: folder.appending(path: "psx.dat"))
         let chd = folder.appending(path: "Game.chd")

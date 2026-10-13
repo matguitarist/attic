@@ -424,6 +424,32 @@
         }
       }
     },
+    "%lld games renamed, with their media, gamelist entries and saves.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jeux renommés, avec leurs médias, leurs entrées de gamelist et leurs sauvegardes."
+          }
+        }
+      }
+    },
+    "%lld games renamed, with their media, gamelist entries and saves. %lld kept their names: another file already has the new one.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games renamed, with their media, gamelist entries and saves. %2$lld kept their names: another file already has the new one."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux renommés, avec leurs médias, leurs entrées de gamelist et leurs sauvegardes. %2$lld ont gardé leur nom : un autre fichier porte déjà le nouveau."
+          }
+        }
+      }
+    },
     "%lld games, %@ now. Each becomes a .zip of its own, kept only when it saves at least 10%%. Attic unzips a game when it starts.": {
       "localizations": {
         "en": {
@@ -3203,6 +3229,16 @@
         }
       }
     },
+    "File Names": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noms de fichiers"
+          }
+        }
+      }
+    },
     "File Types": {
       "localizations": {
         "fr": {
@@ -3553,12 +3589,12 @@
         }
       }
     },
-    "Good dumps, with file names of their own.": {
+    "Good dumps with file names of their own. Their media, gamelist entries and saves follow, and they keep their play history and collections.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "De bons dumps, avec leurs propres noms de fichiers."
+            "value": "De bons dumps avec leurs propres noms de fichiers. Leurs médias, entrées de gamelist et sauvegardes suivent, et ils gardent leur historique de jeu et leurs collections."
           }
         }
       }
@@ -4449,6 +4485,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Noms et illustrations"
+          }
+        }
+      }
+    },
+    "Names that would add a release tag such as (Proto) or (Virtual Console) aren't ticked: No-Intro sometimes lists the same data under several releases.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les noms qui ajouteraient une mention de version comme (Proto) ou (Virtual Console) ne sont pas cochés : No-Intro liste parfois les mêmes données sous plusieurs versions."
           }
         }
       }
@@ -5663,12 +5709,58 @@
         }
       }
     },
+    "Rename %lld Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer %lld jeux"
+          }
+        }
+      }
+    },
+    "Rename Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer les jeux"
+          }
+        }
+      }
+    },
     "Rename this collection, change its search or add and remove games": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Renommer cette collection, changer sa recherche ou ajouter et retirer des jeux"
+          }
+        }
+      }
+    },
+    "Rename to No-Intro's names (%lld of %lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Rename to No-Intro's names (%1$lld of %2$lld)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer selon No-Intro (%1$lld sur %2$lld)"
+          }
+        }
+      }
+    },
+    "Renaming games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommage des jeux…"
           }
         }
       }
@@ -6291,6 +6383,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher des shaders"
+          }
+        }
+      }
+    },
+    "Select All": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout sélectionner"
+          }
+        }
+      }
+    },
+    "Select None": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne rien sélectionner"
           }
         }
       }
@@ -7397,16 +7509,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifié"
-          }
-        }
-      }
-    },
-    "Verified under another name (%lld)": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vérifiés sous un autre nom (%lld)"
           }
         }
       }

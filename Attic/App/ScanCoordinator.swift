@@ -38,6 +38,10 @@ final class ScanCoordinator {
         (try? await libraryStore.gameFiles()) ?? []
     }
 
+    func applyRenames(_ renames: [LibraryStore.RenamedFile]) async {
+        try? await libraryStore.applyRenames(renames)
+    }
+
     func saveDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?)]) async {
         try? await libraryStore.setDATVerdicts(verdicts)
     }

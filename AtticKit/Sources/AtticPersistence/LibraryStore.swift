@@ -154,14 +154,57 @@ public actor LibraryStore {
     /// A game's file, for checking it against a DAT.
     public struct GameFile: Sendable {
         public let path: String
+        public let relativePath: String
         public let system: CanonicalSystemID
         public let title: String
     }
 
     public func gameFiles() throws -> [GameFile] {
         try modelContext.fetch(FetchDescriptor<Game>()).map {
-            GameFile(path: $0.romAbsolutePath, system: CanonicalSystemID($0.systemCanonicalID), title: $0.title)
+            GameFile(path: $0.romAbsolutePath, relativePath: $0.romRelativePath, system: CanonicalSystemID($0.systemCanonicalID), title: $0.title)
         }
+    }
+
+    /// A game's file given another name, with the media that went along
+    /// (old path to new, symbolic links resolved).
+    public struct RenamedFile: Sendable {
+        public let from: String
+        public let to: String
+        public let media: [String: String]
+
+        public init(from: String, to: String, media: [String: String]) {
+            self.from = from
+            self.to = to
+            self.media = media
+        }
+    }
+
+    /// Points each renamed game's record at its new file and media, so it
+    /// keeps its play history, favorite and collections; and collections
+    /// that left it out still do.
+    public func applyRenames(_ renames: [RenamedFile]) throws {
+        let byPath = Dictionary(renames.map { ($0.from, $0) }, uniquingKeysWith: { first, _ in first })
+        var renamedKeys: [String: String] = [:]
+        for game in try modelContext.fetch(FetchDescriptor<Game>()) {
+            guard let rename = byPath[game.romAbsolutePath] else { continue }
+            let oldKey = game.collectionKey
+            let newName = (rename.to as NSString).lastPathComponent
+            game.romAbsolutePath = rename.to
+            game.romRelativePath = ((game.romRelativePath as NSString).deletingLastPathComponent as NSString).appendingPathComponent(newName)
+            func moved(_ path: String?) -> String? {
+                guard let path else { return nil }
+                return rename.media[URL(fileURLWithPath: path).resolvingSymlinksInPath().path] ?? path
+            }
+            game.coverArtPath = moved(game.coverArtPath)
+            game.titleScreenPath = moved(game.titleScreenPath)
+            game.videoPath = moved(game.videoPath)
+            renamedKeys[oldKey] = game.collectionKey
+        }
+        for collection in try modelContext.fetch(FetchDescriptor<GameCollection>()) {
+            let keys = collection.excludedGameKeys.map { renamedKeys[$0] ?? $0 }
+            if keys != collection.excludedGameKeys { collection.excludedGameKeys = keys }
+        }
+        if modelContext.hasChanges { try modelContext.save() }
     }
 
     /// What a DAT said of each game, by path: its verdict and the DAT's

@@ -115,8 +115,23 @@ final class ToolsCoordinator {
     struct VerifyReport {
         struct Game: Hashable {
             let path: String
+            let relativePath: String
+            let system: CanonicalSystemID
             let title: String
             let datName: String?
+
+            var stem: String { URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent }
+
+            /// Worth renaming without a second look: No-Intro's name
+            /// doesn't add a release the game may not be (the same data
+            /// is sometimes listed as a prototype or a re-release too).
+            var isPlainRename: Bool {
+                guard let datName else { return false }
+                let tags = { (name: String) in Set(name.matches(of: #/\(([^)]*)\)/#).map { String($0.output.1).lowercased() }) }
+                let added = tags(datName).subtracting(tags(stem))
+                let releases = ["proto", "beta", "demo", "sample", "virtual console", "classic mini", "switch online", "collection", "unl", "pirate", "aftermarket", "program", "kiosk", "competition"]
+                return !added.contains { tag in releases.contains { tag.contains($0) } }
+            }
         }
 
         struct System: Identifiable {
@@ -169,6 +184,34 @@ final class ToolsCoordinator {
         report = .verify(Self.report(files: files, checks: checks, verifier: verifier))
     }
 
+    /// Gives the games No-Intro's names for them, with what's named
+    /// after them, then checks again.
+    func rename(_ games: [VerifyReport.Game], emulationFolder: EmulationFolder, romsRoots: [URL], scanCoordinator: ScanCoordinator) async {
+        guard !isBusy, !games.isEmpty else { return }
+        activity = Activity(title: String(localized: "Renaming games…"), fraction: 0)
+        let jobs = games.compactMap { game -> (URL, String, URL, [URL])? in
+            guard let name = game.datName, game.path.hasSuffix(game.relativePath) else { return nil }
+            let systemFolder = URL(fileURLWithPath: String(game.path.dropLast(game.relativePath.count)), isDirectory: true)
+            return (URL(fileURLWithPath: game.path), name, systemFolder, [emulationFolder.saves(for: game.system), emulationFolder.states(for: game.system)])
+        }
+        let renamed = await Task.detached(priority: .userInitiated) { () -> [LibraryStore.RenamedFile] in
+            jobs.compactMap { file, name, systemFolder, saveFolders in
+                GameRenaming.rename(file, to: name, systemFolder: systemFolder, saveFolders: saveFolders)
+                    .map { LibraryStore.RenamedFile(from: $0.from.path, to: $0.to.path, media: $0.media) }
+            }
+        }.value
+        await scanCoordinator.applyRenames(renamed)
+        await scanCoordinator.scan(romsRootURLs: romsRoots)
+        activity = nil
+        let kept = games.count - renamed.count
+        outcome = Outcome(
+            title: String(localized: "Rename Games"),
+            message: kept == 0
+                ? String(localized: "\(renamed.count) games renamed, with their media, gamelist entries and saves.")
+                : String(localized: "\(renamed.count) games renamed, with their media, gamelist entries and saves. \(kept) kept their names: another file already has the new one.")
+        )
+    }
+
     private static func report(files: [LibraryStore.GameFile], checks: [String: DATVerifier.Check?], verifier: DATVerifier) -> VerifyReport {
         var report = VerifyReport()
         report.datCount = verifier.sets.count
@@ -187,7 +230,7 @@ final class ToolsCoordinator {
                 continue
             }
             var system = systems[file.system] ?? VerifyReport.System(id: file.system, name: name(file.system))
-            let game = VerifyReport.Game(path: file.path, title: file.title, datName: check?.name)
+            let game = VerifyReport.Game(path: file.path, relativePath: file.relativePath, system: file.system, title: file.title, datName: check?.name)
             switch check?.verdict {
             case .verified?:
                 system.verified += 1
