@@ -7,24 +7,42 @@ import Foundation
 public struct SeriesTemplate: Identifiable, Hashable, Sendable {
     public let name: String
     public let search: CollectionSearch
+    /// Names its logo goes by in ES-DE and Batocera themes, when not
+    /// its own name squeezed ("mario" for Super Mario).
+    let logoAliases: [String]
 
     public var id: String { name }
 
-    init(_ name: String, _ including: String, excluding: String = "") {
+    init(_ name: String, _ including: String, excluding: String = "", logo logoAliases: [String] = []) {
         self.name = name
         self.search = CollectionSearch(including: including, excluding: excluding)
+        self.logoAliases = logoAliases
+    }
+
+    /// The file names (without extension) a logo for a collection called
+    /// `name` may have in a folder of theme logos, best first: a
+    /// template's aliases, then the name in lowercase letters and digits
+    /// only, with and without a leading "the".
+    public static func logoNames(for name: String) -> [String] {
+        let squeezed = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+            .lowercased().filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
+        var names = all.first { $0.name.caseInsensitiveCompare(name) == .orderedSame }?.logoAliases ?? []
+        names.append(squeezed)
+        if squeezed.hasPrefix("the") { names.append(String(squeezed.dropFirst(3))) }
+        var seen = Set<String>()
+        return names.filter { !$0.isEmpty && seen.insert($0).inserted }
     }
 
     public static let all: [SeriesTemplate] = [
         // Nintendo
         SeriesTemplate("Super Mario", "Super Mario, Mario Bros, Mario Land, Mario 64, Mario Sunshine, Mario Galaxy, Mario 3D",
-                       excluding: "Kart, Party, Tennis, Golf, Strikers, Olympic, Paint, Picross, Puzzle, Dr. Mario, Teaches, Hotel Mario, Pinball, Sports, Baseball, Basketball, Hoops"),
+                       excluding: "Kart, Party, Tennis, Golf, Strikers, Olympic, Paint, Picross, Puzzle, Dr. Mario, Teaches, Hotel Mario, Pinball, Sports, Baseball, Basketball, Hoops", logo: ["mario"]),
         SeriesTemplate("Mario Kart", "Mario Kart"),
         SeriesTemplate("Mario Party", "Mario Party"),
-        SeriesTemplate("The Legend of Zelda", "Zelda", excluding: "Picross"),
+        SeriesTemplate("The Legend of Zelda", "Zelda", excluding: "Picross", logo: ["zelda"]),
         SeriesTemplate("Metroid", "Metroid", excluding: "Pinball"),
         SeriesTemplate("Kirby", "Kirby", excluding: "Pinball"),
-        SeriesTemplate("Donkey Kong", "Donkey Kong", excluding: "Konga"),
+        SeriesTemplate("Donkey Kong", "Donkey Kong", excluding: "Konga", logo: ["donkeykong", "dk"]),
         SeriesTemplate("Pokémon", "Pokemon, Pokémon", excluding: "Pinball, Puzzle League, Snap, Trading Card"),
         SeriesTemplate("Fire Emblem", "Fire Emblem"),
         SeriesTemplate("Star Fox", "Star Fox, Starfox, StarFox, Starwing"),
@@ -33,7 +51,7 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
         SeriesTemplate("Yoshi", "Yoshi"),
         SeriesTemplate("EarthBound", "EarthBound, Mother 1, Mother 2, Mother 3"),
         // Sega
-        SeriesTemplate("Sonic the Hedgehog", "Sonic", excluding: "Sonic Wings, Sonic Blast Man, Sonic Boom, Sonic Champ"),
+        SeriesTemplate("Sonic the Hedgehog", "Sonic", excluding: "Sonic Wings, Sonic Blast Man, Sonic Boom, Sonic Champ", logo: ["sonic"]),
         SeriesTemplate("Streets of Rage", "Streets of Rage, Bare Knuckle"),
         SeriesTemplate("Phantasy Star", "Phantasy Star"),
         SeriesTemplate("Shinobi", "Shinobi"),
@@ -51,7 +69,7 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
         SeriesTemplate("Contra", "Contra, Probotector"),
         SeriesTemplate("Metal Gear", "Metal Gear"),
         SeriesTemplate("Gradius", "Gradius, Life Force, Salamander"),
-        SeriesTemplate("Teenage Mutant Ninja Turtles", "Teenage Mutant, TMNT, Turtles in Time"),
+        SeriesTemplate("Teenage Mutant Ninja Turtles", "Teenage Mutant, TMNT, Turtles in Time", logo: ["tmnt"]),
         SeriesTemplate("Silent Hill", "Silent Hill"),
         // Square Enix
         SeriesTemplate("Final Fantasy", "Final Fantasy"),
@@ -60,7 +78,7 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
         SeriesTemplate("Chrono", "Chrono Trigger, Chrono Cross"),
         // SNK
         SeriesTemplate("Metal Slug", "Metal Slug"),
-        SeriesTemplate("The King of Fighters", "King of Fighters"),
+        SeriesTemplate("The King of Fighters", "King of Fighters", logo: ["kof"]),
         SeriesTemplate("Fatal Fury", "Fatal Fury, Garou, Real Bout"),
         SeriesTemplate("Samurai Shodown", "Samurai Shodown, Samurai Spirits"),
         // Others

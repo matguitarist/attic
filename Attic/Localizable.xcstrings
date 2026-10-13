@@ -200,6 +200,16 @@
         }
       }
     },
+    "%lld collections got a logo.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld collections ont reçu un logo."
+          }
+        }
+      }
+    },
     "%lld covers, videos and manuals came along.": {
       "localizations": {
         "fr": {
@@ -701,6 +711,16 @@
         }
       }
     },
+    "A folder of series logos named like ES-DE and Batocera themes' (mario.png, zelda.png…). A collection made from a series, or named like one, takes its logo from here; it's copied into the collection's folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un dossier de logos de séries nommés comme dans les thèmes ES-DE et Batocera (mario.png, zelda.png…). Une collection créée depuis une série, ou portant son nom, y prend son logo, copié dans le dossier de la collection."
+          }
+        }
+      }
+    },
     "A game's video plays, muted, in the side panel after a moment on it.": {
       "localizations": {
         "fr": {
@@ -817,6 +837,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter des jeux…"
+          }
+        }
+      }
+    },
+    "Add Logos to Collections": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter les logos aux collections"
           }
         }
       }
@@ -1485,6 +1515,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher les mises à jour automatiquement"
+          }
+        }
+      }
+    },
+    "Choose": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir"
           }
         }
       }
@@ -3771,6 +3811,16 @@
         }
       }
     },
+    "Logos folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier de logos"
+          }
+        }
+      }
+    },
     "Look": {
       "localizations": {
         "fr": {
@@ -4157,6 +4207,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun shader"
+          }
+        }
+      }
+    },
+    "No collection without a logo has one in this folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune collection sans logo n’en a un dans ce dossier."
           }
         }
       }

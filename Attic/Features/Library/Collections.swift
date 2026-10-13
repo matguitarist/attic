@@ -93,6 +93,8 @@ struct CollectionEditorView: View {
     /// Pictures picked here, put in place on save: nil leaves the current
     /// one, `.some(nil)` removes it.
     @State private var pendingPictures: [String: URL?] = [:]
+    /// The pending logo came from the logos folder, for a template.
+    @State private var logoIsFromFolder = false
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     var onCreate: (GameCollection) -> Void = { _ in }
 
@@ -263,6 +265,17 @@ struct CollectionEditorView: View {
         searchFollowsName = false
         system = nil
         addsMatchingGames = true
+        // The series' logo from one's logos folder, unless one was picked
+        // by hand.
+        if pendingPictures[CollectionFile.logoName] == nil || logoIsFromFolder {
+            if let logo = CollectionLogos.logo(forCollectionNamed: template.name) {
+                pendingPictures[CollectionFile.logoName] = .some(logo)
+                logoIsFromFolder = true
+            } else if logoIsFromFolder {
+                pendingPictures.removeValue(forKey: CollectionFile.logoName)
+                logoIsFromFolder = false
+            }
+        }
     }
 
     /// The picture as it'll be once saved: picked here, else the current one.
@@ -279,13 +292,19 @@ struct CollectionEditorView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 60, height: 36)
-                    Button("Remove") { pendingPictures[name] = .some(nil) }
+                    Button("Remove") {
+                        pendingPictures[name] = .some(nil)
+                        logoIsFromFolder = false
+                    }
                 }
                 Button("Choose…") {
                     let panel = NSOpenPanel()
                     panel.allowedContentTypes = [.image]
                     panel.begin { response in
-                        if response == .OK, let url = panel.url { pendingPictures[name] = .some(url) }
+                        if response == .OK, let url = panel.url {
+                            pendingPictures[name] = .some(url)
+                            if name == CollectionFile.logoName { logoIsFromFolder = false }
+                        }
                     }
                 }
             }
@@ -344,7 +363,13 @@ struct CollectionEditorView: View {
         }
         collection.excludedGameKeys = excluded.sorted()
         try? modelContext.save()
-        for (name, url) in pendingPictures {
+        var pictures = pendingPictures
+        // A new collection with no logo picked takes its logos folder's one.
+        if editedCollection == nil, pictures[CollectionFile.logoName] == nil,
+           let logo = CollectionLogos.logo(forCollectionNamed: trimmedName) {
+            pictures[CollectionFile.logoName] = .some(logo)
+        }
+        for (name, url) in pictures {
             CollectionFolders.setImage(url, as: name, for: collection, root: collectionsRoot)
         }
         if editedCollection == nil { onCreate(collection) }

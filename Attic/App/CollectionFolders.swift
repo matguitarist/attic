@@ -205,3 +205,43 @@ enum CollectionFolders {
         return byID
     }
 }
+
+/// Logos for collections, from a folder of one's own: a theme's logo
+/// folder (`mario.png`, `zelda.png`…) or any folder of pictures named
+/// after series. Attic ships none: they're the series owners' marks.
+enum CollectionLogos {
+    /// The folder's path, set in Settings.
+    static let folderKey = "collectionLogosFolder"
+
+    static var folder: URL? {
+        guard let path = UserDefaults.standard.string(forKey: folderKey), !path.isEmpty else { return nil }
+        return URL(fileURLWithPath: path, isDirectory: true)
+    }
+
+    static let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "heic", "webp"]
+
+    /// The folder's logo for a collection called `name`, if it has one.
+    static func logo(forCollectionNamed name: String) -> URL? {
+        guard let folder else { return nil }
+        let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? []
+        var byName: [String: URL] = [:]
+        for file in files where imageExtensions.contains(file.pathExtension.lowercased()) {
+            let key = file.deletingPathExtension().lastPathComponent.lowercased()
+            if byName[key] == nil { byName[key] = file }
+        }
+        return SeriesTemplate.logoNames(for: name).lazy.compactMap { byName[$0] }.first
+    }
+
+    /// Gives each collection without a logo the folder's one for it.
+    /// Returns how many got one.
+    @MainActor @discardableResult
+    static func addMissing(to collections: [GameCollection], root: URL) -> Int {
+        var added = 0
+        for collection in collections where CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: root) == nil {
+            guard let logo = logo(forCollectionNamed: collection.name) else { continue }
+            CollectionFolders.setImage(logo, as: CollectionFile.logoName, for: collection, root: root)
+            added += 1
+        }
+        return added
+    }
+}

@@ -35,4 +35,12 @@ struct SeriesTemplatesTests {
         #expect(try CollectionFile.decoded(from: file.encoded()) == file)
         #expect(CollectionFile.folderName(for: "Mario: The / Best?") == "Mario- The - Best-")
     }
+
+    @Test func logoNamesFollowThemeNaming() {
+        #expect(SeriesTemplate.logoNames(for: "Super Mario") == ["mario", "supermario"])
+        #expect(SeriesTemplate.logoNames(for: "Pokémon") == ["pokemon"])
+        #expect(SeriesTemplate.logoNames(for: "The Legend of Zelda") == ["zelda", "thelegendofzelda", "legendofzelda"])
+        #expect(SeriesTemplate.logoNames(for: "F-Zero") == ["fzero"])
+        #expect(SeriesTemplate.logoNames(for: "My RPGs") == ["myrpgs"])
+    }
 }
