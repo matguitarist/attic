@@ -146,138 +146,110 @@ struct CollectionEditorView: View {
     var body: some View {
         let members = self.members
         let matches = self.matches
-        Form {
-            Section {
-                TextField("Name", text: $name, prompt: Text("e.g. Mario"))
-                    .onChange(of: name) {
-                        if searchFollowsName { search.including = trimmedName }
-                    }
-                if editedCollection == nil {
-                    Menu("Start from a Series") {
-                        ForEach(SeriesTemplate.all.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { template in
-                            let count = templateCounts[template.name] ?? 0
-                            Button(count > 0 ? "\(template.name) (\(count))" : template.name) { apply(template) }
-                        }
-                    }
-                }
-            } header: {
-                Text(editedCollection == nil ? String(localized: "New Collection") : String(localized: "Edit Collection"))
-                    .font(.headline)
-            }
-
-            Section {
-                TextField("Titles containing", text: Binding(
-                    get: { search.including },
-                    set: { search.including = $0; searchFollowsName = false }
-                ), prompt: Text("Super Mario, Mario Bros"))
-                TextField("But not", text: $search.excluding, prompt: Text("Tennis, Golf, Kart"))
-                Picker("On", selection: $system) {
-                    Text("All Systems").tag(CanonicalSystemID?.none)
-                    Divider()
-                    ForEach(systems.filter { $0.gameCount > 0 }) { system in
-                        Text(system.displayName).tag(Optional(system.systemID))
-                    }
-                }
-                Toggle(isOn: $addsMatchingGames) {
-                    Text("Add new matching games automatically")
-                    Text("After each library scan, for instance once you've added a system.")
-                }
-                .disabled(search.isEmpty)
-            } header: {
-                Text("Search")
-            } footer: {
-                Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others. Leave them empty to choose by genre, players or years below.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section {
-                LabeledContent {
-                    HStack {
-                        TextField("Genre", text: $search.genres, prompt: Text("Platform, Shooter"))
-                            .labelsHidden()
-                        Menu {
-                            ForEach(libraryGenres, id: \.self) { genre in
-                                Button(genre) { addGenre(genre) }
-                            }
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                        .menuIndicator(.hidden)
-                        .fixedSize()
-                        .disabled(libraryGenres.isEmpty)
-                        .help("Add a genre from your library")
-                    }
-                } label: {
-                    Text("Genres")
-                }
-                Picker("Players", selection: $search.minPlayers) {
-                    Text("Any").tag(0)
-                    Text("2 or more").tag(2)
-                    Text("3 or more").tag(3)
-                    Text("4 or more").tag(4)
-                }
-                LabeledContent("Released") {
-                    HStack {
-                        TextField("From", text: yearBinding(\.fromYear), prompt: Text("1990"))
-                        Text("to")
-                        TextField("To", text: yearBinding(\.toYear), prompt: Text("1999"))
-                    }
-                    .labelsHidden()
-                    .frame(maxWidth: 160)
-                }
-                Toggle("Favorites only", isOn: $search.favoritesOnly)
-            } header: {
-                Text("Also By")
-            } footer: {
-                Text("Each one narrows the search. Without title words, they choose the games on their own: “2-player beat 'em ups of the 90s”.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("Pictures") {
-                pictureRow(String(localized: "Logo"), name: CollectionFile.logoName, help: String(localized: "Shown instead of the name, in the side panel and Cabinet Mode."))
-                pictureRow(String(localized: "Artwork"), name: CollectionFile.artworkName, help: String(localized: "A character or key art, above it in the side panel."))
-            }
-
-            if !members.isEmpty || !matches.isEmpty {
+        HStack(spacing: 0) {
+            Form {
                 Section {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 6) {
-                            if !members.isEmpty, !matches.isEmpty {
-                                Text(editedCollection == nil ? String(localized: "Chosen") : String(localized: "In the collection"))
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                            }
-                            ForEach(members) { row($0) }
-                            if !members.isEmpty, !matches.isEmpty {
-                                Text("Found by the search")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                    .padding(.top, 6)
-                            }
-                            ForEach(matches) { row($0) }
+                    TextField("Name", text: $name, prompt: Text("e.g. Mario"))
+                        .onChange(of: name) {
+                            if searchFollowsName { search.including = trimmedName }
                         }
-                        .padding(.vertical, 4)
+                    if editedCollection == nil {
+                        Menu("Start from a Series") {
+                            ForEach(SeriesTemplate.all.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { template in
+                                let count = templateCounts[template.name] ?? 0
+                                Button(count > 0 ? "\(template.name) (\(count))" : template.name) { apply(template) }
+                            }
+                        }
                     }
-                    .frame(height: 260)
                 } header: {
-                    HStack {
-                        Text(String(localized: "\((members + matches).count { isTicked($0) }) of \(members.count + matches.count) games"))
-                        Spacer()
-                        Button("All") { unticked = [] }
-                        Button("None") { unticked = Set((members + matches).map(\.persistentModelID)) }
-                    }
-                    .buttonStyle(.link)
+                    Text(editedCollection == nil ? String(localized: "New Collection") : String(localized: "Edit Collection"))
+                        .font(.headline)
                 }
-            } else if !search.isEmpty {
-                Text("No games match.")
-                    .foregroundStyle(.secondary)
+
+                Section {
+                    TextField("Titles containing", text: Binding(
+                        get: { search.including },
+                        set: { search.including = $0; searchFollowsName = false }
+                    ), prompt: Text("Super Mario, Mario Bros"))
+                    TextField("But not", text: $search.excluding, prompt: Text("Tennis, Golf, Kart"))
+                    Picker("On", selection: $system) {
+                        Text("All Systems").tag(CanonicalSystemID?.none)
+                        Divider()
+                        ForEach(systems.filter { $0.gameCount > 0 }) { system in
+                            Text(system.displayName).tag(Optional(system.systemID))
+                        }
+                    }
+                    Toggle(isOn: $addsMatchingGames) {
+                        Text("Add new matching games automatically")
+                        Text("After each library scan, for instance once you've added a system.")
+                    }
+                    .disabled(search.isEmpty)
+                } header: {
+                    Text("Search")
+                } footer: {
+                    Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others. Leave them empty to choose by genre, players or years below.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section {
+                    LabeledContent {
+                        HStack {
+                            TextField("Genre", text: $search.genres, prompt: Text("Platform, Shooter"))
+                                .labelsHidden()
+                            Menu {
+                                ForEach(libraryGenres, id: \.self) { genre in
+                                    Button(genre) { addGenre(genre) }
+                                }
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                            .menuIndicator(.hidden)
+                            .fixedSize()
+                            .disabled(libraryGenres.isEmpty)
+                            .help("Add a genre from your library")
+                        }
+                    } label: {
+                        Text("Genres")
+                    }
+                    Picker("Players", selection: $search.minPlayers) {
+                        Text("Any").tag(0)
+                        Text("2 or more").tag(2)
+                        Text("3 or more").tag(3)
+                        Text("4 or more").tag(4)
+                    }
+                    LabeledContent("Released") {
+                        HStack {
+                            TextField("From", text: yearBinding(\.fromYear), prompt: Text("1990"))
+                            Text("to")
+                            TextField("To", text: yearBinding(\.toYear), prompt: Text("1999"))
+                        }
+                        .labelsHidden()
+                        .frame(maxWidth: 160)
+                    }
+                    Toggle("Favorites only", isOn: $search.favoritesOnly)
+                } header: {
+                    Text("Also By")
+                } footer: {
+                    Text("Each one narrows the search. Without title words, they choose the games on their own: “2-player beat 'em ups of the 90s”.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section("Pictures") {
+                    pictureRow(String(localized: "Logo"), name: CollectionFile.logoName, help: String(localized: "Shown instead of the name, in the side panel and Cabinet Mode."))
+                    pictureRow(String(localized: "Artwork"), name: CollectionFile.artworkName, help: String(localized: "A character or key art, above it in the side panel."))
+                }
             }
+            .formStyle(.grouped)
+            .frame(width: 520)
+            Divider()
+            gamesPane(members: members, matches: matches)
+                .frame(width: 360)
         }
-        .formStyle(.grouped)
-        .frame(width: 540)
-        .fixedSize(horizontal: false, vertical: true)
+        // As tall as the screen allows: the settings and the games each
+        // scroll on their own.
+        .frame(height: Self.sheetHeight)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
@@ -307,6 +279,55 @@ struct CollectionEditorView: View {
                 search.including = ""
             }
         }
+    }
+
+    private static var sheetHeight: CGFloat {
+        let screen = NSScreen.main?.visibleFrame.height ?? 800
+        return min(720, max(420, screen - 140))
+    }
+
+    /// The games the collection will hold, beside its settings.
+    private func gamesPane(members: [Game], matches: [Game]) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(String(localized: "\((members + matches).count { isTicked($0) }) of \(members.count + matches.count) games"))
+                    .font(.headline)
+                Spacer()
+                Button("All") { unticked = [] }
+                Button("None") { unticked = Set((members + matches).map(\.persistentModelID)) }
+            }
+            .buttonStyle(.link)
+            .disabled(members.isEmpty && matches.isEmpty)
+            .padding(12)
+            Divider()
+            if members.isEmpty && matches.isEmpty {
+                Text(search.isEmpty ? String(localized: "Games the search finds are listed here.") : String(localized: "No games match."))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 6) {
+                        if !members.isEmpty, !matches.isEmpty {
+                            Text(editedCollection == nil ? String(localized: "Chosen") : String(localized: "In the collection"))
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                        ForEach(members) { row($0) }
+                        if !members.isEmpty, !matches.isEmpty {
+                            Text("Found by the search")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 6)
+                        }
+                        ForEach(matches) { row($0) }
+                    }
+                    .padding(12)
+                }
+            }
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     private var collectionsRoot: URL { CollectionFolders.root(in: emulationFolderStore.folder.root) }
