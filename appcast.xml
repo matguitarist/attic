@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.18.1</title>
+            <pubDate>Tue, 13 Oct 2026 19:12:23 -0400</pubDate>
+            <sparkle:version>25</sparkle:version>
+            <sparkle:shortVersionString>1.18.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>The collection editor lists its games in a column beside the settings, and always fits on the screen however many games there are</li>
+<li>&quot;But not&quot; now also takes out games already in the collection: &quot;Mario, but not Party&quot; unticks the Mario Party games, ready to save</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.18.1/Attic-1.18.1.zip" length="14084240" type="application/octet-stream" sparkle:edSignature="MQNCyxysglobbhr7UnguDKEPY6nqD5XEn6TdKdvAGVzlTz9dCK06eb7PazcMEc+lvBv+ivuva1LKU8qBimhqBQ=="/>
+        </item>
+        <item>
             <title>1.18.0</title>
             <pubDate>Tue, 13 Oct 2026 18:28:39 -0400</pubDate>
             <sparkle:version>24</sparkle:version>
