@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.13.0</title>
+            <pubDate>Mon, 12 Oct 2026 22:06:29 -0400</pubDate>
+            <sparkle:version>18</sparkle:version>
+            <sparkle:shortVersionString>1.13.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Tidy Up can compress disc games to CHD (PS1, PS2, Saturn, Sega CD, Dreamcast, PC Engine CD, 3DO, Neo Geo CD, PC-FX): one lossless file per disc, usually 30–60% smaller, checked before the originals go to the Trash. Uses MAME&#x27;s chdman, which Attic can install with Homebrew.</li>
+<li>RetroAchievements: sign in once in Settings › Emulators, and games earn achievements in RetroArch, DuckStation and PCSX2, with an optional hardcore mode. Only a sign-in token is kept, in the Keychain.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.13.0/Attic-1.13.0.zip" length="12246951" type="application/octet-stream" sparkle:edSignature="C9EGnNybQOoINDQXLyOs16O9+VSVXsfmNbhf3sgjy1SXIESDw2uO2gr1vyLTQYIwO7wSjGudXjCduohtQ6ByDA=="/>
+        </item>
+        <item>
             <title>1.12.0</title>
             <pubDate>Mon, 12 Oct 2026 21:59:25 -0400</pubDate>
             <sparkle:version>17</sparkle:version>
