@@ -88,6 +88,9 @@ struct CollectionEditorView: View {
     @State private var addsMatchingGames: Bool
     /// Listed games left unticked: members to take out, matches to skip.
     @State private var unticked: Set<PersistentIdentifier> = []
+    /// Members unticked because their title has one of the "But not"
+    /// words: ticked again once the word goes.
+    @State private var untickedByExclusion: Set<PersistentIdentifier> = []
     /// How many of the library's games each series template finds.
     @State private var templateCounts: [String: Int] = [:]
     /// Pictures picked here, put in place on save: nil leaves the current
@@ -430,8 +433,17 @@ struct CollectionEditorView: View {
 
     private func untickExcluded() {
         let excluded = Set(editedCollection?.excludedGameKeys ?? [])
-        let memberIDs = Set(unticked.filter { id in members.contains { $0.persistentModelID == id } })
-        unticked = memberIDs.union(matches.filter { excluded.contains($0.collectionKey) }.map(\.persistentModelID))
+        let members = self.members
+        // Members already in it are kept whatever the search finds, but
+        // "But not Party" means the Mario Party games go.
+        let excludedTerms = search.excludedTerms
+        let excludedMembers = Set(members.filter { game in
+            excludedTerms.contains { game.title.localizedStandardContains($0) }
+        }.map(\.persistentModelID))
+        let memberIDs = Set(unticked.subtracting(untickedByExclusion).filter { id in members.contains { $0.persistentModelID == id } })
+        unticked = memberIDs.union(excludedMembers)
+            .union(matches.filter { excluded.contains($0.collectionKey) }.map(\.persistentModelID))
+        untickedByExclusion = excludedMembers
     }
 
     private func save() {
