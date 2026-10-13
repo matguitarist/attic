@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import AtticModels
 
 /// What checking the games against No-Intro's DATs found, system by
 /// system; or, before there are any DATs, where to get them.
@@ -23,7 +24,7 @@ struct VerifyReportView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Verify Games")
+                Text(report.system.map { String(localized: "Verify \(SystemTaxonomy.definition(for: $0)?.displayName ?? $0.rawValue) Games") } ?? String(localized: "Verify Games"))
                     .font(.title2.bold())
                 Text(report.datCount == 0
                      ? String(localized: "Attic checks your games against No-Intro's lists of known good dumps, the DAT files. Nothing is changed.")

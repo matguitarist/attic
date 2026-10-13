@@ -152,17 +152,26 @@ final class ToolsCoordinator {
         /// DATs Attic couldn't tie to a system.
         var unmatchedDATs: [String] = []
         var datCount = 0
+        /// The one system checked, when it wasn't the whole library.
+        var system: CanonicalSystemID?
     }
 
-    /// Checks every game against the DATs in the Emulation folder's DATs
-    /// folder, keeps each verdict on its game, and shows what was found.
-    func verify(datsFolder: URL, scanCoordinator: ScanCoordinator, from host: Host) async {
+    /// Whether a system's games are ones No-Intro catalogues (not arcade
+    /// romsets or hacks), so checking them can mean something.
+    static func canVerify(_ system: CanonicalSystemID) -> Bool {
+        SystemTaxonomy.definition(for: system)?.category != .arcade && ROMHacks.base(of: system) == nil
+    }
+
+    /// Checks every game (or one system's) against the DATs in the
+    /// Emulation folder's DATs folder, keeps each verdict on its game, and
+    /// shows what was found.
+    func verify(datsFolder: URL, scanCoordinator: ScanCoordinator, from host: Host, system: CanonicalSystemID? = nil) async {
         guard !isBusy else { return }
         reportHost = host
         try? FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
         activity = Activity(title: String(localized: "Reading DAT files…"))
         let verifier = await Task.detached(priority: .userInitiated) { DATVerifier.load(from: datsFolder) }.value
-        let files = await scanCoordinator.gameFiles()
+        let files = await scanCoordinator.gameFiles().filter { system == nil || $0.system == system }
         activity = Activity(title: String(localized: "Verifying games…"), fraction: 0)
         let progress = { @Sendable (value: Double, name: String) -> Void in
             Task { @MainActor in
@@ -181,7 +190,9 @@ final class ToolsCoordinator {
         }.value
         await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name) })
         activity = nil
-        report = .verify(Self.report(files: files, checks: checks, verifier: verifier))
+        var result = Self.report(files: files, checks: checks, verifier: verifier)
+        result.system = system
+        report = .verify(result)
     }
 
     /// Gives the games No-Intro's names for them, with what's named

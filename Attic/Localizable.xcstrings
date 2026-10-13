@@ -1858,6 +1858,16 @@
         }
       }
     },
+    "Checks this system's games against No-Intro's lists of known good dumps.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifie les jeux de ce système d’après les listes de bons dumps de No-Intro."
+          }
+        }
+      }
+    },
     "Checks your games against No-Intro's lists of known good dumps.": {
       "localizations": {
         "fr": {
@@ -7960,6 +7970,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dumps vérifiés"
+          }
+        }
+      }
+    },
+    "Verify %@ Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier les jeux %@"
           }
         }
       }

@@ -16,6 +16,8 @@ struct SystemOverviewView: View {
     @Environment(HelpNavigator.self) private var helpNavigator
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(EmulatorSetupCoordinator.self) private var setup
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
     @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
     /// Bumped when Attic comes back to the front, so BIOS files dropped in
     /// from the Finder show up as found.
@@ -59,6 +61,13 @@ struct SystemOverviewView: View {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
                 Button("System Settings…") { systemSettingsEditor.system = system }
                 ScrapeSelectionButton(title: "Scrape This System", selection: .system(system.systemID))
+                if ToolsCoordinator.canVerify(system.systemID) {
+                    Button("Verify Games…") {
+                        Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library, system: system.systemID) }
+                    }
+                    .disabled(tools.isBusy || system.gameCount == 0)
+                    .help("Checks this system's games against No-Intro's lists of known good dumps.")
+                }
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }

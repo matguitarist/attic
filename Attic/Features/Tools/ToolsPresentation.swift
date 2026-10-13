@@ -27,7 +27,7 @@ struct ToolsReports: ViewModifier {
                 case .verify(let report):
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {
-                        Task { await tools.verify(datsFolder: dats, scanCoordinator: scanCoordinator, from: host) }
+                        Task { await tools.verify(datsFolder: dats, scanCoordinator: scanCoordinator, from: host, system: report.system) }
                     } onRename: { games in
                         Task {
                             await tools.rename(games, emulationFolder: emulationFolderStore.folder,
