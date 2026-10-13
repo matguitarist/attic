@@ -40,17 +40,17 @@ public enum ScreenScraperSystemID {
         .sg1000: 109,
         .naomi: 56,
         .atomiswave: 53,
-        // ScreenScraper files these boards under arcade, as ES-DE does.
-        .naomi2: 75,
-        .naomigd: 75,
-        .model2: 75,
-        .stv: 75,
-        .gaelco: 75,
-        // 64DD games are listed with the Nintendo 64's.
-        .n64dd: 14,
+        // Each board has a system of its own on ScreenScraper, which finds
+        // its games there rather than under MAME (75).
+        .naomi2: 230,
+        .naomigd: 227,
+        .model2: 54,
+        .stv: 69,
+        .gaelco: 194,
+        .n64dd: 122,
         .satellaview: 107,
         .sufami: 108,
-        .model3: 75,
+        .model3: 55,
         .psp: 61,
         .ps2: 58,
         .ps3: 59,

@@ -120,9 +120,13 @@ final class ScrapeCoordinator {
         var romFilename = romURL.lastPathComponent
         var romSizeBytes = (try? FileManager.default.attributesOfItem(atPath: romURL.path))?[.size] as? Int
         // A zipped cartridge is matched by the game inside, its own name
-        // and size; an arcade romset is known by its zip.
+        // and size; an arcade romset by its zip's name alone, since its
+        // size depends on how the set was built (merged, split, with the
+        // BIOS) — NAOMI GD-ROM sets are all about the same size.
         let system = CanonicalSystemID(game.systemCanonicalID)
-        if SystemTaxonomy.definition(for: system)?.category != .arcade, let entry = ZipContents.singleEntry(of: romURL) {
+        if SystemTaxonomy.definition(for: system)?.category == .arcade {
+            romSizeBytes = nil
+        } else if let entry = ZipContents.singleEntry(of: romURL) {
             romFilename = (entry.name as NSString).lastPathComponent
             romSizeBytes = entry.size
         }
