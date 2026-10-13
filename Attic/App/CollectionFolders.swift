@@ -64,6 +64,13 @@ enum CollectionFolders {
 
     // MARK: - Import and export
 
+    /// Whether `url` is an exported collection: a folder with a
+    /// collection.json, or the file itself.
+    static func isCollection(_ url: URL) -> Bool {
+        url.lastPathComponent.lowercased() == CollectionFile.fileName.lowercased()
+            || FileManager.default.fileExists(atPath: url.appending(path: CollectionFile.fileName).path)
+    }
+
     struct ImportResult {
         let collection: GameCollection
         let found: Int

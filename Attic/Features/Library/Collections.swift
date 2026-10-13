@@ -312,6 +312,12 @@ struct CollectionEditorView: View {
             Text(title)
             Text(help)
         }
+        .dropDestination(for: URL.self) { urls, _ in
+            guard let image = urls.first(where: { CollectionLogos.imageExtensions.contains($0.pathExtension.lowercased()) }) else { return false }
+            pendingPictures[name] = .some(image)
+            if name == CollectionFile.logoName { logoIsFromFolder = false }
+            return true
+        }
     }
 
     private func row(_ game: Game) -> some View {

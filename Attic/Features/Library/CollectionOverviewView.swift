@@ -11,6 +11,7 @@ struct CollectionOverviewView: View {
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     /// Bumped after the pictures change, so they're read again.
     @State private var pictureCheck = 0
+    @State private var isDropTarget = false
 
     private var root: URL { CollectionFolders.root(in: emulationFolderStore.folder.root) }
 
@@ -26,6 +27,11 @@ struct CollectionOverviewView: View {
                             .scaledToFit()
                             .frame(maxHeight: 200)
                             .clipShape(.rect(cornerRadius: 8))
+                            .dropDestination(for: URL.self) { urls, _ in
+                                guard let image = urls.first(where: Self.isImage) else { return false }
+                                setPicture(image, as: CollectionFile.artworkName)
+                                return true
+                            }
                     }
                     if let logo = picture(CollectionFile.logoName) {
                         Button { chooseLogo() } label: {
@@ -36,7 +42,7 @@ struct CollectionOverviewView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(collection.name)
-                        .help("Click to choose another logo")
+                        .help("Click to choose another logo, or drop a picture on it")
                         .contextMenu { logoMenu(hasLogo: true) }
                     } else {
                         Text(collection.name)
@@ -57,6 +63,19 @@ struct CollectionOverviewView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
+                // A picture dropped here becomes the logo; on the artwork,
+                // the artwork.
+                .dropDestination(for: URL.self) { urls, _ in
+                    guard let image = urls.first(where: Self.isImage) else { return false }
+                    setPicture(image, as: CollectionFile.logoName)
+                    return true
+                } isTargeted: { isDropTarget = $0 }
+                .overlay {
+                    if isDropTarget {
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(Color.accentColor, lineWidth: 2)
+                    }
+                }
             }
 
             Section {
@@ -148,8 +167,16 @@ struct CollectionOverviewView: View {
     }
 
     private func setLogo(_ url: URL?) {
-        CollectionFolders.setImage(url, as: CollectionFile.logoName, for: collection, root: root)
+        setPicture(url, as: CollectionFile.logoName)
+    }
+
+    private func setPicture(_ url: URL?, as name: String) {
+        CollectionFolders.setImage(url, as: name, for: collection, root: root)
         pictureCheck += 1
+    }
+
+    private static func isImage(_ url: URL) -> Bool {
+        CollectionLogos.imageExtensions.contains(url.pathExtension.lowercased())
     }
 
     private func picture(_ name: String) -> NSImage? {

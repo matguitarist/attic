@@ -207,16 +207,22 @@ struct LibraryBrowserView: View {
         panel.prompt = String(localized: "Import")
         panel.message = String(localized: "Choose an exported collection folder, or its collection.json.")
         panel.begin { response in
-            guard response == .OK, let url = panel.url,
-                  let result = CollectionFolders.importCollection(from: url, context: modelContext, root: collectionsRoot) else {
-                if response == .OK { importSummary = String(localized: "That isn't a collection Attic can read.") }
-                return
-            }
-            selection = .collection(result.collection.collectionID)
-            importSummary = result.missing == 0
-                ? String(localized: "“\(result.collection.name)” has all \(result.found) of its games.")
-                : String(localized: "“\(result.collection.name)” has \(result.found) games; \(result.missing) aren't in your library.")
+            guard response == .OK, let url = panel.url else { return }
+            importCollection(from: url)
         }
+    }
+
+    /// Imports the collection folder (or collection.json) at `url`, and
+    /// shows it.
+    private func importCollection(from url: URL) {
+        guard let result = CollectionFolders.importCollection(from: url, context: modelContext, root: collectionsRoot) else {
+            importSummary = String(localized: "That isn't a collection Attic can read.")
+            return
+        }
+        selection = .collection(result.collection.collectionID)
+        importSummary = result.missing == 0
+            ? String(localized: "“\(result.collection.name)” has all \(result.found) of its games.")
+            : String(localized: "“\(result.collection.name)” has \(result.found) games; \(result.missing) aren't in your library.")
     }
 
     /// File › Add Games…: the same import as dropping them on the window.
@@ -234,6 +240,12 @@ struct LibraryBrowserView: View {
     }
 
     private func importROMs(_ urls: [URL], into system: CanonicalSystemID? = nil, shown: CanonicalSystemID? = nil) {
+        // Exported collections dropped with (or instead of) games are
+        // imported as collections.
+        let collections = urls.filter(CollectionFolders.isCollection)
+        for url in collections { importCollection(from: url) }
+        let urls = urls.filter { !CollectionFolders.isCollection($0) }
+        guard !urls.isEmpty else { return }
         romImporter.receive(urls, into: system, shown: shown, romsRoots: romsRootsStore.rootURLs, emulationFolder: emulationFolderStore.folder) {
             Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
         }

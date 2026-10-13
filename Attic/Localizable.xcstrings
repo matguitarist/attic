@@ -1669,12 +1669,12 @@
         }
       }
     },
-    "Click to choose another logo": {
+    "Click to choose another logo, or drop a picture on it": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cliquer pour choisir un autre logo"
+            "value": "Cliquer pour choisir un autre logo, ou y déposer une image"
           }
         }
       }
