@@ -92,7 +92,7 @@ final class ROMImportCoordinator {
         progress = .looking
 
         Task {
-            let (games, skipped, vita) = await Task.detached(priority: .userInitiated) { Self.games(in: urls) }.value
+            let (games, skipped, vita) = await Task.detached(priority: .userInitiated) { Self.games(in: urls, picturesAreGames: system?.baseSystem == .pico8) }.value
             notGames = skipped
             vitaItems = vita
 
@@ -274,7 +274,16 @@ extension ROMImportCoordinator {
 
     /// The games in what was dropped, and how many files in system
     /// folders weren't games for that system.
-    nonisolated static func games(in urls: [URL]) -> (games: [Game], notGames: Int, vita: [URL]) {
+    /// PICO-8 cartridges are PNG pictures (`game.p8.png`); any other
+    /// picture dropped on its own is someone's cover or logo dropped in
+    /// the wrong place, not a game — unless dropped on PICO-8 itself.
+    nonisolated static func isPicture(_ url: URL) -> Bool {
+        let name = url.lastPathComponent.lowercased()
+        return ["png", "jpg", "jpeg", "gif", "heic", "webp", "bmp", "tif", "tiff"].contains(url.pathExtension.lowercased())
+            && !name.hasSuffix(".p8.png")
+    }
+
+    nonisolated static func games(in urls: [URL], picturesAreGames: Bool = false) -> (games: [Game], notGames: Int, vita: [URL]) {
         var loose: [URL] = []
         var games: [Game] = []
         var notGames = 0
@@ -288,6 +297,8 @@ extension ROMImportCoordinator {
                 games += self.games(inFolder: url, system: SystemTaxonomy.system(forShortName: url.lastPathComponent.lowercased())?.canonicalID, notGames: &notGames, vita: &vita)
             } else if isForVita3K(url) {
                 vita.append(url)
+            } else if !picturesAreGames, isPicture(url) {
+                notGames += 1
             } else if !isClutter(url) {
                 loose.append(url)
             }
