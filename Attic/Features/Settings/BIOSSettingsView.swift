@@ -36,8 +36,6 @@ struct BIOSSettingsView: View {
     var body: some View {
         let rows = self.rows
         let missing = rows.filter(\.missesRequired)
-        let optional = rows.filter { !$0.missesRequired && $0.missesOptional }
-        let ready = rows.filter { !$0.files.isEmpty && !$0.missesRequired && !$0.missesOptional }
         let none = rows.filter(\.files.isEmpty)
         Form {
             Section {
@@ -56,10 +54,9 @@ struct BIOSSettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            ForEach(missing + optional) { row in
-                section(row)
-            }
-            ForEach(ready) { row in
+            // In the library's order (by maker, then release), each with
+            // its status, so a maker's consoles stay together.
+            ForEach(rows.filter { !$0.files.isEmpty }) { row in
                 section(row)
             }
             if !none.isEmpty {

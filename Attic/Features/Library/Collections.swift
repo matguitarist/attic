@@ -152,7 +152,7 @@ struct CollectionEditorView: View {
                     }
                 if editedCollection == nil {
                     Menu("Start from a Series") {
-                        ForEach(SeriesTemplate.all) { template in
+                        ForEach(SeriesTemplate.all.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { template in
                             let count = templateCounts[template.name] ?? 0
                             Button(count > 0 ? "\(template.name) (\(count))" : template.name) { apply(template) }
                         }
