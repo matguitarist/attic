@@ -231,7 +231,7 @@ struct LibraryBrowserView: View {
     }
 
     private func importROMs(_ urls: [URL], into system: CanonicalSystemID? = nil, shown: CanonicalSystemID? = nil) {
-        romImporter.receive(urls, into: system, shown: shown, romsRoots: romsRootsStore.rootURLs) {
+        romImporter.receive(urls, into: system, shown: shown, romsRoots: romsRootsStore.rootURLs, emulationFolder: emulationFolderStore.folder) {
             Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
         }
     }

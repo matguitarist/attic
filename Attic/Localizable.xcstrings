@@ -320,6 +320,16 @@
         }
       }
     },
+    "%lld installed in Vita3K; its games are now in PS Vita.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld installés dans Vita3K ; ses jeux sont maintenant dans PS Vita."
+          }
+        }
+      }
+    },
     "%lld items, %@.": {
       "localizations": {
         "en": {
@@ -547,6 +557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un Dolphin déjà présent dans votre dossier Applications est utilisé tel quel ; sinon Attic installe la dernière version depuis dolphin-emu.org."
+          }
+        }
+      }
+    },
+    "A PS Vita .pkg needs its zRIF license key to be installed. Paste it here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un .pkg PS Vita a besoin de sa clé de licence zRIF pour être installé. Collez-la ici."
           }
         }
       }
@@ -3311,6 +3331,16 @@
         }
       }
     },
+    "License for “%@”": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licence pour « %@ »"
+          }
+        }
+      }
+    },
     "Load": {
       "localizations": {
         "fr": {
@@ -3987,6 +4017,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "PCSX2 a besoin d’un dump du BIOS PS2 dans le dossier pcsx2/bios du dossier BIOS (n’importe quelle région). Les dumps fonctionnent le mieux en .chd ou .iso."
+          }
+        }
+      }
+    },
+    "PS Vita games and firmware need Vita3K: install it in Settings › Emulators, then add them again.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux et le firmware PS Vita ont besoin de Vita3K : installez-le dans Réglages › Émulateurs, puis ajoutez-les de nouveau."
           }
         }
       }
@@ -6095,6 +6135,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Celui de RetroArch, dans %@. Le programme de mise à jour en ligne de RetroArch le tient à jour."
+          }
+        }
+      }
+    },
+    "Vita3K couldn't install %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vita3K n’a pas pu installer %@."
+          }
+        }
+      }
+    },
+    "Vita3K is installing %@. A game starts once it's in: close Vita3K to carry on.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vita3K installe %@. Un jeu démarre une fois installé : fermez Vita3K pour continuer."
           }
         }
       }

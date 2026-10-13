@@ -120,3 +120,28 @@ struct FolderNameTests {
         #expect(EmulationFolder.adoptFolderNames(in: parent).isEmpty)
     }
 }
+
+struct ConsoleFilesTests {
+    private func package(magic: [UInt8], contentID: String) throws -> URL {
+        var header = Data(magic) + Data(repeating: 0, count: 0x2C)
+        header += Data(contentID.utf8).prefix(0x24)
+        header += Data(repeating: 0, count: 0x60 - header.count)
+        let url = FileManager.default.temporaryDirectory.appending(path: "pkg-\(UUID().uuidString).pkg")
+        try header.write(to: url)
+        return url
+    }
+
+    @Test func tellsVitaPackagesFromOthers() throws {
+        #expect(Vita3KLibrary.isVitaPackage(try package(magic: [0x7F, 0x50, 0x4B, 0x47], contentID: "UP0001-PCSE00120_00-PERSONA4GOLDEN01")))
+        #expect(!Vita3KLibrary.isVitaPackage(try package(magic: [0x7F, 0x50, 0x4B, 0x47], contentID: "UP0001-NPUB30910_00-GAME000000000001")))
+        #expect(!Vita3KLibrary.isVitaPackage(try package(magic: [0x7F, 0x43, 0x4E, 0x54], contentID: "UP9000-CUSA00900_00-BLOODBORNE000000")))
+    }
+
+    @Test func readsDumpedGameFolders() throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "CUSA00900-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder.appending(path: "sce_sys"), withIntermediateDirectories: true)
+        try Vita3KLibraryTests.paramSFO(title: "Bloodborne", titleID: "CUSA00900").write(to: folder.appending(path: "sce_sys/param.sfo"))
+        let found = try #require(Vita3KLibrary.consoleGame(in: folder))
+        #expect(found.system == .ps4 && found.title == "Bloodborne" && found.titleID == "CUSA00900")
+    }
+}

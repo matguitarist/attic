@@ -18,6 +18,10 @@ struct ROMImportStatusBar: View {
                     Text("Adding \(done + 1) of \(total): \(name)")
                         .lineLimit(1)
                         .truncationMode(.middle)
+                case .installingInVita3K(let name):
+                    ProgressView().controlSize(.small)
+                    Text("Vita3K is installing \(name). A game starts once it's in: close Vita3K to carry on.")
+                        .lineLimit(2)
                 }
                 Spacer()
             }
