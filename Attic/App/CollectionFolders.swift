@@ -119,7 +119,7 @@ enum CollectionFolders {
         }
         context.insert(collection)
         collection.games = found
-        collection.search = CollectionSearch(including: file.including, excluding: file.excluding)
+        collection.search = file.search
         collection.searchSystemID = file.system
         collection.addsMatchingGames = file.addsMatchingGames
         collection.excludedGameKeys = file.excluded
@@ -255,7 +255,7 @@ enum CollectionFolders {
     // MARK: - Files
 
     static func file(for collection: GameCollection) -> CollectionFile {
-        CollectionFile(
+        var file = CollectionFile(
             id: collection.collectionID,
             name: collection.name,
             including: collection.searchIncluding,
@@ -267,6 +267,8 @@ enum CollectionFolders {
                 .map { CollectionFile.Entry(system: $0.systemCanonicalID, path: $0.romRelativePath, title: $0.title) },
             excluded: collection.excludedGameKeys.sorted()
         )
+        file.setCriteria(from: collection.search)
+        return file
     }
 
     /// The collection's folder: where its file already is, else named

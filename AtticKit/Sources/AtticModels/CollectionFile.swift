@@ -31,6 +31,28 @@ public struct CollectionFile: Codable, Equatable, Sendable {
     public var games: [Entry]
     /// Games the search must never add (see `GameCollection.excludedGameKeys`).
     public var excluded: [String]
+    /// The rest of the search, left out when unset (and in files from
+    /// before it).
+    public var genres: String?
+    public var minPlayers: Int?
+    public var fromYear: Int?
+    public var toYear: Int?
+    public var favoritesOnly: Bool?
+
+    /// The search the file describes.
+    public var search: CollectionSearch {
+        CollectionSearch(including: including, excluding: excluding, genres: genres ?? "", minPlayers: minPlayers ?? 0,
+                         fromYear: fromYear ?? 0, toYear: toYear ?? 0, favoritesOnly: favoritesOnly ?? false)
+    }
+
+    /// Sets the search's parts beyond the title.
+    public mutating func setCriteria(from search: CollectionSearch) {
+        genres = search.genres.isEmpty ? nil : search.genres
+        minPlayers = search.minPlayers > 1 ? search.minPlayers : nil
+        fromYear = search.fromYear > 0 ? search.fromYear : nil
+        toYear = search.toYear > 0 ? search.toYear : nil
+        favoritesOnly = search.favoritesOnly ? true : nil
+    }
 
     public init(id: UUID, name: String, including: String = "", excluding: String = "", system: String? = nil,
                 addsMatchingGames: Bool = false, games: [Entry] = [], excluded: [String] = []) {

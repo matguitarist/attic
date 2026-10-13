@@ -108,6 +108,22 @@
         }
       }
     },
+    "%@, %@, in %@. The newest %lld backups are kept.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, %2$@, in %3$@. The newest %4$lld backups are kept."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, %2$@, dans %3$@. Les %4$lld sauvegardes les plus récentes sont gardées."
+          }
+        }
+      }
+    },
     "%@, %lld%% of %@": {
       "localizations": {
         "en": {
@@ -588,6 +604,16 @@
         }
       }
     },
+    "%lld or more": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ou plus"
+          }
+        }
+      }
+    },
     "%lld scraped": {
       "localizations": {
         "en": {
@@ -681,6 +707,56 @@
         }
       }
     },
+    "1990": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1990"
+          }
+        }
+      }
+    },
+    "1999": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1999"
+          }
+        }
+      }
+    },
+    "2 or more": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 ou plus"
+          }
+        }
+      }
+    },
+    "3 or more": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 ou plus"
+          }
+        }
+      }
+    },
+    "4 or more": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 ou plus"
+          }
+        }
+      }
+    },
     "A Dolphin already in your Applications folder is used as is; otherwise Attic installs the latest release from dolphin-emu.org.": {
       "localizations": {
         "fr": {
@@ -727,6 +803,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "La vidéo d’un jeu se lit, sans le son, dans le panneau latéral après un instant sur ce jeu."
+          }
+        }
+      }
+    },
+    "A zip of your saves, save states, collections and gamelists. The newest %lld are kept. Another drive or a synced folder keeps them safest.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un zip de vos sauvegardes, états de sauvegarde, collections et gamelists. Les %lld plus récents sont gardés. Un autre disque ou un dossier synchronisé les protège le mieux."
           }
         }
       }
@@ -867,6 +953,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajoutez un devID/devPassword pour activer la récupération des infos."
+          }
+        }
+      }
+    },
+    "Add a genre from your library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un genre de votre bibliothèque"
           }
         }
       }
@@ -1077,6 +1173,16 @@
         }
       }
     },
+    "Also By": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aussi par"
+          }
+        }
+      }
+    },
     "Also needs BIOS %@ in %@": {
       "localizations": {
         "en": {
@@ -1099,6 +1205,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Analyser…"
+          }
+        }
+      }
+    },
+    "Any": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous"
           }
         }
       }
@@ -1219,6 +1335,16 @@
         }
       }
     },
+    "Attic couldn't write a backup to %@. Check that the folder is there and has room.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic n’a pas pu écrire de sauvegarde dans %@. Vérifiez que le dossier est là et qu’il reste de la place."
+          }
+        }
+      }
+    },
     "Attic downloads emulators from their official sources only: RetroArch and its cores from libretro's buildbot, standalone emulators from their own release pages. Each system's page lists the recommended emulator first.": {
       "localizations": {
         "fr": {
@@ -1275,6 +1401,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les BIOS, sauvegardes, sauvegardes d’état, cœurs et réglages de RetroArch et les émulateurs installés par Attic sont tous ici — sauvegardez ou déplacez ce seul dossier pour tout emporter."
+          }
+        }
+      }
+    },
+    "Back Up Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegarder maintenant"
+          }
+        }
+      }
+    },
+    "Back Up Saves": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegarder les parties"
+          }
+        }
+      }
+    },
+    "Back up every week": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegarder chaque semaine"
+          }
+        }
+      }
+    },
+    "Backing up saves…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegarde des parties…"
+          }
+        }
+      }
+    },
+    "Backup Failed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec de la sauvegarde"
           }
         }
       }
@@ -1609,12 +1785,12 @@
         }
       }
     },
-    "Choose an exported collection folder, or its collection.json.": {
+    "Choose an exported collection folder or its collection.json, or ES-DE custom collections (custom-Name.cfg, in ES-DE's collections folder).": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez un dossier de collection exporté, ou son collection.json."
+            "value": "Choisissez un dossier de collection exporté ou son collection.json, ou des collections personnalisées ES-DE (custom-Nom.cfg, dans le dossier collections d’ES-DE)."
           }
         }
       }
@@ -1635,6 +1811,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez des jeux, ou des dossiers de jeux. Ils sont rangés dans votre dossier de ROMs avec leurs jaquettes et vidéos."
+          }
+        }
+      }
+    },
+    "Choose where Attic keeps backups of your saves. Another drive or a synced folder keeps them safest.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez où Attic garde les sauvegardes de vos parties. Un autre disque ou un dossier synchronisé les protège le mieux."
           }
         }
       }
@@ -2545,6 +2731,16 @@
         }
       }
     },
+    "Each one narrows the search. Without title words, they choose the games on their own: “2-player beat 'em ups of the 90s”.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chacun affine la recherche. Sans mots de titre, ils choisissent les jeux à eux seuls : « beat ’em up à 2 joueurs des années 90 »."
+          }
+        }
+      }
+    },
     "Earn achievements in classic games, in RetroArch, DuckStation and PCSX2. Your password is only sent to retroachievements.org to sign in; Attic keeps the sign-in token it gets back, in the Keychain.": {
       "localizations": {
         "fr": {
@@ -2871,6 +3067,16 @@
         }
       }
     },
+    "Favorites only": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favoris uniquement"
+          }
+        }
+      }
+    },
     "File Types": {
       "localizations": {
         "fr": {
@@ -2977,6 +3183,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le jeu libre est activé par défaut (Réglages › Général › Arcade) : Start lance une partie sans pièces. Les jeux affichent d’abord l’écran de démarrage Neo Geo pendant une dizaine de secondes."
+          }
+        }
+      }
+    },
+    "From": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De"
+          }
+        }
+      }
+    },
+    "From %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis %@"
           }
         }
       }
@@ -3167,6 +3393,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Genre"
+          }
+        }
+      }
+    },
+    "Genres": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genres"
           }
         }
       }
@@ -3731,6 +3967,16 @@
         }
       }
     },
+    "Last backup %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière sauvegarde %@"
+          }
+        }
+      }
+    },
     "Last checked %@. Updates come from the same nightly builds RetroArch's Online Updater uses, compared by checksum — a core only shows an update when its code actually changed.": {
       "localizations": {
         "fr": {
@@ -4241,6 +4487,16 @@
         }
       }
     },
+    "No backup folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun dossier de sauvegarde"
+          }
+        }
+      }
+    },
     "No collection without a logo has one in this folder.": {
       "localizations": {
         "fr": {
@@ -4501,6 +4757,16 @@
         }
       }
     },
+    "Only": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uniquement"
+          }
+        }
+      }
+    },
     "Open Cabinet Mode at launch": {
       "localizations": {
         "fr": {
@@ -4617,6 +4883,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Variables : {romPath}, {romDir}, {romName}, {romNameNoExt}"
+          }
+        }
+      }
+    },
+    "Platform, Shooter": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plateforme, Shoot"
           }
         }
       }
@@ -5481,6 +5757,16 @@
         }
       }
     },
+    "Save Backups": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegardes des parties"
+          }
+        }
+      }
+    },
     "Save Current Settings as Profile…": {
       "localizations": {
         "fr": {
@@ -5527,6 +5813,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les profils enregistrés sont conservés dans le dossier Emulation."
+          }
+        }
+      }
+    },
+    "Saves Backed Up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parties sauvegardées"
           }
         }
       }
@@ -5813,12 +6109,12 @@
         }
       }
     },
-    "Separate several words with commas: a game is found when its title contains any of the first ones and none of the others.": {
+    "Separate several words with commas: a game is found when its title contains any of the first ones and none of the others. Leave them empty to choose by genre, players or years below.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Séparez plusieurs mots par des virgules : un jeu est trouvé si son titre contient l’un des premiers et aucun des autres."
+            "value": "Séparez plusieurs mots par des virgules : un jeu est trouvé quand son titre contient l’un des premiers et aucun des autres. Laissez vide pour choisir par genre, joueurs ou années ci-dessous."
           }
         }
       }
@@ -6523,6 +6819,16 @@
         }
       }
     },
+    "To": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À"
+          }
+        }
+      }
+    },
     "To always start in Cabinet Mode, turn on Open Cabinet Mode at launch in Settings › General.": {
       "localizations": {
         "fr": {
@@ -6609,6 +6915,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retirer des favoris"
+          }
+        }
+      }
+    },
+    "Up to %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’à %@"
           }
         }
       }
@@ -6979,6 +7295,16 @@
         }
       }
     },
+    "Zips your saves, save states, collections and gamelists into your backup folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresse vos sauvegardes, états de sauvegarde, collections et gamelists dans votre dossier de sauvegarde."
+          }
+        }
+      }
+    },
     "and %lld more": {
       "localizations": {
         "fr": {
@@ -7161,6 +7487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "shadPS4 utilise sa propre configuration de manette — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "to": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "à"
           }
         }
       }

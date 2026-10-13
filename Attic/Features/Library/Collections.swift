@@ -137,7 +137,7 @@ struct CollectionEditorView: View {
         return games.filter { game in
             !memberIDs.contains(game.persistentModelID)
                 && (system == nil || game.systemCanonicalID == system?.rawValue)
-                && search.matches(game.title)
+                && search.matches(game.searchable)
         }
     }
 
@@ -186,7 +186,51 @@ struct CollectionEditorView: View {
             } header: {
                 Text("Search")
             } footer: {
-                Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others.")
+                Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others. Leave them empty to choose by genre, players or years below.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                LabeledContent {
+                    HStack {
+                        TextField("Genre", text: $search.genres, prompt: Text("Platform, Shooter"))
+                            .labelsHidden()
+                        Menu {
+                            ForEach(libraryGenres, id: \.self) { genre in
+                                Button(genre) { addGenre(genre) }
+                            }
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        .menuIndicator(.hidden)
+                        .fixedSize()
+                        .disabled(libraryGenres.isEmpty)
+                        .help("Add a genre from your library")
+                    }
+                } label: {
+                    Text("Genres")
+                }
+                Picker("Players", selection: $search.minPlayers) {
+                    Text("Any").tag(0)
+                    Text("2 or more").tag(2)
+                    Text("3 or more").tag(3)
+                    Text("4 or more").tag(4)
+                }
+                LabeledContent("Released") {
+                    HStack {
+                        TextField("From", text: yearBinding(\.fromYear), prompt: Text("1990"))
+                        Text("to")
+                        TextField("To", text: yearBinding(\.toYear), prompt: Text("1999"))
+                    }
+                    .labelsHidden()
+                    .frame(maxWidth: 160)
+                }
+                Toggle("Favorites only", isOn: $search.favoritesOnly)
+            } header: {
+                Text("Also By")
+            } footer: {
+                Text("Each one narrows the search. Without title words, they choose the games on their own: “2-player beat 'em ups of the 90s”.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -255,9 +299,36 @@ struct CollectionEditorView: View {
             }.value
         }
         .onChange(of: system) { untickExcluded() }
+        // Choosing by genre, players or years: the name ("Couch Co-op")
+        // isn't a title to look for.
+        .onChange(of: search.hasCriteria) { _, hasCriteria in
+            if hasCriteria, searchFollowsName {
+                searchFollowsName = false
+                search.including = ""
+            }
+        }
     }
 
     private var collectionsRoot: URL { CollectionFolders.root(in: emulationFolderStore.folder.root) }
+
+    /// The library's genres, most common first.
+    private var libraryGenres: [String] {
+        let counts = Dictionary(games.compactMap { $0.genre?.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }.map { ($0, 1) }, uniquingKeysWith: +)
+        return counts.sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }.prefix(40).map(\.key)
+    }
+
+    private func addGenre(_ genre: String) {
+        guard !search.genreTerms.contains(where: { $0.caseInsensitiveCompare(genre) == .orderedSame }) else { return }
+        search.genres = (search.genreTerms + [genre]).joined(separator: ", ")
+    }
+
+    /// A year field: empty for none.
+    private func yearBinding(_ keyPath: WritableKeyPath<CollectionSearch, Int>) -> Binding<String> {
+        Binding(
+            get: { search[keyPath: keyPath] > 0 ? String(search[keyPath: keyPath]) : "" },
+            set: { search[keyPath: keyPath] = Int($0.filter(\.isNumber).prefix(4)) ?? 0 }
+        )
+    }
 
     private func apply(_ template: SeriesTemplate) {
         name = template.name

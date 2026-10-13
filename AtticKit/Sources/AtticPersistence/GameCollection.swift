@@ -22,6 +22,12 @@ public final class GameCollection {
     public var searchExcluding: String = ""
     /// Only games of this system, when set.
     public var searchSystemID: String?
+    /// The rest of the search (see `CollectionSearch`).
+    public var searchGenres: String = ""
+    public var searchMinPlayers: Int = 0
+    public var searchFromYear: Int = 0
+    public var searchToYear: Int = 0
+    public var searchFavoritesOnly: Bool = false
     /// New games the search finds are added after each library scan.
     public var addsMatchingGames: Bool = false
     /// Games taken out of the collection or unticked from its search, as
@@ -36,17 +42,26 @@ public final class GameCollection {
     }
 
     public var search: CollectionSearch {
-        get { CollectionSearch(including: searchIncluding, excluding: searchExcluding) }
+        get {
+            CollectionSearch(including: searchIncluding, excluding: searchExcluding, genres: searchGenres,
+                             minPlayers: searchMinPlayers, fromYear: searchFromYear, toYear: searchToYear,
+                             favoritesOnly: searchFavoritesOnly)
+        }
         set {
             searchIncluding = newValue.including
             searchExcluding = newValue.excluding
+            searchGenres = newValue.genres
+            searchMinPlayers = newValue.minPlayers
+            searchFromYear = newValue.fromYear
+            searchToYear = newValue.toYear
+            searchFavoritesOnly = newValue.favoritesOnly
         }
     }
 
     /// Whether the collection's search would add `game`.
     public func searchMatches(_ game: Game) -> Bool {
         (searchSystemID == nil || game.systemCanonicalID == searchSystemID)
-            && search.matches(game.title)
+            && search.matches(game.searchable)
             && !excludedGameKeys.contains(game.collectionKey)
     }
 
@@ -61,5 +76,17 @@ public final class GameCollection {
         } else if !isMember {
             games.removeAll { $0.persistentModelID == game.persistentModelID }
         }
+    }
+}
+
+extension Game {
+    /// What a collection's search looks at.
+    public var searchable: CollectionSearch.Game {
+        let year = releaseDate.map { date -> Int in
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.timeZone = TimeZone(identifier: "UTC")!
+            return calendar.component(.year, from: date)
+        }
+        return CollectionSearch.Game(title: title, genre: genre, players: players, year: year, favorite: favorite)
     }
 }

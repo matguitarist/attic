@@ -98,9 +98,24 @@ struct CollectionOverviewView: View {
                     Text("None: games are added by hand. Edit the collection to give it a search.")
                         .foregroundStyle(.secondary)
                 } else {
-                    LabeledContent("Titles containing", value: collection.search.includedTerms.formatted(.list(type: .or)))
-                    if !collection.search.excludedTerms.isEmpty {
-                        LabeledContent("But not", value: collection.search.excludedTerms.formatted(.list(type: .or)))
+                    let search = collection.search
+                    if !search.includedTerms.isEmpty {
+                        LabeledContent("Titles containing", value: search.includedTerms.formatted(.list(type: .or)))
+                    }
+                    if !search.excludedTerms.isEmpty {
+                        LabeledContent("But not", value: search.excludedTerms.formatted(.list(type: .or)))
+                    }
+                    if !search.genreTerms.isEmpty {
+                        LabeledContent("Genres", value: search.genreTerms.formatted(.list(type: .or)))
+                    }
+                    if search.minPlayers > 1 {
+                        LabeledContent("Players", value: String(localized: "\(search.minPlayers) or more"))
+                    }
+                    if search.fromYear > 0 || search.toYear > 0 {
+                        LabeledContent("Released", value: Self.years(search))
+                    }
+                    if search.favoritesOnly {
+                        LabeledContent("Favorites", value: String(localized: "Only"))
                     }
                     if let system = collection.searchSystemID {
                         LabeledContent("On", value: SystemTaxonomy.definition(for: CanonicalSystemID(system))?.displayName ?? system)
@@ -177,6 +192,15 @@ struct CollectionOverviewView: View {
 
     private static func isImage(_ url: URL) -> Bool {
         CollectionLogos.imageExtensions.contains(url.pathExtension.lowercased())
+    }
+
+    /// "1990–1999", "From 1990", "Up to 1999".
+    private static func years(_ search: CollectionSearch) -> String {
+        switch (search.fromYear, search.toYear) {
+        case (let from, let to) where from > 0 && to > 0: "\(from)–\(to)"
+        case (let from, _) where from > 0: String(localized: "From \(String(from))")
+        default: String(localized: "Up to \(String(search.toYear))")
+        }
     }
 
     private func picture(_ name: String) -> NSImage? {
