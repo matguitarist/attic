@@ -3,6 +3,23 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.14.0</title>
+            <pubDate>Tue, 13 Oct 2026 07:54:29 -0400</pubDate>
+            <sparkle:version>19</sparkle:version>
+            <sparkle:shortVersionString>1.14.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>New Tools menu: Tidy Up, Compress Games, the selected game&#x27;s conversion, removing unzipped copies, and a BIOS check.</li>
+<li>Compress Games: disc games to CHD (now PSP too) and cartridge games to ZIP, losslessly, with a report to approve first. A CHD can be turned back into CUE/BIN, GDI or ISO.</li>
+<li>The game panel shows a disc game&#x27;s format, tracks, size, compression and SHA-1.</li>
+<li>A compressed game keeps its favorite, play history, collections and gamelist info.</li>
+<li>Fixed a crash at launch when the library window had been saved narrow.</li>
+<li>Series templates are listed by name, and the BIOS list follows the library&#x27;s order (by maker, then release).</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.14.0/Attic-1.14.0.zip" length="12493756" type="application/octet-stream" sparkle:edSignature="a2r0O6jyCKGSuqsJwAW8lRQLuwE0t+TuZfebooTHDV61HpWcbYUrxSZJX+8cmRrbjHYqzmiu9mI3+xFgIuvkBQ=="/>
+        </item>
+        <item>
             <title>1.13.0</title>
             <pubDate>Mon, 12 Oct 2026 22:06:29 -0400</pubDate>
             <sparkle:version>18</sparkle:version>
