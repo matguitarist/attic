@@ -5,6 +5,7 @@ public enum ZipContents {
     public struct Entry: Equatable, Sendable {
         public let name: String
         public let size: Int
+        public var crc: UInt32 = 0
     }
 
     /// The one file a game's zip holds (folders and macOS's own files
@@ -38,13 +39,14 @@ public enum ZipContents {
         var offset = 0
         for _ in 0..<count {
             guard offset + 46 <= directory.count, integer(directory, offset, 4) == 0x0201_4B50 else { return nil }
+            let crc = UInt32(integer(directory, offset + 16, 4))
             let size = integer(directory, offset + 24, 4)
             let nameLength = integer(directory, offset + 28, 2)
             let extraLength = integer(directory, offset + 30, 2)
             let commentLength = integer(directory, offset + 32, 2)
             guard offset + 46 + nameLength <= directory.count, size != 0xFFFF_FFFF else { return nil }
             let name = String(decoding: directory[(offset + 46)..<(offset + 46 + nameLength)], as: UTF8.self)
-            entries.append(Entry(name: name, size: size))
+            entries.append(Entry(name: name, size: size, crc: crc))
             offset += 46 + nameLength + extraLength + commentLength
         }
         return entries

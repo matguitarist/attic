@@ -163,6 +163,12 @@ struct ToolsCommands: Commands {
             }
             .disabled(roots.isEmpty || tools.isBusy)
 
+            Button("Verify Games…") {
+                Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+            .help("Checks your games against No-Intro's lists of known good dumps.")
+
             Divider()
 
             gameItems

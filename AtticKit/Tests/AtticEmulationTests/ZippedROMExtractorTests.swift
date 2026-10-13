@@ -175,7 +175,8 @@ import Testing
     @Test func readsAZipsOneGameWithoutUnpacking() throws {
         let rom = Data(repeating: 7, count: 123_456)
         let zip = try makeZip(named: "Zelda (USA).zip", containing: ["Zelda (USA).sfc": rom])
-        #expect(ZipContents.singleEntry(of: zip) == ZipContents.Entry(name: "Zelda (USA).sfc", size: 123_456))
+        #expect(ZipContents.singleEntry(of: zip)?.name == "Zelda (USA).sfc")
+        #expect(ZipContents.singleEntry(of: zip)?.size == 123_456)
         let set = try makeZip(named: "romset.zip", containing: ["a.bin": rom, "b.bin": rom])
         #expect(ZipContents.singleEntry(of: set) == nil)
         #expect(ZipContents.entries(of: set)?.count == 2)

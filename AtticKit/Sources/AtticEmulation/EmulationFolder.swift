@@ -37,6 +37,8 @@ public struct EmulationFolder: Sendable, Hashable {
     public var media: URL { root.appending(path: EmulationLayout.media, directoryHint: .isDirectory) }
     public var gamelists: URL { root.appending(path: EmulationLayout.gamelists, directoryHint: .isDirectory) }
     public var collections: URL { root.appending(path: EmulationLayout.collections, directoryHint: .isDirectory) }
+    /// No-Intro's DAT files, for Tools › Verify Games.
+    public var dats: URL { root.appending(path: "DATs", directoryHint: .isDirectory) }
 
     public var retroArchConfigDirectory: URL { config.appending(path: "RetroArch", directoryHint: .isDirectory) }
     /// RetroArch's main config when launched by Attic (`--config`).

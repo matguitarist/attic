@@ -604,6 +604,22 @@
         }
       }
     },
+    "%lld of %lld verified": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld verified"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld sur %2$lld vérifiés"
+          }
+        }
+      }
+    },
     "%lld or more": {
       "localizations": {
         "fr": {
@@ -807,6 +823,16 @@
         }
       }
     },
+    "A good dump of %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un bon dump de %@."
+          }
+        }
+      }
+    },
     "A zip of your saves, save states, collections and gamelists. The newest %lld are kept. Another drive or a synced folder keeps them safest.": {
       "localizations": {
         "fr": {
@@ -907,6 +933,16 @@
         }
       }
     },
+    "Add DAT Files…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des fichiers DAT…"
+          }
+        }
+      }
+    },
     "Add Folder…": {
       "localizations": {
         "fr": {
@@ -1003,6 +1039,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter automatiquement les nouveaux jeux qui correspondent"
+          }
+        }
+      }
+    },
+    "Add these systems' DATs to check their games too.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez les DAT de ces systèmes pour vérifier aussi leurs jeux."
           }
         }
       }
@@ -1335,12 +1381,32 @@
         }
       }
     },
+    "Attic checks your games against No-Intro's lists of known good dumps, the DAT files. Nothing is changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic vérifie vos jeux d’après les listes de bons dumps de No-Intro, les fichiers DAT. Rien n’est modifié."
+          }
+        }
+      }
+    },
     "Attic couldn't write a backup to %@. Check that the folder is there and has room.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Attic n’a pas pu écrire de sauvegarde dans %@. Vérifiez que le dossier est là et qu’il reste de la place."
+          }
+        }
+      }
+    },
+    "Attic doesn't download DATs itself: No-Intro hands them out through its site only.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic ne télécharge pas les DAT lui-même : No-Intro ne les distribue que sur son site."
           }
         }
       }
@@ -1701,6 +1767,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher les mises à jour automatiquement"
+          }
+        }
+      }
+    },
+    "Checks your games against No-Intro's lists of known good dumps.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifie vos jeux d’après les listes de bons dumps de No-Intro."
           }
         }
       }
@@ -2381,6 +2457,16 @@
         }
       }
     },
+    "DATs for systems Attic doesn't have": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DAT de systèmes qu’Attic ne connaît pas"
+          }
+        }
+      }
+    },
     "DVD": {
       "localizations": {
         "fr": {
@@ -2497,6 +2583,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Identifiants développeur"
+          }
+        }
+      }
+    },
+    "Differ from No-Intro's (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Différents de ceux de No-Intro (%lld)"
+          }
+        }
+      }
+    },
+    "Differs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Différent"
           }
         }
       }
@@ -2631,6 +2737,16 @@
         }
       }
     },
+    "Download them from No-Intro's DAT-o-MATIC: the daily pack has every system, or pick one system's Standard DAT. Then add the files, or the pack's zip as it is.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargez-les sur DAT-o-MATIC, le site de No-Intro : le pack quotidien contient tous les systèmes, ou choisissez le DAT standard d’un système. Ajoutez ensuite les fichiers, ou le zip du pack tel quel."
+          }
+        }
+      }
+    },
     "Downloads come straight from each project's official source — libretro's buildbot for RetroArch and its cores, GitHub releases for standalone emulators. BIOS files are never included: dump them from hardware you own and put them in %@.": {
       "localizations": {
         "fr": {
@@ -2727,6 +2843,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chaque jeu est un dossier nommé comme Monkey Island.scummvm, avec les fichiers du jeu et un fichier du même nom (Monkey Island.scummvm) contenant l’identifiant ScummVM du jeu, comme monkey."
+          }
+        }
+      }
+    },
+    "Each game's data, checked against %lld No-Intro DAT files. Nothing has been changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les données de chaque jeu, vérifiées d’après %lld fichiers DAT de No-Intro. Rien n’a été modifié."
           }
         }
       }
@@ -3427,6 +3553,16 @@
         }
       }
     },
+    "Good dumps, with file names of their own.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De bons dumps, avec leurs propres noms de fichiers."
+          }
+        }
+      }
+    },
     "Handheld LCD": {
       "localizations": {
         "fr": {
@@ -3523,6 +3659,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Homebrew n’a pas pu installer rom-tools. Essayez « brew install rom-tools » dans le Terminal."
+          }
+        }
+      }
+    },
+    "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Homebrews, hacks, traductions, prototypes, ou dumps que No-Intro ne liste pas."
           }
         }
       }
@@ -4287,6 +4433,16 @@
         }
       }
     },
+    "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nommé comme un jeu listé par No-Intro, mais les données ne sont pas celles de ce jeu : un mauvais dump, un hack, ou une autre révision."
+          }
+        }
+      }
+    },
     "Names and artwork": {
       "localizations": {
         "fr": {
@@ -4447,6 +4603,26 @@
         }
       }
     },
+    "No DAT": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans DAT"
+          }
+        }
+      }
+    },
+    "No DAT files yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore de fichiers DAT"
+          }
+        }
+      }
+    },
     "No Game Selected": {
       "localizations": {
         "fr": {
@@ -4597,6 +4773,16 @@
         }
       }
     },
+    "No-Intro": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No-Intro"
+          }
+        }
+      }
+    },
     "None": {
       "localizations": {
         "fr": {
@@ -4637,6 +4823,16 @@
         }
       }
     },
+    "Not in No-Intro's list (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absents de la liste de No-Intro (%lld)"
+          }
+        }
+      }
+    },
     "Not installed": {
       "localizations": {
         "fr": {
@@ -4653,6 +4849,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Non installé. Les rendus et la bibliothèque de shaders nécessitent les shaders slang de libretro."
+          }
+        }
+      }
+    },
+    "Not listed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non listé"
           }
         }
       }
@@ -4773,6 +4979,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ouvrir le mode Cabinet au démarrage"
+          }
+        }
+      }
+    },
+    "Open DAT-o-MATIC": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir DAT-o-MATIC"
           }
         }
       }
@@ -5153,6 +5369,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Note"
+          }
+        }
+      }
+    },
+    "Reading DAT files…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture des fichiers DAT…"
           }
         }
       }
@@ -6199,6 +6425,16 @@
         }
       }
     },
+    "Show DATs Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le dossier des DAT"
+          }
+        }
+      }
+    },
     "Show ROMs Folder": {
       "localizations": {
         "fr": {
@@ -7151,6 +7387,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Celui de RetroArch, dans %@. Le programme de mise à jour en ligne de RetroArch le tient à jour."
+          }
+        }
+      }
+    },
+    "Verified": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifié"
+          }
+        }
+      }
+    },
+    "Verified under another name (%lld)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifiés sous un autre nom (%lld)"
+          }
+        }
+      }
+    },
+    "Verify Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier les jeux"
+          }
+        }
+      }
+    },
+    "Verify Games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier les jeux…"
+          }
+        }
+      }
+    },
+    "Verifying games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification des jeux…"
           }
         }
       }

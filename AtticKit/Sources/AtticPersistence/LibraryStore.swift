@@ -151,6 +151,30 @@ public actor LibraryStore {
         return added
     }
 
+    /// A game's file, for checking it against a DAT.
+    public struct GameFile: Sendable {
+        public let path: String
+        public let system: CanonicalSystemID
+        public let title: String
+    }
+
+    public func gameFiles() throws -> [GameFile] {
+        try modelContext.fetch(FetchDescriptor<Game>()).map {
+            GameFile(path: $0.romAbsolutePath, system: CanonicalSystemID($0.systemCanonicalID), title: $0.title)
+        }
+    }
+
+    /// What a DAT said of each game, by path: its verdict and the DAT's
+    /// name for it (nils when there was no DAT to check it against).
+    public func setDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?)]) throws {
+        for game in try modelContext.fetch(FetchDescriptor<Game>()) {
+            guard let result = verdicts[game.romAbsolutePath] else { continue }
+            if game.datVerdict != result.verdict { game.datVerdict = result.verdict }
+            if game.datName != result.name { game.datName = result.name }
+        }
+        if modelContext.hasChanges { try modelContext.save() }
+    }
+
     public func systemCount() throws -> Int {
         try modelContext.fetchCount(FetchDescriptor<GameSystem>())
     }

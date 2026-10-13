@@ -50,6 +50,7 @@ struct GameDetailView: View {
                         }
                     }
                     LabeledContent("System", value: game.system?.displayName ?? game.systemCanonicalID)
+                    DATVerdictRow(game: game)
                 }
 
                 if game.playCount > 0 || game.lastPlayedDate != nil {
@@ -318,5 +319,34 @@ struct GameDetailView: View {
         game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
         game.metadataManuallyEdited = true
         try? game.modelContext?.save()
+    }
+}
+
+/// What Tools › Verify Games found for the game, once it's been run.
+private struct DATVerdictRow: View {
+    let game: Game
+
+    var body: some View {
+        switch game.datVerdict {
+        case "verified":
+            LabeledContent("No-Intro") {
+                Label("Verified", systemImage: "checkmark.seal.fill")
+                    .foregroundStyle(.green)
+            }
+            .help(game.datName.map { String(localized: "A good dump of \($0).") } ?? "")
+        case "differs":
+            LabeledContent("No-Intro") {
+                Label("Differs", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.orange)
+            }
+            .help(String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))
+        case "unknown":
+            LabeledContent("No-Intro") {
+                Text("Not listed").foregroundStyle(.secondary)
+            }
+            .help(String(localized: "Homebrew, hacks, translations, prototypes, or dumps No-Intro doesn't list."))
+        default:
+            EmptyView()
+        }
     }
 }

@@ -42,6 +42,14 @@ public final class Game {
     /// in its gamelist have been taken in, so they're merged only once.
     public var importedFrontEndHistory: Bool = false
 
+    /// What Tools › Verify Games found against the No-Intro DATs:
+    /// "verified", "differs" or "unknown"; nil until it's run, or when
+    /// there's no DAT for the system.
+    public var datVerdict: String?
+    /// The DAT's name for the game, when it's verified as one or named
+    /// like one.
+    public var datName: String?
+
     public var coverArtPath: String?
     public var titleScreenPath: String?
     public var videoPath: String?

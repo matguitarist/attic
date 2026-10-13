@@ -29,7 +29,7 @@ public enum ROMHacks {
 
     private static let baseByHack = Dictionary(uniqueKeysWithValues: entries.map { ($0.hack, $0.base) })
 
-    static func base(of hack: CanonicalSystemID) -> CanonicalSystemID? {
+    public static func base(of hack: CanonicalSystemID) -> CanonicalSystemID? {
         baseByHack[hack]
     }
 

@@ -34,6 +34,14 @@ final class ScanCoordinator {
         try? await libraryStore.refreshGameCounts()
     }
 
+    func gameFiles() async -> [LibraryStore.GameFile] {
+        (try? await libraryStore.gameFiles()) ?? []
+    }
+
+    func saveDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?)]) async {
+        try? await libraryStore.setDATVerdicts(verdicts)
+    }
+
     func scan(romsRootURLs: [URL]) async {
         guard !romsRootURLs.isEmpty else { return }
         state = .scanning

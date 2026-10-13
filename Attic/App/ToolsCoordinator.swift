@@ -13,11 +13,13 @@ final class ToolsCoordinator {
     enum Report: Identifiable {
         case tidy(MediaTidyPlan)
         case compress(GameCompressionPlan)
+        case verify(VerifyReport)
 
         var id: String {
             switch self {
             case .tidy: "tidy"
             case .compress: "compress"
+            case .verify: "verify"
             }
         }
     }
@@ -105,6 +107,101 @@ final class ToolsCoordinator {
         await scanCoordinator.scan(romsRootURLs: romsRoots)
         activity = nil
         outcome = Outcome(title: String(localized: "Compress Games"), message: Self.summary(of: result))
+    }
+
+    // MARK: - Verify
+
+    /// What checking the library against the DATs found.
+    struct VerifyReport {
+        struct Game: Hashable {
+            let path: String
+            let title: String
+            let datName: String?
+        }
+
+        struct System: Identifiable {
+            let id: CanonicalSystemID
+            let name: String
+            var verified = 0
+            /// Verified, but filed under a name of their own.
+            var renamed: [Game] = []
+            var differs: [Game] = []
+            var unknown: [Game] = []
+            /// Arcade romsets, discs: not checked.
+            var skipped = 0
+        }
+
+        var systems: [System] = []
+        /// Systems in the library with no DAT, and how many games each has.
+        var withoutDAT: [(name: String, games: Int)] = []
+        /// DATs Attic couldn't tie to a system.
+        var unmatchedDATs: [String] = []
+        var datCount = 0
+    }
+
+    /// Checks every game against the DATs in the Emulation folder's DATs
+    /// folder, keeps each verdict on its game, and shows what was found.
+    func verify(datsFolder: URL, scanCoordinator: ScanCoordinator, from host: Host) async {
+        guard !isBusy else { return }
+        reportHost = host
+        try? FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
+        activity = Activity(title: String(localized: "Reading DAT files…"))
+        let verifier = await Task.detached(priority: .userInitiated) { DATVerifier.load(from: datsFolder) }.value
+        let files = await scanCoordinator.gameFiles()
+        activity = Activity(title: String(localized: "Verifying games…"), fraction: 0)
+        let progress = { @Sendable (value: Double, name: String) -> Void in
+            Task { @MainActor in
+                self.activity?.fraction = value
+                self.activity?.detail = name
+            }
+        }
+        let checks = await Task.detached(priority: .userInitiated) { () -> [String: DATVerifier.Check?] in
+            var checks: [String: DATVerifier.Check?] = [:]
+            for (index, file) in files.enumerated() {
+                if index % 20 == 0 { progress(Double(index) / Double(max(files.count, 1)), file.title) }
+                guard verifier.systems.contains(file.system) else { continue }
+                checks[file.path] = .some(verifier.check(URL(fileURLWithPath: file.path), system: file.system))
+            }
+            return checks
+        }.value
+        await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name) })
+        activity = nil
+        report = .verify(Self.report(files: files, checks: checks, verifier: verifier))
+    }
+
+    private static func report(files: [LibraryStore.GameFile], checks: [String: DATVerifier.Check?], verifier: DATVerifier) -> VerifyReport {
+        var report = VerifyReport()
+        report.datCount = verifier.sets.count
+        report.unmatchedDATs = verifier.sets.filter { $0.system == nil }.map(\.name)
+        var systems: [CanonicalSystemID: VerifyReport.System] = [:]
+        var withoutDAT: [CanonicalSystemID: Int] = [:]
+        func name(_ id: CanonicalSystemID) -> String { SystemTaxonomy.definition(for: id)?.displayName ?? id.rawValue }
+        for file in files {
+            guard let check = checks[file.path] else {
+                // Not what No-Intro catalogues: arcade romsets, hacks,
+                // discs (Redump's).
+                if SystemTaxonomy.definition(for: file.system)?.category != .arcade, ROMHacks.base(of: file.system) == nil,
+                   DATVerifier.canCheck(URL(fileURLWithPath: file.path)) {
+                    withoutDAT[file.system, default: 0] += 1
+                }
+                continue
+            }
+            var system = systems[file.system] ?? VerifyReport.System(id: file.system, name: name(file.system))
+            let game = VerifyReport.Game(path: file.path, title: file.title, datName: check?.name)
+            switch check?.verdict {
+            case .verified?:
+                system.verified += 1
+                let stem = URL(fileURLWithPath: file.path).deletingPathExtension().lastPathComponent
+                if stem != check?.name { system.renamed.append(game) }
+            case .differs?: system.differs.append(game)
+            case .unknown?: system.unknown.append(game)
+            case nil: system.skipped += 1
+            }
+            systems[file.system] = system
+        }
+        report.systems = systems.values.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+        report.withoutDAT = withoutDAT.map { (name($0.key), $0.value) }.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+        return report
     }
 
     // MARK: - One game

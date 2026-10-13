@@ -8,6 +8,7 @@ struct ToolsReports: ViewModifier {
     @Environment(ToolsCoordinator.self) private var tools
     @Environment(RomsRootsStore.self) private var romsRootsStore
     @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
 
     func body(content: Content) -> some View {
         content
@@ -22,6 +23,11 @@ struct ToolsReports: ViewModifier {
                 case .compress(let plan):
                     CompressReportView(plan: plan, root: root) { approved in
                         Task { await tools.compress(approved, romsRoots: roots, scanCoordinator: scanCoordinator) }
+                    }
+                case .verify(let report):
+                    let dats = emulationFolderStore.folder.dats
+                    VerifyReportView(report: report, datsFolder: dats) {
+                        Task { await tools.verify(datsFolder: dats, scanCoordinator: scanCoordinator, from: host) }
                     }
                 }
             }
