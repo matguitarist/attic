@@ -3,6 +3,23 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.18.0</title>
+            <pubDate>Tue, 13 Oct 2026 18:28:39 -0400</pubDate>
+            <sparkle:version>24</sparkle:version>
+            <sparkle:shortVersionString>1.18.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Eight more systems, each with its About page and BIOS list: NAOMI 2, NAOMI GD-ROM (now its own system), Model 2, ST-V, Gaelco, 64DD, Satellaview and SuFami Turbo</li>
+<li>NAOMI lists its game BIOS sets, and Settings › BIOS can show systems you have no games for</li>
+<li>Arcade boards scrape from their own ScreenScraper systems, and every MAME board&#x27;s games get their real titles instead of their set names</li>
+<li>Verify Games can check a single system (from its overview or the sidebar), and checks arcade sets too against FinalBurn Neo or MAME&#x27;s list, which it can download for you: missing or wrong ROMs, parents, BIOS and disc images</li>
+<li>The verify report lists games by name, the verified ones included</li>
+<li>Replace Existing Info now shows the new images straight away, and ScreenScraper scrapes videos too</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.18.0/Attic-1.18.0.zip" length="14066677" type="application/octet-stream" sparkle:edSignature="Sr+ECWViL9LHa2vJgfEVe0oFdsb8fCJNKQYNO/Tvk4Z3QGny/3ggccDGazlnwwiaqXPK1sJiF354bpf1/Ei4DQ=="/>
+        </item>
+        <item>
             <title>1.17.0</title>
             <pubDate>Tue, 13 Oct 2026 13:36:36 -0400</pubDate>
             <sparkle:version>23</sparkle:version>
