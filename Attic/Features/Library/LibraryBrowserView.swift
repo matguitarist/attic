@@ -85,6 +85,7 @@ struct LibraryBrowserView: View {
             }
         }
         .focusedSceneValue(\.selectedGame, selectedGame)
+        .focusedSceneValue(\.addGames, AddGamesAction { chooseGamesToAdd() })
         .focusedSceneValue(\.gameInfoEditor, infoEditor)
         .environment(infoEditor)
         .focusedSceneValue(\.collectionCoordinator, collectionCoordinator)
@@ -164,6 +165,20 @@ struct LibraryBrowserView: View {
 
     private var currentSelection: LibrarySelection { selection ?? .allGames }
 
+    /// File › Add Games…: the same import as dropping them on the window.
+    private func chooseGamesToAdd() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = true
+        panel.prompt = String(localized: "Add")
+        panel.message = String(localized: "Choose games, or folders of games. They're filed in your ROMs folder with their covers and videos.")
+        panel.begin { response in
+            guard response == .OK else { return }
+            importROMs(panel.urls, shown: selectedSystem?.systemID)
+        }
+    }
+
     private func importROMs(_ urls: [URL], into system: CanonicalSystemID? = nil, shown: CanonicalSystemID? = nil) {
         romImporter.receive(urls, into: system, shown: shown, romsRoots: romsRootsStore.rootURLs) {
             Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
@@ -228,6 +243,23 @@ struct LibraryBrowserView: View {
 
         ToolbarItem {
             ScrapeMissingButton(selection: currentSelection)
+        }
+
+        ToolbarItem {
+            if scanCoordinator.state == .scanning {
+                ProgressView()
+                    .controlSize(.small)
+                    .padding(.horizontal, 8)
+                    .help("Refreshing the library…")
+            } else {
+                Button {
+                    Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+                } label: {
+                    Label("Refresh Library", systemImage: "arrow.clockwise")
+                }
+                .disabled(romsRootsStore.rootURLs.isEmpty)
+                .help("Look for games added to or removed from your ROMs folder (⌘R)")
+            }
         }
 
         ToolbarSpacer(.fixed)

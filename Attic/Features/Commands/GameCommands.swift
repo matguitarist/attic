@@ -1,10 +1,72 @@
 import SwiftUI
+import AtticModels
 import AtticPersistence
 
 extension FocusedValues {
     /// The library window's currently selected game, published with
     /// `.focusedSceneValue` so menu bar commands act on it.
     @Entry var selectedGame: Game?
+    /// File › Add Games…, from the library window (which shows the
+    /// import's questions and progress).
+    @Entry var addGames: AddGamesAction?
+}
+
+struct AddGamesAction {
+    let run: () -> Void
+    func callAsFunction() { run() }
+}
+
+/// The File menu: adding games and keeping the library in step with the
+/// ROMs folder. Replaces SwiftUI's New Window, since Attic has one library
+/// window (a second one crashed).
+struct LibraryCommands: Commands {
+    let scanCoordinator: ScanCoordinator
+    let romsRootsStore: RomsRootsStore
+
+    @FocusedValue(\.addGames) private var addGames
+    @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
+    @AppStorage(RemovedSystems.key) private var removedSystems = ""
+
+    var body: some Commands {
+        CommandGroup(replacing: .newItem) {
+            Button("Add Games…") { addGames?() }
+                .keyboardShortcut("o")
+                .disabled(addGames == nil || romsRootsStore.rootURLs.isEmpty)
+
+            Button("New Collection…") {
+                collectionCoordinator?.newCollection()
+            }
+            .keyboardShortcut("n", modifiers: [.command, .shift])
+            .disabled(collectionCoordinator == nil)
+
+            Divider()
+
+            Button("Refresh Library") { refresh() }
+                .keyboardShortcut("r")
+                .disabled(romsRootsStore.rootURLs.isEmpty || scanCoordinator.state == .scanning)
+
+            Button("Show ROMs Folder") {
+                if let root = romsRootsStore.rootURLs.first { NSWorkspace.shared.open(root) }
+            }
+            .disabled(romsRootsStore.rootURLs.isEmpty)
+
+            // Reads `removedSystems` so it updates when one is removed.
+            if !removedSystems.isEmpty {
+                Menu("Add Back Removed System") {
+                    ForEach(RemovedSystems.ids, id: \.self) { id in
+                        Button(SystemTaxonomy.definition(for: id)?.displayName ?? id.rawValue) {
+                            RemovedSystems.addBack(id)
+                            refresh()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func refresh() {
+        Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+    }
 }
 
 /// The menu bar's Game menu. Gives every per-game action a standard
@@ -19,14 +81,6 @@ struct GameCommands: Commands {
     @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
 
     var body: some Commands {
-        CommandGroup(after: .newItem) {
-            Button("New Collection…") {
-                collectionCoordinator?.newCollection()
-            }
-            .keyboardShortcut("n", modifiers: [.command, .shift])
-            .disabled(collectionCoordinator == nil)
-        }
-
         CommandMenu("Game") {
             Button("Play") {
                 if let game { launchCoordinator.play(game: game, retroArchStore: retroArchStore) }
@@ -52,6 +106,11 @@ struct GameCommands: Commands {
             }
             .disabled(game == nil || collectionCoordinator == nil)
             .disabled(game == nil || infoEditor == nil)
+
+            Button("Open Manual") {
+                if let manual = game?.manualURL { NSWorkspace.shared.open(manual) }
+            }
+            .disabled(game?.manualURL == nil)
 
             Divider()
 

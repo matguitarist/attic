@@ -23,6 +23,9 @@ struct AtticApp: App {
     init() {
         // Before any store reads its settings.
         LegacyRomsBoxMigration.migrateSettings()
+        // One library window: no window tabs (View › Show Tab Bar would
+        // open more).
+        NSWindow.allowsAutomaticWindowTabbing = false
 
         let container: ModelContainer
         do {
@@ -82,6 +85,7 @@ struct AtticApp: App {
             SidebarCommands()
             InspectorCommands()
             CabinetCommands()
+            LibraryCommands(scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
             HelpCommands(navigator: helpNavigator)
         }

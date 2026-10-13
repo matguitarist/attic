@@ -553,6 +553,16 @@
         }
       }
     },
+    "Add Back Removed System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remettre un système retiré"
+          }
+        }
+      }
+    },
     "Add Custom Emulator…": {
       "localizations": {
         "fr": {
@@ -569,6 +579,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter un dossier…"
+          }
+        }
+      }
+    },
+    "Add Games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des jeux…"
           }
         }
       }
@@ -1207,6 +1227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez une image ou faites-en glisser une sur la jaquette."
+          }
+        }
+      }
+    },
+    "Choose games, or folders of games. They're filed in your ROMs folder with their covers and videos.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez des jeux, ou des dossiers de jeux. Ils sont rangés dans votre dossier de ROMs avec leurs jaquettes et vidéos."
           }
         }
       }
@@ -2983,6 +3013,16 @@
         }
       }
     },
+    "Look for games added to or removed from your ROMs folder (⌘R)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chercher les jeux ajoutés ou retirés de votre dossier de ROMs (⌘R)"
+          }
+        }
+      }
+    },
     "Looking for games…": {
       "localizations": {
         "fr": {
@@ -3513,6 +3553,16 @@
         }
       }
     },
+    "Open Manual": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir le manuel"
+          }
+        }
+      }
+    },
     "Open the game's manual": {
       "localizations": {
         "fr": {
@@ -3889,6 +3939,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actualiser les cœurs"
+          }
+        }
+      }
+    },
+    "Refresh Library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiser la bibliothèque"
+          }
+        }
+      }
+    },
+    "Refreshing the library…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualisation de la bibliothèque…"
           }
         }
       }
@@ -4751,6 +4821,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher le dossier BIOS"
+          }
+        }
+      }
+    },
+    "Show ROMs Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le dossier des ROMs"
           }
         }
       }
