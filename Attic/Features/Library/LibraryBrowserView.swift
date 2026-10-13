@@ -56,6 +56,7 @@ struct LibraryBrowserView: View {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 VStack(spacing: 0) {
                     ROMImportStatusBar(importer: romImporter)
+                    ToolsStatusBar()
                     BatchScrapeStatusBar()
                 }
                 .background(.bar)
@@ -147,6 +148,7 @@ struct LibraryBrowserView: View {
         .sheet(item: $systemSettingsEditor.system) { system in
             SystemSettingsView(system: system)
         }
+        .toolsReports(in: .library)
         // A selection belongs to what was showing when it was made; the
         // newly shown system's overview takes its place.
         .onChange(of: selection) {

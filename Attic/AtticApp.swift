@@ -18,6 +18,7 @@ struct AtticApp: App {
     @State private var helpNavigator = HelpNavigator()
     @State private var emulatorSetupCoordinator: EmulatorSetupCoordinator
     @State private var appUpdater = AppUpdater()
+    @State private var toolsCoordinator = ToolsCoordinator()
     @State private var shaderPackStore: ShaderPackStore
 
     init() {
@@ -97,6 +98,7 @@ struct AtticApp: App {
             CabinetCommands()
             LibraryCommands(scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
+            ToolsCommands(tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             HelpCommands(navigator: helpNavigator)
         }
 
@@ -171,5 +173,6 @@ struct AtticApp: App {
             .environment(emulationFolderStore)
             .environment(appUpdater)
             .environment(shaderPackStore)
+            .environment(toolsCoordinator)
     }
 }

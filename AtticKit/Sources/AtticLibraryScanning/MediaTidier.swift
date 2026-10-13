@@ -29,15 +29,13 @@ public struct MediaTidyPlan: Sendable {
     /// Heavy scanned manuals to redraw lighter (see
     /// `MediaFolder.compressManual`).
     public var manuals: [URL] = []
-    /// Disc games to turn into CHD (see `CHDConversion`).
-    public var discs: [CHDConversion.Candidate] = []
     /// For each duplicate game going to the Trash, the copy kept.
     public var keptCopies: [URL: URL] = [:]
     /// What `trash` takes up.
     public var trashBytes: Int64 { trashed.reduce(0) { $0 + $1.bytes } }
 
-    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trashed.isEmpty && compress.isEmpty && manuals.isEmpty && discs.isEmpty }
-    var operationCount: Int { moves.count + gamelists.count + trashed.count + compress.count + manuals.count + discs.count }
+    public var isEmpty: Bool { moves.isEmpty && gamelists.isEmpty && trashed.isEmpty && compress.isEmpty && manuals.isEmpty }
+    var operationCount: Int { moves.count + gamelists.count + trashed.count + compress.count + manuals.count }
 
     /// Why something goes to the Trash; also how the report groups it.
     public enum TrashReason: String, CaseIterable, Sendable {
@@ -67,7 +65,7 @@ public struct MediaTidyPlan: Sendable {
 
     /// The parts of a tidy-up, which the report lets one leave out.
     public enum Step: Hashable, Sendable {
-        case moveMedia, gamelists, compressCovers, compressManuals, compressDiscs
+        case moveMedia, gamelists, compressCovers, compressManuals
         case trash(TrashReason)
     }
 
@@ -78,7 +76,6 @@ public struct MediaTidyPlan: Sendable {
         if !gamelists.isEmpty { steps.append(.gamelists) }
         if !compress.isEmpty { steps.append(.compressCovers) }
         if !manuals.isEmpty { steps.append(.compressManuals) }
-        if !discs.isEmpty { steps.append(.compressDiscs) }
         for reason in TrashReason.allCases where trashed.contains(where: { $0.reason == reason }) {
             steps.append(.trash(reason))
         }
@@ -99,7 +96,6 @@ public struct MediaTidyPlan: Sendable {
         if !steps.contains(.gamelists) { plan.gamelists = [] }
         if !steps.contains(.compressCovers) { plan.compress = [] }
         if !steps.contains(.compressManuals) { plan.manuals = [] }
-        if !steps.contains(.compressDiscs) { plan.discs = [] }
         plan.trashed.removeAll { !steps.contains(.trash($0.reason)) }
         return plan
     }
@@ -156,7 +152,7 @@ public enum MediaTidier {
     /// Carries out `plan`, reporting progress from 0 to 1. Returns how
     /// many covers were compressed.
     @discardableResult
-    public static func apply(_ plan: MediaTidyPlan, chdman: URL? = nil, progress: (Double) -> Void = { _ in }) -> Int {
+    public static func apply(_ plan: MediaTidyPlan, progress: (Double) -> Void = { _ in }) -> Int {
         let fileManager = FileManager.default
         let total = Double(max(plan.operationCount, 1))
         var done = 0.0
@@ -200,10 +196,6 @@ public enum MediaTidier {
         }
         for url in plan.manuals {
             MediaFolder.compressManual(url)
-            step()
-        }
-        for disc in plan.discs {
-            if let chdman { CHDConversion.convert(disc, chdman: chdman) }
             step()
         }
         return compressed
@@ -262,9 +254,6 @@ public enum MediaTidier {
             }
 
             let systemMedia = mediaRoot.appending(path: name, directoryHint: .isDirectory)
-            if let system = SystemTaxonomy.system(forShortName: name)?.canonicalID {
-                plan.discs += CHDConversion.candidates(in: folder, system: system)
-            }
             // Arcade romsets come in parents and clones on purpose.
             if SystemTaxonomy.system(forShortName: name)?.category != .arcade {
                 for group in DuplicateFinder.groups(in: folder) {

@@ -10,9 +10,6 @@ struct TidyReportView: View {
     let onTidy: (MediaTidyPlan) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var selected: Set<MediaTidyPlan.Step> = []
-    @State private var chdman = CHDConversion.findCHDMan()
-    @State private var isInstallingCHDMan = false
-    @State private var chdmanError: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -57,10 +54,6 @@ struct TidyReportView: View {
                                 Text(title(for: step))
                                 Text(summary(for: step))
                             }
-                            .disabled(step == .compressDiscs && chdman == nil)
-                        }
-                        if step == .compressDiscs, chdman == nil {
-                            chdmanRow
                         }
                     }
                 }
@@ -76,7 +69,7 @@ struct TidyReportView: View {
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Button("Tidy Up") {
-                    onTidy(plan.only(chdman == nil ? selected.subtracting([.compressDiscs]) : selected))
+                    onTidy(plan.only(selected))
                     dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
@@ -85,58 +78,11 @@ struct TidyReportView: View {
             .padding(20)
         }
         .frame(width: 640, height: 600)
-        // Duplicates are games, and CHD rewrites them (and takes a while):
-        // only when asked for.
-        .onAppear { selected = Set(plan.steps).subtracting([.trash(.duplicates), .compressDiscs]) }
+        // Duplicates are games: only when asked for.
+        .onAppear { selected = Set(plan.steps).subtracting([.trash(.duplicates)]) }
     }
 
     private var selectedTrash: MediaTidyPlan { plan.only(selected) }
-
-    /// Homebrew, which can install `chdman` (its rom-tools package is built
-    /// from MAME's own source).
-    private static var brew: URL? {
-        ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"].map(URL.init(fileURLWithPath:))
-            .first { FileManager.default.isExecutableFile(atPath: $0.path) }
-    }
-
-    private var chdmanRow: some View {
-        HStack {
-            if let chdmanError {
-                Text(chdmanError).foregroundStyle(.orange)
-            } else if Self.brew != nil {
-                Text("Needs MAME's chdman tool, which Homebrew can install.")
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("Needs MAME's chdman tool: install Homebrew (brew.sh), then run “brew install rom-tools” in Terminal.")
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            if isInstallingCHDMan {
-                ProgressView().controlSize(.small)
-            } else if let brew = Self.brew {
-                Button("Install chdman") {
-                    isInstallingCHDMan = true
-                    chdmanError = nil
-                    Task {
-                        let ok = await Task.detached { () -> Bool in
-                            let process = Process()
-                            process.executableURL = brew
-                            process.arguments = ["install", "rom-tools"]
-                            process.standardOutput = FileHandle.nullDevice
-                            process.standardError = FileHandle.nullDevice
-                            guard (try? process.run()) != nil else { return false }
-                            process.waitUntilExit()
-                            return process.terminationStatus == 0
-                        }.value
-                        isInstallingCHDMan = false
-                        chdman = CHDConversion.findCHDMan()
-                        if !ok || chdman == nil { chdmanError = String(localized: "Homebrew couldn't install rom-tools. Try “brew install rom-tools” in Terminal.") }
-                    }
-                }
-            }
-        }
-        .font(.callout)
-    }
 
     private func binding(for step: MediaTidyPlan.Step) -> Binding<Bool> {
         Binding(
@@ -153,7 +99,6 @@ struct TidyReportView: View {
         case .gamelists: String(localized: "Fix gamelists")
         case .compressCovers: String(localized: "Save covers as HEIC")
         case .compressManuals: String(localized: "Compress heavy manual scans")
-        case .compressDiscs: String(localized: "Compress disc games to CHD")
         case .trash(.unusedFolders): String(localized: "Folders Attic doesn't use")
         case .trash(.noGames): String(localized: "Media and gamelists of systems with no games")
         case .trash(.otherApps): String(localized: "Other apps' files")
@@ -175,12 +120,6 @@ struct TidyReportView: View {
             return String(localized: "\(count) PNG and JPEG covers, kept only when HEIC is smaller.")
         case .compressManuals:
             return String(localized: "\(count) manuals redrawn at 150 dpi, kept only when that saves at least 40%.")
-        case .compressDiscs:
-            let bytes = plan.discs.reduce(Int64(0)) { total, disc in
-                total + disc.files.reduce(Int64(0)) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
-            }
-            let size = ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
-            return String(localized: "\(count) games, \(size) now: each becomes one .chd, lossless and usually 30–60% smaller, checked before the original files go to the Trash. Takes a few minutes per game.")
         case .trash(let reason):
             let bytes = plan.trashed.filter { $0.reason == reason }.reduce(0) { $0 + $1.bytes }
             let size = ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
@@ -212,11 +151,6 @@ struct TidyReportView: View {
             plan.gamelists.map { Row(text: $0.from == $0.to ? short($0.from) : "\(short($0.from)) → \(short($0.to))", url: $0.from) }
         case .compressCovers:
             plan.compress.map { Row(text: short($0), url: $0) }
-        case .compressDiscs:
-            plan.discs.map { disc in
-                Row(text: short(disc.source) + (disc.files.count > 1 ? String(localized: " (and \(disc.files.count - 1) tracks)") : ""), url: disc.source,
-                    bytes: disc.files.reduce(Int64(0)) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) })
-            }
         case .compressManuals:
             plan.manuals.map { Row(text: short($0), url: $0, bytes: Int64((try? $0.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)) }
         case .trash(let reason):

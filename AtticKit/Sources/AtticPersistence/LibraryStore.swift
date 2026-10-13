@@ -56,8 +56,27 @@ public actor LibraryStore {
         var inserted = 0
         var updated = 0
 
+        var unmatched: [ImportedGameRecord] = []
         for record in data.games {
             if let existing = existingByPath.removeValue(forKey: record.romRelativePath) {
+                existing.applyRescannedMetadata(record, romsRootURL: data.romsRootURL)
+                updated += 1
+            } else {
+                unmatched.append(record)
+            }
+        }
+
+        // A game whose file was swapped for one of the same name (compressed
+        // to a .chd or .zip, or back) stays the same game: its favorite,
+        // play history and collections carry over. Only when the name
+        // leaves no doubt which game it was.
+        let newStems = Dictionary(grouping: unmatched) { Self.stem($0.romRelativePath) }
+        let oldStems = Dictionary(grouping: existingByPath.values) { Self.stem($0.romRelativePath) }
+        for record in unmatched {
+            let stem = Self.stem(record.romRelativePath)
+            if newStems[stem]?.count == 1, let old = oldStems[stem], old.count == 1, let existing = old.first,
+               existingByPath.removeValue(forKey: existing.romRelativePath) != nil {
+                existing.romRelativePath = record.romRelativePath
                 existing.applyRescannedMetadata(record, romsRootURL: data.romsRootURL)
                 updated += 1
             } else {
@@ -132,5 +151,10 @@ public actor LibraryStore {
 
     public func totalGameCount() throws -> Int {
         try modelContext.fetchCount(FetchDescriptor<Game>())
+    }
+
+    /// A game's path without its extension, for matching swapped files.
+    static func stem(_ path: String) -> String {
+        (path as NSString).deletingPathExtension.lowercased()
     }
 }

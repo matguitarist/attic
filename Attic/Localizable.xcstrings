@@ -51,6 +51,16 @@
         }
       }
     },
+    "%@ doesn't get smaller zipped, so it stays as it is.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ne prend pas moins de place compressé en ZIP, il reste tel quel."
+          }
+        }
+      }
+    },
     "%@ to the Trash": {
       "localizations": {
         "fr": {
@@ -94,6 +104,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ — Recommandé"
+          }
+        }
+      }
+    },
+    "%@, %lld%% of %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, %2$lld%% of %3$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, %2$lld %% de %3$@"
           }
         }
       }
@@ -180,6 +206,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld jaquettes, vidéos et manuels ont suivi."
+          }
+        }
+      }
+    },
+    "%lld discs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld disques"
           }
         }
       }
@@ -304,6 +340,38 @@
         }
       }
     },
+    "%lld games compressed, %@ saved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games compressed, %2$@ saved."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux compressés, %2$@ gagnés."
+          }
+        }
+      }
+    },
+    "%lld games compressed, %@ saved. %lld couldn't be converted and haven't changed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games compressed, %2$@ saved. %3$lld couldn't be converted and haven't changed."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux compressés, %2$@ gagnés. %3$lld n’ont pas pu être convertis et n’ont pas changé."
+          }
+        }
+      }
+    },
     "%lld games in your library": {
       "localizations": {
         "fr": {
@@ -330,18 +398,34 @@
         }
       }
     },
-    "%lld games, %@ now: each becomes one .chd, lossless and usually 30–60%% smaller, checked before the original files go to the Trash. Takes a few minutes per game.": {
+    "%lld games, %@ now. Each becomes a .zip of its own, kept only when it saves at least 10%%. Attic unzips a game when it starts.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
-            "value": "%1$lld games, %2$@ now: each becomes one .chd, lossless and usually 30–60%% smaller, checked before the original files go to the Trash. Takes a few minutes per game."
+            "value": "%1$lld games, %2$@ now. Each becomes a .zip of its own, kept only when it saves at least 10%%. Attic unzips a game when it starts."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld jeux, %2$@ actuellement : chacun devient un seul .chd, sans perte et en général 30 à 60 %% plus léger, vérifié avant que les fichiers d’origine aillent à la corbeille. Compte quelques minutes par jeu."
+            "value": "%1$lld jeux, %2$@ actuellement. Chacun devient son propre .zip, gardé seulement s’il fait gagner au moins 10 %%. Attic décompresse un jeu au lancement."
+          }
+        }
+      }
+    },
+    "%lld games, %@ now. Each disc becomes one .chd, usually 30–60%% smaller; PSP and PS2 discs too. Takes a few minutes per game.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games, %2$@ now. Each disc becomes one .chd, usually 30–60%% smaller; PSP and PS2 discs too. Takes a few minutes per game."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux, %2$@ actuellement. Chaque disque devient un seul .chd, en général 30 à 60 %% plus léger ; disques PSP et PS2 compris. Compte quelques minutes par jeu."
           }
         }
       }
@@ -550,6 +634,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld systèmes n’ont pas un fichier BIOS nécessaire : leurs jeux ne démarreront pas."
+          }
+        }
+      }
+    },
+    "%lld tracks": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld pistes"
           }
         }
       }
@@ -1235,6 +1329,16 @@
         }
       }
     },
+    "CD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CD"
+          }
+        }
+      }
+    },
     "CRT TV": {
       "localizations": {
         "fr": {
@@ -1295,6 +1399,16 @@
         }
       }
     },
+    "Cartridge games to ZIP": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux cartouche en ZIP"
+          }
+        }
+      }
+    },
     "Carts are .p8 or .p8.png files, from the PICO-8 website (Splore) or itch.io. Retro8 runs most of them; the official PICO-8 app runs all.": {
       "localizations": {
         "fr": {
@@ -1321,6 +1435,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Modifier…"
+          }
+        }
+      }
+    },
+    "Check BIOS Files…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier les fichiers BIOS…"
           }
         }
       }
@@ -1535,12 +1659,52 @@
         }
       }
     },
-    "Compress disc games to CHD": {
+    "Compress": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Compresser les jeux sur disque en CHD"
+            "value": "Compresser"
+          }
+        }
+      }
+    },
+    "Compress Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser les jeux"
+          }
+        }
+      }
+    },
+    "Compress Games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser les jeux…"
+          }
+        }
+      }
+    },
+    "Compress Selected Game": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser le jeu sélectionné"
+          }
+        }
+      }
+    },
+    "Compress games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser les jeux"
           }
         }
       }
@@ -1551,6 +1715,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Compresser les scans de manuels lourds"
+          }
+        }
+      }
+    },
+    "Compress to CHD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser en CHD"
+          }
+        }
+      }
+    },
+    "Compress “%@” to CHD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser « %@ » en CHD"
+          }
+        }
+      }
+    },
+    "Compress “%@” to ZIP": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compresser « %@ » en ZIP"
+          }
+        }
+      }
+    },
+    "Compressing games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compression des jeux…"
+          }
+        }
+      }
+    },
+    "Compression": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compression"
           }
         }
       }
@@ -1611,6 +1825,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Commandes"
+          }
+        }
+      }
+    },
+    "Convert Back to %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconvertir en %@"
+          }
+        }
+      }
+    },
+    "Convert “%@” Back from CHD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconvertir « %@ » depuis le CHD"
+          }
+        }
+      }
+    },
+    "Converting %@…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversion de %@…"
           }
         }
       }
@@ -1881,6 +2125,16 @@
         }
       }
     },
+    "DVD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DVD"
+          }
+        }
+      }
+    },
     "Default": {
       "localizations": {
         "fr": {
@@ -1987,6 +2241,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Identifiants développeur"
+          }
+        }
+      }
+    },
+    "Disc Image": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image disque"
+          }
+        }
+      }
+    },
+    "Disc games to CHD": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux sur disque en CHD"
+          }
+        }
+      }
+    },
+    "Disc games to CHD, cartridge games to ZIP, without losing anything. You see a report first. Both are also in the Tools menu.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sur disque en CHD, les jeux cartouche en ZIP, sans rien perdre. Un rapport s’affiche d’abord. Les deux sont aussi dans le menu Outils."
           }
         }
       }
@@ -2351,6 +2635,16 @@
         }
       }
     },
+    "Every game that can be compressed already is.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux qui peuvent l’être sont déjà compressés."
+          }
+        }
+      }
+    },
     "Every system has an emulator": {
       "localizations": {
         "fr": {
@@ -2447,6 +2741,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Exporter…"
+          }
+        }
+      }
+    },
+    "FLAC (audio)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FLAC (audio)"
           }
         }
       }
@@ -2567,6 +2871,16 @@
         }
       }
     },
+    "Format": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
+          }
+        }
+      }
+    },
     "Found": {
       "localizations": {
         "fr": {
@@ -2603,6 +2917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette)"
+          }
+        }
+      }
+    },
+    "GD-ROM": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GD-ROM"
           }
         }
       }
@@ -3477,6 +3801,16 @@
         }
       }
     },
+    "Looking through the ROMs folders…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Examen des dossiers ROMs…"
+          }
+        }
+      }
+    },
     "Manual": {
       "localizations": {
         "fr": {
@@ -4003,6 +4337,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remarques"
+          }
+        }
+      }
+    },
+    "Nothing has changed yet. Compression is lossless: games play as before, and keep their saves, media and play history. Each new file is checked before the old ones go to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien n’a encore changé. La compression est sans perte : les jeux se lancent comme avant et gardent leurs sauvegardes, médias et historique de jeu. Chaque nouveau fichier est vérifié avant que les anciens aillent à la Corbeille."
           }
         }
       }
@@ -4617,6 +4961,26 @@
         }
       }
     },
+    "Remove Unzipped Copies": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer les copies décompressées"
+          }
+        }
+      }
+    },
+    "Remove Unzipped Copies (%@)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer les copies décompressées (%@)"
+          }
+        }
+      }
+    },
     "Remove from Favorites": {
       "localizations": {
         "fr": {
@@ -4983,6 +5347,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En cours…"
+          }
+        }
+      }
+    },
+    "SHA-1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-1"
           }
         }
       }
@@ -5519,6 +5893,16 @@
         }
       }
     },
+    "Size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille"
+          }
+        }
+      }
+    },
     "Skip": {
       "localizations": {
         "fr": {
@@ -5989,6 +6373,16 @@
         }
       }
     },
+    "Tidy Up…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ranger…"
+          }
+        }
+      }
+    },
     "Tidy up media and leftovers": {
       "localizations": {
         "fr": {
@@ -6039,6 +6433,16 @@
         }
       }
     },
+    "Tools": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outils"
+          }
+        }
+      }
+    },
     "Top (Y / Triangle)": {
       "localizations": {
         "fr": {
@@ -6065,6 +6469,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux Triforce tournent dans Dolphin, l’émulateur GameCube et Wii, qui prend désormais en charge le Triforce. Utilisez des dumps .iso, .gcz ou .rvz."
+          }
+        }
+      }
+    },
+    "Turns the CHD back into the files it was made from, for an emulator that doesn't read CHD.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retransforme le CHD en fichiers d’origine, pour un émulateur qui ne lit pas le CHD."
           }
         }
       }
@@ -6445,12 +6859,32 @@
         }
       }
     },
+    "Zipped games are unzipped to be played. The copies can go: a game unzips again when it next starts.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux en ZIP sont décompressés pour être joués. Ces copies peuvent partir : un jeu se décompresse à nouveau au prochain lancement."
+          }
+        }
+      }
+    },
     "and %lld more": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "et %lld de plus"
+          }
+        }
+      }
+    },
+    "chdman couldn't convert %@. Its files haven't changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chdman n’a pas pu convertir %@. Ses fichiers n’ont pas changé."
           }
         }
       }

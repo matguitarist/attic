@@ -61,6 +61,30 @@ import Testing
         #expect(collections.first { $0.name == "Frozen" }?.games.isEmpty == true)
     }
 
+    @Test func aSwappedFileKeepsItsGame() async throws {
+        let container = try AtticModelContainer.makeInMemory()
+        let store = LibraryStore(modelContainer: container)
+        _ = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "Zelda.sfc", title: "Zelda"),
+            sampleRecord(path: "Mario.sfc", title: "Mario"),
+            sampleRecord(path: "Mario.smc", title: "Mario"),
+        ]), displayName: "SNES")
+        let context = ModelContext(container)
+        for game in try context.fetch(FetchDescriptor<Game>()) { game.favorite = true }
+        try context.save()
+
+        // Zelda was zipped; which Mario became the zip can't be told.
+        let result = try await store.upsertSystem(sampleSystemData(games: [
+            sampleRecord(path: "Zelda.zip", title: "Zelda"),
+            sampleRecord(path: "Mario.zip", title: "Mario"),
+        ]), displayName: "SNES")
+        #expect(result.gamesInserted == 1 && result.gamesUpdated == 1 && result.gamesRemoved == 2)
+        let games = try ModelContext(container).fetch(FetchDescriptor<Game>())
+        #expect(games.first { $0.romRelativePath == "Zelda.zip" }?.favorite == true)
+        #expect(games.first { $0.romRelativePath == "Zelda.zip" }?.romAbsolutePath == "/tmp/roms/snes/Zelda.zip")
+        #expect(games.first { $0.romRelativePath == "Mario.zip" }?.favorite == false)
+    }
+
     @Test func firstScanInsertsSystemAndGames() async throws {
         let store = try makeStore()
         let data = sampleSystemData(games: [

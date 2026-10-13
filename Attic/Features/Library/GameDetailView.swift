@@ -64,6 +64,8 @@ struct GameDetailView: View {
                     }
                 }
 
+                DiscImageSection(game: game)
+
                 Section("Description") {
                     // TextEditor has no Return-to-submit (Return is a
                     // newline), so this one commits on focus loss only.

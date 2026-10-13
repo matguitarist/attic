@@ -139,6 +139,80 @@ struct GameCommands: Commands {
     }
 }
 
+/// The Tools menu: looking after the ROMs folders (tidying, compressing),
+/// the selected game's files, and what Attic keeps on the side.
+struct ToolsCommands: Commands {
+    let tools: ToolsCoordinator
+    let scanCoordinator: ScanCoordinator
+    let romsRootsStore: RomsRootsStore
+
+    @FocusedValue(\.selectedGame) private var game
+    @Environment(\.openSettings) private var openSettings
+    @AppStorage(SettingsTabView.selectionKey) private var settingsTab = SettingsTabView.Tab.general
+
+    var body: some Commands {
+        CommandMenu("Tools") {
+            Button("Tidy Up…") {
+                Task { await tools.analyzeTidy(romsRoots: roots, from: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+
+            Button("Compress Games…") {
+                Task { await tools.analyzeCompression(romsRoots: roots, from: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+
+            Divider()
+
+            gameItems
+
+            Divider()
+
+            let unzipped = tools.unzippedGamesBytes
+            Button(unzipped > 0
+                   ? String(localized: "Remove Unzipped Copies (\(ByteCountFormatter.string(fromByteCount: unzipped, countStyle: .file)))")
+                   : String(localized: "Remove Unzipped Copies")) {
+                tools.emptyUnzippedGames()
+            }
+            .disabled(unzipped == 0)
+            .help("Zipped games are unzipped to be played. The copies can go: a game unzips again when it next starts.")
+
+            Button("Check BIOS Files…") {
+                settingsTab = .bios
+                openSettings()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var gameItems: some View {
+        let title = game?.title ?? ""
+        let compression = game.flatMap { tools.compression(for: $0) }
+        let back = game.flatMap { tools.conversionBack(for: $0) }
+        switch compression {
+        case .discs(let discs)?:
+            Button(String(localized: "Compress “\(title)” to CHD")) { run(.discs(discs), title) }
+                .disabled(tools.isBusy || tools.chdman == nil)
+        case .cartridge(let rom)?:
+            Button(String(localized: "Compress “\(title)” to ZIP")) { run(.cartridge(rom), title) }
+                .disabled(tools.isBusy)
+        default:
+            Button("Compress Selected Game") {}
+                .disabled(true)
+        }
+        if let back {
+            Button(String(localized: "Convert “\(title)” Back from CHD")) { run(back, title) }
+                .disabled(tools.isBusy || tools.chdman == nil)
+        }
+    }
+
+    private var roots: [URL] { romsRootsStore.rootURLs }
+
+    private func run(_ conversion: ToolsCoordinator.GameConversion, _ title: String) {
+        Task { await tools.run(conversion, title: title, romsRoots: roots, scanCoordinator: scanCoordinator) }
+    }
+}
+
 /// View › Enter Cabinet Mode.
 struct CabinetCommands: Commands {
     @Environment(\.openWindow) private var openWindow

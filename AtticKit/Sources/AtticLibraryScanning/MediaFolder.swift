@@ -26,6 +26,11 @@ public enum MediaFolder {
     public static let imageExtensions = ["heic", "webp", "png", "jpg", "jpeg"]
     public static let videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"]
 
+    /// A file's size, 0 when it can't be read.
+    public static func fileSize(_ url: URL) -> Int64 {
+        Int64((try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0)
+    }
+
     /// `<shared parent>/Media/<system folder name>` for a
     /// system's ROMs folder such as `Emulation/ROMs/snes`.
     public static func root(forSystemFolder systemFolder: URL) -> URL {
