@@ -13,6 +13,8 @@ enum ScreenScraperMapper {
     private static let coverMediaTypePreference = ["box-2D", "box-2D-side", "mixrsdb", "box-3D"]
     /// "ss" is an in-game screenshot, "sstitle" the title screen.
     private static let screenshotMediaTypePreference = ["ss", "sstitle"]
+    /// "video-normalized" is the smaller, re-encoded cut.
+    private static let videoMediaTypePreference = ["video-normalized", "video"]
 
     static func map(_ envelope: ScreenScraperResponseEnvelope) -> ScrapedGameInfo? {
         guard let jeu = envelope.response?.jeu else { return nil }
@@ -27,7 +29,8 @@ enum ScreenScraperMapper {
             releaseDate: bestRegional(jeu.dates).flatMap { parseDate($0.text) },
             rating: (jeu.note?.text).flatMap { Double($0) }.map { $0 / 20.0 },
             coverArtURL: bestMedia(jeu.medias, types: coverMediaTypePreference),
-            screenshotURL: bestMedia(jeu.medias, types: screenshotMediaTypePreference)
+            screenshotURL: bestMedia(jeu.medias, types: screenshotMediaTypePreference),
+            videoURL: bestMedia(jeu.medias, types: videoMediaTypePreference)
         )
     }
 

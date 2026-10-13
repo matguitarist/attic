@@ -19,6 +19,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
     public var coverArtURL: URL?
     /// An in-game screenshot (or the title screen, if that's all there is).
     public var screenshotURL: URL?
+    /// A short gameplay video (ScreenScraper's).
+    public var videoURL: URL?
 
     public init(
         title: String? = nil,
@@ -30,7 +32,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         releaseDate: Date? = nil,
         rating: Double? = nil,
         coverArtURL: URL? = nil,
-        screenshotURL: URL? = nil
+        screenshotURL: URL? = nil,
+        videoURL: URL? = nil
     ) {
         self.title = title
         self.description = description
@@ -42,5 +45,6 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         self.rating = rating
         self.coverArtURL = coverArtURL
         self.screenshotURL = screenshotURL
+        self.videoURL = videoURL
     }
 }

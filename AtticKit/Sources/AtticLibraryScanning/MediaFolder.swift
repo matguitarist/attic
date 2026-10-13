@@ -64,7 +64,7 @@ public enum MediaFolder {
             try heic.write(to: destination, options: .atomic)
             return destination
         }
-        let ext = fileExtension.isEmpty ? "png" : fileExtension.lowercased()
+        let ext = fileExtension.isEmpty ? (kind == .videos ? "mp4" : "png") : fileExtension.lowercased()
         let destination = base.appendingPathExtension(ext)
         try data.write(to: destination, options: .atomic)
         return destination

@@ -1,5 +1,24 @@
 import Foundation
 import ImageIO
+import Observation
+
+/// Bumped when a media file is replaced at the same path (a re-scrape
+/// writes `covers/<rom>.heic` again), so views showing it load it anew:
+/// the path alone doesn't change.
+@MainActor
+@Observable
+final class MediaRevisions {
+    static let shared = MediaRevisions()
+    private var revisions: [String: Int] = [:]
+
+    func revision(of url: URL?) -> Int {
+        url.map { revisions[$0.path] ?? 0 } ?? 0
+    }
+
+    func bump(_ url: URL) {
+        revisions[url.path, default: 0] += 1
+    }
+}
 
 /// Decodes box art at roughly the size it's actually displayed and keeps
 /// the results in memory. `AsyncImage` on a local file decoded the full
@@ -54,6 +73,7 @@ final class CoverArtThumbnailCache: @unchecked Sendable {
         for multiple in 1...8 {
             cache.removeObject(forKey: key(for: url, bucketedSize: multiple * Self.sizeBucket))
         }
+        Task { @MainActor in MediaRevisions.shared.bump(url) }
     }
 
     private func key(for url: URL, bucketedSize: Int) -> NSString {

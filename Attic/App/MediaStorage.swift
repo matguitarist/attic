@@ -33,6 +33,7 @@ extension Game {
     func storeMedia(_ data: Data, fileExtension: String, kind: MediaKind) throws -> URL {
         let url = try MediaFolder.store(data, fileExtension: fileExtension, forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: kind)
         CoverArtThumbnailCache.shared.invalidate(url)
+        // A video isn't a thumbnail, but its view watches the same revision.
         return url
     }
 }

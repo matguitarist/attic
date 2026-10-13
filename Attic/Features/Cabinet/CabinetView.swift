@@ -485,7 +485,7 @@ private struct CabinetBackdrop: View {
             .clipped()
             .ignoresSafeArea()
         .animation(.easeInOut(duration: 0.4), value: coverURL)
-        .task(id: coverURL) {
+        .task(id: [coverURL?.path, String(MediaRevisions.shared.revision(of: coverURL))]) {
             guard let coverURL else {
                 image = nil
                 return

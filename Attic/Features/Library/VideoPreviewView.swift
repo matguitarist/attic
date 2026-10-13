@@ -74,7 +74,7 @@ struct GameHeaderMedia: View {
                 .help(isMuted ? String(localized: "Play the video's sound") : String(localized: "Mute the video"))
             }
         }
-        .task(id: [videoURL?.path, playsPreviews.description]) {
+        .task(id: [videoURL?.path, playsPreviews.description, String(MediaRevisions.shared.revision(of: videoURL))]) {
             showsVideo = false
             guard playsPreviews, let videoURL, Self.canPlay(videoURL) else { return }
             try? await Task.sleep(for: .seconds(1))

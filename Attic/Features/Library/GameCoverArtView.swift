@@ -34,12 +34,15 @@ struct GameCoverArtView: View {
     private struct ThumbnailRequest: Hashable {
         let url: URL
         let maxPixelSize: CGFloat
+        /// Changes when the file is replaced at the same path.
+        let revision: Int
     }
 
     var body: some View {
         GeometryReader { proxy in
             let request = url.map {
-                ThumbnailRequest(url: $0, maxPixelSize: max(proxy.size.width, proxy.size.height) * displayScale)
+                ThumbnailRequest(url: $0, maxPixelSize: max(proxy.size.width, proxy.size.height) * displayScale,
+                                 revision: MediaRevisions.shared.revision(of: $0))
             }
 
             ZStack {

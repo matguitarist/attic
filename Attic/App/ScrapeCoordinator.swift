@@ -295,6 +295,13 @@ final class ScrapeCoordinator {
             }
         }
 
+        if (force || game.videoPath == nil), let remoteURL = info.videoURL {
+            if let localURL = try? await downloadMedia(from: remoteURL, for: game, kind: .videos) {
+                game.videoPath = localURL.path
+                changed.append(String(localized: "video"))
+            }
+        }
+
         if changedProtectedField {
             game.metadataManuallyEdited = true
         }
@@ -305,8 +312,27 @@ final class ScrapeCoordinator {
 
     /// Into the media folder beside the games, where a rescan finds it too.
     private func downloadMedia(from remoteURL: URL, for game: Game, kind: MediaKind) async throws -> URL {
-        let (data, _) = try await URLSession.shared.data(from: remoteURL)
-        return try game.storeMedia(data, fileExtension: remoteURL.pathExtension, kind: kind)
+        let (data, response) = try await URLSession.shared.data(from: remoteURL)
+        guard (response as? HTTPURLResponse)?.statusCode ?? 200 == 200, !data.isEmpty else { throw URLError(.badServerResponse) }
+        return try game.storeMedia(data, fileExtension: Self.fileExtension(of: remoteURL, response: response), kind: kind)
+    }
+
+    /// ScreenScraper serves media from `mediaJeu.php?…`: the type comes
+    /// from the response, not the link.
+    static func fileExtension(of url: URL, response: URLResponse) -> String {
+        let known = MediaFolder.imageExtensions + MediaFolder.videoExtensions + ["gif", "pdf"]
+        if known.contains(url.pathExtension.lowercased()) { return url.pathExtension.lowercased() }
+        switch response.mimeType?.lowercased() {
+        case "image/png": return "png"
+        case "image/jpeg", "image/jpg": return "jpg"
+        case "image/webp": return "webp"
+        case "image/gif": return "gif"
+        case "video/mp4": return "mp4"
+        case "video/x-matroska": return "mkv"
+        case "video/quicktime": return "mov"
+        case "application/pdf": return "pdf"
+        default: return ""
+        }
     }
 
     private static func message(for error: ScreenScraperError) -> String {

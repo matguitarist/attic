@@ -92,6 +92,18 @@ import Testing
         #expect(info.coverArtURL == nil)
     }
 
+    @Test func picksTheNormalizedVideo() throws {
+        let fixture = """
+        {"response": {"jeu": {"medias": [
+          {"type": "video", "url": "https://example.com/mediaVideoJeu.php?media=video"},
+          {"type": "video-normalized", "url": "https://example.com/mediaVideoJeu.php?media=video-normalized"}
+        ]}}}
+        """
+        let envelope = try JSONDecoder().decode(ScreenScraperResponseEnvelope.self, from: Data(fixture.utf8))
+        let info = try #require(ScreenScraperMapper.map(envelope))
+        #expect(info.videoURL == URL(string: "https://example.com/mediaVideoJeu.php?media=video-normalized"))
+    }
+
     @Test func missingJeuReturnsNil() throws {
         let fixture = #"{"response": {}}"#
         let envelope = try JSONDecoder().decode(ScreenScraperResponseEnvelope.self, from: Data(fixture.utf8))
