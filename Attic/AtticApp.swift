@@ -78,10 +78,17 @@ struct AtticApp: App {
                 // Each collection's folder follows every save of the library.
                 .task {
                     let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
-                    CollectionFolders.restoreIfNeeded(context: modelContainer.mainContext, root: root)
+                    CollectionFolders.loadNewFolders(context: modelContainer.mainContext, root: root)
                     saveCollectionFolders()
                     for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) {
                         saveCollectionFolders()
+                    }
+                }
+                // A collection folder copied into Collections while Attic
+                // runs joins the library when Attic comes back to the front.
+                .task {
+                    for await _ in NotificationCenter.default.notifications(named: NSApplication.didBecomeActiveNotification) {
+                        CollectionFolders.loadNewFolders(context: modelContainer.mainContext, root: CollectionFolders.root(in: emulationFolderStore.folder.root))
                     }
                 }
                 // Re-runs when the first ROMs folder is chosen, since the

@@ -45,14 +45,21 @@ enum CollectionFolders {
         try? FileManager.default.trashItem(at: folder, resultingItemURL: nil)
     }
 
-    /// Brings collections back from their folders when the library has
-    /// games but no collections (a reset library, or a new Mac).
-    static func restoreIfNeeded(context: ModelContext, root: URL) {
-        guard (try? context.fetchCount(FetchDescriptor<GameCollection>())) == 0,
-              (try? context.fetchCount(FetchDescriptor<Game>())) ?? 0 > 0 else { return }
-        for folder in foldersByID(in: root).values {
-            _ = importCollection(from: folder, context: context, root: root, keepID: true)
+    /// Loads the collection folders in `root` the library doesn't have:
+    /// one copied in by hand, or all of them for a reset library or a new
+    /// Mac. (A deleted collection's folder goes to the Trash, so it
+    /// doesn't come back.) Returns how many.
+    @discardableResult
+    static func loadNewFolders(context: ModelContext, root: URL) -> Int {
+        cachedFolders = nil
+        guard (try? context.fetchCount(FetchDescriptor<Game>())) ?? 0 > 0,
+              let existing = try? context.fetch(FetchDescriptor<GameCollection>()) else { return 0 }
+        let known = Set(existing.map(\.collectionID))
+        var loaded = 0
+        for (id, folder) in foldersByID(in: root) where !known.contains(id) {
+            if importCollection(from: folder, context: context, root: root, keepID: true) != nil { loaded += 1 }
         }
+        return loaded
     }
 
     // MARK: - Import and export
@@ -107,11 +114,15 @@ enum CollectionFolders {
         try? context.save()
 
         save([collection], root: root)
-        // Pictures from elsewhere are copied in.
+        // Pictures from elsewhere are copied in. A logo under another name
+        // (mario.png beside the file) becomes the logo too.
         let destination = self.folder(for: collection, root: root, existing: foldersByID(in: root))
-        if destination.standardizedFileURL != folder.standardizedFileURL {
-            for picture in [CollectionFile.logoName, CollectionFile.artworkName] {
-                if let source = image(named: picture, in: folder) { setImage(source, as: picture, for: collection, root: root) }
+        let isElsewhere = destination.standardizedFileURL != folder.standardizedFileURL
+        for picture in [CollectionFile.logoName, CollectionFile.artworkName] {
+            if let source = image(named: picture, in: folder) {
+                if isElsewhere { setImage(source, as: picture, for: collection, root: root) }
+            } else if picture == CollectionFile.logoName, let source = looseLogo(in: folder, name: file.name) {
+                setImage(source, as: picture, for: collection, root: root)
             }
         }
         return ImportResult(collection: collection, found: found.count, missing: missing)
@@ -160,8 +171,25 @@ enum CollectionFolders {
     }
 
     private static func image(named name: String, in folder: URL) -> URL? {
-        ["png", "jpg", "jpeg", "heic", "webp"].map { folder.appending(path: "\(name).\($0)") }
-            .first { FileManager.default.fileExists(atPath: $0.path) }
+        images(in: folder).first { $0.deletingPathExtension().lastPathComponent.lowercased() == name }
+    }
+
+    private static func images(in folder: URL) -> [URL] {
+        ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
+            .filter { CollectionLogos.imageExtensions.contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+    }
+
+    /// A picture in a collection's folder not named logo or artwork that's
+    /// its logo: named like the collection (mario.png for Mario), or the
+    /// only picture there.
+    private static func looseLogo(in folder: URL, name: String) -> URL? {
+        let others = images(in: folder).filter {
+            ![CollectionFile.logoName, CollectionFile.artworkName].contains($0.deletingPathExtension().lastPathComponent.lowercased())
+        }
+        let names = SeriesTemplate.logoNames(for: name)
+        return names.lazy.compactMap { logoName in others.first { $0.deletingPathExtension().lastPathComponent.lowercased() == logoName } }.first
+            ?? (others.count == 1 ? others[0] : nil)
     }
 
     // MARK: - Files
