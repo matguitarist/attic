@@ -61,6 +61,7 @@ struct LibraryBrowserView: View {
                 }
                 .background(.bar)
             }
+            .navigationSplitViewColumnWidth(min: 460, ideal: 800)
             .navigationTitle(selectionTitle)
             .toolbar { toolbarContent }
             // Games dropped here go to the system shown when it takes

@@ -69,7 +69,11 @@ struct AtticApp: App {
     var body: some Scene {
         WindowGroup {
             withAppEnvironment(ContentView())
-                .frame(minWidth: 800, minHeight: 500)
+                // Room for the sidebar, the grid and the game panel. Any
+                // narrower and the columns' minimums can't all fit:
+                // AppKit kept resizing them until it gave up (a crash at
+                // launch for a window saved at 900 points wide).
+                .frame(minWidth: 1040, minHeight: 560)
                 .task { await scanCoordinator.refreshGameCounts() }
                 // Each collection's folder follows every save of the library.
                 .task {
@@ -91,6 +95,8 @@ struct AtticApp: App {
                 }
         }
         .modelContainer(modelContainer)
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 1400, height: 860)
         .commands {
             UpdateCommands(updater: appUpdater)
             SidebarCommands()
