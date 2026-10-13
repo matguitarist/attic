@@ -3,6 +3,24 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.12.0</title>
+            <pubDate>Mon, 12 Oct 2026 21:59:25 -0400</pubDate>
+            <sparkle:version>17</sparkle:version>
+            <sparkle:shortVersionString>1.12.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>A game&#x27;s video plays, muted, in the side panel after a moment on it, with a button for the sound (Settings › General can turn previews off).</li>
+<li>Play counts, last played, playtime and favorites from ES-DE and Batocera gamelists are brought in once, so your history carries over.</li>
+<li>Settings › BIOS lists every system you have games for and what its emulator needs, missing files first.</li>
+<li>Multi-disc games show as one game: Attic writes their .m3u playlist. The .bin tracks of .cue games no longer show up as games.</li>
+<li>Tidy Up can find duplicate games (other regions, revisions, betas, a zip of the same game) and keep the best copy; off unless you tick it.</li>
+<li>Standalone emulators (DuckStation, Dolphin, PCSX2, RPCS3, xemu, Vita3K, shadPS4) are checked for updates and update from Settings › Emulators.</li>
+<li>Drop a PS Vita .vpk, .pkg (with its zRIF) or firmware to install it in Vita3K, or a dumped PS4 game folder to file it under PlayStation 4.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.12.0/Attic-1.12.0.zip" length="12146250" type="application/octet-stream" sparkle:edSignature="4ld5op/4ONgY80CxYydXrBDKCtAHH9M5L9mzRWx8jEpscWpRxnEaIXVFmOcnwyCbTBTrSrV37s6vqF+R5InSCQ=="/>
+        </item>
+        <item>
             <title>1.11.0</title>
             <pubDate>Mon, 12 Oct 2026 21:16:16 -0400</pubDate>
             <sparkle:version>16</sparkle:version>
