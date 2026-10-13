@@ -150,7 +150,8 @@ final class LaunchCoordinator {
                 retroLookByDefault: UserDefaults.standard.bool(forKey: ShaderPackStore.retroLookByDefaultKey)
             )
             let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(
-                for: systemID, controller: controllerSettingsStore.settings, systemSettings: systemSettings
+                for: systemID, controller: controllerSettingsStore.settings, systemSettings: systemSettings,
+                achievements: RetroAchievementsStore.currentAccount
             )
             try folder.setSystemCoreOptions(systemSettings, core: identifier)
             try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
@@ -177,7 +178,8 @@ final class LaunchCoordinator {
                     of: emulator, for: CanonicalSystemID(game.systemCanonicalID),
                     quitCombo: controllerSettingsStore.settings.quitWithSelectStart,
                     buttonMapping: controllerSettingsStore.settings.buttonMapping,
-                    systemSettings: systemSettings
+                    systemSettings: systemSettings,
+                    achievements: RetroAchievementsStore.currentAccount
                 )
                 if emulator.id == EmulatorCatalog.dolphin.id {
                     extraArguments = SystemSettingsSupport.dolphinArguments(systemSettings)

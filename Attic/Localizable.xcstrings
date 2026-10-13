@@ -1771,6 +1771,16 @@
         }
       }
     },
+    "Create an Account": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer un compte"
+          }
+        }
+      }
+    },
     "Curved CRT TV": {
       "localizations": {
         "fr": {
@@ -2177,6 +2187,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chaque jeu est un dossier nommé comme Monkey Island.scummvm, avec les fichiers du jeu et un fichier du même nom (Monkey Island.scummvm) contenant l’identifiant ScummVM du jeu, comme monkey."
+          }
+        }
+      }
+    },
+    "Earn achievements in classic games, in RetroArch, DuckStation and PCSX2. Your password is only sent to retroachievements.org to sign in; Attic keeps the sign-in token it gets back, in the Keychain.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gagnez des succès dans les jeux classiques, dans RetroArch, DuckStation et PCSX2. Votre mot de passe n’est envoyé qu’à retroachievements.org pour vous connecter ; Attic garde le jeton de connexion reçu en retour, dans le trousseau."
           }
         }
       }
@@ -2803,6 +2823,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Portables"
+          }
+        }
+      }
+    },
+    "Hardcore mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode hardcore"
           }
         }
       }
@@ -3877,6 +3907,16 @@
         }
       }
     },
+    "No save states, rewind, cheats or slow motion, for full points and the leaderboards.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans sauvegardes d’état, retour arrière, triches ni ralenti, pour tous les points et les classements."
+          }
+        }
+      }
+    },
     "None": {
       "localizations": {
         "fr": {
@@ -4767,6 +4807,26 @@
         }
       }
     },
+    "RetroAchievements": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetroAchievements"
+          }
+        }
+      }
+    },
+    "RetroAchievements didn't accept that sign-in.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RetroAchievements n’a pas accepté cette connexion."
+          }
+        }
+      }
+    },
     "RetroArch": {
       "localizations": {
         "fr": {
@@ -5405,6 +5465,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Affiché à la place du nom, dans le panneau latéral et le mode Cabinet."
+          }
+        }
+      }
+    },
+    "Sign In": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecter"
+          }
+        }
+      }
+    },
+    "Sign Out": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se déconnecter"
+          }
+        }
+      }
+    },
+    "Signed in as": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté en tant que"
           }
         }
       }
@@ -6191,6 +6281,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisé dans Attic, le mode Cabinet et les menus de RetroArch."
+          }
+        }
+      }
+    },
+    "User Name": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom d’utilisateur"
           }
         }
       }

@@ -145,3 +145,28 @@ struct ConsoleFilesTests {
         #expect(found.system == .ps4 && found.title == "Bloodborne" && found.titleID == "CUSA00900")
     }
 }
+
+struct AchievementsLaunchTests {
+    private let account = AchievementsAccount(username: "mario", token: "abc123", hardcore: true)
+
+    @Test func retroArchGetsTheAccountOnlyWhenSignedIn() {
+        let text = EmulationFolder.retroArchAchievementSettings(account)
+        #expect(text.contains("cheevos_enable = \"true\"\n"))
+        #expect(text.contains("cheevos_username = \"mario\"\n"))
+        #expect(text.contains("cheevos_token = \"abc123\"\n"))
+        #expect(text.contains("cheevos_hardcore_mode_enable = \"true\"\n"))
+        #expect(EmulationFolder.retroArchAchievementSettings(nil).isEmpty)
+    }
+
+    @Test func standaloneEmulatorsGetItInTheirOwnSection() throws {
+        let folder = EmulationFolder(root: FileManager.default.temporaryDirectory.appending(path: "Cheevos-\(UUID().uuidString)"))
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.duckStation, for: .psx, achievements: account)
+        _ = try folder.prepareStandaloneLaunch(of: EmulatorCatalog.pcsx2, for: .ps2, achievements: account)
+        let duck = IniFile(contents: try String(contentsOf: folder.configHome(for: EmulatorCatalog.duckStation).appending(path: EmulatorCatalog.duckStation.portableHome!.settingsRelativePath), encoding: .utf8))
+        let pcsx2 = IniFile(contents: try String(contentsOf: folder.configHome(for: EmulatorCatalog.pcsx2).appending(path: EmulatorCatalog.pcsx2.portableHome!.settingsRelativePath), encoding: .utf8))
+        #expect(duck.value(section: "Cheevos", key: "Token") == "abc123")
+        #expect(duck.value(section: "Cheevos", key: "ChallengeMode") == "true")
+        #expect(pcsx2.value(section: "Achievements", key: "Username") == "mario")
+        #expect(pcsx2.value(section: "Achievements", key: "Enabled") == "true")
+    }
+}

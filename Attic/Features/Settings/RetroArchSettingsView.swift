@@ -43,6 +43,8 @@ struct RetroArchSettingsView: View {
                 }
             }
 
+            RetroAchievementsSection()
+
             CustomEmulatorsSection()
         }
         .formStyle(.grouped)

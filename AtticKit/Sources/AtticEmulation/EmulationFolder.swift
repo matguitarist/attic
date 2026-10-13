@@ -177,7 +177,8 @@ public struct EmulationFolder: Sendable, Hashable {
     public func prepareRetroArchLaunch(
         for system: CanonicalSystemID,
         controller: ControllerSettings = .default,
-        systemSettings: SystemSettings = SystemSettings()
+        systemSettings: SystemSettings = SystemSettings(),
+        achievements: AchievementsAccount? = nil
     ) throws -> (config: URL, appendConfig: URL) {
         try createStructure()
         for directory in [saves(for: system), states(for: system)] {
@@ -190,10 +191,24 @@ public struct EmulationFolder: Sendable, Hashable {
             for: system, controller: controller, systemSettings: systemSettings, savedConfig: saved,
             previouslyWritten: previous, systemSettingsOwned: readOwned("retroarch-system") ?? [:]
         )
-        try config.text.write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
+        let text = config.text.hasSuffix("\n") || config.text.isEmpty ? config.text : config.text + "\n"
+        try (text + Self.retroArchAchievementSettings(achievements)).write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
         try writeOwnedSettings(config.controllerSettingsWritten, for: "retroarch")
         try writeOwned(config.systemSettingsOwned, for: "retroarch-system")
         return (retroArchConfigFile, retroArchPathsConfigFile)
+    }
+
+    /// RetroAchievements for this launch, when signed in through Attic;
+    /// otherwise nothing, so a sign-in made in RetroArch itself still holds.
+    static func retroArchAchievementSettings(_ account: AchievementsAccount?) -> String {
+        guard let account else { return "" }
+        return [
+            ("cheevos_enable", "true"),
+            ("cheevos_username", account.username),
+            ("cheevos_token", account.token),
+            ("cheevos_password", ""),
+            ("cheevos_hardcore_mode_enable", account.hardcore ? "true" : "false"),
+        ].map { "\($0.0) = \"\($0.1)\"\n" }.joined()
     }
 
     /// Sets `core`'s options for `settings` (resolution, widescreen…) in
@@ -524,6 +539,10 @@ public struct EmulationFolder: Sendable, Hashable {
 
     // MARK: - Standalone emulators
 
+    /// Where each standalone emulator that has RetroAchievements keeps its
+    /// account, in its settings file.
+    static let achievementsSection = [EmulatorCatalog.duckStation.id: "Cheevos", EmulatorCatalog.pcsx2.id: "Achievements"]
+
     /// Points a standalone emulator's own settings file at this folder's
     /// BIOS/save/state directories, and returns the environment to launch
     /// it with. Re-run before every launch so the paths follow the folder.
@@ -532,7 +551,8 @@ public struct EmulationFolder: Sendable, Hashable {
         for system: CanonicalSystemID,
         quitCombo: Bool = true,
         buttonMapping: ButtonMapping = .default,
-        systemSettings: SystemSettings = SystemSettings()
+        systemSettings: SystemSettings = SystemSettings(),
+        achievements: AchievementsAccount? = nil
     ) throws -> [String: String] {
         guard let portable = emulator.portableHome else { return [:] }
         let home = configHome(for: emulator)
@@ -560,6 +580,13 @@ public struct EmulationFolder: Sendable, Hashable {
         }
         if emulator.id == EmulatorCatalog.duckStation.id {
             try applyDuckStationSettings(systemSettings, to: &ini)
+        }
+        if let achievements, let section = Self.achievementsSection[emulator.id] {
+            // DuckStation and PCSX2 read the same keys, under their own section.
+            ini.set(section: section, key: "Enabled", value: "true")
+            ini.set(section: section, key: "Username", value: achievements.username)
+            ini.set(section: section, key: "Token", value: achievements.token)
+            ini.set(section: section, key: "ChallengeMode", value: achievements.hardcore ? "true" : "false")
         }
         try ini.contents.write(to: settingsFile, atomically: true, encoding: .utf8)
         return ["HOME": home.path]

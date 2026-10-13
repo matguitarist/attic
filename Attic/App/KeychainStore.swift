@@ -14,7 +14,14 @@ protocol KeychainStoring {
 /// for ScreenScraper account/API credentials instead of UserDefaults, since
 /// those are real secrets rather than app preferences.
 struct KeychainStore: KeychainStoring {
-    private let service = "com.attic.app.screenscraper"
+    private var service = "com.attic.app.screenscraper"
+
+    init() {}
+
+    /// A store for another kind of secret (RetroAchievements' token).
+    init(service: String) {
+        self.service = service
+    }
 
     func read(account: String) -> String? {
         if let value = read(account: account, service: service) { return value }
