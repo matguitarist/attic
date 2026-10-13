@@ -3,6 +3,25 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.11.0</title>
+            <pubDate>Mon, 12 Oct 2026 21:16:16 -0400</pubDate>
+            <sparkle:version>16</sparkle:version>
+            <sparkle:shortVersionString>1.11.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Collections search by several terms at once and can leave some out (&quot;Super Mario, Mario Bros&quot; but not &quot;Kart, Tennis&quot;), optionally on one system, with every match listed to untick before adding.</li>
+<li>Start a collection from about 55 popular series, each with a tuned search and how many of your games it finds.</li>
+<li>Collections remember their search: Edit Collection (toolbar, File menu or right-click) runs it again or changes it, takes games out, and can add new matching games by itself after each library scan.</li>
+<li>Collections sort by system, then release date, so a series reads in order (in Cabinet Mode too).</li>
+<li>With a collection open, the side panel shows its pictures, game count and years, systems, search and play history. Give a collection a logo and artwork; Cabinet Mode shows the logo.</li>
+<li>Each collection is saved as a folder in Emulation/Collections, with its pictures: it travels with your games, comes back if the library is reset, and can be exported and imported (File menu).</li>
+<li>File menu: Add Games… (⌘O), Refresh Library (⌘R), Show ROMs Folder, Import/Export Collection; New Window, which crashed, is gone. A Refresh button sits in the toolbar, and the Game menu can open a game&#x27;s manual.</li>
+<li>Attic&#x27;s folders are now Media, Gamelists and Collections beside ROMs, BIOS, Saves and the rest; ES-DE&#x27;s downloaded_media and gamelists are renamed on first launch.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.11.0/Attic-1.11.0.zip" length="11882582" type="application/octet-stream" sparkle:edSignature="/j9cHruru+zx/zPZVJulpnj38N/eO9pDagPRQh8ZGtnCrtfVye0O15Hr8seAe3ZKBstZwc57a9UAfq7B0tLPBg=="/>
+        </item>
+        <item>
             <title>1.10.1</title>
             <pubDate>Mon, 12 Oct 2026 20:09:36 -0400</pubDate>
             <sparkle:version>15</sparkle:version>
