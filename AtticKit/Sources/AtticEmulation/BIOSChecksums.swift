@@ -15,10 +15,23 @@ public enum BIOSChecksums {
         case unchecked
     }
 
-    struct Entry: Sendable {
-        let name: String
-        let size: Int
-        let md5: String
+    public struct Entry: Sendable, Hashable {
+        public let name: String
+        public let size: Int
+        public let md5: String
+    }
+
+    /// What checking a file found: the verdict, and what it was compared
+    /// with, to show.
+    public struct Check: Sendable, Hashable {
+        public var verdict: Verdict = .unchecked
+        /// The known good dumps of the file (for a folder, the one it
+        /// matched, if any).
+        public var expected: [Entry] = []
+        public var md5: String?
+        public var size: Int?
+        /// Matched once a copier's 512-byte header was skipped.
+        public var hasHeader = false
     }
 
     static let entries: [Entry] = {
@@ -42,21 +55,49 @@ public enum BIOSChecksums {
 
     /// Whether `file` is a good dump of `fileName`.
     public static func verdict(of file: URL, as fileName: String) -> Verdict {
-        verdict(of: file, as: fileName, in: entries)
+        check(file, as: fileName).verdict
     }
 
     static func verdict(of file: URL, as fileName: String, in entries: [Entry]) -> Verdict {
+        check(file, as: fileName, in: entries).verdict
+    }
+
+    public static func check(_ file: URL, as fileName: String) -> Check {
+        check(file, as: fileName, in: entries)
+    }
+
+    static func check(_ file: URL, as fileName: String, in entries: [Entry]) -> Check {
         let known = known(for: fileName, in: entries)
-        guard !known.isEmpty, file.pathExtension.lowercased() != "zip" else { return .unchecked }
+        let isFolder = fileName.hasSuffix("/")
+        var check = Check(expected: isFolder ? [] : known)
+        guard file.pathExtension.lowercased() != "zip" else { return check }
         let size = MD5Cache.size(of: file)
+        check.size = size >= 0 ? size : nil
+        check.md5 = MD5Cache.md5(of: file)
+        guard !known.isEmpty else { return check }
+        if let md5 = check.md5, let match = known.first(where: { $0.md5 == md5 }) {
+            check.verdict = .verified
+            if isFolder { check.expected = [match] }
+            return check
+        }
         // A copier's 512-byte header before it (PC Engine System Cards
         // often have one) doesn't make it another dump.
-        let isKnown = known.contains { $0.size == size } && MD5Cache.md5(of: file).map { md5 in known.contains { $0.md5 == md5 } } == true
-            || known.contains { $0.size + 512 == size } && MD5Cache.md5(of: file, skipping: 512).map { md5 in known.contains { $0.md5 == md5 } } == true
-        if isKnown { return .verified }
+        if known.contains(where: { $0.size + 512 == size }), let md5 = MD5Cache.md5(of: file, skipping: 512),
+           let match = known.first(where: { $0.md5 == md5 }) {
+            check.verdict = .verified
+            check.hasHeader = true
+            if isFolder { check.expected = [match] }
+            return check
+        }
         // The list has only some of the dumps a folder takes (PCSX2
         // checks its own).
-        return fileName.hasSuffix("/") ? .unchecked : .unrecognized
+        check.verdict = isFolder ? .unchecked : .unrecognized
+        return check
+    }
+
+    /// The known good dumps of a file, to show what it should be.
+    public static func expected(for fileName: String) -> [Entry] {
+        fileName.hasSuffix("/") ? [] : known(for: fileName)
     }
 
     /// A file in the BIOS folder (or a folder in it) that is a good dump

@@ -286,6 +286,71 @@ struct FlowLayout: Layout {
     }
 }
 
+/// A BIOS file next to the known good dumps of it: size and MD5, the
+/// differences marked.
+struct BIOSComparisonView: View {
+    let file: BIOSFileStatus
+
+    var body: some View {
+        let check = file.check
+        VStack(alignment: .leading, spacing: 12) {
+            Text("\(file.fileName) isn't a known dump").font(.headline)
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
+                GridRow {
+                    Text("")
+                    Text("Size").foregroundStyle(.secondary)
+                    Text("MD5").foregroundStyle(.secondary)
+                }
+                .font(.caption)
+                GridRow {
+                    Text("Yours").bold()
+                    Text(size(check.size))
+                        .foregroundStyle(check.expected.contains { $0.size == check.size } ? Color.primary : .orange)
+                    Text(verbatim: check.md5 ?? "—").foregroundStyle(.orange)
+                }
+                ForEach(check.expected, id: \.self) { entry in
+                    GridRow {
+                        Text("Expected").bold()
+                        Text(size(entry.size))
+                        Text(verbatim: entry.md5)
+                    }
+                }
+            }
+            .font(.callout.monospaced())
+            .textSelection(.enabled)
+            Text(explanation(check))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                if let url = file.url {
+                    Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+                }
+                Spacer()
+                if let md5 = check.md5 {
+                    Button("Copy MD5") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(md5, forType: .string)
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .frame(width: 560)
+    }
+
+    private func size(_ bytes: Int?) -> String {
+        bytes.map { "\($0.formatted()) B" } ?? "—"
+    }
+
+    private func explanation(_ check: BIOSChecksums.Check) -> String {
+        if let size = check.size, !check.expected.contains(where: { $0.size == size }) {
+            return String(localized: "The size differs too: it's likely another file, a damaged copy, or a dump with something added. Dump it again, or look for the expected one.")
+        }
+        return String(localized: "Same size, other data: most likely another revision of this BIOS, sometimes a damaged copy. It may still work; if games don't start, use the expected dump.")
+    }
+}
+
 /// One BIOS file's row: its name, whether it's required, and whether
 /// it's there. Shared by the system panel and Settings › BIOS.
 struct BIOSFileRow: View {
@@ -293,6 +358,7 @@ struct BIOSFileRow: View {
     /// After a misnamed dump was put in place, so the list checks again.
     var onChange: () -> Void = {}
     @State private var copyFailed = false
+    @State private var showsComparison = false
 
     var body: some View {
         LabeledContent {
@@ -303,9 +369,15 @@ struct BIOSFileRow: View {
                         .foregroundStyle(.green)
                         .help("A known good dump.")
                 case .unrecognized:
-                    Label("Not a known dump", systemImage: "exclamationmark.circle")
-                        .foregroundStyle(.orange)
-                        .help("Named right, but it isn't one of the known good dumps: another revision, or a bad dump. It may still work; if games don't start, try another dump.")
+                    HStack {
+                        Label("Not a known dump", systemImage: "exclamationmark.circle")
+                            .foregroundStyle(.orange)
+                            .help("Named right, but it isn't one of the known good dumps: another revision, or a bad dump. It may still work; if games don't start, try another dump.")
+                        Button("Compare…") { showsComparison = true }
+                            .popover(isPresented: $showsComparison, arrowEdge: .bottom) {
+                                BIOSComparisonView(file: file)
+                            }
+                    }
                 case .unchecked:
                     Label("Found", systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.green)
@@ -331,6 +403,46 @@ struct BIOSFileRow: View {
             Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
                 .compactMap { $0 }
                 .joined(separator: " · "))
+            checksum
+        }
+    }
+
+    /// The file's MD5, or the one it should have: both when they differ.
+    @ViewBuilder
+    private var checksum: some View {
+        let check = file.check
+        let expected = check.expected.first?.md5
+        let more = check.expected.count > 1 ? String(localized: " (or \(check.expected.count - 1) other known dumps)") : ""
+        switch (file.isPresent, check.verdict) {
+        case (true, .verified):
+            Text(verbatim: "MD5 \(expected ?? check.md5 ?? "")")
+                .font(.caption.monospaced())
+                .textSelection(.enabled)
+                .help(check.hasHeader ? String(localized: "The known dump's checksum: the file has a 512-byte header before it.") : String(localized: "The known dump's checksum, which the file has."))
+        case (true, .unrecognized):
+            if let expected {
+                Text(String(localized: "Expected MD5 \(expected)") + more)
+                    .font(.caption.monospaced())
+                    .textSelection(.enabled)
+            }
+            if let md5 = check.md5 {
+                Text(String(localized: "Found MD5 \(md5)"))
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.orange)
+                    .textSelection(.enabled)
+            }
+        case (true, .unchecked):
+            if let md5 = check.md5 {
+                Text(verbatim: "MD5 \(md5)")
+                    .font(.caption.monospaced())
+                    .textSelection(.enabled)
+            }
+        case (false, _):
+            if let expected {
+                Text(String(localized: "Expected MD5 \(expected)") + more)
+                    .font(.caption.monospaced())
+                    .textSelection(.enabled)
+            }
         }
     }
 

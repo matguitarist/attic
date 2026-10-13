@@ -55,6 +55,22 @@ struct BIOSChecksumsTests {
         #expect(BIOSChecksums.verdict(of: file, as: "scph5501.bin", in: entries) == .unrecognized)
     }
 
+    @Test func aCheckSaysWhatItCompared() throws {
+        let file = bios.appending(path: "scph5501.bin")
+        let other = Data(repeating: 1, count: 2048)
+        try other.write(to: file)
+        let check = BIOSChecksums.check(file, as: "scph5501.bin", in: entries)
+        #expect(check.verdict == .unrecognized)
+        #expect(check.expected.map(\.md5) == [entries[0].md5])
+        #expect(check.md5 == Insecure.MD5.hash(data: other).map { String(format: "%02x", $0) }.joined())
+        #expect(check.size == 2048)
+
+        // In a folder: the dump it matched.
+        let ps2 = bios.appending(path: "pcsx2/bios/x.bin")
+        try dump.write(to: ps2)
+        #expect(BIOSChecksums.check(ps2, as: "pcsx2/bios/", in: entries).expected.map(\.name) == ["pcsx2/bios/ps2-0200a.bin"])
+    }
+
     @Test func zipsAndUnlistedFilesArentChecked() throws {
         let zip = bios.appending(path: "neogeo.zip")
         try dump.write(to: zip)

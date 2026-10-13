@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "": {},
     " (and %lld tracks)": {
       "localizations": {
         "fr": {
@@ -17,6 +18,16 @@
           "stringUnit": {
             "state": "translated",
             "value": " (garde %@)"
+          }
+        }
+      }
+    },
+    " (or %lld other known dumps)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " (ou %lld autres dumps connus)"
           }
         }
       }
@@ -57,6 +68,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ ne prend pas moins de place compressé en ZIP, il reste tel quel."
+          }
+        }
+      }
+    },
+    "%@ isn't a known dump": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ n’est pas un dump connu"
           }
         }
       }
@@ -2047,6 +2068,16 @@
         }
       }
     },
+    "Compare…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comparer…"
+          }
+        }
+      }
+    },
     "Compress": {
       "localizations": {
         "fr": {
@@ -2263,6 +2294,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le copie sous le nom que cherche l’émulateur. Votre fichier reste tel quel."
+          }
+        }
+      }
+    },
+    "Copy MD5": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier le MD5"
           }
         }
       }
@@ -3193,6 +3234,26 @@
         }
       }
     },
+    "Expected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attendu"
+          }
+        }
+      }
+    },
+    "Expected MD5 %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MD5 attendu %@"
+          }
+        }
+      }
+    },
     "Export": {
       "localizations": {
         "fr": {
@@ -3385,6 +3446,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trouvé"
+          }
+        }
+      }
+    },
+    "Found MD5 %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MD5 trouvé %@"
           }
         }
       }
@@ -4415,6 +4486,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Examen des dossiers ROMs…"
+          }
+        }
+      }
+    },
+    "MD5": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MD5"
           }
         }
       }
@@ -6285,6 +6366,16 @@
         }
       }
     },
+    "Same size, other data: most likely another revision of this BIOS, sometimes a damaged copy. It may still work; if games don't start, use the expected dump.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Même taille, autres données : le plus souvent une autre révision de ce BIOS, parfois une copie abîmée. Il peut quand même fonctionner ; si les jeux ne démarrent pas, utilisez le dump attendu."
+          }
+        }
+      }
+    },
     "Save": {
       "localizations": {
         "fr": {
@@ -7227,12 +7318,42 @@
         }
       }
     },
+    "The known dump's checksum, which the file has.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La somme de contrôle du dump connu, que le fichier a bien."
+          }
+        }
+      }
+    },
+    "The known dump's checksum: the file has a 512-byte header before it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La somme de contrôle du dump connu : le fichier a un en-tête de 512 octets avant."
+          }
+        }
+      }
+    },
     "The left stick option applies to RetroArch games; Select + Start also quits DuckStation. Games save normally on the way out.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "L’option du stick gauche s’applique aux jeux RetroArch ; Select + Start quitte aussi DuckStation. Les jeux sauvegardent normalement en quittant."
+          }
+        }
+      }
+    },
+    "The size differs too: it's likely another file, a damaged copy, or a dump with something added. Dump it again, or look for the expected one.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La taille diffère aussi : c’est sans doute un autre fichier, une copie abîmée, ou un dump avec quelque chose en plus. Refaites le dump, ou cherchez celui attendu."
           }
         }
       }
@@ -7909,6 +8030,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre dossier de ROMs"
+          }
+        }
+      }
+    },
+    "Yours": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le vôtre"
           }
         }
       }
