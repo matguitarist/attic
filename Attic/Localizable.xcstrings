@@ -859,6 +859,16 @@
         }
       }
     },
+    "A known good dump.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un bon dump connu."
+          }
+        }
+      }
+    },
     "A zip of your saves, save states, collections and gamelists. The newest %lld are kept. Another drive or a synced folder keeps them safest.": {
       "localizations": {
         "fr": {
@@ -2227,6 +2237,16 @@
         }
       }
     },
+    "Copies it in under the name the emulator looks for. The file you have stays as it is.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le copie sous le nom que cherche l’émulateur. Votre fichier reste tel quel."
+          }
+        }
+      }
+    },
     "Cores and emulators you installed yourself are detected too. Settings › Emulators also checks for core updates.": {
       "localizations": {
         "fr": {
@@ -2243,6 +2263,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode canapé"
+          }
+        }
+      }
+    },
+    "Couldn't Copy": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copie impossible"
           }
         }
       }
@@ -3325,6 +3355,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trouvé"
+          }
+        }
+      }
+    },
+    "Found as %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trouvé sous %@"
           }
         }
       }
@@ -4479,6 +4519,16 @@
         }
       }
     },
+    "Named right, but it isn't one of the known good dumps: another revision, or a bad dump. It may still work; if games don't start, try another dump.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bien nommé, mais ce n’est pas un des bons dumps connus : une autre révision, ou un mauvais dump. Il peut quand même fonctionner ; si les jeux ne démarrent pas, essayez un autre dump."
+          }
+        }
+      }
+    },
     "Names and artwork": {
       "localizations": {
         "fr": {
@@ -4855,6 +4905,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucune : les jeux sont ajoutés à la main. Modifiez la collection pour lui donner une recherche."
+          }
+        }
+      }
+    },
+    "Not a known dump": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dump inconnu"
           }
         }
       }
@@ -5445,6 +5505,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prêt à récupérer les infos."
+          }
+        }
+      }
+    },
+    "Ready, a file isn't a known dump": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt, un fichier est un dump inconnu"
           }
         }
       }
@@ -7429,6 +7499,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisez des fichiers .wua (format compressé de Cemu), ou des images disque .wud/.wux."
+          }
+        }
+      }
+    },
+    "Use It": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’utiliser"
           }
         }
       }

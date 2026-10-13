@@ -396,6 +396,8 @@ struct SystemSettingsLaunchTests {
 
     @Test func fileRequirementIsOneRow() {
         let rows = [BIOSRequirement("scph5501.bin", note: "US")].statuses(in: URL(fileURLWithPath: "/nonexistent"))
-        #expect(rows == [BIOSFileStatus(fileName: "scph5501.bin", isPresent: false, required: true, note: "US")])
+        #expect(rows.map(\.fileName) == ["scph5501.bin"])
+        #expect(rows.first?.isPresent == false && rows.first?.required == true && rows.first?.note == "US")
+        #expect(rows.first?.expectedURL?.path == "/nonexistent/scph5501.bin")
     }
 }

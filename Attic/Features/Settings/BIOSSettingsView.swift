@@ -22,6 +22,7 @@ struct BIOSSettingsView: View {
         var id: String { system.canonicalID }
         var missesRequired: Bool { files.contains { $0.required && !$0.isPresent } }
         var missesOptional: Bool { files.contains { !$0.required && !$0.isPresent } }
+        var hasUnknownDump: Bool { files.contains { $0.isPresent && $0.verdict == .unrecognized } }
     }
 
     private var rows: [Row] {
@@ -83,7 +84,7 @@ struct BIOSSettingsView: View {
 
     private func section(_ row: Row) -> some View {
         Section {
-            ForEach(row.files) { BIOSFileRow(file: $0) }
+            ForEach(row.files) { BIOSFileRow(file: $0) { check += 1 } }
             if row.missesRequired || row.missesOptional {
                 Button("Show BIOS Folder") {
                     BIOSFileRow.showFolder(for: row.requirements, bios: emulationFolderStore.folder.bios)
@@ -95,6 +96,8 @@ struct BIOSSettingsView: View {
                 Spacer()
                 if row.missesRequired {
                     Text("Missing").foregroundStyle(.orange)
+                } else if row.hasUnknownDump {
+                    Text("Ready, a file isn't a known dump").foregroundStyle(.secondary)
                 } else if row.missesOptional {
                     Text("Ready, some optional files missing").foregroundStyle(.secondary)
                 } else {

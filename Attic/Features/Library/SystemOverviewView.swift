@@ -158,7 +158,7 @@ struct SystemOverviewView: View {
         Section {
             let _ = biosCheck
             ForEach(biosRequirements.statuses(in: emulationFolderStore.folder.bios)) { file in
-                BIOSFileRow(file: file)
+                BIOSFileRow(file: file) { biosCheck += 1 }
             }
             Button("Show BIOS Folder") {
                 BIOSFileRow.showFolder(for: biosRequirements, bios: emulationFolderStore.folder.bios)
@@ -290,17 +290,57 @@ struct FlowLayout: Layout {
 /// it's there. Shared by the system panel and Settings › BIOS.
 struct BIOSFileRow: View {
     let file: BIOSFileStatus
+    /// After a misnamed dump was put in place, so the list checks again.
+    var onChange: () -> Void = {}
+    @State private var copyFailed = false
 
     var body: some View {
         LabeledContent {
-            Label(file.isPresent ? "Found" : "Missing",
-                  systemImage: file.isPresent ? "checkmark.circle.fill" : (file.required ? "exclamationmark.triangle.fill" : "circle"))
-                .foregroundStyle(file.isPresent ? .green : (file.required ? .orange : .secondary))
+            if file.isPresent {
+                switch file.verdict {
+                case .verified:
+                    Label("Verified", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                        .help("A known good dump.")
+                case .unrecognized:
+                    Label("Not a known dump", systemImage: "exclamationmark.circle")
+                        .foregroundStyle(.orange)
+                        .help("Named right, but it isn't one of the known good dumps: another revision, or a bad dump. It may still work; if games don't start, try another dump.")
+                case .unchecked:
+                    Label("Found", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                }
+            } else if let misnamed = file.misnamed, let target = file.expectedURL {
+                HStack {
+                    Text("Found as \(misnamed.lastPathComponent)")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Button(copyFailed ? String(localized: "Couldn't Copy") : String(localized: "Use It")) {
+                        copyFailed = !Self.copy(misnamed, to: target)
+                        if !copyFailed { onChange() }
+                    }
+                    .help("Copies it in under the name the emulator looks for. The file you have stays as it is.")
+                }
+            } else {
+                Label("Missing", systemImage: file.required ? "exclamationmark.triangle.fill" : "circle")
+                    .foregroundStyle(file.required ? .orange : .secondary)
+            }
         } label: {
             Tag(file.fileName)
             Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
                 .compactMap { $0 }
                 .joined(separator: " · "))
+        }
+    }
+
+    private static func copy(_ file: URL, to target: URL) -> Bool {
+        do {
+            try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try FileManager.default.copyItem(at: file, to: target)
+            return true
+        } catch {
+            return false
         }
     }
 

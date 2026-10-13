@@ -7,6 +7,12 @@ public struct BIOSFileStatus: Sendable, Hashable, Identifiable {
     public let isPresent: Bool
     public let required: Bool
     public let note: String?
+    /// For a file that's there: whether it's a known good dump.
+    public var verdict: BIOSChecksums.Verdict = .unchecked
+    /// For a missing file: a good dump of it in the BIOS folder under
+    /// another name, and where it should go.
+    public var misnamed: URL?
+    public var expectedURL: URL?
 
     public var id: String { fileName.lowercased() }
 }
@@ -19,14 +25,28 @@ extension Array where Element == BIOSRequirement {
     public func statuses(in biosDirectory: URL) -> [BIOSFileStatus] {
         flatMap { requirement -> [BIOSFileStatus] in
             guard requirement.isFolder else {
-                return [BIOSFileStatus(fileName: requirement.fileName, isPresent: requirement.isPresent(in: biosDirectory),
-                                       required: requirement.required, note: requirement.note)]
+                let url = biosDirectory.appending(path: requirement.fileName)
+                let isPresent = requirement.isPresent(in: biosDirectory)
+                var status = BIOSFileStatus(fileName: requirement.fileName, isPresent: isPresent,
+                                            required: requirement.required, note: requirement.note)
+                status.expectedURL = url
+                if isPresent {
+                    status.verdict = BIOSChecksums.verdict(of: url, as: requirement.fileName)
+                } else {
+                    status.misnamed = BIOSChecksums.misnamedDump(of: requirement.fileName, in: biosDirectory)
+                }
+                return [status]
             }
             let anyOne = String(localized: "Any one is enough", bundle: .module)
             let found = requirement.dumps(in: biosDirectory)
             let foundNames = Set(found.map { $0.lowercased() })
             let missing = requirement.supportedDumps.filter { !foundNames.contains($0.lowercased()) }
-            return found.map { BIOSFileStatus(fileName: $0, isPresent: true, required: requirement.required, note: anyOne) }
+            let folder = biosDirectory.appending(path: requirement.fileName)
+            return found.map { name in
+                var status = BIOSFileStatus(fileName: name, isPresent: true, required: requirement.required, note: anyOne)
+                status.verdict = BIOSChecksums.verdict(of: folder.appending(path: name), as: requirement.fileName)
+                return status
+            }
                 + missing.map { BIOSFileStatus(fileName: $0, isPresent: false, required: requirement.required && found.isEmpty, note: anyOne) }
         }
     }
