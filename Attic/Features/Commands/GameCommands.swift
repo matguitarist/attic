@@ -9,8 +9,11 @@ extension FocusedValues {
     /// File › Add Games…, from the library window (which shows the
     /// import's questions and progress).
     @Entry var addGames: MenuAction?
-    /// File › Edit Collection…, while a collection is shown.
+    /// File › Edit Collection… and Export Collection…, while a collection
+    /// is shown.
     @Entry var editCollection: MenuAction?
+    @Entry var exportCollection: MenuAction?
+    @Entry var importCollection: MenuAction?
 }
 
 /// A menu bar action a window publishes for the commands to call.
@@ -28,6 +31,8 @@ struct LibraryCommands: Commands {
 
     @FocusedValue(\.addGames) private var addGames
     @FocusedValue(\.editCollection) private var editCollection
+    @FocusedValue(\.exportCollection) private var exportCollection
+    @FocusedValue(\.importCollection) private var importCollection
     @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
 
@@ -45,6 +50,10 @@ struct LibraryCommands: Commands {
 
             Button("Edit Collection…") { editCollection?() }
                 .disabled(editCollection == nil)
+            Button("Import Collection…") { importCollection?() }
+                .disabled(importCollection == nil)
+            Button("Export Collection…") { exportCollection?() }
+                .disabled(exportCollection == nil)
 
             Divider()
 

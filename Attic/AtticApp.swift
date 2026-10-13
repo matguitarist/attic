@@ -69,6 +69,15 @@ struct AtticApp: App {
             withAppEnvironment(ContentView())
                 .frame(minWidth: 800, minHeight: 500)
                 .task { await scanCoordinator.refreshGameCounts() }
+                // Each collection's folder follows every save of the library.
+                .task {
+                    let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
+                    CollectionFolders.restoreIfNeeded(context: modelContainer.mainContext, root: root)
+                    saveCollectionFolders()
+                    for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) {
+                        saveCollectionFolders()
+                    }
+                }
                 // Re-runs when the first ROMs folder is chosen, since the
                 // Emulation folder's default location derives from it.
                 .task(id: romsRootsStore.rootURLs) {
@@ -118,6 +127,11 @@ struct AtticApp: App {
             withAppEnvironment(SettingsTabView())
                 .modelContainer(modelContainer)
         }
+    }
+
+    private func saveCollectionFolders() {
+        let collections = (try? modelContainer.mainContext.fetch(FetchDescriptor<GameCollection>())) ?? []
+        CollectionFolders.save(collections, root: CollectionFolders.root(in: emulationFolderStore.folder.root))
     }
 
     /// Every scene sees the same shared app state.

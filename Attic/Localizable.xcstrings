@@ -294,6 +294,22 @@
         }
       }
     },
+    "%lld games on %lld systems": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games on %2$lld systems"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux sur %2$lld systèmes"
+          }
+        }
+      }
+    },
     "%lld items, %@.": {
       "localizations": {
         "en": {
@@ -495,6 +511,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un Dolphin déjà présent dans votre dossier Applications est utilisé tel quel ; sinon Attic installe la dernière version depuis dolphin-emu.org."
+          }
+        }
+      }
+    },
+    "A character or key art, above it in the side panel.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un personnage ou une illustration, au-dessus dans le panneau latéral."
           }
         }
       }
@@ -719,6 +745,26 @@
         }
       }
     },
+    "Added automatically": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutés automatiquement"
+          }
+        }
+      }
+    },
+    "Added by hand": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutés à la main"
+          }
+        }
+      }
+    },
     "Added to %@.": {
       "localizations": {
         "fr": {
@@ -883,6 +929,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Arguments"
+          }
+        }
+      }
+    },
+    "Artwork": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Illustration"
           }
         }
       }
@@ -1277,6 +1333,16 @@
         }
       }
     },
+    "Choose an exported collection folder, or its collection.json.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un dossier de collection exporté, ou son collection.json."
+          }
+        }
+      }
+    },
     "Choose an image or drag one onto the cover.": {
       "localizations": {
         "fr": {
@@ -1343,6 +1409,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Collection"
+          }
+        }
+      }
+    },
+    "Collection Imported": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collection importée"
           }
         }
       }
@@ -2183,6 +2259,36 @@
         }
       }
     },
+    "Export": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exporter"
+          }
+        }
+      }
+    },
+    "Export Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exporter la collection…"
+          }
+        }
+      }
+    },
+    "Export…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exporter…"
+          }
+        }
+      }
+    },
     "Failed to save %@: %@": {
       "localizations": {
         "en": {
@@ -2605,6 +2711,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Une résolution plus élevée est plus nette et demande un Mac plus rapide."
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer"
+          }
+        }
+      }
+    },
+    "Import Collection…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer une collection…"
           }
         }
       }
@@ -3109,6 +3235,16 @@
         }
       }
     },
+    "Logo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo"
+          }
+        }
+      }
+    },
     "Look": {
       "localizations": {
         "fr": {
@@ -3379,6 +3515,16 @@
         }
       }
     },
+    "New Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveaux jeux"
+          }
+        }
+      }
+    },
     "Nintendo (Switch)": {
       "localizations": {
         "fr": {
@@ -3535,6 +3681,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun choisi"
+          }
+        }
+      }
+    },
+    "None: games are added by hand. Edit the collection to give it a search.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune : les jeux sont ajoutés à la main. Modifiez la collection pour lui donner une recherche."
           }
         }
       }
@@ -3745,6 +3901,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Image"
+          }
+        }
+      }
+    },
+    "Pictures": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Images"
           }
         }
       }
@@ -4971,6 +5137,16 @@
         }
       }
     },
+    "Shown instead of the name, in the side panel and Cabinet Mode.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiché à la place du nom, dans le panneau latéral et le mode Cabinet."
+          }
+        }
+      }
+    },
     "Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.": {
       "localizations": {
         "fr": {
@@ -5101,6 +5277,16 @@
         }
       }
     },
+    "Start from a Series": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partir d’une série"
+          }
+        }
+      }
+    },
     "Start games without inserting coins. Applies to Neo Geo games run with FinalBurn Neo.": {
       "localizations": {
         "fr": {
@@ -5221,6 +5407,16 @@
         }
       }
     },
+    "That isn't a collection Attic can read.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce n’est pas une collection qu’Attic sait lire."
+          }
+        }
+      }
+    },
     "The %@ core isn't installed.": {
       "localizations": {
         "fr": {
@@ -5271,6 +5467,16 @@
         }
       }
     },
+    "The collection is saved as a folder, with its list of games and its pictures. Import it with File › Import Collection….": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La collection est enregistrée comme un dossier, avec sa liste de jeux et ses images. Importez-la avec Fichier › Importer une collection…."
+          }
+        }
+      }
+    },
     "The core “%@” is no longer installed.": {
       "localizations": {
         "fr": {
@@ -5291,12 +5497,12 @@
         }
       }
     },
-    "The games stay in your library.": {
+    "The games stay in your library. The collection's folder, with its pictures, goes to the Trash.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les jeux restent dans votre bibliothèque."
+            "value": "Les jeux restent dans votre bibliothèque. Le dossier de la collection, avec ses images, va à la corbeille."
           }
         }
       }
@@ -6019,6 +6225,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "xemu utilise sa propre configuration de manette — réglez-la une fois dans xemu."
+          }
+        }
+      }
+    },
+    "“%@” has %lld games; %lld aren't in your library.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "“%1$@” has %2$lld games; %3$lld aren't in your library."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %1$@ » a %2$lld jeux ; %3$lld ne sont pas dans votre bibliothèque."
+          }
+        }
+      }
+    },
+    "“%@” has all %lld of its games.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "“%1$@” has all %2$lld of its games."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %1$@ » a ses %2$lld jeux."
           }
         }
       }

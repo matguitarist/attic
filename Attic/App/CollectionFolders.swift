@@ -1,0 +1,207 @@
+import AppKit
+import SwiftData
+import AtticModels
+import AtticPersistence
+
+/// Each collection also lives as a folder, `Emulation/collections/<Name>/`:
+/// its `collection.json` (see `CollectionFile`), its `logo` and its
+/// `artwork`. Attic rewrites the file whenever the library is saved, so
+/// collections move and back up with the Emulation folder, come back if
+/// the library is ever reset, and export as just that folder.
+@MainActor
+enum CollectionFolders {
+    static func root(in emulationRoot: URL) -> URL {
+        emulationRoot.appending(path: "collections", directoryHint: .isDirectory)
+    }
+
+    // MARK: - Keeping the folders up to date
+
+    /// Writes every collection's file, renaming its folder along with it.
+    /// Never deletes a folder: only deleting the collection does.
+    static func save(_ collections: [GameCollection], root: URL) {
+        defer { cachedFolders = nil }
+        let folders = foldersByID(in: root)
+        for collection in collections {
+            let folder = folder(for: collection, root: root, existing: folders)
+            let target = root.appending(path: CollectionFile.folderName(for: collection.name), directoryHint: .isDirectory)
+            var current = folder
+            if folder.lastPathComponent != target.lastPathComponent, !FileManager.default.fileExists(atPath: target.path),
+               FileManager.default.fileExists(atPath: folder.path),
+               (try? FileManager.default.moveItem(at: folder, to: target)) != nil {
+                current = target
+            }
+            guard let data = try? file(for: collection).encoded() else { continue }
+            let url = current.appending(path: CollectionFile.fileName)
+            if (try? Data(contentsOf: url)) == data { continue }
+            try? FileManager.default.createDirectory(at: current, withIntermediateDirectories: true)
+            try? data.write(to: url, options: .atomic)
+        }
+    }
+
+    /// Moves a deleted collection's folder to the Trash.
+    static func remove(_ collection: GameCollection, root: URL) {
+        defer { cachedFolders = nil }
+        guard let folder = foldersByID(in: root)[collection.collectionID] else { return }
+        try? FileManager.default.trashItem(at: folder, resultingItemURL: nil)
+    }
+
+    /// Brings collections back from their folders when the library has
+    /// games but no collections (a reset library, or a new Mac).
+    static func restoreIfNeeded(context: ModelContext, root: URL) {
+        guard (try? context.fetchCount(FetchDescriptor<GameCollection>())) == 0,
+              (try? context.fetchCount(FetchDescriptor<Game>())) ?? 0 > 0 else { return }
+        for folder in foldersByID(in: root).values {
+            _ = importCollection(from: folder, context: context, root: root, keepID: true)
+        }
+    }
+
+    // MARK: - Import and export
+
+    struct ImportResult {
+        let collection: GameCollection
+        let found: Int
+        let missing: Int
+    }
+
+    /// Reads a collection folder (or its `collection.json`), finding its
+    /// games by system and path, else by title. Its pictures come along.
+    @discardableResult
+    static func importCollection(from url: URL, context: ModelContext, root: URL, keepID: Bool = false) -> ImportResult? {
+        let isFolder = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+        let folder = isFolder ? url : url.deletingLastPathComponent()
+        let fileURL = isFolder ? url.appending(path: CollectionFile.fileName) : url
+        guard let data = try? Data(contentsOf: fileURL), let file = try? CollectionFile.decoded(from: data),
+              let games = try? context.fetch(FetchDescriptor<Game>()),
+              let existing = try? context.fetch(FetchDescriptor<GameCollection>()) else { return nil }
+
+        let byKey = Dictionary(games.map { ($0.collectionKey, $0) }, uniquingKeysWith: { first, _ in first })
+        let bySystemTitle = Dictionary(games.map { ("\($0.systemCanonicalID)/\($0.title.lowercased())", $0) }, uniquingKeysWith: { first, _ in first })
+        let byTitle = Dictionary(games.map { ($0.title.lowercased(), $0) }, uniquingKeysWith: { first, _ in first })
+        var found: [Game] = []
+        var missing = 0
+        for entry in file.games {
+            if let game = byKey[entry.key] ?? bySystemTitle["\(entry.system)/\(entry.title.lowercased())"] ?? byTitle[entry.title.lowercased()] {
+                found.append(game)
+            } else {
+                missing += 1
+            }
+        }
+
+        let names = Set(existing.map(\.name))
+        var name = file.name
+        var number = 2
+        while names.contains(name) {
+            name = "\(file.name) \(number)"
+            number += 1
+        }
+        let collection = GameCollection(name: name)
+        if keepID, !existing.contains(where: { $0.collectionID == file.id }) {
+            collection.collectionID = file.id
+        }
+        context.insert(collection)
+        collection.games = found
+        collection.search = CollectionSearch(including: file.including, excluding: file.excluding)
+        collection.searchSystemID = file.system
+        collection.addsMatchingGames = file.addsMatchingGames
+        collection.excludedGameKeys = file.excluded
+        try? context.save()
+
+        save([collection], root: root)
+        // Pictures from elsewhere are copied in.
+        let destination = self.folder(for: collection, root: root, existing: foldersByID(in: root))
+        if destination.standardizedFileURL != folder.standardizedFileURL {
+            for picture in [CollectionFile.logoName, CollectionFile.artworkName] {
+                if let source = image(named: picture, in: folder) { setImage(source, as: picture, for: collection, root: root) }
+            }
+        }
+        return ImportResult(collection: collection, found: found.count, missing: missing)
+    }
+
+    /// Asks where to put a copy of the collection's folder, and puts it there.
+    static func export(_ collection: GameCollection, root: URL) {
+        save([collection], root: root)
+        let source = folder(for: collection, root: root, existing: foldersByID(in: root))
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = CollectionFile.folderName(for: collection.name)
+        panel.message = String(localized: "The collection is saved as a folder, with its list of games and its pictures. Import it with File › Import Collection….")
+        panel.prompt = String(localized: "Export")
+        panel.begin { response in
+            guard response == .OK, let destination = panel.url else { return }
+            if FileManager.default.fileExists(atPath: destination.path) {
+                try? FileManager.default.trashItem(at: destination, resultingItemURL: nil)
+            }
+            try? FileManager.default.copyItem(at: source, to: destination)
+        }
+    }
+
+    static func showInFinder(_ collection: GameCollection, root: URL) {
+        save([collection], root: root)
+        let folder = folder(for: collection, root: root, existing: foldersByID(in: root))
+        NSWorkspace.shared.activateFileViewerSelecting([folder])
+    }
+
+    // MARK: - Pictures
+
+    static func image(named name: String, for collection: GameCollection, root: URL) -> URL? {
+        image(named: name, in: folder(for: collection, root: root, existing: foldersByID(in: root)))
+    }
+
+    /// Copies `source` in as the collection's `name` picture (logo or
+    /// artwork), replacing the earlier one; nil removes it.
+    static func setImage(_ source: URL?, as name: String, for collection: GameCollection, root: URL) {
+        save([collection], root: root)
+        let folder = folder(for: collection, root: root, existing: foldersByID(in: root))
+        if let old = image(named: name, in: folder) { try? FileManager.default.trashItem(at: old, resultingItemURL: nil) }
+        guard let source else { return }
+        let accessing = source.startAccessingSecurityScopedResource()
+        defer { if accessing { source.stopAccessingSecurityScopedResource() } }
+        let ext = source.pathExtension.isEmpty ? "png" : source.pathExtension.lowercased()
+        try? FileManager.default.copyItem(at: source, to: folder.appending(path: "\(name).\(ext)"))
+    }
+
+    private static func image(named name: String, in folder: URL) -> URL? {
+        ["png", "jpg", "jpeg", "heic", "webp"].map { folder.appending(path: "\(name).\($0)") }
+            .first { FileManager.default.fileExists(atPath: $0.path) }
+    }
+
+    // MARK: - Files
+
+    static func file(for collection: GameCollection) -> CollectionFile {
+        CollectionFile(
+            id: collection.collectionID,
+            name: collection.name,
+            including: collection.searchIncluding,
+            excluding: collection.searchExcluding,
+            system: collection.searchSystemID,
+            addsMatchingGames: collection.addsMatchingGames,
+            games: collection.games
+                .sorted { $0.collectionKey < $1.collectionKey }
+                .map { CollectionFile.Entry(system: $0.systemCanonicalID, path: $0.romRelativePath, title: $0.title) },
+            excluded: collection.excludedGameKeys.sorted()
+        )
+    }
+
+    /// The collection's folder: where its file already is, else named
+    /// after it.
+    private static func folder(for collection: GameCollection, root: URL, existing: [UUID: URL]) -> URL {
+        existing[collection.collectionID] ?? root.appending(path: CollectionFile.folderName(for: collection.name), directoryHint: .isDirectory)
+    }
+
+    /// The last `foldersByID` result: Cabinet Mode and the side panel ask
+    /// for pictures on every redraw. Cleared whenever folders change.
+    private static var cachedFolders: (root: URL, byID: [UUID: URL])?
+
+    /// Collection folders under `root`, by the ID in their file.
+    private static func foldersByID(in root: URL) -> [UUID: URL] {
+        if let cachedFolders, cachedFolders.root == root { return cachedFolders.byID }
+        let folders = (try? FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? []
+        var byID: [UUID: URL] = [:]
+        for folder in folders {
+            guard let data = try? Data(contentsOf: folder.appending(path: CollectionFile.fileName)),
+                  let file = try? CollectionFile.decoded(from: data) else { continue }
+            byID[file.id] = folder
+        }
+        cachedFolders = (root, byID)
+        return byID
+    }
+}

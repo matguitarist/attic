@@ -30,6 +30,7 @@ struct CabinetView: View {
 
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(\.dismissWindow) private var dismissWindow
 
@@ -114,7 +115,12 @@ struct CabinetView: View {
             CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played"))
         ] + collections
             .filter { !$0.games.isEmpty }
-            .map { CabinetSection(selection: .collection($0.collectionID), title: $0.name) }
+            .map { collection in
+                let logo = CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: CollectionFolders.root(in: emulationFolderStore.folder.root))
+                    .flatMap(NSImage.init(contentsOf:))
+                    .map { Image(nsImage: $0) }
+                return CabinetSection(selection: .collection(collection.collectionID), title: collection.name, logo: logo)
+            }
         + systems
             .filter { $0.gameCount > 0 }
             .orderedByCategory()

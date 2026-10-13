@@ -88,6 +88,12 @@ struct CollectionEditorView: View {
     @State private var addsMatchingGames: Bool
     /// Listed games left unticked: members to take out, matches to skip.
     @State private var unticked: Set<PersistentIdentifier> = []
+    /// How many of the library's games each series template finds.
+    @State private var templateCounts: [String: Int] = [:]
+    /// Pictures picked here, put in place on save: nil leaves the current
+    /// one, `.some(nil)` removes it.
+    @State private var pendingPictures: [String: URL?] = [:]
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     var onCreate: (GameCollection) -> Void = { _ in }
 
     init(draft: CollectionDraft, onCreate: @escaping (GameCollection) -> Void = { _ in }) {
@@ -144,6 +150,14 @@ struct CollectionEditorView: View {
                     .onChange(of: name) {
                         if searchFollowsName { search.including = trimmedName }
                     }
+                if editedCollection == nil {
+                    Menu("Start from a Series") {
+                        ForEach(SeriesTemplate.all) { template in
+                            let count = templateCounts[template.name] ?? 0
+                            Button(count > 0 ? "\(template.name) (\(count))" : template.name) { apply(template) }
+                        }
+                    }
+                }
             } header: {
                 Text(editedCollection == nil ? String(localized: "New Collection") : String(localized: "Edit Collection"))
                     .font(.headline)
@@ -173,6 +187,11 @@ struct CollectionEditorView: View {
                 Text("Separate several words with commas: a game is found when its title contains any of the first ones and none of the others.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section("Pictures") {
+                pictureRow(String(localized: "Logo"), name: CollectionFile.logoName, help: String(localized: "Shown instead of the name, in the side panel and Cabinet Mode."))
+                pictureRow(String(localized: "Artwork"), name: CollectionFile.artworkName, help: String(localized: "A character or key art, above it in the side panel."))
             }
 
             if !members.isEmpty || !matches.isEmpty {
@@ -224,7 +243,56 @@ struct CollectionEditorView: View {
         }
         // Games left out before start unticked, so they can be put back.
         .task(id: search) { untickExcluded() }
+        .task {
+            guard editedCollection == nil else { return }
+            let titles = games.map(\.title)
+            templateCounts = await Task.detached(priority: .userInitiated) {
+                Dictionary(uniqueKeysWithValues: SeriesTemplate.all.map { template in
+                    (template.name, titles.count { template.search.matches($0) })
+                })
+            }.value
+        }
         .onChange(of: system) { untickExcluded() }
+    }
+
+    private var collectionsRoot: URL { CollectionFolders.root(in: emulationFolderStore.folder.root) }
+
+    private func apply(_ template: SeriesTemplate) {
+        name = template.name
+        search = template.search
+        searchFollowsName = false
+        system = nil
+        addsMatchingGames = true
+    }
+
+    /// The picture as it'll be once saved: picked here, else the current one.
+    private func picture(_ name: String) -> URL? {
+        if let pending = pendingPictures[name] { return pending }
+        return editedCollection.flatMap { CollectionFolders.image(named: name, for: $0, root: collectionsRoot) }
+    }
+
+    private func pictureRow(_ title: String, name: String, help: String) -> some View {
+        LabeledContent {
+            HStack {
+                if let url = picture(name), let image = NSImage(contentsOf: url) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 36)
+                    Button("Remove") { pendingPictures[name] = .some(nil) }
+                }
+                Button("Choose…") {
+                    let panel = NSOpenPanel()
+                    panel.allowedContentTypes = [.image]
+                    panel.begin { response in
+                        if response == .OK, let url = panel.url { pendingPictures[name] = .some(url) }
+                    }
+                }
+            }
+        } label: {
+            Text(title)
+            Text(help)
+        }
     }
 
     private func row(_ game: Game) -> some View {
@@ -276,6 +344,9 @@ struct CollectionEditorView: View {
         }
         collection.excludedGameKeys = excluded.sorted()
         try? modelContext.save()
+        for (name, url) in pendingPictures {
+            CollectionFolders.setImage(url, as: name, for: collection, root: collectionsRoot)
+        }
         if editedCollection == nil { onCreate(collection) }
         dismiss()
     }

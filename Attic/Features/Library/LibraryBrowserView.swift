@@ -31,6 +31,9 @@ struct LibraryBrowserView: View {
     @State private var collectionCoordinator = CollectionCoordinator()
     @State private var systemSettingsEditor = SystemSettingsEditor()
     @State private var romImporter = ROMImportCoordinator()
+    @State private var importSummary: String?
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @Environment(\.modelContext) private var modelContext
     @Environment(RomsRootsStore.self) private var romsRootsStore
     @Environment(ScanCoordinator.self) private var scanCoordinator
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
@@ -78,7 +81,7 @@ struct LibraryBrowserView: View {
                 if multiSelection.count > 1 {
                     MultipleGamesSummaryView(games: multiSelection)
                 } else {
-                    GameDetailView(game: selectedGame, system: selectedSystem)
+                    GameDetailView(game: selectedGame, system: selectedSystem, collection: shownCollection)
                 }
             }
             .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
@@ -90,6 +93,13 @@ struct LibraryBrowserView: View {
         .focusedSceneValue(\.selectedGame, selectedGame)
         .focusedSceneValue(\.addGames, MenuAction { chooseGamesToAdd() })
         .focusedSceneValue(\.editCollection, shownCollection.map { collection in MenuAction { collectionCoordinator.edit(collection) } })
+        .focusedSceneValue(\.exportCollection, shownCollection.map { collection in MenuAction { CollectionFolders.export(collection, root: collectionsRoot) } })
+        .focusedSceneValue(\.importCollection, MenuAction { chooseCollectionToImport() })
+        .alert("Collection Imported", isPresented: Binding(get: { importSummary != nil }, set: { if !$0 { importSummary = nil } })) {
+            Button("OK") { importSummary = nil }
+        } message: {
+            Text(importSummary ?? "")
+        }
         .focusedSceneValue(\.gameInfoEditor, infoEditor)
         .environment(infoEditor)
         .focusedSceneValue(\.collectionCoordinator, collectionCoordinator)
@@ -113,12 +123,13 @@ struct LibraryBrowserView: View {
         ) { collection in
             Button("Delete Collection", role: .destructive) {
                 if selection == .collection(collection.collectionID) { selection = .allGames }
+                CollectionFolders.remove(collection, root: collectionsRoot)
                 let context = collection.modelContext
                 context?.delete(collection)
                 try? context?.save()
             }
         } message: { _ in
-            Text("The games stay in your library.")
+            Text("The games stay in your library. The collection's folder, with its pictures, goes to the Trash.")
         }
         .sheet(item: $infoEditor.game) { game in
             EditGameInfoView(game: game)
@@ -179,6 +190,30 @@ struct LibraryBrowserView: View {
     private var shownCollection: GameCollection? {
         guard case .collection(let id) = currentSelection else { return nil }
         return collections.first { $0.collectionID == id }
+    }
+
+    private var collectionsRoot: URL { CollectionFolders.root(in: emulationFolderStore.folder.root) }
+
+    /// File › Import Collection…: a collection folder someone exported, or
+    /// its collection.json.
+    private func chooseCollectionToImport() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = true
+        panel.allowedContentTypes = [.json, .folder]
+        panel.prompt = String(localized: "Import")
+        panel.message = String(localized: "Choose an exported collection folder, or its collection.json.")
+        panel.begin { response in
+            guard response == .OK, let url = panel.url,
+                  let result = CollectionFolders.importCollection(from: url, context: modelContext, root: collectionsRoot) else {
+                if response == .OK { importSummary = String(localized: "That isn't a collection Attic can read.") }
+                return
+            }
+            selection = .collection(result.collection.collectionID)
+            importSummary = result.missing == 0
+                ? String(localized: "“\(result.collection.name)” has all \(result.found) of its games.")
+                : String(localized: "“\(result.collection.name)” has \(result.found) games; \(result.missing) aren't in your library.")
+        }
     }
 
     /// File › Add Games…: the same import as dropping them on the window.

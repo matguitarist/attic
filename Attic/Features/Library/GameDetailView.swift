@@ -11,6 +11,8 @@ struct GameDetailView: View {
     let game: Game?
     /// The system being browsed, summed up while no game is selected.
     var system: GameSystem? = nil
+    /// Likewise the collection being browsed.
+    var collection: GameCollection? = nil
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
@@ -94,6 +96,8 @@ struct GameDetailView: View {
             .id(game.persistentModelID)
         } else if let system {
             SystemOverviewView(system: system)
+        } else if let collection {
+            CollectionOverviewView(collection: collection)
         } else {
             ContentUnavailableView(
                 "No Game Selected",

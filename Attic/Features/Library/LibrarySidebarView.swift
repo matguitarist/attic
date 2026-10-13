@@ -18,6 +18,7 @@ struct LibrarySidebarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(CollectionCoordinator.self) private var collectionCoordinator
     @Environment(SystemSettingsEditor.self) private var systemSettingsEditor
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(\.importROMs) private var importROMs
     @AppStorage(SystemSortOrder.key) private var sortOrder = SystemSortOrder.manufacturer
     @State private var systemToRemove: GameSystem?
@@ -48,6 +49,8 @@ struct LibrarySidebarView: View {
                             ScrapeSelectionMenu(title: "Scrape This Collection", selection: .collection(collection.collectionID))
                             Divider()
                             Button("Edit Collection…") { collectionCoordinator.edit(collection) }
+                            Button("Export…") { CollectionFolders.export(collection, root: CollectionFolders.root(in: emulationFolderStore.folder.root)) }
+                            Button("Show in Finder") { CollectionFolders.showInFinder(collection, root: CollectionFolders.root(in: emulationFolderStore.folder.root)) }
                             Button("Delete Collection…", role: .destructive) { collectionCoordinator.pendingDeletion = collection }
                         }
                 }
