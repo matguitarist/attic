@@ -184,10 +184,9 @@ final class ScrapeCoordinator {
         return nil
     }
 
-    /// Scrapes every game in `games` that's missing a description (the same
-    /// proxy the single-game path uses for "not yet scraped"), skipping
-    /// ones that already have one so a huge library doesn't re-request data
-    /// it already has. Runs sequentially with a small pause between
+    /// Scrapes every game in `games` missing its description, cover,
+    /// screenshot or video (see `lacksInfo`), skipping complete ones so a
+    /// huge library doesn't re-request data it already has. Runs sequentially with a small pause between
     /// requests — free-tier accounts on both sources have tight rate/thread
     /// limits, and hundreds of games hammered concurrently would just get
     /// rejected.
@@ -220,8 +219,16 @@ final class ScrapeCoordinator {
         batchState = .idle
     }
 
+    /// What "missing" means for a batch: no description, cover or
+    /// screenshot, or no video from ScreenScraper (TheGamesDB has none).
+    static func lacksInfo(_ game: Game, from source: ScraperSource?) -> Bool {
+        if game.gameDescription == nil || game.coverArtPath == nil || game.titleScreenPath == nil { return true }
+        if case .theGamesDB? = source { return false }
+        return game.videoPath == nil
+    }
+
     private func runBatch(games: [Game], source: ScraperSource, onlyMissing: Bool = true, force: Bool = false) async {
-        let missing = onlyMissing ? games.filter { $0.gameDescription == nil } : games
+        let missing = onlyMissing ? games.filter { Self.lacksInfo($0, from: source) } : games
         guard !missing.isEmpty else {
             batchState = .finished(scraped: 0, alreadyPresent: games.count, failed: 0)
             return
