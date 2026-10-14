@@ -198,7 +198,7 @@ struct LibraryStatsView: View {
         }.value
     }
 
-    nonisolated private static func size(of url: URL) -> Int64 {
+    nonisolated static func size(of url: URL) -> Int64 {
         let size = Int64((try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0)
         guard ["cue", "gdi", "m3u"].contains(url.pathExtension.lowercased()),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return size }

@@ -61,16 +61,17 @@ struct SystemOverviewView: View {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
                 Button("System Settings…") { systemSettingsEditor.system = system }
                 ScrapeSelectionButton(title: "Scrape This System", selection: .system(system.systemID))
-                if ToolsCoordinator.canVerify(system.systemID) {
-                    Button("Verify Games…") {
-                        Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library, system: system.systemID) }
-                    }
-                    .disabled(tools.isBusy || system.gameCount == 0)
-                    .help("Checks this system's games against No-Intro's lists of known good dumps.")
-                }
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)
                 }
+            }
+
+            if system.gameCount > 0 {
+                SystemGamesSection(games: system.games)
+            }
+
+            if ToolsCoordinator.canVerify(system.systemID), system.gameCount > 0 {
+                SystemVerificationSection(systemID: system.systemID, games: system.games, host: .library)
             }
 
             informationSection

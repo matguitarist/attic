@@ -851,6 +851,22 @@
         }
       }
     },
+    "%lld of %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld sur %2$lld"
+          }
+        }
+      }
+    },
     "%lld of %lld games": {
       "localizations": {
         "en": {
@@ -2290,6 +2306,16 @@
         }
       }
     },
+    "Checks this system's sets against its emulator's DAT, and shows what's missing.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifie les jeux de ce système avec le DAT de leur émulateur, et montre ce qui manque."
+          }
+        }
+      }
+    },
     "Checks your games against No-Intro's lists of known good dumps.": {
       "localizations": {
         "fr": {
@@ -2946,6 +2972,16 @@
         }
       }
     },
+    "Covers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jaquettes"
+          }
+        }
+      }
+    },
     "Create": {
       "localizations": {
         "fr": {
@@ -3172,6 +3208,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Description"
+          }
+        }
+      }
+    },
+    "Descriptions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descriptions"
           }
         }
       }
@@ -5042,6 +5088,32 @@
         }
       }
     },
+    "Last checked %@, against %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last checked %1$@, against %2$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifié le %1$@, avec %2$@."
+          }
+        }
+      }
+    },
+    "Last checked %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifié le %@."
+          }
+        }
+      }
+    },
     "Last checked %@. Updates come from the same nightly builds RetroArch's Online Updater uses, compared by checksum — a core only shows an update when its code actually changed.": {
       "localizations": {
         "fr": {
@@ -5842,6 +5914,26 @@
         }
       }
     },
+    "Not Checked": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non vérifiés"
+          }
+        }
+      }
+    },
+    "Not Listed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non répertoriés"
+          }
+        }
+      }
+    },
     "Not a known dump": {
       "localizations": {
         "fr": {
@@ -5928,6 +6020,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Non renseigné"
+          }
+        }
+      }
+    },
+    "Not verified yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore vérifié."
           }
         }
       }
@@ -7550,6 +7652,16 @@
         }
       }
     },
+    "Screenshots": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captures d'écran"
+          }
+        }
+      }
+    },
     "Search": {
       "localizations": {
         "fr": {
@@ -8796,6 +8908,16 @@
         }
       }
     },
+    "Verification": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification"
+          }
+        }
+      }
+    },
     "Verified": {
       "localizations": {
         "fr": {
@@ -8836,6 +8958,16 @@
         }
       }
     },
+    "Verify Again…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier à nouveau…"
+          }
+        }
+      }
+    },
     "Verify Games": {
       "localizations": {
         "fr": {
@@ -8862,6 +8994,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérification des jeux…"
+          }
+        }
+      }
+    },
+    "Videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéos"
           }
         }
       }
@@ -8982,6 +9124,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre compte (facultatif)"
+          }
+        }
+      }
+    },
+    "Your Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos jeux"
           }
         }
       }

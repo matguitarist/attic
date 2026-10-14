@@ -24,7 +24,7 @@ enum AppAppearance: String, CaseIterable, Identifiable {
     }
 
     /// Sets every window's appearance, the open ones included.
-    func apply() {
+    @MainActor func apply() {
         NSApplication.shared.appearance = switch self {
         case .system: nil
         case .light: NSAppearance(named: .aqua)

@@ -27,7 +27,7 @@ final class ToolsCoordinator {
     }
 
     /// Where a report shows: the window it was asked for from.
-    enum Host { case library, settings }
+    enum Host { case library, settings, help }
 
     struct Activity: Equatable {
         let title: String
@@ -50,6 +50,22 @@ final class ToolsCoordinator {
     var chdmanError: String?
 
     var isBusy: Bool { isAnalyzing || activity != nil }
+
+    /// When a system's games were last checked, and against which DATs.
+    struct Verification: Codable, Equatable {
+        let date: Date
+        let dats: [String]
+    }
+
+    private static let verificationsKey = "verifications"
+
+    /// The last verification of each system, by its ID.
+    private(set) var verifications: [String: Verification] = {
+        guard let data = UserDefaults.standard.data(forKey: ToolsCoordinator.verificationsKey) else { return [:] }
+        return (try? JSONDecoder().decode([String: Verification].self, from: data)) ?? [:]
+    }() {
+        didSet { UserDefaults.standard.set(try? JSONEncoder().encode(verifications), forKey: Self.verificationsKey) }
+    }
 
     // MARK: - Reports
 
@@ -231,6 +247,14 @@ final class ToolsCoordinator {
         }.value
         await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name) })
         activity = nil
+        // Each system checked, with what it was checked against.
+        let now = Date()
+        for checked in Set(files.filter { checks[$0.path] != nil }.map(\.system)) {
+            let dats = Self.isArcade(checked)
+                ? arcade.name(of: Self.arcadeSource(for: checked)).map { [$0] } ?? arcade.names
+                : verifier.sets.filter { $0.system == checked }.map(\.name)
+            verifications[checked.rawValue] = Verification(date: now, dats: dats)
+        }
         var result = Self.report(files: files, checks: checks, verifier: verifier)
         result.system = system
         result.datCount += arcade.names.count

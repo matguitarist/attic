@@ -62,6 +62,7 @@ struct HelpView: View {
                 ContentUnavailableView("Select a Topic", systemImage: "questionmark.circle")
             }
         }
+        .toolsReports(in: .help)
     }
 }
 
@@ -98,6 +99,7 @@ private struct SystemHelpView: View {
     @State private var biosCheck = 0
 
     private var definition: SystemDefinition? { SystemTaxonomy.definition(for: systemID) }
+    private var librarySystem: GameSystem? { librarySystems.first { $0.systemID == systemID } }
     private var info: SystemHelpInfo? { SystemHelpContent.info(for: systemID) }
     private var recommendation: SystemEmulatorRecommendation? { EmulatorCatalog.recommendation(for: systemID) }
 
@@ -105,6 +107,12 @@ private struct SystemHelpView: View {
         Form {
             headerSection
             informationSection
+            if let librarySystem, librarySystem.gameCount > 0 {
+                SystemGamesSection(games: librarySystem.games)
+                if ToolsCoordinator.canVerify(systemID) {
+                    SystemVerificationSection(systemID: systemID, games: librarySystem.games, host: .help)
+                }
+            }
             emulatorsSection
             biosSection
             if let controls = info?.controls, !controls.isEmpty {
@@ -138,7 +146,7 @@ private struct SystemHelpView: View {
                         Text(verbatim: SystemFacts.summary(for: systemID) ?? info.manufacturer)
                             .foregroundStyle(.secondary)
                     }
-                    if let count = librarySystems.first(where: { $0.systemID == systemID })?.gameCount, count > 0 {
+                    if let count = librarySystem?.gameCount, count > 0 {
                         Text("\(count) games in your library")
                             .font(.callout)
                             .foregroundStyle(.secondary)
@@ -230,19 +238,12 @@ private struct SystemHelpView: View {
                 Text("No BIOS needed.")
                     .foregroundStyle(.secondary)
             } else {
+                // Each file's MD5, and whether it's a known good dump.
                 ForEach(requirements.statuses(in: emulationFolderStore.folder.bios)) { file in
-                    HStack(alignment: .firstTextBaseline) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Tag(file.fileName)
-                            Text([file.required ? String(localized: "Required") : String(localized: "Optional"), file.note]
-                                .compactMap { $0 }
-                                .joined(separator: " · "))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        statusLabel(file.isPresent, yes: "Found", no: "Missing", missingIsWarning: file.required)
-                    }
+                    BIOSFileRow(file: file) { biosCheck += 1 }
+                }
+                Button("Show BIOS Folder") {
+                    BIOSFileRow.showFolder(for: requirements, bios: emulationFolderStore.folder.bios)
                 }
             }
         } header: {
