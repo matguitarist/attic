@@ -1,7 +1,24 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ and %lld more": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ and %2$lld more"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ et %2$lld autres"
+          }
+        }
+      }
+    },
     "%lld ROMs from another version": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "variations": {
@@ -41,7 +58,7 @@
         }
       }
     },
-    "%lld ROMs missing": {
+    "%lld ROMs from another version: %@": {
       "localizations": {
         "en": {
           "variations": {
@@ -49,13 +66,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ROM missing"
+                  "value": "%1$lld ROM from another version: %2$@"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ROMs missing"
+                  "value": "%1$lld ROMs from another version: %2$@"
                 }
               }
             }
@@ -67,13 +84,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ROM manquante"
+                  "value": "%1$lld ROM d'une autre version : %2$@"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld ROM manquantes"
+                  "value": "%1$lld ROM d'une autre version : %2$@"
                 }
               }
             }
@@ -81,7 +98,7 @@
         }
       }
     },
-    "%lld ROMs missing (in %@)": {
+    "%lld ROMs missing: %@": {
       "localizations": {
         "en": {
           "variations": {
@@ -89,13 +106,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%1$lld ROM missing (in %2$@)"
+                  "value": "%1$lld ROM missing: %2$@"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%1$lld ROMs missing (in %2$@)"
+                  "value": "%1$lld ROMs missing: %2$@"
                 }
               }
             }
@@ -107,13 +124,53 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%1$lld ROM manquante (dans %2$@)"
+                  "value": "%1$lld ROM manquante : %2$@"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%1$lld ROM manquantes (dans %2$@)"
+                  "value": "%1$lld ROM manquantes : %2$@"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld ROMs missing: %@ (in %@)": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM missing: %2$@ (in %3$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROMs missing: %2$@ (in %3$@)"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquante : %2$@ (dans %3$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquantes : %2$@ (dans %3$@)"
                 }
               }
             }

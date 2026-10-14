@@ -189,6 +189,7 @@ struct ArcadeVerifierTests {
         let puzzler = verifier.check(roms.appending(path: "puzzler.zip"), preferring: .fbneo, biosDirectory: bios)
         #expect(puzzler?.verdict == .incomplete)
         #expect(puzzler?.detail?.contains("puzzle.zip") == true)
+        #expect(puzzler?.detail?.contains("p1.bin") == true)
         #expect(verifier.check(roms.appending(path: "maze.zip"), preferring: .fbneo, biosDirectory: bios)?.verdict == .verified)
     }
 

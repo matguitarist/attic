@@ -224,11 +224,12 @@ public actor LibraryStore {
 
     /// What a DAT said of each game, by path: its verdict and the DAT's
     /// name for it (nils when there was no DAT to check it against).
-    public func setDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?)]) throws {
+    public func setDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?, detail: String?)]) throws {
         for game in try modelContext.fetch(FetchDescriptor<Game>()) {
             guard let result = verdicts[game.romAbsolutePath] else { continue }
             if game.datVerdict != result.verdict { game.datVerdict = result.verdict }
             if game.datName != result.name { game.datName = result.name }
+            if game.datDetail != result.detail { game.datDetail = result.detail }
         }
         if modelContext.hasChanges { try modelContext.save() }
     }

@@ -39,8 +39,8 @@ struct SystemVerificationSection: View {
                     .foregroundStyle(.secondary)
             } else {
                 row("Verified", systemImage: "checkmark.seal.fill", color: .green, count: verdicts["verified"])
-                row("Incomplete", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["incomplete"])
-                row(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["differs"])
+                row("Incomplete", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["incomplete"], verdict: "incomplete")
+                row(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["differs"], verdict: "differs")
                 row("Not Listed", systemImage: "questionmark.circle", color: .secondary, count: verdicts["unknown"])
                 row("Not Checked", systemImage: "circle", color: .secondary, count: verdicts[""])
             }
@@ -82,12 +82,18 @@ struct SystemVerificationSection: View {
         }
     }
 
-    /// One verdict's row, left out when no game has it.
+    /// One verdict's row, left out when no game has it. With `verdict`,
+    /// its games and what's wrong with each are a click away.
     @ViewBuilder
-    private func row(_ title: LocalizedStringKey, systemImage: String, color: Color, count: Int?) -> some View {
+    private func row(_ title: LocalizedStringKey, systemImage: String, color: Color, count: Int?, verdict: String? = nil) -> some View {
         if let count, count > 0 {
             LabeledContent {
-                Text(count.formatted()).monospacedDigit()
+                HStack {
+                    Text(count.formatted()).monospacedDigit()
+                    if let verdict {
+                        DATGamesButton(games: games.filter { $0.datVerdict == verdict })
+                    }
+                }
             } label: {
                 Label(title, systemImage: systemImage).foregroundStyle(color)
             }
@@ -330,5 +336,99 @@ struct RemoveGamesView: View {
         case .hack: "(Hack), [h]"
         case .badDump: "[b]"
         }
+    }
+}
+
+/// What Verify Games found wrong with a game, as a list: "2 ROMs missing:
+/// a.c1 and b.c2 (in x.zip)", one line per problem.
+private func detailLines(_ detail: String) -> [String] {
+    // "set: problem; problem"
+    let problems = detail.firstRange(of: ": ").map { String(detail[$0.upperBound...]) } ?? detail
+    return problems.components(separatedBy: "; ")
+}
+
+/// "Details" beside a game's verdict: what's missing or from another
+/// version. Saved by Verify Games; for a game verified before details
+/// were saved, the game is checked again on its own.
+struct DATDetailButton: View {
+    let game: Game
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @State private var shows = false
+    @State private var checking = false
+
+    var body: some View {
+        Button("Details") { shows = true }
+            .buttonStyle(.link)
+            .popover(isPresented: $shows, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(verbatim: game.romAbsoluteURL.lastPathComponent).font(.headline)
+                    if let detail = game.datDetail {
+                        ForEach(detailLines(detail), id: \.self) { line in
+                            Label(line, systemImage: "exclamationmark.triangle")
+                                .foregroundStyle(.orange)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    } else if checking {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Text("Nothing more to say: the set's chips all match.")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .textSelection(.enabled)
+                .padding(16)
+                .frame(width: 380, alignment: .leading)
+                .task {
+                    guard game.datDetail == nil else { return }
+                    checking = true
+                    _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator)
+                    checking = false
+                }
+            }
+    }
+}
+
+/// A verdict's games in the system's Verification section, each with
+/// what's wrong with it.
+struct DATGamesButton: View {
+    let games: [Game]
+    @State private var shows = false
+
+    var body: some View {
+        Button("Show") { shows = true }
+            .buttonStyle(.link)
+            .popover(isPresented: $shows, arrowEdge: .trailing) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(games.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }) { game in
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(game.title).bold()
+                                Text(verbatim: game.romAbsoluteURL.lastPathComponent)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                if let detail = game.datDetail {
+                                    ForEach(detailLines(detail), id: \.self) { line in
+                                        Text(line)
+                                            .font(.callout)
+                                            .foregroundStyle(.orange)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                } else if game.datVerdict != "differs" || ToolsCoordinator.isArcade(CanonicalSystemID(game.systemCanonicalID)) {
+                                    Text("Verify Again, or open the game's Details, to see what's wrong.")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    .textSelection(.enabled)
+                    .padding(16)
+                    .frame(width: 420, alignment: .leading)
+                }
+                .frame(maxHeight: 480)
+            }
     }
 }

@@ -2440,6 +2440,7 @@
       }
     },
     "Chips or a disc image are missing: the game may not start. Tools › Verify Games says which.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -3331,6 +3332,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Descriptions"
+          }
+        }
+      }
+    },
+    "Details": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détails"
           }
         }
       }
@@ -6307,6 +6318,16 @@
         }
       }
     },
+    "Nothing more to say: the set's chips all match.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à signaler : toutes les puces du jeu correspondent."
+          }
+        }
+      }
+    },
     "Nothing new for “%@”: it already has everything found. Use Scrape Info › Replace Existing Info to overwrite it.": {
       "localizations": {
         "fr": {
@@ -8155,6 +8176,16 @@
         }
       }
     },
+    "Show": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher"
+          }
+        }
+      }
+    },
     "Show BIOS Folder": {
       "localizations": {
         "fr": {
@@ -9297,6 +9328,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifier les jeux %@"
+          }
+        }
+      }
+    },
+    "Verify Again, or open the game's Details, to see what's wrong.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifiez à nouveau, ou ouvrez les détails du jeu, pour voir ce qui ne va pas."
           }
         }
       }

@@ -63,6 +63,13 @@ public struct ArcadeVerifier: Sendable {
 
     // MARK: - Checking
 
+    /// ROM file names, the first eight of them: "a.c1, b.c2 and 3 more".
+    static func listed(_ names: [String]) -> String {
+        let shown = Array(names.prefix(8))
+        guard names.count > shown.count else { return shown.formatted(.list(type: .and)) }
+        return String(localized: "\(shown.joined(separator: ", ")) and \(names.count - shown.count) more", bundle: .module)
+    }
+
     /// nil when there's no DAT, or the set can't be read (a 7z).
     public func check(_ url: URL, preferring preferred: Source, biosDirectory: URL) -> DATVerifier.Check? {
         guard url.pathExtension.lowercased() == "zip" else { return nil }
@@ -85,7 +92,8 @@ public struct ArcadeVerifier: Sendable {
         let names = Swift.Set(pool.map { ($0.name as NSString).lastPathComponent.lowercased() })
 
         var missing: [UInt32] = []
-        var wrong = 0
+        var missingNames: [String] = []
+        var wrongNames: [String] = []
         // A board's BIOS versions, and those a game carries itself (The
         // Irritating Maze's own and its Japanese hack): any one does.
         func isBIOS(_ rom: ROM) -> Bool {
@@ -93,7 +101,12 @@ public struct ArcadeVerifier: Sendable {
         }
         let biosROMs = machine.roms.filter(isBIOS)
         for rom in machine.roms where !crcs.contains(rom.crc) && !isBIOS(rom) {
-            if names.contains(rom.name.lowercased()) { wrong += 1 } else { missing.append(rom.crc) }
+            if names.contains(rom.name.lowercased()) {
+                wrongNames.append(rom.name)
+            } else {
+                missing.append(rom.crc)
+                missingNames.append(rom.name)
+            }
         }
         // Any one BIOS version does; none at all, and the game can't start.
         let biosMissing = !biosROMs.isEmpty && !biosROMs.contains { crcs.contains($0.crc) }
@@ -115,19 +128,21 @@ public struct ArcadeVerifier: Sendable {
         if biosMissing, let bios = Self.chain(of: setName, in: set).last {
             details.append(String(localized: "BIOS set \(bios).zip missing", bundle: .module))
         }
-        if wrong > 0 { details.append(String(localized: "\(wrong) ROMs from another version", bundle: .module)) }
+        if !wrongNames.isEmpty {
+            details.append(String(localized: "\(wrongNames.count) ROMs from another version: \(Self.listed(wrongNames))", bundle: .module))
+        }
         if !missing.isEmpty {
             // Another set's zip may hold them: a game the emulator lists
             // on its own, kept as another's clone ("in puzzledp.zip").
             let elsewhere = Self.zips(holding: missing, in: folder, besides: [setName] + Self.chain(of: setName, in: set))
             details.append(elsewhere.isEmpty
-                ? String(localized: "\(missing.count) ROMs missing", bundle: .module)
-                : String(localized: "\(missing.count) ROMs missing (in \(elsewhere.map { $0 + ".zip" }.formatted(.list(type: .and))))", bundle: .module))
+                ? String(localized: "\(missing.count) ROMs missing: \(Self.listed(missingNames))", bundle: .module)
+                : String(localized: "\(missing.count) ROMs missing: \(Self.listed(missingNames)) (in \(elsewhere.map { $0 + ".zip" }.formatted(.list(type: .and))))", bundle: .module))
         }
         for disk in wrongDisks { details.append(String(localized: "disc image \(disk) from another version", bundle: .module)) }
         for disk in missingDisks { details.append(String(localized: "disc image \(disk).chd missing", bundle: .module)) }
-        let detail = details.isEmpty ? nil : details.joined(separator: ", ")
-        let verdict: DATVerifier.Verdict = wrong > 0 || !wrongDisks.isEmpty ? .differs
+        let detail = details.isEmpty ? nil : details.joined(separator: "; ")
+        let verdict: DATVerifier.Verdict = !wrongNames.isEmpty || !wrongDisks.isEmpty ? .differs
             : !missing.isEmpty || biosMissing || !missingDisks.isEmpty ? .incomplete : .verified
         return DATVerifier.Check(verdict: verdict, name: machine.title, detail: detail.map { "\(set.name): \($0)" })
     }

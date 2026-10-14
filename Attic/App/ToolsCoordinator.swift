@@ -245,7 +245,7 @@ final class ToolsCoordinator {
             }
             return checks
         }.value
-        await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name) })
+        await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name, detail: $0?.detail) })
         activity = nil
         // Each system checked, with what it was checked against.
         let now = Date()
@@ -274,6 +274,25 @@ final class ToolsCoordinator {
             result.arcadeDATs[source] = arcade.name(of: source)
         }
         report = .verify(result)
+    }
+
+    /// Checks one game again, for what's wrong with it, and saves what's
+    /// found: quicker than verifying its whole system.
+    func recheck(_ game: Game, datsFolder: URL, scanCoordinator: ScanCoordinator) async -> DATVerifier.Check? {
+        let url = game.romAbsoluteURL
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        let biosDirectory = datsFolder.deletingLastPathComponent().appending(path: "BIOS", directoryHint: .isDirectory)
+        let check = await Task.detached(priority: .userInitiated) { () -> DATVerifier.Check? in
+            if Self.isArcade(system) {
+                let arcade = ArcadeVerifier.load(from: datsFolder, wanted: [url.deletingPathExtension().lastPathComponent], cacheDirectory: Self.arcadeCache)
+                return arcade.check(url, preferring: Self.arcadeSource(for: system), biosDirectory: biosDirectory)
+            }
+            return DATVerifier.load(from: datsFolder).check(url, system: system)
+        }.value
+        if let check {
+            await scanCoordinator.saveDATVerdicts([game.romAbsolutePath: (check.verdict.rawValue, check.name, check.detail)])
+        }
+        return check
     }
 
     /// Downloads an arcade DAT into the DATs folder, from FinalBurn Neo's

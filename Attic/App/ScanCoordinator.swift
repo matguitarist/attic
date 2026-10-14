@@ -51,7 +51,7 @@ final class ScanCoordinator {
         try? await libraryStore.applyRenames(renames)
     }
 
-    func saveDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?)]) async {
+    func saveDATVerdicts(_ verdicts: [String: (verdict: String?, name: String?, detail: String?)]) async {
         try? await libraryStore.setDATVerdicts(verdicts)
     }
 

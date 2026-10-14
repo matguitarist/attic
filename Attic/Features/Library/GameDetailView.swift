@@ -341,14 +341,20 @@ private struct DATVerdictRow: View {
                            : game.datName.map { String(localized: "A good dump of \($0).") } ?? "")
         case "incomplete":
             LabeledContent(label) {
-                Label("Incomplete", systemImage: "exclamationmark.triangle")
-                    .foregroundStyle(.orange)
+                HStack {
+                    Label("Incomplete", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                    DATDetailButton(game: game)
+                }
             }
-            .help(String(localized: "Chips or a disc image are missing: the game may not start. Tools › Verify Games says which."))
+            .help(String(localized: "Chips or a disc image are missing: the game may not start."))
         case "differs":
             LabeledContent(label) {
-                Label(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle")
-                    .foregroundStyle(.orange)
+                HStack {
+                    Label(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                    if isArcade { DATDetailButton(game: game) }
+                }
             }
             .help(isArcade ? String(localized: "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.")
                            : String(localized: "Named like a game No-Intro lists, but the data isn't that game's: a bad dump, a hack, or another revision."))

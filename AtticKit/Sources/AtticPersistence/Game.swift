@@ -49,6 +49,9 @@ public final class Game {
     /// The DAT's name for the game, when it's verified as one or named
     /// like one.
     public var datName: String?
+    /// What's wrong, when it isn't verified: an arcade set's missing or
+    /// other-version ROMs, and where they are.
+    public var datDetail: String?
 
     /// When the game joined the library, for Recently Added. Games from
     /// before there was one take the day their file went in its folder.
