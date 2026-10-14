@@ -132,7 +132,7 @@ public struct DATVerifier: Sendable {
     /// Whether the file is one a cartridge DAT can list: not a disc
     /// image (Redump's), whose tracks a DAT lists one by one.
     public static func canCheck(_ url: URL) -> Bool {
-        !["chd", "cue", "bin", "gdi", "iso", "m3u", "rvz", "gcz", "cso", "pbp", "cdi", "wbfs", "wua", "wux", "rpx", "ccd", "img", "mds", "nrg"]
+        !["chd", "cue", "bin", "gdi", "iso", "m3u", "rvz", "gcz", "cso", "zso", "pbp", "cdi", "wbfs", "wua", "wux", "rpx", "ccd", "img", "mds", "nrg"]
             .contains(url.pathExtension.lowercased())
     }
 

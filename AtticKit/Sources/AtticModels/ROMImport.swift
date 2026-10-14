@@ -14,7 +14,7 @@ public enum ROMImport {
         "pce": .pcengine, "sgx": .supergrafx,
         "ws": .wonderswan, "ngp": .ngp, "ngc": .ngpc, "ngpc": .ngpc,
         "a52": .atari5200, "xex": .atari800, "atr": .atari800, "atx": .atari800, "lnx": .atarilynx,
-        "gcm": .gamecube, "wbfs": .wii, "cso": .psp, "pbp": .psp, "cdi": .dreamcast, "neo": .neogeo,
+        "gcm": .gamecube, "wbfs": .wii, "cso": .psp, "zso": .psp, "pbp": .psp, "cdi": .dreamcast, "neo": .neogeo,
         "d64": .c64, "t64": .c64, "g64": .c64, "x64": .c64, "crt": .c64, "prg": .c64,
         "tzx": .zxspectrum, "dim": .x68000, "ipf": .amiga, "hdf": .amiga, "wad": .doom,
     ]

@@ -182,7 +182,7 @@ struct ToolsCommands: Commands {
                 Task { await tools.analyzeMediaImport(from: folder, scanCoordinator: scanCoordinator, host: .library) }
             }
             .disabled(roots.isEmpty || tools.isBusy)
-            .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games.")
+            .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.")
 
             Divider()
 

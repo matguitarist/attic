@@ -499,6 +499,46 @@
         }
       }
     },
+    "%lld games copied.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game copied."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games copied."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu copié."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux copiés."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld games got media or info, %lld files copied.": {
       "localizations": {
         "en": {
@@ -563,6 +603,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld jeux renommés, avec leurs médias, leurs entrées de gamelist et leurs sauvegardes. %2$lld ont gardé leur nom : un autre fichier porte déjà le nouveau."
+          }
+        }
+      }
+    },
+    "%lld games to copy, %@": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld game to copy, %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld games to copy, %2$@"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeu à copier, %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeux à copier, %2$@"
+                }
+              }
+            }
           }
         }
       }
@@ -755,6 +835,22 @@
         }
       }
     },
+    "%lld more, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld more, %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld de plus, %2$@"
+          }
+        }
+      }
+    },
     "%lld of %lld games": {
       "localizations": {
         "en": {
@@ -799,6 +895,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld sur %2$lld vérifiés"
+          }
+        }
+      }
+    },
+    "%lld of your games": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld of your games"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld of your games"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld de vos jeux"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld de vos jeux"
+                }
+              }
+            }
           }
         }
       }
@@ -1472,6 +1608,16 @@
         }
       }
     },
+    "Adding the games to the library…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajout des jeux à la bibliothèque…"
+          }
+        }
+      }
+    },
     "Adding your own ScreenScraper member login raises your scrape quota and concurrent-thread limit.": {
       "localizations": {
         "fr": {
@@ -1904,12 +2050,12 @@
         }
       }
     },
-    "Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games.": {
+    "Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Récupère les jaquettes, captures d’écran, vidéos, manuels et descriptions qu’un autre front-end a pour vos jeux."
+            "value": "Récupère les jaquettes, captures d’écran, vidéos, manuels et descriptions qu’un autre front-end a pour vos jeux, et si vous le souhaitez les jeux que vous n’avez pas."
           }
         }
       }
@@ -2630,6 +2776,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copier le MD5"
+          }
+        }
+      }
+    },
+    "Copy the games you don't have": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier les jeux que vous n’avez pas"
+          }
+        }
+      }
+    },
+    "Copying games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copie des jeux…"
           }
         }
       }
@@ -4696,6 +4862,16 @@
         }
       }
     },
+    "Into your ROMs folder, with their media and info. The other front-end keeps its own.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans votre dossier ROMs, avec leurs médias et infos. L’autre front-end garde les siens."
+          }
+        }
+      }
+    },
     "Its %lld games leave Attic, along with their play history, favorites and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General.": {
       "localizations": {
         "fr": {
@@ -5556,12 +5732,12 @@
         }
       }
     },
-    "No gamelist there lists your games. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.": {
+    "No gamelist found there. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucune gamelist à cet endroit ne liste vos jeux. Choisissez le dossier qui contient le dossier de chaque système (le dossier roms de RetroBat ou de Batocera), ou le dossier d’un système."
+            "value": "Aucune gamelist trouvée à cet endroit. Choisissez le dossier qui contient le dossier de chaque système (le dossier roms de RetroBat ou de Batocera), ou le dossier d’un système."
           }
         }
       }
@@ -5862,6 +6038,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uniquement"
+          }
+        }
+      }
+    },
+    "Only %@ free on that disk.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seulement %@ libres sur ce disque."
           }
         }
       }
@@ -6356,6 +6542,16 @@
         }
       }
     },
+    "Reading the other front-end's gamelists…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture des gamelists de l’autre front-end…"
+          }
+        }
+      }
+    },
     "Ready": {
       "localizations": {
         "fr": {
@@ -6722,12 +6918,12 @@
         }
       }
     },
-    "Replace what games already have": {
+    "Replace what your games already have": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Remplacer ce que les jeux ont déjà"
+            "value": "Remplacer ce que vos jeux ont déjà"
           }
         }
       }
@@ -8806,16 +9002,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vos jeux avaient déjà tout."
-          }
-        }
-      }
-    },
-    "Your games it lists": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vos jeux qu’il liste"
           }
         }
       }

@@ -5,7 +5,7 @@ import AtticLibraryScanning
 
 /// What importing from another front-end's folder would bring, system by
 /// system: counts of what the games lack and it has, and of what it has
-/// at all (when replacing).
+/// at all (when replacing), and the games it has that the library doesn't.
 struct MediaImportPlan {
     struct Counts: Equatable {
         var covers = 0
@@ -15,6 +15,11 @@ struct MediaImportPlan {
         var descriptions = 0
 
         var isEmpty: Bool { self == Counts() }
+
+        static func + (lhs: Counts, rhs: Counts) -> Counts {
+            Counts(covers: lhs.covers + rhs.covers, screenshots: lhs.screenshots + rhs.screenshots, videos: lhs.videos + rhs.videos,
+                   manuals: lhs.manuals + rhs.manuals, descriptions: lhs.descriptions + rhs.descriptions)
+        }
     }
 
     struct System: Identifiable {
@@ -24,89 +29,172 @@ struct MediaImportPlan {
         var matched = 0
         var missing = Counts()
         var available = Counts()
+        /// Games the other front-end has and the library doesn't.
+        var newGames: [FrontEndMedia.Entry] = []
+        var newBytes: Int64 { newGames.reduce(0) { $0 + $1.bytes } }
+        /// Media and info the new games would come with.
+        var newGamesMedia = Counts()
     }
 
     let folder: URL
     var systems: [System] = []
-    /// Which entry each game takes: its path, the entry, and where its
-    /// media goes.
-    fileprivate var matches: [Match] = []
+    /// The other front-end's systems, read once.
+    fileprivate var sources: [FrontEndMedia.SystemFolder] = []
+}
 
-    fileprivate struct Match {
-        let game: LibraryStore.GameMedia
-        let entry: FrontEndMedia.Entry
-        let hasManual: Bool
-    }
+/// A game of the library and the entry it takes.
+private struct MediaImportMatch {
+    let game: LibraryStore.GameMedia
+    let entry: FrontEndMedia.Entry
+    let hasManual: Bool
 }
 
 extension ToolsCoordinator {
     /// Reads another front-end's gamelists (RetroBat's or Batocera's
     /// `roms` folder, or one system's folder in it) and shows what they'd
-    /// fill in.
+    /// bring.
     func analyzeMediaImport(from folder: URL, scanCoordinator: ScanCoordinator, host: Host) async {
         guard !isBusy else { return }
         reportHost = host
-        isAnalyzing = true
+        activity = Activity(title: String(localized: "Reading the other front-end's gamelists…"), fraction: 0)
+        let progress = { @Sendable (value: Double, name: String) -> Void in
+            Task { @MainActor in
+                self.activity?.fraction = value
+                self.activity?.detail = name
+            }
+        }
         let games = await scanCoordinator.gameMedia()
-        let plan = await Task.detached(priority: .userInitiated) { Self.plan(folder: folder, games: games) }.value
-        isAnalyzing = false
+        let plan = await Task.detached(priority: .userInitiated) { Self.plan(folder: folder, games: games, progress: progress) }.value
+        activity = nil
         guard !plan.systems.isEmpty else {
             outcome = Outcome(
                 title: String(localized: "Import from Another Front-End"),
-                message: String(localized: "No gamelist there lists your games. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.")
+                message: String(localized: "No gamelist found there. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.")
             )
             return
         }
         report = .mediaImport(plan)
     }
 
-    nonisolated private static func plan(folder: URL, games: [LibraryStore.GameMedia]) -> MediaImportPlan {
+    nonisolated private static func plan(folder: URL, games: [LibraryStore.GameMedia],
+                                         progress: @Sendable (Double, String) -> Void) -> MediaImportPlan {
         var plan = MediaImportPlan(folder: folder)
+        plan.sources = FrontEndMedia.systems(in: folder, progress: progress)
         let gamesBySystem = Dictionary(grouping: games, by: \.system)
-        for source in FrontEndMedia.systems(in: folder, wanted: Set(gamesBySystem.keys)) {
+        for source in plan.sources {
+            let mine = gamesBySystem[source.system] ?? []
             var system = MediaImportPlan.System(id: source.system, name: SystemTaxonomy.definition(for: source.system)?.displayName ?? source.system.rawValue)
-            for game in gamesBySystem[source.system] ?? [] {
-                guard let entry = source.entries[FrontEndMedia.key(for: game.relativePath)] else { continue }
-                let manual = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .manuals)
-                    .appendingPathExtension("pdf")
-                let hasManual = FileManager.default.fileExists(atPath: manual.path)
+            for match in matches(mine, source) {
                 system.matched += 1
-                plan.matches.append(.init(game: game, entry: entry, hasManual: hasManual))
-                if entry.cover != nil { system.available.covers += 1; if !game.hasCover { system.missing.covers += 1 } }
-                if entry.screenshot != nil { system.available.screenshots += 1; if !game.hasScreenshot { system.missing.screenshots += 1 } }
-                if entry.video != nil { system.available.videos += 1; if !game.hasVideo { system.missing.videos += 1 } }
-                if entry.manual != nil { system.available.manuals += 1; if !hasManual { system.missing.manuals += 1 } }
-                if entry.description != nil { system.available.descriptions += 1; if !game.hasDescription { system.missing.descriptions += 1 } }
+                let game = match.game
+                let (missing, available) = counts(match.entry, hasCover: game.hasCover, hasScreenshot: game.hasScreenshot,
+                                                  hasVideo: game.hasVideo, hasManual: match.hasManual, hasDescription: game.hasDescription)
+                system.missing = system.missing + missing
+                system.available = system.available + available
             }
-            if system.matched > 0 { plan.systems.append(system) }
+            let keys = Set(mine.map { FrontEndMedia.key(for: $0.relativePath) })
+            system.newGames = installedSystems.contains(source.system.rawValue) ? []
+                : source.entries.filter { !keys.contains($0.key) && $0.value.game != nil }.map(\.value)
+                .sorted { $0.relativePath.localizedStandardCompare($1.relativePath) == .orderedAscending }
+            for entry in system.newGames {
+                system.newGamesMedia = system.newGamesMedia + counts(entry).available
+            }
+            if system.matched > 0 || !system.newGames.isEmpty { plan.systems.append(system) }
         }
         plan.systems.sort { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
         return plan
     }
 
-    /// Copies the media into the Media folder (covers as HEIC when that's
-    /// smaller) and fills in the games' info: what they lack, or all of it
+    /// Systems whose games another front-end lists as shortcuts to what
+    /// its emulator installed: copying them would bring nothing to play.
+    nonisolated private static let installedSystems: Set<String> = ["psvita", "ps3", "ps4"]
+
+    nonisolated private static func matches(_ games: [LibraryStore.GameMedia], _ source: FrontEndMedia.SystemFolder) -> [MediaImportMatch] {
+        games.compactMap { game in
+            guard let entry = source.entries[FrontEndMedia.key(for: game.relativePath)] else { return nil }
+            let manual = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .manuals)
+                .appendingPathExtension("pdf")
+            return MediaImportMatch(game: game, entry: entry, hasManual: FileManager.default.fileExists(atPath: manual.path))
+        }
+    }
+
+    /// What a game lacks that the entry has, and what the entry has.
+    nonisolated private static func counts(_ entry: FrontEndMedia.Entry, hasCover: Bool = false, hasScreenshot: Bool = false, hasVideo: Bool = false,
+                                           hasManual: Bool = false, hasDescription: Bool = false)
+        -> (missing: MediaImportPlan.Counts, available: MediaImportPlan.Counts) {
+        var missing = MediaImportPlan.Counts()
+        var available = MediaImportPlan.Counts()
+        if entry.cover != nil { available.covers += 1; if !hasCover { missing.covers += 1 } }
+        if entry.screenshot != nil { available.screenshots += 1; if !hasScreenshot { missing.screenshots += 1 } }
+        if entry.video != nil { available.videos += 1; if !hasVideo { missing.videos += 1 } }
+        if entry.manual != nil { available.manuals += 1; if !hasManual { missing.manuals += 1 } }
+        if entry.description != nil { available.descriptions += 1; if !hasDescription { missing.descriptions += 1 } }
+        return (missing, available)
+    }
+
+    /// Copies the chosen systems' games the library doesn't have, when
+    /// asked, then their media into the Media folder (covers as HEIC when
+    /// that's smaller) and the games' info: what they lack, or all of it
     /// when `replacing`.
-    func importMedia(_ plan: MediaImportPlan, replacing: Bool, romsRoots: [URL], scanCoordinator: ScanCoordinator) async {
+    func importMedia(_ plan: MediaImportPlan, systems chosen: Set<CanonicalSystemID>, copyingGames: Bool, replacing: Bool,
+                     romsRoots: [URL], scanCoordinator: ScanCoordinator) async {
+        let sources = plan.sources.filter { chosen.contains($0.system) }
+        var copiedGames = 0
+        if copyingGames {
+            let newGames = plan.systems.filter { chosen.contains($0.id) }.flatMap { system in system.newGames.map { (system.id, $0) } }
+            if !newGames.isEmpty {
+                activity = Activity(title: String(localized: "Copying games…"), fraction: 0)
+                let progress = { @Sendable (value: Double, name: String) -> Void in
+                    Task { @MainActor in
+                        self.activity?.fraction = value
+                        self.activity?.detail = name
+                    }
+                }
+                copiedGames = await Task.detached(priority: .userInitiated) {
+                    Self.copyGames(newGames, sources: sources, romsRoots: romsRoots, progress: progress)
+                }.value
+                // The new games join the library, to take their media.
+                activity = Activity(title: String(localized: "Adding the games to the library…"))
+                await scanCoordinator.scan(romsRootURLs: romsRoots)
+            }
+        }
+
         activity = Activity(title: String(localized: "Importing media…"), fraction: 0)
         let progress = { @Sendable (value: Double) -> Void in
             Task { @MainActor in self.activity?.fraction = value }
         }
+        let games = await scanCoordinator.gameMedia()
         let (info, stored) = await Task.detached(priority: .userInitiated) {
-            Self.copyMedia(plan.matches, replacing: replacing, progress: progress)
+            let bySystem = Dictionary(grouping: games, by: \.system)
+            let matches = sources.flatMap { Self.matches(bySystem[$0.system] ?? [], $0) }
+            return Self.copyMedia(matches, replacing: replacing, progress: progress)
         }.value
         for url in stored { CoverArtThumbnailCache.shared.invalidate(url) }
         let changed = await scanCoordinator.applyImported(info, replacing: replacing)
         activity = nil
-        outcome = Outcome(
-            title: String(localized: "Import from Another Front-End"),
-            message: changed == 0 && stored.isEmpty
-                ? String(localized: "Your games already had all of it.")
-                : String(localized: "\(changed) games got media or info, \(stored.count) files copied.")
-        )
+        var lines: [String] = []
+        if copyingGames { lines.append(String(localized: "\(copiedGames) games copied.")) }
+        lines.append(changed == 0 && stored.isEmpty
+            ? String(localized: "Your games already had all of it.")
+            : String(localized: "\(changed) games got media or info, \(stored.count) files copied."))
+        outcome = Outcome(title: String(localized: "Import from Another Front-End"), message: lines.joined(separator: " "))
     }
 
-    nonisolated private static func copyMedia(_ matches: [MediaImportPlan.Match], replacing: Bool,
+    nonisolated private static func copyGames(_ games: [(CanonicalSystemID, FrontEndMedia.Entry)], sources: [FrontEndMedia.SystemFolder],
+                                              romsRoots: [URL], progress: @Sendable (Double, String) -> Void) -> Int {
+        let sourceFolders = Dictionary(sources.map { ($0.system, $0.folder) }, uniquingKeysWith: { first, _ in first })
+        var copied = 0
+        for (index, (system, entry)) in games.enumerated() {
+            progress(Double(index) / Double(max(games.count, 1)), entry.relativePath)
+            guard let game = entry.game, let from = sourceFolders[system],
+                  let destination = ROMImport.folder(for: system, romsRoots: romsRoots) else { continue }
+            if FrontEndMedia.copyGame(game, from: from, to: destination) != nil { copied += 1 }
+        }
+        progress(1, "")
+        return copied
+    }
+
+    nonisolated private static func copyMedia(_ matches: [MediaImportMatch], replacing: Bool,
                                               progress: @Sendable (Double) -> Void) -> ([String: LibraryStore.ImportedInfo], [URL]) {
         var info: [String: LibraryStore.ImportedInfo] = [:]
         var stored: [URL] = []

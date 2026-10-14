@@ -111,7 +111,7 @@ struct DiscDetails {
             format = ext == "cue" ? "CUE/BIN" : "GDI"
             tracks = files.count - 1
             bytes = files.reduce(0) { $0 + MediaFolder.fileSize($1) }
-        case "iso", "cdi", "pbp", "cso":
+        case "iso", "cdi", "pbp", "cso", "zso":
             format = ext.uppercased()
             bytes = MediaFolder.fileSize(url)
         default:

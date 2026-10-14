@@ -61,7 +61,7 @@ public enum SystemROMExtensions {
         .satellaview: ["7z", "bml", "bs", "fig", "sfc", "smc", "st", "swc", "zip"],
         .sufami: ["7z", "bml", "bs", "fig", "sfc", "smc", "st", "zip"],
         .model3: ["7z", "zip"],
-        .psp: ["7z", "chd", "cso", "elf", "iso", "pbp", "prx", "zip"],
+        .psp: ["7z", "chd", "cso", "elf", "iso", "pbp", "prx", "zip", "zso"],
         .ps2: ["bin", "chd", "ciso", "cso", "dump", "elf", "gz", "img", "iso", "isz", "m3u", "mdf", "ngr", "nrg", "zso"],
         .ps3: ["app", "iso", "ps3", "ps3dir"],
         // Game folders (CUSA…, with eboot.bin) named like Game.ps4.

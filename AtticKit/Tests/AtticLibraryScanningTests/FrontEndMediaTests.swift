@@ -42,4 +42,45 @@ struct FrontEndMediaTests {
         // One system's folder on its own.
         #expect(FrontEndMedia.systems(in: nes).count == 1)
     }
+
+    @Test func copiesAGameWithItsFiles() throws {
+        let base = FileManager.default.temporaryDirectory.appending(path: "FrontEndCopy-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let source = base.appending(path: "psx", directoryHint: .isDirectory)
+        let arcade = base.appending(path: "naomi", directoryHint: .isDirectory)
+        let destination = base.appending(path: "mine", directoryHint: .isDirectory)
+        for folder in [source, arcade.appending(path: "cvs2"), source.appending(path: "Folder Game.ps3")] {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        }
+        // A two-disc game: a playlist, each disc's cue and tracks.
+        try "Game (Disc 1).cue\nGame (Disc 2).cue\n".write(to: source.appending(path: "Game.m3u"), atomically: true, encoding: .utf8)
+        for disc in [1, 2] {
+            try "FILE \"Game (Disc \(disc)) (Track 1).bin\" BINARY\n  TRACK 01 MODE2/2352\n"
+                .write(to: source.appending(path: "Game (Disc \(disc)).cue"), atomically: true, encoding: .utf8)
+            try Data("bin".utf8).write(to: source.appending(path: "Game (Disc \(disc)) (Track 1).bin"))
+        }
+        try Data("unrelated".utf8).write(to: source.appending(path: "Other.bin"))
+        try Data("eboot".utf8).write(to: source.appending(path: "Folder Game.ps3/EBOOT.BIN"))
+        try Data("zip".utf8).write(to: arcade.appending(path: "cvs2.zip"))
+        try Data("chd".utf8).write(to: arcade.appending(path: "cvs2/gdx-0004.chd"))
+
+        #expect(FrontEndMedia.files(ofGame: source.appending(path: "Game.m3u")).count == 5)
+        let lead = FrontEndMedia.copyGame(source.appending(path: "Game.m3u"), from: source, to: destination)
+        #expect(lead?.lastPathComponent == "Game.m3u")
+        let copied = try FileManager.default.contentsOfDirectory(atPath: destination.path).sorted()
+        #expect(copied == ["Game (Disc 1) (Track 1).bin", "Game (Disc 1).cue", "Game (Disc 2) (Track 1).bin", "Game (Disc 2).cue", "Game.m3u"])
+        // The source keeps its games.
+        #expect(FileManager.default.fileExists(atPath: source.appending(path: "Game.m3u").path))
+
+        let arcadeCopy = base.appending(path: "mine-naomi", directoryHint: .isDirectory)
+        _ = FrontEndMedia.copyGame(arcade.appending(path: "cvs2.zip"), from: arcade, to: arcadeCopy)
+        #expect(FileManager.default.fileExists(atPath: arcadeCopy.appending(path: "cvs2/gdx-0004.chd").path))
+
+        _ = FrontEndMedia.copyGame(source.appending(path: "Folder Game.ps3"), from: source, to: destination)
+        #expect(FileManager.default.fileExists(atPath: destination.appending(path: "Folder Game.ps3/EBOOT.BIN").path))
+    }
+
+    @Test func readsAGDI() {
+        let gdi = "3\n1 0 4 2352 track01.bin 0\n2 756 0 2352 \"track 02.raw\" 0\n3 45000 4 2352 track03.bin 0\n"
+        #expect(FrontEndMedia.referencedFiles(in: gdi, playlist: false, sheet: false) == ["track01.bin", "track 02.raw", "track03.bin"])
+    }
 }
