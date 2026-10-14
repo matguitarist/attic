@@ -51,6 +51,17 @@ struct DATVerifierTests {
         return zip
     }
 
+    @Test func theSameDumpUnderAnotherNameIsFound() throws {
+        let rom = Data("cyber core".utf8)
+        let bare = folder.appending(path: "Cyber Core (USA).pce")
+        try rom.write(to: bare)
+        let zipped = try zip(rom, named: "Cyber-Core (USA).pce", into: "Cyber-Core (USA).zip")
+        let other = try zip(Data("cyber core 2".utf8), named: "Cyber-Core (USA).pce", into: "Other.zip")
+        #expect(DATVerifier.sameDump(bare, zipped, system: .pcengine))
+        #expect(!DATVerifier.sameDump(zipped, other, system: .pcengine))
+        #expect(!DATVerifier.sameDump(zipped, folder.appending(path: "Missing.zip"), system: .pcengine))
+    }
+
     @Test func readsDATOMATICXML() {
         let rom = Data("mario".utf8)
         let dat = DATFile.parse(xml(name: "Nintendo - Super Nintendo Entertainment System", games: [("Super Mario World (USA)", "Super Mario World (USA).sfc", rom)]))

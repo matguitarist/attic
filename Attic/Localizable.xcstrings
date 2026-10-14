@@ -347,6 +347,16 @@
         }
       }
     },
+    "%lld duplicates moved to the Trash: a file with the right name already held the same dump.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld doublons placés dans la corbeille : un fichier au bon nom contenait déjà le même dump."
+          }
+        }
+      }
+    },
     "%lld failed": {
       "localizations": {
         "en": {
@@ -608,6 +618,7 @@
       }
     },
     "%lld games renamed, with their media, gamelist entries and saves. %lld kept their names: another file already has the new one.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -813,6 +824,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld éléments, %2$@ : systeminfo.txt, gamelists en trop, restes de scrapers."
+          }
+        }
+      }
+    },
+    "%lld kept their names: another file already has the new one, with other data.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ont gardé leur nom : un autre fichier porte déjà le nouveau, avec d'autres données."
           }
         }
       }

@@ -138,6 +138,15 @@ public struct DATVerifier: Sendable {
 
     private static let cartridgeLimit = 512 << 20
 
+    /// Whether two files hold the same dump: the same data, size and
+    /// CRC32, whatever their names or containers (a zip, a 7z, the bare
+    /// file). False when either can't be read.
+    public static func sameDump(_ a: URL, _ b: URL, system: CanonicalSystemID) -> Bool {
+        guard let first = fingerprints(of: a, system: system, isKnown: { _ in false })?.first,
+              let second = fingerprints(of: b, system: system, isKnown: { _ in false })?.first else { return false }
+        return first == second
+    }
+
     /// The file's size and CRC32, and again without a copier or emulator
     /// header (No-Intro lists most systems' dumps without one).
     private static func fingerprints(of url: URL, system: CanonicalSystemID, isKnown: (Fingerprint) -> Bool) -> [Fingerprint]? {

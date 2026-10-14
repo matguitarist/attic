@@ -329,27 +329,46 @@ final class ToolsCoordinator {
     func rename(_ games: [VerifyReport.Game], emulationFolder: EmulationFolder, romsRoots: [URL], scanCoordinator: ScanCoordinator) async {
         guard !isBusy, !games.isEmpty else { return }
         activity = Activity(title: String(localized: "Renaming games…"), fraction: 0)
-        let jobs = games.compactMap { game -> (URL, String, URL, [URL])? in
+        let jobs = games.compactMap { game -> (URL, String, URL, [URL], GameToRemove, CanonicalSystemID)? in
             guard let name = game.datName, game.path.hasSuffix(game.relativePath) else { return nil }
             let systemFolder = URL(fileURLWithPath: String(game.path.dropLast(game.relativePath.count)), isDirectory: true)
-            return (URL(fileURLWithPath: game.path), name, systemFolder, [emulationFolder.saves(for: game.system), emulationFolder.states(for: game.system)])
+            let file = URL(fileURLWithPath: game.path)
+            return (file, name, systemFolder, [emulationFolder.saves(for: game.system), emulationFolder.states(for: game.system)],
+                    GameToRemove(rom: file, systemFolder: systemFolder, relativePath: game.relativePath), game.system)
         }
-        let renamed = await Task.detached(priority: .userInitiated) { () -> [LibraryStore.RenamedFile] in
-            jobs.compactMap { file, name, systemFolder, saveFolders in
-                GameRenaming.rename(file, to: name, systemFolder: systemFolder, saveFolders: saveFolders)
-                    .map { LibraryStore.RenamedFile(from: $0.from.path, to: $0.to.path, media: $0.media) }
+        let (renamed, duplicates) = await Task.detached(priority: .userInitiated) { () -> ([LibraryStore.RenamedFile], Int) in
+            var renamed: [LibraryStore.RenamedFile] = []
+            var duplicates = 0
+            for (file, name, systemFolder, saveFolders, game, system) in jobs {
+                if let moved = GameRenaming.rename(file, to: name, systemFolder: systemFolder, saveFolders: saveFolders) {
+                    renamed.append(LibraryStore.RenamedFile(from: moved.from.path, to: moved.to.path, media: moved.media))
+                    continue
+                }
+                // The name's taken by the very same dump: this copy goes
+                // to the Trash, its media with it.
+                let existing = file.deletingLastPathComponent()
+                    .appending(path: file.pathExtension.isEmpty ? GameRenaming.fileStem(name) : "\(GameRenaming.fileStem(name)).\(file.pathExtension)")
+                if existing.standardizedFileURL != file.standardizedFileURL,
+                   FileManager.default.fileExists(atPath: existing.path),
+                   DATVerifier.sameDump(file, existing, system: system),
+                   Self.trash(game) != nil {
+                    duplicates += 1
+                }
             }
+            return (renamed, duplicates)
         }.value
         await scanCoordinator.applyRenames(renamed)
         await scanCoordinator.scan(romsRootURLs: romsRoots)
         activity = nil
-        let kept = games.count - renamed.count
-        outcome = Outcome(
-            title: String(localized: "Rename Games"),
-            message: kept == 0
-                ? String(localized: "\(renamed.count) games renamed, with their media, gamelist entries and saves.")
-                : String(localized: "\(renamed.count) games renamed, with their media, gamelist entries and saves. \(kept) kept their names: another file already has the new one.")
-        )
+        let kept = games.count - renamed.count - duplicates
+        var lines = [String(localized: "\(renamed.count) games renamed, with their media, gamelist entries and saves.")]
+        if duplicates > 0 {
+            lines.append(String(localized: "\(duplicates) duplicates moved to the Trash: a file with the right name already held the same dump."))
+        }
+        if kept > 0 {
+            lines.append(String(localized: "\(kept) kept their names: another file already has the new one, with other data."))
+        }
+        outcome = Outcome(title: String(localized: "Rename Games"), message: lines.joined(separator: " "))
     }
 
     private static func report(files: [LibraryStore.GameFile], checks: [String: DATVerifier.Check?], verifier: DATVerifier) -> VerifyReport {

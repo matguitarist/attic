@@ -36,28 +36,35 @@ extension ToolsCoordinator {
     }
 
     nonisolated private static func trash(_ games: [GameToRemove], progress: @Sendable (Double, String) -> Void) -> (Int, Int64) {
-        let manager = FileManager.default
         var trashed = 0
         var bytes: Int64 = 0
         for (index, game) in games.enumerated() {
             progress(Double(index) / Double(games.count), game.rom.lastPathComponent)
-            let files = FrontEndMedia.files(ofGame: game.rom)
-            let size = files.reduce(Int64(0)) { $0 + FrontEndMedia.bytes(under: $1) }
-            var moved = false
-            for file in files where (try? manager.trashItem(at: file, resultingItemURL: nil)) != nil { moved = true }
-            guard moved else { continue }
+            guard let size = trash(game) else { continue }
             trashed += 1
             bytes += size
-            for kind in MediaKind.allCases {
-                let base = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: kind)
-                for file in MediaFolder.existingFiles(base: base) + [base.appendingPathExtension("pdf")]
-                where manager.fileExists(atPath: file.path) {
-                    try? manager.trashItem(at: file, resultingItemURL: nil)
-                    CoverArtThumbnailCache.shared.invalidate(file)
-                }
-            }
         }
         progress(1, "")
         return (trashed, bytes)
+    }
+
+    /// Moves one game's files and media to the Trash: how much it took,
+    /// or nil when none of its files could go.
+    nonisolated static func trash(_ game: GameToRemove) -> Int64? {
+        let manager = FileManager.default
+        let files = FrontEndMedia.files(ofGame: game.rom)
+        let size = files.reduce(Int64(0)) { $0 + FrontEndMedia.bytes(under: $1) }
+        var moved = false
+        for file in files where (try? manager.trashItem(at: file, resultingItemURL: nil)) != nil { moved = true }
+        guard moved else { return nil }
+        for kind in MediaKind.allCases {
+            let base = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: kind)
+            for file in MediaFolder.existingFiles(base: base) + [base.appendingPathExtension("pdf")]
+            where manager.fileExists(atPath: file.path) {
+                try? manager.trashItem(at: file, resultingItemURL: nil)
+                CoverArtThumbnailCache.shared.invalidate(file)
+            }
+        }
+        return size
     }
 }
