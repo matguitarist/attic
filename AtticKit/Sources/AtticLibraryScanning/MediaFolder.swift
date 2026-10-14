@@ -96,13 +96,26 @@ public enum MediaFolder {
     @discardableResult
     public static func compressToHEIC(_ url: URL) -> URL? {
         guard ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased()),
-              let data = try? Data(contentsOf: url),
-              let heic = heicData(from: data) else { return nil }
+              let data = try? Data(contentsOf: url) else { return nil }
+        guard let heic = heicData(from: data) else {
+            // Smaller as it is (a small palette PNG): not tried again.
+            setxattr(url.path, coverCheckedAttribute, [1], 1, 0, 0)
+            return nil
+        }
         let destination = url.deletingPathExtension().appendingPathExtension("heic")
         guard !FileManager.default.fileExists(atPath: destination.path),
               (try? heic.write(to: destination, options: .atomic)) != nil else { return nil }
         try? FileManager.default.trashItem(at: url, resultingItemURL: nil)
         return destination
+    }
+
+    /// Set on a cover HEIC didn't make smaller, so tidying leaves it.
+    static let coverCheckedAttribute = "com.attic.cover-checked"
+
+    /// Whether a cover is a PNG or JPEG Attic hasn't tried to shrink yet.
+    public static func coverIsWorthCompressing(_ url: URL) -> Bool {
+        ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased())
+            && getxattr(url.path, coverCheckedAttribute, nil, 0, 0, 0) < 0
     }
 
     // MARK: - Manuals

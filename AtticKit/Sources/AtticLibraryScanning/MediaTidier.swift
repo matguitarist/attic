@@ -390,21 +390,11 @@ public enum MediaTidier {
         return (relative as NSString).deletingPathExtension
     }
 
-    /// PNGs and JPEGs, except palette PNGs: already that small, HEIC
-    /// doesn't beat them, so they'd come up again on every tidy.
+    /// PNGs and JPEGs not tried yet. Palette PNGs too: those from the
+    /// libretro thumbnails often shrink by half, though small ones don't
+    /// (they're marked then, so they don't come up on every tidy).
     private static func isCompressible(_ url: URL) -> Bool {
-        switch url.pathExtension.lowercased() {
-        case "jpg", "jpeg":
-            return true
-        case "png":
-            // Byte 25 of a PNG is the colour type, 3 for a palette.
-            guard let handle = try? FileHandle(forReadingFrom: url),
-                  let header = try? handle.read(upToCount: 26), header.count == 26 else { return true }
-            try? handle.close()
-            return header[25] != 3
-        default:
-            return false
-        }
+        MediaFolder.coverIsWorthCompressing(url)
     }
 
     private static func children(of folder: URL) -> [URL] {

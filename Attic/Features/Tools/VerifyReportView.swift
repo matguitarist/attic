@@ -48,6 +48,12 @@ struct VerifyReportView: View {
             HStack {
                 Button("Add DAT Files…") { addDATs() }
                 Button("Show DATs Folder") { NSWorkspace.shared.activateFileViewerSelecting([datsFolder]) }
+                if report.datCount > 0 {
+                    // No-Intro has no download to automate: its daily pack
+                    // is picked on its site, then added here.
+                    Link("Newer No-Intro DATs", destination: Self.datomatic)
+                        .help("Opens DAT-o-MATIC, where No-Intro's daily pack is downloaded. Add its files with Add DAT Files…; those for the same system replace the older ones.")
+                }
                 Spacer()
                 if toRename.isEmpty {
                     Button("Done") { dismiss() }
@@ -89,8 +95,21 @@ struct VerifyReportView: View {
 
     private var results: some View {
         Form {
-            if !report.missingArcadeDATs.isEmpty {
+            if !report.missingArcadeDATs.isEmpty || !report.arcadeDATs.isEmpty {
                 Section {
+                    ForEach(ArcadeVerifier.Source.allCases.filter { report.arcadeDATs[$0] != nil }, id: \.self) { source in
+                        LabeledContent {
+                            Button("Update") {
+                                dismiss()
+                                onDownload(source)
+                            }
+                        } label: {
+                            Text(verbatim: report.arcadeDATs[source] ?? "")
+                            Text(source == .fbneo
+                                 ? String(localized: "Downloads FinalBurn Neo's current DAT, to check against the core's latest version.")
+                                 : String(localized: "Downloads the list from MAME's latest release; the older one goes to the Trash."))
+                        }
+                    }
                     ForEach(report.missingArcadeDATs, id: \.self) { source in
                         LabeledContent {
                             Button("Download") {
@@ -247,6 +266,34 @@ struct VerifyReportView: View {
 
     /// Copies the chosen DATs (or zips of them) into the DATs folder, then
     /// checks again.
+    /// The systems' DATs a file holds, by name without their date:
+    /// "Nintendo - Game Boy" for "Nintendo - Game Boy (20240101-000000).dat".
+    private static func datNames(in file: URL) -> [String] {
+        let undated = { (name: String) in
+            (name as NSString).deletingPathExtension.replacing(#/ \(\d{8}-\d{6}\)$/#, with: "")
+        }
+        switch file.pathExtension.lowercased() {
+        case "dat", "xml":
+            return [undated(file.lastPathComponent)]
+        case "zip":
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/zipinfo")
+            process.arguments = ["-1", file.path]
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            process.standardError = FileHandle.nullDevice
+            guard (try? process.run()) != nil else { return [] }
+            let output = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return String(decoding: output, as: UTF8.self).split(whereSeparator: \.isNewline)
+                .map { ($0 as NSString).lastPathComponent }
+                .filter { ["dat", "xml"].contains(($0 as NSString).pathExtension.lowercased()) }
+                .map(undated)
+        default:
+            return []
+        }
+    }
+
     private func addDATs() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
@@ -255,12 +302,24 @@ struct VerifyReportView: View {
         panel.directoryURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
         panel.prompt = String(localized: "Add")
         guard panel.runModal() == .OK, !panel.urls.isEmpty else { return }
-        try? FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
-        for url in panel.urls {
+        let manager = FileManager.default
+        try? manager.createDirectory(at: datsFolder, withIntermediateDirectories: true)
+        let added = panel.urls.filter { $0.standardizedFileURL.deletingLastPathComponent() != datsFolder.standardizedFileURL }
+        // Newer DATs replace the ones for the same systems, so a system
+        // isn't checked against two versions: a DAT dated otherwise, or
+        // an older daily pack the new one covers.
+        let newNames = Set(added.flatMap(Self.datNames))
+        let existing = (try? manager.contentsOfDirectory(at: datsFolder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? []
+        for file in existing where !ArcadeVerifier.isArcadeZip(file) {
+            let names = Self.datNames(in: file)
+            if !names.isEmpty, names.allSatisfy(newNames.contains) {
+                try? manager.trashItem(at: file, resultingItemURL: nil)
+            }
+        }
+        for url in added {
             let target = datsFolder.appending(path: url.lastPathComponent)
-            guard url.standardizedFileURL != target.standardizedFileURL else { continue }
-            try? FileManager.default.removeItem(at: target)
-            try? FileManager.default.copyItem(at: url, to: target)
+            try? manager.removeItem(at: target)
+            try? manager.copyItem(at: url, to: target)
         }
         dismiss()
         onVerifyAgain()

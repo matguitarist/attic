@@ -238,10 +238,11 @@ struct MediaTidierTests {
         #expect(plan.trash.map(\.lastPathComponent) == ["gba"])
     }
 
-    @Test func palettePNGsAreLeftAsTheyAre() throws {
+    @Test func coversHEICDoesntShrinkAreLeftAfterOneTry() throws {
         try touch(roms.appending(path: "snes/Game.sfc"))
         try touch(roms.appending(path: "snes/Other.sfc"))
         // A PNG header up to IHDR's colour type: 3 (palette), then 6 (RGBA).
+        // Both are tried; neither gets smaller, so neither is tried again.
         func png(colourType: UInt8) -> Data {
             Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52,
                   0, 0, 0, 1, 0, 0, 0, 1, 8, colourType, 0, 0, 0])
@@ -249,7 +250,11 @@ struct MediaTidierTests {
         try FileManager.default.createDirectory(at: media.appending(path: "snes/covers"), withIntermediateDirectories: true)
         try png(colourType: 3).write(to: media.appending(path: "snes/covers/Game.png"))
         try png(colourType: 6).write(to: media.appending(path: "snes/covers/Other.png"))
-        #expect(MediaTidier.plan(romsRoots: [roms]).compress.map(\.lastPathComponent) == ["Other.png"])
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        #expect(plan.compress.map(\.lastPathComponent).sorted() == ["Game.png", "Other.png"])
+        #expect(MediaTidier.apply(plan) == 0)
+        #expect(exists(media.appending(path: "snes/covers/Game.png")))
+        #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
     }
 
     @Test func storeReplacesTheEarlierFile() throws {

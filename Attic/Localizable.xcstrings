@@ -2974,12 +2974,32 @@
         }
       }
     },
+    "Downloads FinalBurn Neo's current DAT, to check against the core's latest version.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharge le DAT actuel de FinalBurn Neo, pour vérifier selon la dernière version du cœur."
+          }
+        }
+      }
+    },
     "Downloads come straight from each project's official source — libretro's buildbot for RetroArch and its cores, GitHub releases for standalone emulators. BIOS files are never included: dump them from hardware you own and put them in %@.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les téléchargements proviennent directement de la source officielle de chaque projet — le buildbot de libretro pour RetroArch et ses cœurs, les versions GitHub pour les émulateurs autonomes. Les BIOS ne sont jamais fournis : extrayez-les du matériel que vous possédez et placez-les dans %@."
+          }
+        }
+      }
+    },
+    "Downloads the list from MAME's latest release; the older one goes to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharge la liste de la dernière version de MAME ; l’ancienne va à la corbeille."
           }
         }
       }
@@ -5070,6 +5090,16 @@
         }
       }
     },
+    "Newer No-Intro DATs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DAT No-Intro plus récents"
+          }
+        }
+      }
+    },
     "Nintendo (Switch)": {
       "localizations": {
         "fr": {
@@ -5536,6 +5566,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ouvrir le manuel du jeu"
+          }
+        }
+      }
+    },
+    "Opens DAT-o-MATIC, where No-Intro's daily pack is downloaded. Add its files with Add DAT Files…; those for the same system replace the older ones.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvre DAT-o-MATIC, où se télécharge le pack quotidien de No-Intro. Ajoutez ses fichiers avec Ajouter des fichiers DAT… ; ceux d’un même système remplacent les anciens."
           }
         }
       }

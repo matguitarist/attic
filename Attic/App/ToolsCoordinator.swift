@@ -163,6 +163,9 @@ final class ToolsCoordinator {
         var systemDATs: [String] = []
         /// Arcade DATs that would check games here, and aren't there.
         var missingArcadeDATs: [ArcadeVerifier.Source] = []
+        /// Arcade DATs that checked games here, by the name they go by,
+        /// to update.
+        var arcadeDATs: [ArcadeVerifier.Source: String] = [:]
     }
 
     /// Whether a system's games are in a DAT: not hack folders.
@@ -233,11 +236,16 @@ final class ToolsCoordinator {
             // Only what concerns that system: its DAT, not those the
             // library has no system for.
             result.unmatchedDATs = []
-            result.systemDATs = Self.isArcade(system) ? arcade.names : verifier.sets.filter { $0.system == system }.map(\.name)
+            result.systemDATs = Self.isArcade(system)
+                ? arcade.name(of: Self.arcadeSource(for: system)).map { [$0] } ?? arcade.names
+                : verifier.sets.filter { $0.system == system }.map(\.name)
         }
         let arcadeSystems = Set(files.map(\.system).filter(Self.isArcade))
         result.missingArcadeDATs = ArcadeVerifier.Source.allCases.filter { source in
             !arcade.sources.contains(source) && arcadeSystems.contains { Self.arcadeSource(for: $0) == source }
+        }
+        for source in ArcadeVerifier.Source.allCases where arcadeSystems.contains(where: { Self.arcadeSource(for: $0) == source }) {
+            result.arcadeDATs[source] = arcade.name(of: source)
         }
         report = .verify(result)
     }
@@ -273,6 +281,10 @@ final class ToolsCoordinator {
                 let target = datsFolder.appending(path: asset.name)
                 try? FileManager.default.removeItem(at: target)
                 try FileManager.default.moveItem(at: file, to: target)
+                // An older version's list goes, so it isn't read instead.
+                let older = ((try? FileManager.default.contentsOfDirectory(at: datsFolder, includingPropertiesForKeys: nil)) ?? [])
+                    .filter { $0.lastPathComponent != asset.name && ArcadeVerifier.isArcadeZip($0) }
+                for file in older { try? FileManager.default.trashItem(at: file, resultingItemURL: nil) }
             }
             saved = true
         } catch {

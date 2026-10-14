@@ -51,6 +51,8 @@ public struct ArcadeVerifier: Sendable {
 
     public var sources: Swift.Set<Source> { Swift.Set(sets.keys) }
     public var names: [String] { sets.values.map(\.name).sorted() }
+    /// The DAT read for a source: "MAME 0.289".
+    public func name(of source: Source) -> String? { sets[source]?.name }
 
     init(sets: [Source: Set]) {
         self.sets = sets
