@@ -3,6 +3,25 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.19.0</title>
+            <pubDate>Wed, 14 Oct 2026 15:42:22 -0400</pubDate>
+            <sparkle:version>28</sparkle:version>
+            <sparkle:shortVersionString>1.19.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Tools › Import from Another Front-End: covers, screenshots, videos, manuals and info from RetroBat&#x27;s or Batocera&#x27;s gamelists, system by system, and the games you don&#x27;t have copied in (never moved), with the room they need</li>
+<li>Settings › General › Appearance: Light, Dark or the same as macOS</li>
+<li>A system&#x27;s panel and its About page show what Verify Games found, when and against which DAT, with Verify Again, and how many games have covers, screenshots, videos and descriptions</li>
+<li>Remove Games: games not in No-Intro, or tagged as prototypes, demos, unlicensed, hacks or bad dumps, to the Trash after you review them</li>
+<li>Rename Games moves a copy to the Trash when the right name already holds the same dump</li>
+<li>About This System shows each BIOS file&#x27;s MD5 and whether it&#x27;s a known good dump</li>
+<li>PSP games in .zso are recognized</li>
+<li>Fixes: collection games ticked back by hand stay in, covers with a HEIC beside them aren&#x27;t offered again</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.19.0/Attic-1.19.0.zip" length="14544329" type="application/octet-stream" sparkle:edSignature="a8ztE2x+vjgRD3GbPgzNHryWfMZBudpkcOmfFncsZiL98re+q9MxerP+zP6iK8F67kSMq0ZM/pHDdH7GldbBCQ=="/>
+        </item>
+        <item>
             <title>1.18.3</title>
             <pubDate>Tue, 13 Oct 2026 20:52:05 -0400</pubDate>
             <sparkle:version>27</sparkle:version>
