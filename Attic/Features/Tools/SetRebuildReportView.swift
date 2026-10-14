@@ -13,6 +13,11 @@ struct SetRebuildReportView: View {
 
     private var plan: RebuildPlan { report.plan }
 
+    private var leftoverPaths: [String] {
+        plan.leftovers.map { $0.path.replacingOccurrences(of: report.folder.path + "/", with: "") }
+            .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
@@ -54,11 +59,13 @@ struct SetRebuildReportView: View {
                             Text("\(plan.leftovers.count) files, \(ByteCountFormatter.string(fromByteCount: plan.leftoverBytes, countStyle: .file)): their chips are in a zip, or none of the sets here uses them.")
                         }
                         DisclosureGroup("Files", isExpanded: $showsLeftovers) {
-                            ForEach(plan.leftovers, id: \.self) { file in
-                                Text(verbatim: file.path.replacingOccurrences(of: report.folder.path + "/", with: ""))
+                            // Sorted by path, so each folder's files sit together.
+                            ForEach(leftoverPaths, id: \.self) { path in
+                                Text(verbatim: path)
                                     .font(.caption.monospaced())
                                     .lineLimit(1)
                                     .truncationMode(.middle)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                     } header: {
