@@ -79,24 +79,60 @@ struct CollectionOverviewView: View {
             }
 
             Section {
-                Button("Edit Collection…") { collectionCoordinator.edit(collection) }
-                Button("Export…") { CollectionFolders.export(collection, root: root) }
-                Button("Show in Finder") { CollectionFolders.showInFinder(collection, root: root) }
+                HStack {
+                    Button("Edit Collection…") { collectionCoordinator.edit(collection) }
+                    Spacer()
+                    Menu {
+                        Button("Export…", systemImage: "square.and.arrow.up") { CollectionFolders.export(collection, root: root) }
+                        Button("Show in Finder", systemImage: "folder") { CollectionFolders.showInFinder(collection, root: root) }
+                    } label: {
+                        Label("Actions", systemImage: "ellipsis.circle")
+                    }
+                    .fixedSize()
+                }
+            }
+
+            // At a glance, as in a system's panel.
+            let playtime = games.reduce(0) { $0 + $1.totalPlaytimeSeconds }
+            Section("Games") {
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+                    StatTile(value: games.count.formatted(), label: "Games")
+                    StatTile(value: games.count(where: \.favorite).formatted(), label: "Favorites")
+                    StatTile(value: games.count(where: { $0.playCount > 0 }).formatted(), label: "Played")
+                    StatTile(value: playtime > 0 ? SystemOverviewView.formattedPlaytime(playtime) : "—", label: "Play Time")
+                }
+                .padding(.vertical, 2)
+                if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {
+                    LabeledContent("Last Played") {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(last.title)
+                            if let date = last.lastPlayedDate {
+                                Text(date.formatted(.relative(presentation: .named)))
+                                    .font(.caption)
+                                    .foregroundStyle(Color.secondaryText)
+                            }
+                        }
+                    }
+                }
             }
 
             let systems = systemCounts(games)
             if systems.count > 1 {
+                // One tag each: a long column of rows otherwise.
                 Section("Systems") {
-                    ForEach(systems, id: \.name) { system in
-                        LabeledContent(system.name, value: "\(system.count)")
+                    FlowLayout(spacing: 4) {
+                        ForEach(systems, id: \.name) { system in
+                            StatusTag(text: "\(system.name)  \(system.count)", tint: .primary)
+                        }
                     }
+                    .padding(.vertical, 2)
                 }
             }
 
             Section("Search") {
                 if collection.search.isEmpty {
                     Text("None: games are added by hand. Edit the collection to give it a search.")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondaryText)
                 } else {
                     let search = collection.search
                     if !search.includedTerms.isEmpty {
@@ -122,36 +158,6 @@ struct CollectionOverviewView: View {
                     }
                     LabeledContent("New Games", value: collection.addsMatchingGames ? String(localized: "Added automatically") : String(localized: "Added by hand"))
                 }
-            }
-
-            let played = games.filter { $0.playCount > 0 }
-            if !played.isEmpty {
-                Section("Play History") {
-                    LabeledContent("Games Played", value: "\(played.count)")
-                    let playtime = games.reduce(0) { $0 + $1.totalPlaytimeSeconds }
-                    if playtime > 0 {
-                        LabeledContent("Total Playtime", value: SystemOverviewView.formattedPlaytime(playtime))
-                    }
-                    if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {
-                        LabeledContent("Last Played") {
-                            VStack(alignment: .trailing, spacing: 2) {
-                                Text(last.title)
-                                if let date = last.lastPlayedDate {
-                                    Text(date.formatted(.relative(presentation: .named)))
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Section {
-                Text("Select a game to see its details.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
             }
         }
         .formStyle(.grouped)

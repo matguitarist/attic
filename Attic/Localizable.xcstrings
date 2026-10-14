@@ -353,6 +353,46 @@
         }
       }
     },
+    "%lld differ": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld differs"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld differ"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld différent"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld différents"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld discs": {
       "localizations": {
         "fr": {
@@ -445,6 +485,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld fichiers, renommés à la manière d’ES-DE (Jeu-boxart.png devient covers/Jeu.png)."
+          }
+        }
+      }
+    },
+    "%lld found": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld trouvé"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld trouvés"
+                }
+              }
+            }
           }
         }
       }
@@ -780,6 +842,28 @@
         }
       }
     },
+    "%lld incomplete": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld incomplet"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld incomplets"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld installed in Vita3K; its games are now in PS Vita.": {
       "localizations": {
         "fr": {
@@ -972,7 +1056,74 @@
         }
       }
     },
+    "%lld not checked": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld non vérifié"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld non vérifiés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld not known": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld inconnu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld inconnus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld not listed": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld non répertorié"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld non répertoriés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld of %lld": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1076,6 +1227,28 @@
         }
       }
     },
+    "%lld optional": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld facultatif"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld facultatifs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld or more": {
       "localizations": {
         "fr": {
@@ -1092,6 +1265,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld autres puces ont été trouvées."
+          }
+        }
+      }
+    },
+    "%lld other version": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld other version"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld other versions"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autre version"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autres versions"
+                }
+              }
+            }
           }
         }
       }
@@ -1212,6 +1425,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld pistes"
+          }
+        }
+      }
+    },
+    "%lld verified": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vérifié"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vérifiés"
+                }
+              }
+            }
           }
         }
       }
@@ -2508,6 +2743,7 @@
       }
     },
     "Checks this system's games against No-Intro's lists of known good dumps.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -2518,6 +2754,7 @@
       }
     },
     "Checks this system's sets against its emulator's DAT, and shows what's missing.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -3460,6 +3697,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Détails"
+          }
+        }
+      }
+    },
+    "Details…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détails…"
           }
         }
       }
@@ -4601,6 +4848,7 @@
       }
     },
     "Games Played": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -5687,6 +5935,7 @@
       }
     },
     "Makes sets whole from loose files and other zips in this system's folder, then clears out what's left over.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -5887,6 +6136,7 @@
       }
     },
     "Moves games that aren't in the DAT, prototypes, demos, unlicensed games or hacks to the Trash.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -6516,7 +6766,18 @@
         }
       }
     },
+    "Not verified yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore vérifié"
+          }
+        }
+      }
+    },
     "Not verified yet.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -7187,6 +7448,7 @@
       }
     },
     "Reads this system's folder again: games added or removed in the Finder show up.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -7352,6 +7614,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actualiser ce système"
+          }
+        }
+      }
+    },
+    "Refresh, scrape, verify or clean up this system's games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiser, récupérer les infos, vérifier ou nettoyer les jeux de ce système"
           }
         }
       }

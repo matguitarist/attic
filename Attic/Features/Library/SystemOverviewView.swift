@@ -23,16 +23,20 @@ struct SystemOverviewView: View {
     /// Bumped when Attic comes back to the front, so BIOS files dropped in
     /// from the Finder show up as found.
     @State private var biosCheck = 0
+    @State private var showsBIOS = false
+    @State private var showsRemoval = false
+
+    private var canVerify: Bool { ToolsCoordinator.canVerify(system.systemID) && system.gameCount > 0 }
 
     var body: some View {
         Form {
             Section {
-                VStack(spacing: 14) {
+                VStack(spacing: 10) {
                     if let logo = system.systemID.logo {
                         logo
                             .resizable()
                             .scaledToFit()
-                            .frame(maxWidth: 240, maxHeight: 120)
+                            .frame(maxWidth: 220, maxHeight: 96)
                             .accessibilityLabel(system.displayName)
                     }
                     VStack(spacing: 2) {
@@ -41,14 +45,12 @@ struct SystemOverviewView: View {
                             .multilineTextAlignment(.center)
                         if let summary = SystemFacts.summary(for: system.systemID) {
                             Text(verbatim: summary)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.secondaryText)
                         }
-                        Text("\(system.gameCount) games")
-                            .foregroundStyle(.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+                .padding(.vertical, 8)
             }
 
             // No working emulator yet: offer the recommended ones first.
@@ -60,15 +62,10 @@ struct SystemOverviewView: View {
 
             Section {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
-                Button("System Settings…") { systemSettingsEditor.system = system }
-                Button("Refresh This System") {
-                    Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs, only: [system.systemID]) }
-                }
-                .disabled(scanCoordinator.state == .scanning)
-                .help("Reads this system's folder again: games added or removed in the Finder show up.")
-                ScrapeSelectionButton(title: "Scrape This System", selection: .system(system.systemID))
-                Button("About This System") {
-                    helpNavigator.open(.system(system.systemID), with: openWindow)
+                HStack {
+                    Button("System Settings…") { systemSettingsEditor.system = system }
+                    Spacer()
+                    actionsMenu
                 }
             }
 
@@ -76,44 +73,16 @@ struct SystemOverviewView: View {
                 SystemGamesSection(systemID: system.systemID)
             }
 
-            if ToolsCoordinator.canVerify(system.systemID), system.gameCount > 0 {
+            if canVerify {
                 SystemVerificationSection(systemID: system.systemID, host: .library)
             }
-
-            informationSection
 
             if !biosRequirements.isEmpty {
                 biosSection
             }
-
-            Section("Play History") {
-                LabeledContent("Games Played", value: "\(history.played)")
-                LabeledContent("Favorites", value: "\(history.favorites)")
-                if history.playtime > 0 {
-                    LabeledContent("Total Playtime", value: Self.formattedPlaytime(history.playtime))
-                }
-                if let last = history.lastPlayed {
-                    LabeledContent("Last Played") {
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(last.title)
-                            if let date = last.lastPlayedDate {
-                                Text(date.formatted(.relative(presentation: .named)))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
-            }
-
-            Section {
-                Text("Select a game to see its details.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-            }
         }
         .formStyle(.grouped)
+        .modifier(RemoveGamesSheet(isPresented: $showsRemoval, systemID: system.systemID, host: .library))
         .task {
             // PS2 dumps dropped into BIOS/ itself go where PCSX2 looks.
             if emulationFolderStore.folder.movePS2BIOSIntoPlace().count > 0 { biosCheck += 1 }
@@ -124,42 +93,40 @@ struct SystemOverviewView: View {
         }
     }
 
-    // MARK: - Information
-
-    @ViewBuilder
-    private var informationSection: some View {
-        let definition = SystemTaxonomy.definition(for: system.systemID)
-        let extensions = SystemFacts.fileExtensions(for: system.systemID, coreInfo: emulationFolderStore.folder.coreInfo)
-        let info = SystemHelpContent.info(for: system.systemID)
-        if definition != nil || !extensions.isEmpty || info != nil {
-            Section("Information") {
-                // Label above, value below: these run long, and beside the
-                // label they wrapped differently from one system to the next.
-                if let definition {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("ROM Folder")
-                        Text(SystemFacts.romFolderNames(definition))
-                            .monospaced()
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .textSelection(.enabled)
-                    }
-                }
-                if !extensions.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("File Types")
-                        // One tag per extension, so a line only ever breaks
-                        // between two of them.
-                        TagList(items: extensions.map { ".\($0)" })
-                    }
-                }
-                if let info {
-                    Link(destination: info.wikipediaURL) {
-                        Label("Wikipedia", systemImage: "safari")
-                    }
-                }
+    /// Everything else to do with the system, in one menu rather than a
+    /// column of buttons.
+    private var actionsMenu: some View {
+        Menu {
+            Button("Refresh This System", systemImage: "arrow.clockwise") {
+                Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs, only: [system.systemID]) }
             }
+            .disabled(scanCoordinator.state == .scanning)
+            ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
+            if canVerify {
+                Divider()
+                Button("Verify Games…", systemImage: "checkmark.seal") {
+                    Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library, system: system.systemID) }
+                }
+                .disabled(tools.isBusy)
+                if ToolsCoordinator.isArcade(system.systemID) {
+                    Button("Rebuild Sets…", systemImage: "shippingbox") {
+                        let folder = system.romsRootURL
+                        Task { await tools.analyzeRebuild(system: system.systemID, folder: folder, datsFolder: emulationFolderStore.folder.dats, from: .library) }
+                    }
+                    .disabled(tools.isBusy)
+                }
+                Button("Remove Games…", systemImage: "trash") { showsRemoval = true }
+                    .disabled(tools.isBusy)
+            }
+            Divider()
+            Button("About This System", systemImage: "info.circle") {
+                helpNavigator.open(.system(system.systemID), with: openWindow)
+            }
+        } label: {
+            Label("Actions", systemImage: "ellipsis.circle")
         }
+        .fixedSize()
+        .help("Refresh, scrape, verify or clean up this system's games")
     }
 
     // MARK: - BIOS
@@ -170,32 +137,51 @@ struct SystemOverviewView: View {
         EmulatorSetupCoordinator.biosRequirements(for: system)
     }
 
+    /// One row of tags; each file, its MD5 and state are in a popover.
     private var biosSection: some View {
-        Section {
-            let _ = biosCheck
-            ForEach(biosRequirements.statuses(in: emulationFolderStore.folder.bios)) { file in
-                BIOSFileRow(file: file) { biosCheck += 1 }
-            }
-            Button("Show BIOS Folder") {
-                BIOSFileRow.showFolder(for: biosRequirements, bios: emulationFolderStore.folder.bios)
+        let _ = biosCheck
+        let files = biosRequirements.statuses(in: emulationFolderStore.folder.bios)
+        let verified = files.count { $0.isPresent && $0.verdict == .verified }
+        let found = files.count { $0.isPresent && $0.verdict == .unchecked }
+        let unknown = files.count { $0.isPresent && $0.verdict == .unrecognized }
+        let missing = files.count { !$0.isPresent && $0.required }
+        let optional = files.count { !$0.isPresent && !$0.required }
+        return Section {
+            LabeledContent {
+                Button("Details…") { showsBIOS = true }
+                    .popover(isPresented: $showsBIOS, arrowEdge: .leading) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Form {
+                                ForEach(files) { file in
+                                    BIOSFileRow(file: file) { biosCheck += 1 }
+                                }
+                            }
+                            .formStyle(.grouped)
+                            HStack {
+                                Text("Dump BIOS files from hardware you own; Attic never downloads them.")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.secondaryText)
+                                Spacer()
+                                Button("Show BIOS Folder") {
+                                    BIOSFileRow.showFolder(for: biosRequirements, bios: emulationFolderStore.folder.bios)
+                                }
+                            }
+                            .padding([.horizontal, .bottom], 16)
+                        }
+                        .frame(width: 480, height: min(560, CGFloat(files.count) * 74 + 110))
+                    }
+            } label: {
+                FlowLayout(spacing: 4) {
+                    if verified > 0 { StatusTag(text: String(localized: "\(verified) verified"), systemImage: "checkmark.seal.fill", tint: .green) }
+                    if found > 0 { StatusTag(text: String(localized: "\(found) found"), systemImage: "checkmark.circle.fill", tint: .green) }
+                    if unknown > 0 { StatusTag(text: String(localized: "\(unknown) not known"), systemImage: "exclamationmark.circle", tint: .orange) }
+                    if missing > 0 { StatusTag(text: String(localized: "\(missing) missing"), systemImage: "exclamationmark.triangle.fill", tint: .orange) }
+                    if optional > 0 { StatusTag(text: String(localized: "\(optional) optional"), tint: .secondary) }
+                }
             }
         } header: {
             Text("BIOS")
-        } footer: {
-            Text("Dump BIOS files from hardware you own; Attic never downloads them.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
         }
-    }
-
-    private var history: (played: Int, favorites: Int, playtime: Double, lastPlayed: Game?) {
-        let games = system.games
-        return (
-            games.count { $0.playCount > 0 },
-            games.count(where: \.favorite),
-            games.reduce(0) { $0 + $1.totalPlaytimeSeconds },
-            games.filter { $0.lastPlayedDate != nil }.max { $0.lastPlayedDate! < $1.lastPlayedDate! }
-        )
     }
 
     private var emulatorName: String? {

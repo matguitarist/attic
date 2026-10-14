@@ -48,7 +48,7 @@ struct GameCoverArtView: View {
             ZStack {
                 if showBackground {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(.quaternary.opacity(0.4))
+                        .fill(Color.card)
                 }
 
                 if let request, let image = image(for: request) {

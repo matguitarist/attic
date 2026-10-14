@@ -5,9 +5,10 @@ import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
 
-/// What Tools › Verify Games found for a system's games, when it was run
-/// and against which DATs, and a button to run it again. Shared by the
-/// library's system overview and the system's help page.
+/// What Tools › Verify Games found for a system's games, in one row of
+/// tags; the breakdown, each verdict's games and Verify Again are in a
+/// popover. Shared by the library's system overview and the system's
+/// help page.
 struct SystemVerificationSection: View {
     let systemID: CanonicalSystemID
     /// The window the report shows in.
@@ -17,10 +18,7 @@ struct SystemVerificationSection: View {
     @Query private var games: [Game]
 
     @Environment(ToolsCoordinator.self) private var tools
-    @Environment(ScanCoordinator.self) private var scanCoordinator
-    @Environment(EmulationFolderStore.self) private var emulationFolderStore
-    @Environment(RomsRootsStore.self) private var romsRootsStore
-    @State private var showsRemoval = false
+    @State private var showsDetails = false
 
     init(systemID: CanonicalSystemID, host: ToolsCoordinator.Host) {
         self.systemID = systemID
@@ -35,93 +33,161 @@ struct SystemVerificationSection: View {
         let verdicts = Dictionary(grouping: games, by: { $0.datVerdict ?? "" }).mapValues(\.count)
         let verification = tools.verifications[systemID.rawValue]
         Section {
-            if verification == nil, verdicts.keys.allSatisfy(\.isEmpty) {
-                Text("Not verified yet.")
-                    .foregroundStyle(.secondary)
-            } else {
-                row("Verified", systemImage: "checkmark.seal.fill", color: .green, count: verdicts["verified"])
-                row("Incomplete", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["incomplete"], verdict: "incomplete")
-                row(isArcade ? "Other Version" : "Differs", systemImage: "exclamationmark.triangle", color: .orange, count: verdicts["differs"], verdict: "differs")
-                row("Not Listed", systemImage: "questionmark.circle", color: .secondary, count: verdicts["unknown"])
-                row("Not Checked", systemImage: "circle", color: .secondary, count: verdicts[""])
-            }
-            HStack {
-                Button(verification == nil ? String(localized: "Verify Games…") : String(localized: "Verify Again…")) {
-                    Task {
-                        await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator,
-                                           from: host, system: systemID)
+            LabeledContent {
+                Button("Details…") { showsDetails = true }
+                    .popover(isPresented: $showsDetails, arrowEdge: .leading) {
+                        VerificationDetails(systemID: systemID, host: host, games: games, verdicts: verdicts, verification: verification)
                     }
-                }
-                .disabled(tools.isBusy || games.isEmpty)
-                .help(isArcade ? String(localized: "Checks this system's sets against its emulator's DAT, and shows what's missing.")
-                               : String(localized: "Checks this system's games against No-Intro's lists of known good dumps."))
-                if let activity = tools.activity, tools.reportHost == host {
-                    ProgressView(value: activity.fraction ?? 0)
-                        .frame(maxWidth: 120)
-                }
-            }
-            // One a row: the panel is narrow.
-            if isArcade {
-                Button("Rebuild Sets…") {
-                    guard let folder = games.first?.system?.romsRootURL else { return }
-                    Task {
-                        await tools.analyzeRebuild(system: systemID, folder: folder, datsFolder: emulationFolderStore.folder.dats, from: host)
-                    }
-                }
-                .disabled(tools.isBusy || games.isEmpty)
-                .help("Makes sets whole from loose files and other zips in this system's folder, then clears out what's left over.")
-            }
-            Button("Remove Games…") { showsRemoval = true }
-                .disabled(tools.isBusy || games.isEmpty)
-                .help("Moves games that aren't in the DAT, prototypes, demos, unlicensed games or hacks to the Trash.")
-        } header: {
-            Text("Verification")
-                .sheet(isPresented: $showsRemoval) {
-                    RemoveGamesView(systemName: SystemTaxonomy.definition(for: systemID)?.displayName ?? systemID.rawValue,
-                                    isArcade: isArcade, games: games) { chosen in
-                        Task {
-                            await tools.trashGames(chosen, system: systemID, romsRoots: romsRootsStore.rootURLs, scanCoordinator: scanCoordinator, from: host)
+            } label: {
+                if verdicts.keys.allSatisfy(\.isEmpty) {
+                    Text("Not verified yet")
+                        .foregroundStyle(Color.secondaryText)
+                } else {
+                    FlowLayout(spacing: 4) {
+                        if let n = verdicts["verified"] {
+                            StatusTag(text: String(localized: "\(n) verified"), systemImage: "checkmark.seal.fill", tint: .green)
+                        }
+                        if let n = verdicts["incomplete"] {
+                            StatusTag(text: String(localized: "\(n) incomplete"), systemImage: "exclamationmark.triangle.fill", tint: .orange)
+                        }
+                        if let n = verdicts["differs"] {
+                            StatusTag(text: isArcade ? String(localized: "\(n) other version") : String(localized: "\(n) differ"),
+                                      systemImage: "exclamationmark.triangle.fill", tint: .orange)
+                        }
+                        if let n = verdicts["unknown"] {
+                            StatusTag(text: String(localized: "\(n) not listed"), tint: .secondary)
+                        }
+                        if let n = verdicts[""] {
+                            StatusTag(text: String(localized: "\(n) not checked"), tint: .secondary)
                         }
                     }
                 }
+            }
+            if let activity = tools.activity, tools.reportHost == host {
+                ProgressView(value: activity.fraction ?? 0)
+            }
+        } header: {
+            Text("Verification")
         } footer: {
             if let verification {
-                Text(footer(verification))
+                Text(Self.footer(verification))
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
+                    .foregroundStyle(Color.secondaryText)
             }
         }
     }
 
-    /// One verdict's row, left out when no game has it. With `verdict`,
-    /// its games and what's wrong with each are a click away.
-    @ViewBuilder
-    private func row(_ title: LocalizedStringKey, systemImage: String, color: Color, count: Int?, verdict: String? = nil) -> some View {
-        if let count, count > 0 {
-            LabeledContent {
-                // The button before the count, so counts line up.
-                HStack {
-                    if let verdict {
-                        DATGamesButton(games: games.filter { $0.datVerdict == verdict })
-                    }
-                    Text(count.formatted()).monospacedDigit()
-                }
-            } label: {
-                Label(title, systemImage: systemImage).foregroundStyle(color)
-            }
-        }
-    }
-
-    private func footer(_ verification: ToolsCoordinator.Verification) -> String {
+    static func footer(_ verification: ToolsCoordinator.Verification) -> String {
         let date = verification.date.formatted(date: .abbreviated, time: .shortened)
         guard !verification.dats.isEmpty else { return String(localized: "Last checked \(date).") }
         return String(localized: "Last checked \(date), against \(verification.dats.formatted(.list(type: .and))).")
     }
 }
 
-/// How complete a system's games are: their size on disk, and how many
-/// have a cover, a screenshot, a video and a description.
+/// The popover behind a system's Verification row: each verdict's count
+/// and games, when it was checked, and Verify Again.
+private struct VerificationDetails: View {
+    let systemID: CanonicalSystemID
+    let host: ToolsCoordinator.Host
+    let games: [Game]
+    let verdicts: [String: Int]
+    let verification: ToolsCoordinator.Verification?
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @Environment(\.dismiss) private var dismiss
+
+    private var isArcade: Bool { ToolsCoordinator.isArcade(systemID) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Verification").font(.headline)
+            Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 8) {
+                row("Verified", "checkmark.seal.fill", .green, verdicts["verified"])
+                row("Incomplete", "exclamationmark.triangle.fill", .orange, verdicts["incomplete"], verdict: "incomplete")
+                row(isArcade ? "Other Version" : "Differs", "exclamationmark.triangle.fill", .orange, verdicts["differs"], verdict: "differs")
+                row("Not Listed", "questionmark.circle", .secondary, verdicts["unknown"])
+                row("Not Checked", "circle", .secondary, verdicts[""])
+            }
+            if let verification {
+                Text(SystemVerificationSection.footer(verification))
+                    .font(.caption)
+                    .foregroundStyle(Color.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack {
+                Spacer()
+                Button(verification == nil ? String(localized: "Verify Games…") : String(localized: "Verify Again…")) {
+                    dismiss()
+                    Task {
+                        await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator,
+                                           from: host, system: systemID)
+                    }
+                }
+                .disabled(tools.isBusy || games.isEmpty)
+            }
+        }
+        .padding(16)
+        .frame(width: 320)
+    }
+
+    /// One verdict's row, left out when no game has it; Show lists the
+    /// games and what's wrong with each.
+    @ViewBuilder
+    private func row(_ title: LocalizedStringKey, _ image: String, _ tint: Color, _ count: Int?, verdict: String? = nil) -> some View {
+        if let count, count > 0 {
+            GridRow {
+                Image(systemName: image).foregroundStyle(tint)
+                Text(title)
+                Spacer()
+                if let verdict {
+                    DATGamesButton(games: games.filter { $0.datVerdict == verdict })
+                } else {
+                    Color.clear.frame(width: 1, height: 1)
+                }
+                Text(count.formatted())
+                    .monospacedDigit()
+                    .gridColumnAlignment(.trailing)
+            }
+        }
+    }
+}
+
+/// Remove Games for a system, as a sheet: shared by the system panel's
+/// Actions menu and anything else that offers it.
+struct RemoveGamesSheet: ViewModifier {
+    @Binding var isPresented: Bool
+    let systemID: CanonicalSystemID
+    let host: ToolsCoordinator.Host
+
+    @Query private var games: [Game]
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(RomsRootsStore.self) private var romsRootsStore
+
+    init(isPresented: Binding<Bool>, systemID: CanonicalSystemID, host: ToolsCoordinator.Host) {
+        _isPresented = isPresented
+        self.systemID = systemID
+        self.host = host
+        let id = systemID.rawValue
+        _games = Query(filter: #Predicate<Game> { $0.systemCanonicalID == id })
+    }
+
+    func body(content: Content) -> some View {
+        content.sheet(isPresented: $isPresented) {
+            RemoveGamesView(systemName: SystemTaxonomy.definition(for: systemID)?.displayName ?? systemID.rawValue,
+                            isArcade: ToolsCoordinator.isArcade(systemID), games: games) { chosen in
+                Task {
+                    await tools.trashGames(chosen, system: systemID, romsRoots: romsRootsStore.rootURLs, scanCoordinator: scanCoordinator, from: host)
+                }
+            }
+        }
+    }
+}
+
+/// A system's games at a glance: how many, their size, how much they've
+/// been played, and how many have each kind of media.
 struct SystemGamesSection: View {
     @Query private var games: [Game]
     @State private var bytes: Int64?
@@ -132,19 +198,39 @@ struct SystemGamesSection: View {
     }
 
     var body: some View {
+        let playtime = games.reduce(0) { $0 + $1.totalPlaytimeSeconds }
         Section("Your Games") {
-            LabeledContent("Games", value: games.count.formatted())
-            LabeledContent("On Disk") {
-                if let bytes {
-                    Text(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file))
-                } else {
-                    ProgressView().controlSize(.small)
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+                StatTile(value: games.count.formatted(), label: "Games")
+                StatTile(value: bytes.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "…", label: "On Disk")
+                StatTile(value: games.count(where: { $0.playCount > 0 }).formatted(), label: "Played")
+                StatTile(value: playtime > 0 ? SystemOverviewView.formattedPlaytime(playtime) : "—", label: "Play Time")
+            }
+            .padding(.vertical, 2)
+            // How many have each kind of media, orange while some lack it.
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
+                GridRow {
+                    coverage("photo", "Covers", games.count { $0.coverArtPath != nil })
+                    coverage("tv", "Screenshots", games.count { $0.titleScreenPath != nil })
+                }
+                GridRow {
+                    coverage("film", "Videos", games.count { $0.videoPath != nil })
+                    coverage("text.alignleft", "Descriptions", games.count { !($0.gameDescription ?? "").isEmpty })
                 }
             }
-            coverage("Covers", games.count { $0.coverArtPath != nil })
-            coverage("Screenshots", games.count { $0.titleScreenPath != nil })
-            coverage("Videos", games.count { $0.videoPath != nil })
-            coverage("Descriptions", games.count { !($0.gameDescription ?? "").isEmpty })
+            .padding(.vertical, 2)
+            if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {
+                LabeledContent("Last Played") {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(last.title)
+                        if let date = last.lastPlayedDate {
+                            Text(date.formatted(.relative(presentation: .named)))
+                                .font(.caption)
+                                .foregroundStyle(Color.secondaryText)
+                        }
+                    }
+                }
+            }
         }
         .task(id: games.count) {
             let files = games.map(\.romAbsoluteURL)
@@ -154,14 +240,22 @@ struct SystemGamesSection: View {
         }
     }
 
-    /// "612 of 721", orange while some are missing.
-    private func coverage(_ title: LocalizedStringKey, _ count: Int) -> some View {
-        LabeledContent(title) {
-            Text("\(count) of \(games.count)")
+    private func coverage(_ image: String, _ label: LocalizedStringKey, _ count: Int) -> some View {
+        let complete = count == games.count
+        return HStack(spacing: 6) {
+            Image(systemName: image)
+                .frame(width: 16)
+                .foregroundStyle(complete ? Color.secondaryText : .orange)
+            Text(label)
+            Spacer(minLength: 4)
+            Text(verbatim: complete ? count.formatted() : "\(count)/\(games.count)")
                 .monospacedDigit()
-                .foregroundStyle(count < games.count ? Color.orange : Color.secondary)
+                .foregroundStyle(complete ? Color.secondaryText : .orange)
         }
+        .font(.callout)
+        .frame(maxWidth: .infinity)
     }
+
 }
 
 /// Picks games to move to the Trash by what they are: not in the DAT,

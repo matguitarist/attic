@@ -174,6 +174,7 @@ struct GameGridView: View {
         .onScrollGeometryChange(for: CGFloat.self) { $0.containerSize.height } action: { _, height in
             viewportHeight = height
         }
+        .background(Color.contentBackground)
         // One key with plural variants in the String Catalog, rather than an
         // English-only singular/plural ternary.
         .navigationSubtitle(String(localized: "\(games.count) games"))

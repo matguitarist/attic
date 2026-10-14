@@ -74,11 +74,11 @@ struct LibraryStatsView: View {
                 .minimumScaleFactor(0.6)
             Text(title)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondaryText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+        .background(Color.card, in: RoundedRectangle(cornerRadius: 10))
     }
 
     // MARK: - Play time

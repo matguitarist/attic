@@ -24,7 +24,7 @@ struct GameCoverCell: View {
 
             HStack(spacing: 4) {
                 Text(game.title)
-                    .font(.caption)
+                    .font(.callout)
                     .lineLimit(2)
                     .truncationMode(.tail)
                     .multilineTextAlignment(.center)
