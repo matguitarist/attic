@@ -3,6 +3,22 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.19.1</title>
+            <pubDate>Wed, 14 Oct 2026 17:41:53 -0400</pubDate>
+            <sparkle:version>29</sparkle:version>
+            <sparkle:shortVersionString>1.19.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Refresh This System, in a system&#x27;s right-click menu and its panel, rescans only that system&#x27;s folder</li>
+<li>Games removed from their folder leave the library, even when a gamelist still lists them</li>
+<li>Verify details are a click away: Details beside a game&#x27;s verdict, Show beside a system&#x27;s Incomplete and Differs counts, without verifying again</li>
+<li>An arcade set&#x27;s details are tables of each file missing or from another version, with the CRC32 (or a disc image&#x27;s SHA-1) it should have and the one yours has</li>
+<li>Scrape Missing also takes games missing a cover, screenshot or video, not only a description</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.19.1/Attic-1.19.1.zip" length="14676141" type="application/octet-stream" sparkle:edSignature="jLG+klbeO+0CfsiwYkW5TwjA7/R5aMbL/WyH63iV9/Wpe9mlWMj+qkK+SFH5YUztXoGvfpm6T9iae6SEQQCZBQ=="/>
+        </item>
+        <item>
             <title>1.19.0</title>
             <pubDate>Wed, 14 Oct 2026 15:42:22 -0400</pubDate>
             <sparkle:version>28</sparkle:version>
