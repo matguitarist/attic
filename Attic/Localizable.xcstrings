@@ -1382,6 +1382,26 @@
         }
       }
     },
+    "Appearance": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apparence"
+          }
+        }
+      }
+    },
+    "Appearance and Language": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apparence et langue"
+          }
+        }
+      }
+    },
     "Applies when %@ games run in %@. “Default” leaves %@’s own setting as it is.": {
       "localizations": {
         "en": {
@@ -2660,6 +2680,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "DVD"
+          }
+        }
+      }
+    },
+    "Dark": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sombre"
           }
         }
       }
@@ -4656,6 +4686,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Licence pour « %@ »"
+          }
+        }
+      }
+    },
+    "Light": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clair"
           }
         }
       }
@@ -6672,6 +6712,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "SHA-1"
+          }
+        }
+      }
+    },
+    "Same as macOS": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comme macOS"
           }
         }
       }

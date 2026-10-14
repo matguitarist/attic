@@ -16,6 +16,7 @@ struct GeneralSettingsView: View {
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
+    @AppStorage(AppAppearance.key) private var appearance = AppAppearance.system
     @Environment(ToolsCoordinator.self) private var tools
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
@@ -165,6 +166,10 @@ struct GeneralSettingsView: View {
             }
 
             Section {
+                Picker("Appearance", selection: $appearance) {
+                    ForEach(AppAppearance.allCases) { Text($0.displayName).tag($0) }
+                }
+                .onChange(of: appearance) { _, newValue in newValue.apply() }
                 Picker("Language", selection: $language) {
                     Text("System Default").tag(AppLanguage.systemDefault)
                     ForEach(AppLanguage.available, id: \.self) { language in
@@ -182,7 +187,7 @@ struct GeneralSettingsView: View {
                     }
                 }
             } header: {
-                Text("Language")
+                Text("Appearance and Language")
             }
 
             Section {

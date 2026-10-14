@@ -27,6 +27,7 @@ struct AtticApp: App {
         // One library window: no window tabs (View › Show Tab Bar would
         // open more).
         NSWindow.allowsAutomaticWindowTabbing = false
+        AppAppearance.current.apply()
 
         let container: ModelContainer
         do {
