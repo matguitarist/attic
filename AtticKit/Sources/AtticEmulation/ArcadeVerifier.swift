@@ -17,6 +17,8 @@ public struct ArcadeVerifier: Sendable {
         let name: String
         let size: Int
         let crc: UInt32
+        /// Kept in the parent's zip (a clone's shared chip).
+        var inParent = false
     }
 
     struct Disk: Sendable, Codable, Hashable {
@@ -47,7 +49,7 @@ public struct ArcadeVerifier: Sendable {
     /// How many games must list a ROM for it to be a BIOS's.
     static let biosSharing = 20
 
-    private var sets: [Source: Set] = [:]
+    var sets: [Source: Set] = [:]
 
     public var sources: Swift.Set<Source> { Swift.Set(sets.keys) }
     public var names: [String] { sets.values.map(\.name).sorted() }
@@ -159,7 +161,7 @@ public struct ArcadeVerifier: Sendable {
             .first { FileManager.default.fileExists(atPath: $0.path) }
     }
 
-    private static func entries(of zip: URL) -> [ZipContents.Entry] {
+    static func entries(of zip: URL) -> [ZipContents.Entry] {
         (ZipContents.entries(of: zip) ?? []).filter { !$0.name.hasSuffix("/") }
     }
 
@@ -303,7 +305,7 @@ public struct ArcadeVerifier: Sendable {
                 guard current.map(wanted.contains) == true, attributes["status"] != "nodump", attributes["bios"] == nil,
                       let name = attributes["name"], let size = attributes["size"].flatMap(Int.init),
                       let crc = attributes["crc"].flatMap({ UInt32($0, radix: 16) }) else { return }
-                roms.append(ROM(name: name, size: size, crc: crc))
+                roms.append(ROM(name: name, size: size, crc: crc, inParent: attributes["merge"] != nil))
             case "disk":
                 guard current.map(wanted.contains) == true, attributes["status"] != "nodump",
                       let name = attributes["name"], let sha1 = attributes["sha1"] else { return }

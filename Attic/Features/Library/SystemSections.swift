@@ -55,14 +55,25 @@ struct SystemVerificationSection: View {
                 .disabled(tools.isBusy || games.isEmpty)
                 .help(isArcade ? String(localized: "Checks this system's sets against its emulator's DAT, and shows what's missing.")
                                : String(localized: "Checks this system's games against No-Intro's lists of known good dumps."))
-                Button("Remove Games…") { showsRemoval = true }
-                    .disabled(tools.isBusy || games.isEmpty)
-                    .help("Moves games that aren't in the DAT, prototypes, demos, unlicensed games or hacks to the Trash.")
                 if let activity = tools.activity, tools.reportHost == host {
                     ProgressView(value: activity.fraction ?? 0)
                         .frame(maxWidth: 120)
                 }
             }
+            // One a row: the panel is narrow.
+            if isArcade {
+                Button("Rebuild Sets…") {
+                    guard let folder = games.first?.system?.romsRootURL else { return }
+                    Task {
+                        await tools.analyzeRebuild(system: systemID, folder: folder, datsFolder: emulationFolderStore.folder.dats, from: host)
+                    }
+                }
+                .disabled(tools.isBusy || games.isEmpty)
+                .help("Makes sets whole from loose files and other zips in this system's folder, then clears out what's left over.")
+            }
+            Button("Remove Games…") { showsRemoval = true }
+                .disabled(tools.isBusy || games.isEmpty)
+                .help("Moves games that aren't in the DAT, prototypes, demos, unlicensed games or hacks to the Trash.")
         } header: {
             Text("Verification")
                 .sheet(isPresented: $showsRemoval) {

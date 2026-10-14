@@ -31,6 +31,13 @@ struct ToolsReports: ViewModifier {
                                                     romsRoots: roots, scanCoordinator: scanCoordinator)
                         }
                     }
+                case .rebuild(let report):
+                    SetRebuildReportView(report: report) { trashingLeftovers in
+                        Task {
+                            await tools.rebuild(report, trashingLeftovers: trashingLeftovers, datsFolder: emulationFolderStore.folder.dats,
+                                                romsRoots: roots, scanCoordinator: scanCoordinator)
+                        }
+                    }
                 case .verify(let report):
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {

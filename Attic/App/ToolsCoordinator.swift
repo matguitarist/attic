@@ -15,6 +15,7 @@ final class ToolsCoordinator {
         case compress(GameCompressionPlan)
         case verify(VerifyReport)
         case mediaImport(MediaImportPlan)
+        case rebuild(SetRebuildReport)
 
         var id: String {
             switch self {
@@ -22,6 +23,7 @@ final class ToolsCoordinator {
             case .compress: "compress"
             case .verify: "verify"
             case .mediaImport: "mediaImport"
+            case .rebuild: "rebuild"
             }
         }
     }
@@ -204,7 +206,7 @@ final class ToolsCoordinator {
         EmulatorCatalog.recommendation(for: system)?.recommendedCore?.coreIdentifier == "fbneo_libretro" ? .fbneo : .mame
     }
 
-    nonisolated private static var arcadeCache: URL {
+    nonisolated static var arcadeCache: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appending(path: "Attic/ArcadeDATs")
     }
 

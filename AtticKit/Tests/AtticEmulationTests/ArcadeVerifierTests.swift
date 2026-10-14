@@ -69,6 +69,38 @@ struct ArcadeVerifierTests {
         ArcadeVerifier.load(from: dats, wanted: wanted, cacheDirectory: root.appending(path: "cache"))
     }
 
+    @Test func aSetIsRebuiltFromLooseFilesAndTheLeftoversFound() throws {
+        try writeMAMEList()
+        // A zip with another version's g1.bin, the right one unpacked
+        // beside it, and an unpacked clone's chip no set here uses.
+        try zip(roms.appending(path: "game.zip"), ["g1.bin": chip(7), "g2.bin": chip(2)])
+        let loose = roms.appending(path: "game", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: loose.appending(path: "gamej"), withIntermediateDirectories: true)
+        try chip(1).write(to: loose.appending(path: "g1.bin"))
+        try chip(2).write(to: loose.appending(path: "g2.bin"))
+        try chip(3).write(to: loose.appending(path: "gamej/g2j.bin"))
+        // A clone unpacked on its own: its zip gets only its own chip.
+        let clone = roms.appending(path: "gamej", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: clone, withIntermediateDirectories: true)
+        try chip(3).write(to: clone.appending(path: "g2j.bin"))
+
+        let verifier = load(["game", "gamej"])
+        let plan = verifier.rebuildPlan(folder: roms, preferring: .mame)
+        #expect(plan.rebuilds.map(\.name) == ["game", "gamej"])
+        let game = try #require(plan.rebuilds.first)
+        #expect(game.parts.first { $0.name == "g1.bin" }?.entry == nil)
+        #expect(game.parts.first { $0.name == "g2.bin" }?.entry == "g2.bin")
+        #expect(plan.rebuilds.last?.parts.map(\.name) == ["g2j.bin"])
+        #expect(Set(plan.leftovers.map(\.lastPathComponent)) == ["g1.bin", "g2.bin", "g2j.bin"])
+        #expect(plan.leftovers.count == 4)
+
+        for rebuild in plan.rebuilds { try ArcadeVerifier.rebuild(rebuild) }
+        #expect(verifier.check(roms.appending(path: "game.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .verified)
+        #expect(verifier.check(roms.appending(path: "gamej.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .verified)
+        // Whole now: nothing more to rebuild.
+        #expect(verifier.rebuildPlan(folder: roms, preferring: .mame).rebuilds.isEmpty)
+    }
+
     @Test func aCompleteSetIsVerified() throws {
         try writeMAMEList()
         try zip(roms.appending(path: "game.zip"), ["g1.bin": chip(1), "g2.bin": chip(2)])

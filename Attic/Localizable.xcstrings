@@ -237,6 +237,22 @@
         }
       }
     },
+    "%lld chips: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld chips: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld puces : %2$@"
+          }
+        }
+      }
+    },
     "%lld collections got a logo.": {
       "localizations": {
         "fr": {
@@ -407,6 +423,22 @@
         }
       }
     },
+    "%lld files, %@: their chips are in a zip, or none of the sets here uses them.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld files, %2$@: their chips are in a zip, or none of the sets here uses them."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld fichiers, %2$@ : leurs puces sont dans un zip, ou aucun jeu ici ne les utilise."
+          }
+        }
+      }
+    },
     "%lld files, renamed ES-DE style (Game-boxart.png becomes covers/Game.png).": {
       "localizations": {
         "fr": {
@@ -423,6 +455,32 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld images"
+          }
+        }
+      }
+    },
+    "%lld from %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld from %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld de %2$@"
+          }
+        }
+      }
+    },
+    "%lld from loose files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld de fichiers isolés"
           }
         }
       }
@@ -3020,6 +3078,16 @@
         }
       }
     },
+    "Couldn't rebuild %@: a chip couldn't be read, or the zip couldn't be written. Those sets were left as they were, and so were the loose files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de reconstruire %@ : une puce n'a pas pu être lue, ou le zip n'a pas pu être écrit. Ces jeux sont restés tels quels, ainsi que les fichiers isolés."
+          }
+        }
+      }
+    },
     "Couldn't save controller profiles: %@": {
       "localizations": {
         "fr": {
@@ -3776,6 +3844,16 @@
         }
       }
     },
+    "Each zip is written with exactly the chips %@ lists, then checked; the zip it replaces goes to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque zip est écrit avec exactement les puces que liste %@, puis vérifié ; le zip qu'il remplace va dans la corbeille."
+          }
+        }
+      }
+    },
     "Earn achievements in classic games, in RetroArch, DuckStation and PCSX2. Your password is only sent to retroachievements.org to sign in; Attic keeps the sign-in token it gets back, in the Keychain.": {
       "localizations": {
         "fr": {
@@ -4178,6 +4256,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Types de fichiers"
+          }
+        }
+      }
+    },
+    "Files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers"
           }
         }
       }
@@ -5498,6 +5586,16 @@
         }
       }
     },
+    "Looking for chips…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche des puces…"
+          }
+        }
+      }
+    },
     "Looking for games…": {
       "localizations": {
         "fr": {
@@ -5518,6 +5616,16 @@
         }
       }
     },
+    "Loose Files": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers isolés"
+          }
+        }
+      }
+    },
     "MAME's game list": {
       "localizations": {
         "fr": {
@@ -5534,6 +5642,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "MD5"
+          }
+        }
+      }
+    },
+    "Makes sets whole from loose files and other zips in this system's folder, then clears out what's left over.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complète les jeux à partir des fichiers isolés et des autres zips du dossier de ce système, puis retire ce qui reste."
           }
         }
       }
@@ -5694,6 +5812,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Déplacer les médias dans le dossier Media"
+          }
+        }
+      }
+    },
+    "Move the leftover loose files to the Trash": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer les fichiers isolés restants dans la corbeille"
           }
         }
       }
@@ -6408,6 +6536,16 @@
         }
       }
     },
+    "Nothing to rebuild: no set here can be made whole from the files beside it, and no loose files are left over.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à reconstruire : aucun jeu ici ne peut être complété avec les fichiers à côté, et il ne reste aucun fichier isolé."
+          }
+        }
+      }
+    },
     "Number of Games": {
       "localizations": {
         "fr": {
@@ -7044,6 +7182,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Prêt, des fichiers facultatifs manquent"
+          }
+        }
+      }
+    },
+    "Rebuild": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconstruire"
+          }
+        }
+      }
+    },
+    "Rebuild Sets": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconstruire les jeux"
+          }
+        }
+      }
+    },
+    "Rebuild Sets…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconstruire les jeux…"
+          }
+        }
+      }
+    },
+    "Rebuilding sets…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconstruction des jeux…"
           }
         }
       }
@@ -8162,6 +8340,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez un émulateur par défaut pour ce système dans les Réglages, ou choisissez-en un dans « Lancer avec »."
+          }
+        }
+      }
+    },
+    "Sets": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux"
           }
         }
       }
