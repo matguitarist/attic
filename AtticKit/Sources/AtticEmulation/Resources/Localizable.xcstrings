@@ -2,6 +2,7 @@
   "sourceLanguage": "en",
   "strings": {
     "%@ (CRC %@, yours %@)": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -18,6 +19,7 @@
       }
     },
     "%@ (SHA-1 %@, yours %@)": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -34,6 +36,7 @@
       }
     },
     "%@ and %lld more": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -50,7 +53,6 @@
       }
     },
     "%lld ROMs from another version": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "variations": {
@@ -91,6 +93,7 @@
       }
     },
     "%lld ROMs from another version: %@": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "variations": {
@@ -130,7 +133,88 @@
         }
       }
     },
+    "%lld ROMs missing": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM missing"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROMs missing"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM manquante"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ROM manquantes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld ROMs missing (in %@)": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM missing (in %2$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROMs missing (in %2$@)"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquante (dans %2$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquantes (dans %2$@)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld ROMs missing: %@": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "variations": {
@@ -171,6 +255,7 @@
       }
     },
     "%lld ROMs missing: %@ (in %@)": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "variations": {
@@ -400,7 +485,18 @@
         }
       }
     },
+    "BIOS set %@ missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu BIOS %@ manquant"
+          }
+        }
+      }
+    },
     "BIOS set %@.zip missing": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -1306,7 +1402,18 @@
         }
       }
     },
+    "disc image %@ missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "image disque %@ manquante"
+          }
+        }
+      }
+    },
     "disc image %@.chd missing": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {

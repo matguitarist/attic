@@ -65,13 +65,6 @@ public struct ArcadeVerifier: Sendable {
 
     static func hex(_ crc: UInt32) -> String { String(format: "%08x", crc) }
 
-    /// ROM file names, the first eight of them: "a.c1, b.c2 and 3 more".
-    static func listed(_ names: [String]) -> String {
-        let shown = Array(names.prefix(8))
-        guard names.count > shown.count else { return shown.formatted(.list(type: .and)) }
-        return String(localized: "\(shown.joined(separator: ", ")) and \(names.count - shown.count) more", bundle: .module)
-    }
-
     /// nil when there's no DAT, or the set can't be read (a 7z).
     public func check(_ url: URL, preferring preferred: Source, biosDirectory: URL) -> DATVerifier.Check? {
         guard url.pathExtension.lowercased() == "zip" else { return nil }
@@ -93,9 +86,8 @@ public struct ArcadeVerifier: Sendable {
         let crcs = Swift.Set(pool.map(\.crc))
         let names = Swift.Set(pool.map { ($0.name as NSString).lastPathComponent.lowercased() })
 
+        var problems = SetProblems(dat: set.name)
         var missing: [UInt32] = []
-        var missingNames: [String] = []
-        var wrongNames: [String] = []
         // A board's BIOS versions, and those a game carries itself (The
         // Irritating Maze's own and its Japanese hack): any one does.
         func isBIOS(_ rom: ROM) -> Bool {
@@ -106,49 +98,35 @@ public struct ArcadeVerifier: Sendable {
             if names.contains(rom.name.lowercased()) {
                 // The CRC it should have, and the one it has.
                 let found = pool.first { ($0.name as NSString).lastPathComponent.lowercased() == rom.name.lowercased() }?.crc
-                wrongNames.append(String(localized: "\(rom.name) (CRC \(Self.hex(rom.crc)), yours \(found.map(Self.hex) ?? "?"))", bundle: .module))
+                problems.otherVersionROMs.append(.init(name: rom.name, expected: Self.hex(rom.crc), found: found.map(Self.hex)))
             } else {
                 missing.append(rom.crc)
-                missingNames.append(rom.name)
+                problems.missingROMs.append(.init(name: rom.name, expected: Self.hex(rom.crc)))
             }
         }
         // Any one BIOS version does; none at all, and the game can't start.
-        let biosMissing = !biosROMs.isEmpty && !biosROMs.contains { crcs.contains($0.crc) }
-        var missingDisks: [String] = []
-        var wrongDisks: [String] = []
+        if !biosROMs.isEmpty, !biosROMs.contains(where: { crcs.contains($0.crc) }), let bios = Self.chain(of: setName, in: set).last {
+            problems.missingBIOS = bios + ".zip"
+        }
         let folders = [setName] + Self.chain(of: setName, in: set)
         for disk in machine.disks {
             let candidates = folders.map { folder.appending(path: $0).appending(path: disk.name + ".chd") }
             guard let chd = candidates.first(where: { FileManager.default.fileExists(atPath: $0.path) }) else {
-                missingDisks.append(disk.name)
+                problems.missingDisks.append(.init(name: disk.name + ".chd", expected: disk.sha1.lowercased()))
                 continue
             }
             if let header = CHDHeader.read(chd), header.sha1.lowercased() != disk.sha1.lowercased() {
-                wrongDisks.append(String(localized: "\(disk.name) (SHA-1 \(disk.sha1.lowercased()), yours \(header.sha1.lowercased()))", bundle: .module))
+                problems.otherVersionDisks.append(.init(name: disk.name + ".chd", expected: disk.sha1.lowercased(), found: header.sha1.lowercased()))
             }
         }
-
-        var details: [String] = []
-        if biosMissing, let bios = Self.chain(of: setName, in: set).last {
-            details.append(String(localized: "BIOS set \(bios).zip missing", bundle: .module))
-        }
-        if !wrongNames.isEmpty {
-            details.append(String(localized: "\(wrongNames.count) ROMs from another version: \(Self.listed(wrongNames))", bundle: .module))
-        }
+        // Another set's zip may hold the missing ones: a game the emulator
+        // lists on its own, kept as another's clone ("in puzzledp.zip").
         if !missing.isEmpty {
-            // Another set's zip may hold them: a game the emulator lists
-            // on its own, kept as another's clone ("in puzzledp.zip").
-            let elsewhere = Self.zips(holding: missing, in: folder, besides: [setName] + Self.chain(of: setName, in: set))
-            details.append(elsewhere.isEmpty
-                ? String(localized: "\(missing.count) ROMs missing: \(Self.listed(missingNames))", bundle: .module)
-                : String(localized: "\(missing.count) ROMs missing: \(Self.listed(missingNames)) (in \(elsewhere.map { $0 + ".zip" }.formatted(.list(type: .and))))", bundle: .module))
+            problems.missingROMsIn = Self.zips(holding: missing, in: folder, besides: folders).map { $0 + ".zip" }
         }
-        for disk in wrongDisks { details.append(String(localized: "disc image \(disk) from another version", bundle: .module)) }
-        for disk in missingDisks { details.append(String(localized: "disc image \(disk).chd missing", bundle: .module)) }
-        let detail = details.isEmpty ? nil : details.joined(separator: "; ")
-        let verdict: DATVerifier.Verdict = !wrongNames.isEmpty || !wrongDisks.isEmpty ? .differs
-            : !missing.isEmpty || biosMissing || !missingDisks.isEmpty ? .incomplete : .verified
-        return DATVerifier.Check(verdict: verdict, name: machine.title, detail: detail.map { "\(set.name): \($0)" })
+        let verdict: DATVerifier.Verdict = !problems.otherVersionROMs.isEmpty || !problems.otherVersionDisks.isEmpty ? .differs
+            : !problems.missingROMs.isEmpty || problems.missingBIOS != nil || !problems.missingDisks.isEmpty ? .incomplete : .verified
+        return DATVerifier.Check(verdict: verdict, name: machine.title, problems: verdict == .verified ? nil : problems)
     }
 
     /// The other zips in `folder` that hold any of `crcs`, by set name.
@@ -385,5 +363,60 @@ private enum FolderIndex {
         }
         lock.withLock { cache[folder.path] = (date, index) }
         return index
+    }
+}
+
+/// What's wrong with an arcade set, file by file: what's missing, and
+/// what comes from another version, with the checksum each should have.
+public struct SetProblems: Codable, Sendable, Hashable {
+    public struct File: Codable, Sendable, Hashable {
+        public let name: String
+        /// The CRC32 (a ROM) or SHA-1 (a disc image) the DAT lists.
+        public let expected: String
+        /// The one the file has, when it's there.
+        public var found: String?
+
+        public init(name: String, expected: String, found: String? = nil) {
+            self.name = name
+            self.expected = expected
+            self.found = found
+        }
+    }
+
+    /// The DAT checked against: "MAME 0.289".
+    public let dat: String
+    public var missingBIOS: String?
+    public var otherVersionROMs: [File] = []
+    public var missingROMs: [File] = []
+    /// Other sets' zips that hold the missing ROMs.
+    public var missingROMsIn: [String] = []
+    public var otherVersionDisks: [File] = []
+    public var missingDisks: [File] = []
+
+    public init(dat: String) { self.dat = dat }
+
+    /// One line: "MAME 0.289: 4 ROMs from another version; 2 ROMs missing".
+    public var summary: String {
+        var parts: [String] = []
+        if let missingBIOS { parts.append(String(localized: "BIOS set \(missingBIOS) missing", bundle: .module)) }
+        if !otherVersionROMs.isEmpty { parts.append(String(localized: "\(otherVersionROMs.count) ROMs from another version", bundle: .module)) }
+        if !missingROMs.isEmpty {
+            parts.append(missingROMsIn.isEmpty
+                ? String(localized: "\(missingROMs.count) ROMs missing", bundle: .module)
+                : String(localized: "\(missingROMs.count) ROMs missing (in \(missingROMsIn.formatted(.list(type: .and))))", bundle: .module))
+        }
+        for disk in otherVersionDisks { parts.append(String(localized: "disc image \(disk.name) from another version", bundle: .module)) }
+        for disk in missingDisks { parts.append(String(localized: "disc image \(disk.name) missing", bundle: .module)) }
+        return "\(dat): \(parts.joined(separator: "; "))"
+    }
+
+    /// Kept with the game as JSON.
+    public var json: String? {
+        (try? JSONEncoder().encode(self)).flatMap { String(data: $0, encoding: .utf8) }
+    }
+
+    public init?(json: String) {
+        guard json.hasPrefix("{"), let value = try? JSONDecoder().decode(SetProblems.self, from: Data(json.utf8)) else { return nil }
+        self = value
     }
 }

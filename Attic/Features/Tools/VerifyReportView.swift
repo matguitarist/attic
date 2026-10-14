@@ -241,6 +241,9 @@ struct VerifyReportView: View {
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
                                 .truncationMode(.middle)
+                            if let problems = game.problems {
+                                SetProblemsButton(problems: problems)
+                            }
                         } else if let name = game.datName, name != game.title {
                             Text(verbatim: name)
                                 .foregroundStyle(.secondary)

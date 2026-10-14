@@ -84,8 +84,8 @@ struct ArcadeVerifierTests {
         #expect(check?.verdict == .differs)
         #expect(check?.detail?.contains("MAME 0.289") == true)
         // The CRC the chip should have, and the one it has.
-        #expect(check?.detail?.contains(crc(chip(1)).lowercased()) == true)
-        #expect(check?.detail?.contains(crc(chip(7)).lowercased()) == true)
+        #expect(check?.problems?.otherVersionROMs == [SetProblems.File(name: "g1.bin", expected: crc(chip(1)), found: crc(chip(7)))])
+        #expect(check.flatMap { $0.problems?.json }.flatMap(SetProblems.init(json:)) == check?.problems)
 
         try FileManager.default.removeItem(at: roms.appending(path: "game.zip"))
         try zip(roms.appending(path: "game.zip"), ["g1.bin": chip(1)])
@@ -192,7 +192,7 @@ struct ArcadeVerifierTests {
         let puzzler = verifier.check(roms.appending(path: "puzzler.zip"), preferring: .fbneo, biosDirectory: bios)
         #expect(puzzler?.verdict == .incomplete)
         #expect(puzzler?.detail?.contains("puzzle.zip") == true)
-        #expect(puzzler?.detail?.contains("p1.bin") == true)
+        #expect(puzzler?.problems?.missingROMs.map(\.name) == ["p1.bin"])
         #expect(verifier.check(roms.appending(path: "maze.zip"), preferring: .fbneo, biosDirectory: bios)?.verdict == .verified)
     }
 

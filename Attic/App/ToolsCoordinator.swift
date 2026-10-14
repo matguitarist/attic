@@ -139,6 +139,8 @@ final class ToolsCoordinator {
             let datName: String?
             /// What's wrong with an arcade set.
             var detail: String?
+            /// The same, file by file.
+            var problems: SetProblems?
 
             var stem: String { URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent }
 
@@ -245,7 +247,7 @@ final class ToolsCoordinator {
             }
             return checks
         }.value
-        await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name, detail: $0?.detail) })
+        await scanCoordinator.saveDATVerdicts(checks.mapValues { (verdict: $0?.verdict.rawValue, name: $0?.name, detail: $0?.problems?.json ?? $0?.detail) })
         activity = nil
         // Each system checked, with what it was checked against.
         let now = Date()
@@ -290,7 +292,7 @@ final class ToolsCoordinator {
             return DATVerifier.load(from: datsFolder).check(url, system: system)
         }.value
         if let check {
-            await scanCoordinator.saveDATVerdicts([game.romAbsolutePath: (check.verdict.rawValue, check.name, check.detail)])
+            await scanCoordinator.saveDATVerdicts([game.romAbsolutePath: (check.verdict.rawValue, check.name, check.problems?.json ?? check.detail)])
         }
         return check
     }
@@ -407,7 +409,7 @@ final class ToolsCoordinator {
                 continue
             }
             var system = systems[file.system] ?? VerifyReport.System(id: file.system, name: name(file.system))
-            let game = VerifyReport.Game(path: file.path, relativePath: file.relativePath, system: file.system, title: file.title, datName: check?.name, detail: check?.detail)
+            let game = VerifyReport.Game(path: file.path, relativePath: file.relativePath, system: file.system, title: file.title, datName: check?.name, detail: check?.detail, problems: check?.problems)
             switch check?.verdict {
             case .verified?:
                 system.verified += 1

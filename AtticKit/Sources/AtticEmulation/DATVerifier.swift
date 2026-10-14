@@ -25,11 +25,14 @@ public struct DATVerifier: Sendable {
         public let name: String?
         /// What's wrong with an arcade set: "MAME 0.289: 2 ROMs missing".
         public let detail: String?
+        /// The same, file by file with their checksums.
+        public let problems: SetProblems?
 
-        public init(verdict: Verdict, name: String?, detail: String? = nil) {
+        public init(verdict: Verdict, name: String?, detail: String? = nil, problems: SetProblems? = nil) {
             self.verdict = verdict
             self.name = name
-            self.detail = detail
+            self.detail = detail ?? problems?.summary
+            self.problems = problems
         }
     }
 

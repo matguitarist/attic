@@ -2069,6 +2069,16 @@
         }
       }
     },
+    "BIOS set %@ missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu BIOS %@ manquant"
+          }
+        }
+      }
+    },
     "BIOS, saves, save states, RetroArch cores and settings, and emulators installed by Attic all live here — back up or move this one folder to take everything with you.": {
       "localizations": {
         "fr": {
@@ -2395,6 +2405,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher les mises à jour automatiquement"
+          }
+        }
+      }
+    },
+    "Checked against %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifié avec %@."
           }
         }
       }
@@ -3426,6 +3446,26 @@
         }
       }
     },
+    "Disc Images From Another Version": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Images disque d'une autre version"
+          }
+        }
+      }
+    },
+    "Disc Images Missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Images disque manquantes"
+          }
+        }
+      }
+    },
     "Disc games to CHD": {
       "localizations": {
         "fr": {
@@ -4112,6 +4152,16 @@
         }
       }
     },
+    "File": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier"
+          }
+        }
+      }
+    },
     "File Names": {
       "localizations": {
         "fr": {
@@ -4298,6 +4348,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Depuis %@"
+          }
+        }
+      }
+    },
+    "From Another Version": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D'une autre version"
           }
         }
       }
@@ -8736,6 +8796,16 @@
         }
       }
     },
+    "The missing ROMs are in %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les ROM manquantes sont dans %@."
+          }
+        }
+      }
+    },
     "The size differs too: it's likely another file, a damaged copy, or a dump with something added. Dump it again, or look for the expected one.": {
       "localizations": {
         "fr": {
@@ -9548,6 +9618,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le vôtre"
+          }
+        }
+      }
+    },
+    "Yours %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le vôtre %@"
           }
         }
       }

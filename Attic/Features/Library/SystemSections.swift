@@ -3,6 +3,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import AtticEmulation
 
 /// What Tools › Verify Games found for a system's games, when it was run
 /// and against which DATs, and a button to run it again. Shared by the
@@ -367,11 +368,7 @@ struct DATDetailButton: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(verbatim: game.romAbsoluteURL.lastPathComponent).font(.headline)
                     if let detail = game.datDetail {
-                        ForEach(detailLines(detail), id: \.self) { line in
-                            Label(line, systemImage: "exclamationmark.triangle")
-                                .foregroundStyle(.orange)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+                        SavedDATDetail(detail: detail)
                     } else if checking {
                         ProgressView().controlSize(.small)
                     } else {
@@ -381,7 +378,7 @@ struct DATDetailButton: View {
                 }
                 .textSelection(.enabled)
                 .padding(16)
-                .frame(width: 380, alignment: .leading)
+                .frame(width: 520, alignment: .leading)
                 .task {
                     guard game.datDetail == nil else { return }
                     checking = true
@@ -411,12 +408,7 @@ struct DATGamesButton: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 if let detail = game.datDetail {
-                                    ForEach(detailLines(detail), id: \.self) { line in
-                                        Text(line)
-                                            .font(.callout)
-                                            .foregroundStyle(.orange)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
+                                    SavedDATDetail(detail: detail)
                                 } else if game.datVerdict != "differs" || ToolsCoordinator.isArcade(CanonicalSystemID(game.systemCanonicalID)) {
                                     Text("Verify Again, or open the game's Details, to see what's wrong.")
                                         .font(.caption)
@@ -427,9 +419,122 @@ struct DATGamesButton: View {
                     }
                     .textSelection(.enabled)
                     .padding(16)
-                    .frame(width: 420, alignment: .leading)
+                    .frame(width: 520, alignment: .leading)
                 }
-                .frame(maxHeight: 480)
+                .frame(maxHeight: 520)
+            }
+    }
+}
+
+/// A game's saved verify details: a table when they were saved file by
+/// file, else their text, a line per problem.
+struct SavedDATDetail: View {
+    let detail: String
+
+    var body: some View {
+        if let problems = SetProblems(json: detail) {
+            SetProblemsView(problems: problems)
+        } else {
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(detailLines(detail), id: \.self) { line in
+                    Text(line)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+}
+
+/// What's wrong with an arcade set, as tables: each file, the checksum
+/// the DAT lists, and the one yours has.
+struct SetProblemsView: View {
+    let problems: SetProblems
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if let bios = problems.missingBIOS {
+                Label {
+                    Text("BIOS set \(bios) missing")
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                }
+                .foregroundStyle(.orange)
+            }
+            table("From Another Version", problems.otherVersionROMs, checksum: "CRC32", showsFound: true)
+            table("Missing", problems.missingROMs, checksum: "CRC32", showsFound: false)
+            if !problems.missingROMsIn.isEmpty {
+                Text("The missing ROMs are in \(problems.missingROMsIn.formatted(.list(type: .and))).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            table("Disc Images From Another Version", problems.otherVersionDisks, checksum: "SHA-1", showsFound: true)
+            table("Disc Images Missing", problems.missingDisks, checksum: "SHA-1", showsFound: false)
+            Text("Checked against \(problems.dat).")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .textSelection(.enabled)
+    }
+
+    @ViewBuilder
+    private func table(_ title: LocalizedStringKey, _ files: [SetProblems.File], checksum: String, showsFound: Bool) -> some View {
+        if !files.isEmpty, checksum == "SHA-1" {
+            // Too long for columns side by side: one under the other.
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title).font(.subheadline.bold())
+                ForEach(files, id: \.self) { file in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(verbatim: file.name).font(.callout.monospaced())
+                        Text(verbatim: "SHA-1 \(file.expected)").foregroundStyle(.green)
+                        if let found = file.found {
+                            Text("Yours \(found)").foregroundStyle(.orange)
+                        }
+                    }
+                    .font(.caption.monospaced())
+                }
+            }
+        } else if !files.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title).font(.subheadline.bold())
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
+                    GridRow {
+                        Text("File")
+                        Text(verbatim: checksum)
+                        if showsFound { Text("Yours") }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    Divider()
+                    ForEach(files, id: \.self) { file in
+                        GridRow {
+                            Text(verbatim: file.name)
+                            Text(verbatim: file.expected).foregroundStyle(.green)
+                            if showsFound { Text(verbatim: file.found ?? "—").foregroundStyle(.orange) }
+                        }
+                    }
+                }
+                .font(.callout.monospaced())
+            }
+        }
+    }
+}
+
+/// "Details" in the verify report, beside a set's one-line summary.
+struct SetProblemsButton: View {
+    let problems: SetProblems
+    @State private var shows = false
+
+    var body: some View {
+        Button("Details") { shows = true }
+            .buttonStyle(.link)
+            .popover(isPresented: $shows, arrowEdge: .bottom) {
+                ScrollView {
+                    SetProblemsView(problems: problems)
+                        .padding(16)
+                        .frame(width: 520, alignment: .leading)
+                }
+                .frame(maxHeight: 520)
             }
     }
 }
