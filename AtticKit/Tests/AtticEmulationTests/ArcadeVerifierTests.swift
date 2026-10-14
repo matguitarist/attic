@@ -83,6 +83,9 @@ struct ArcadeVerifierTests {
         let check = load(["game"]).check(roms.appending(path: "game.zip"), preferring: .mame, biosDirectory: bios)
         #expect(check?.verdict == .differs)
         #expect(check?.detail?.contains("MAME 0.289") == true)
+        // The CRC the chip should have, and the one it has.
+        #expect(check?.detail?.contains(crc(chip(1)).lowercased()) == true)
+        #expect(check?.detail?.contains(crc(chip(7)).lowercased()) == true)
 
         try FileManager.default.removeItem(at: roms.appending(path: "game.zip"))
         try zip(roms.appending(path: "game.zip"), ["g1.bin": chip(1)])

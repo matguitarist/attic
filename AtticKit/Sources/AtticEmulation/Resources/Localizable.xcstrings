@@ -1,6 +1,38 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ (CRC %@, yours %@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (CRC %2$@, yours %3$@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (CRC %2$@, le vôtre %3$@)"
+          }
+        }
+      }
+    },
+    "%@ (SHA-1 %@, yours %@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (SHA-1 %2$@, yours %3$@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (SHA-1 %2$@, le vôtre %3$@)"
+          }
+        }
+      }
+    },
     "%@ and %lld more": {
       "localizations": {
         "en": {

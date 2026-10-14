@@ -63,6 +63,8 @@ public struct ArcadeVerifier: Sendable {
 
     // MARK: - Checking
 
+    static func hex(_ crc: UInt32) -> String { String(format: "%08x", crc) }
+
     /// ROM file names, the first eight of them: "a.c1, b.c2 and 3 more".
     static func listed(_ names: [String]) -> String {
         let shown = Array(names.prefix(8))
@@ -102,7 +104,9 @@ public struct ArcadeVerifier: Sendable {
         let biosROMs = machine.roms.filter(isBIOS)
         for rom in machine.roms where !crcs.contains(rom.crc) && !isBIOS(rom) {
             if names.contains(rom.name.lowercased()) {
-                wrongNames.append(rom.name)
+                // The CRC it should have, and the one it has.
+                let found = pool.first { ($0.name as NSString).lastPathComponent.lowercased() == rom.name.lowercased() }?.crc
+                wrongNames.append(String(localized: "\(rom.name) (CRC \(Self.hex(rom.crc)), yours \(found.map(Self.hex) ?? "?"))", bundle: .module))
             } else {
                 missing.append(rom.crc)
                 missingNames.append(rom.name)
@@ -120,7 +124,7 @@ public struct ArcadeVerifier: Sendable {
                 continue
             }
             if let header = CHDHeader.read(chd), header.sha1.lowercased() != disk.sha1.lowercased() {
-                wrongDisks.append(disk.name)
+                wrongDisks.append(String(localized: "\(disk.name) (SHA-1 \(disk.sha1.lowercased()), yours \(header.sha1.lowercased()))", bundle: .module))
             }
         }
 
