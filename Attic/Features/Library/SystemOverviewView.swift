@@ -168,14 +168,17 @@ struct SystemOverviewView: View {
                             }
                             .padding([.horizontal, .bottom], 16)
                         }
-                        .frame(width: 480, height: min(560, CGFloat(files.count) * 74 + 110))
+                        // Rows with two checksums (a dump that isn't a known
+                        // one, or a missing file) are taller.
+                        .frame(width: 500, height: min(620, files.reduce(CGFloat(120)) { $0 + ($1.isPresent && $1.verdict == .verified ? 78 : 104) }))
                     }
             } label: {
                 FlowLayout(spacing: 4) {
+                    // Problems first, as in Settings › BIOS.
+                    if missing > 0 { StatusTag(text: String(localized: "\(missing) missing"), systemImage: "exclamationmark.triangle.fill", tint: .orange) }
+                    if unknown > 0 { StatusTag(text: String(localized: "\(unknown) not known"), systemImage: "exclamationmark.circle", tint: .orange) }
                     if verified > 0 { StatusTag(text: String(localized: "\(verified) verified"), systemImage: "checkmark.seal.fill", tint: .green) }
                     if found > 0 { StatusTag(text: String(localized: "\(found) found"), systemImage: "checkmark.circle.fill", tint: .green) }
-                    if unknown > 0 { StatusTag(text: String(localized: "\(unknown) not known"), systemImage: "exclamationmark.circle", tint: .orange) }
-                    if missing > 0 { StatusTag(text: String(localized: "\(missing) missing"), systemImage: "exclamationmark.triangle.fill", tint: .orange) }
                     if optional > 0 { StatusTag(text: String(localized: "\(optional) optional"), tint: .secondary) }
                 }
             }
@@ -330,15 +333,22 @@ struct BIOSComparisonView: View {
                 }
                 Spacer()
                 if let md5 = check.md5 {
-                    Button("Copy MD5") {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(md5, forType: .string)
-                    }
+                    Button("Copy Yours") { Self.copy(md5) }
+                }
+                // The one to look for: what the emulator expects.
+                if let expected = check.expected.first?.md5 {
+                    Button("Copy Expected MD5") { Self.copy(expected) }
+                        .keyboardShortcut(.defaultAction)
                 }
             }
         }
         .padding(16)
         .frame(width: 560)
+    }
+
+    private static func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
     }
 
     private func size(_ bytes: Int?) -> String {

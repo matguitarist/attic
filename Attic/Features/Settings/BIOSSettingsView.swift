@@ -40,19 +40,39 @@ struct BIOSSettingsView: View {
     var body: some View {
         let rows = self.rows
         let missing = rows.filter(\.missesRequired)
+        // Everything worth a look: missing files and dumps that aren't
+        // known ones, so none of them hides further down.
+        let problems = rows.filter { $0.missesRequired || $0.hasUnknownDump }
         let none = rows.filter(\.files.isEmpty)
+        ScrollViewReader { proxy in
         Form {
             Section {
                 Label {
-                    Text(missing.isEmpty
+                    Text(problems.isEmpty
                          ? String(localized: "Every system you have games for has the BIOS files it needs.")
+                         : missing.isEmpty
+                         ? String(localized: "Every system has its BIOS files, but some aren't known good dumps.")
                          : String(localized: "\(missing.count) systems are missing a BIOS file they need, so their games won't start."))
                 } icon: {
-                    Image(systemName: missing.isEmpty ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
-                        .foregroundStyle(missing.isEmpty ? .green : .orange)
+                    Image(systemName: problems.isEmpty ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                        .foregroundStyle(problems.isEmpty ? .green : .orange)
                 }
-                Button("Show BIOS Folder") { NSWorkspace.shared.open(emulationFolderStore.folder.bios) }
-                Toggle("Show systems without games", isOn: $showsAllSystems)
+                ForEach(problems) { row in
+                    LabeledContent {
+                        HStack {
+                            tags(row)
+                            Button("Show") { withAnimation { proxy.scrollTo(row.id, anchor: .top) } }
+                                .buttonStyle(.link)
+                        }
+                    } label: {
+                        Text(row.system.displayName)
+                    }
+                }
+                HStack {
+                    Button("Show BIOS Folder") { NSWorkspace.shared.open(emulationFolderStore.folder.bios) }
+                    Spacer()
+                    Toggle("Show systems without games", isOn: $showsAllSystems)
+                }
             } footer: {
                 Text("Dump BIOS files from hardware you own; Attic never downloads them. What's needed follows each system's chosen emulator.")
                     .font(.caption)
@@ -62,7 +82,7 @@ struct BIOSSettingsView: View {
             // In the library's order (by maker, then release), each with
             // its status, so a maker's consoles stay together.
             ForEach(rows.filter { !$0.files.isEmpty }) { row in
-                section(row)
+                section(row).id(row.id)
             }
             if !none.isEmpty {
                 Section {
@@ -74,6 +94,7 @@ struct BIOSSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        }
         .task {
             for await _ in NotificationCenter.default.notifications(named: NSApplication.didBecomeActiveNotification) {
                 emulationFolderStore.folder.movePS2BIOSIntoPlace()
@@ -98,16 +119,24 @@ struct BIOSSettingsView: View {
             HStack {
                 Text(row.system.displayName)
                 Spacer()
-                if row.missesRequired {
-                    Text("Missing").foregroundStyle(.orange)
-                } else if row.hasUnknownDump {
-                    Text("Ready, a file isn't a known dump").foregroundStyle(.secondary)
-                } else if row.missesOptional {
-                    Text("Ready, some optional files missing").foregroundStyle(.secondary)
-                } else {
-                    Text("Ready").foregroundStyle(.green)
-                }
+                tags(row)
             }
+        }
+    }
+
+    /// A system's state as tags, as in its panel.
+    private func tags(_ row: Row) -> some View {
+        let verified = row.files.count { $0.isPresent && $0.verdict == .verified }
+        let found = row.files.count { $0.isPresent && $0.verdict == .unchecked }
+        let unknown = row.files.count { $0.isPresent && $0.verdict == .unrecognized }
+        let missing = row.files.count { !$0.isPresent && $0.required }
+        let optional = row.files.count { !$0.isPresent && !$0.required }
+        return HStack(spacing: 4) {
+            if missing > 0 { StatusTag(text: String(localized: "\(missing) missing"), systemImage: "exclamationmark.triangle.fill", tint: .orange) }
+            if unknown > 0 { StatusTag(text: String(localized: "\(unknown) not known"), systemImage: "exclamationmark.circle", tint: .orange) }
+            if verified > 0 { StatusTag(text: String(localized: "\(verified) verified"), systemImage: "checkmark.seal.fill", tint: .green) }
+            if found > 0 { StatusTag(text: String(localized: "\(found) found"), systemImage: "checkmark.circle.fill", tint: .green) }
+            if optional > 0 { StatusTag(text: String(localized: "\(optional) optional"), tint: .secondary) }
         }
     }
 }

@@ -16,7 +16,9 @@ import AtticEmulation
 final class EmulatorSetupCoordinator {
     /// Install task keys currently running → a label for the UI.
     private(set) var activeInstalls: [String: String] = [:]
-    private(set) var lastError: String?
+    /// What went wrong, one line per install or update that failed, kept
+    /// until dismissed so a batch reports every failure, not its last.
+    private(set) var errors: [String] = []
 
     private let emulationFolderStore: EmulationFolderStore
 
@@ -295,7 +297,7 @@ final class EmulatorSetupCoordinator {
         installer.installedAppURL(for: emulator) != nil
     }
 
-    func dismissError() { lastError = nil }
+    func dismissError() { errors = [] }
 
     // MARK: - Core updates
 
@@ -322,7 +324,7 @@ final class EmulatorSetupCoordinator {
         do {
             remoteCoreChecksums = try await installer.fetchRemoteCoreChecksums()
         } catch {
-            if !quiet { lastError = String(localized: "Couldn't check for core updates: \(error.localizedDescription)") }
+            if !quiet { errors.append(String(localized: "Couldn't check for core updates: \(error.localizedDescription)")) }
             return
         }
         await recomputeStatuses(for: retroArchStore.cores)
@@ -418,6 +420,24 @@ final class EmulatorSetupCoordinator {
         }
     }
 
+    /// The standalone emulators with a newer release.
+    var standaloneEmulatorsWithUpdates: [StandaloneEmulator] {
+        managedStandaloneEmulators.filter { standaloneUpdates[$0.id] != nil }
+    }
+
+    func updateAllStandalone() async {
+        for emulator in standaloneEmulatorsWithUpdates {
+            await updateStandalone(emulator)
+        }
+    }
+
+    /// Every core and standalone emulator with an update, one after the
+    /// other; each failure is reported.
+    func updateEverything(retroArchStore: RetroArchSettingsStore) async {
+        await updateAllCores(retroArchStore: retroArchStore)
+        await updateAllStandalone()
+    }
+
     /// CRCs a few megabytes per core, so off the main actor.
     private func recomputeStatuses(for cores: [RetroArchCoreInfo]) async {
         let remote = remoteCoreChecksums
@@ -490,9 +510,8 @@ final class EmulatorSetupCoordinator {
         defer { activeInstalls.removeValue(forKey: key) }
         do {
             try await work()
-            lastError = nil
         } catch {
-            lastError = "\(failure): \(error.localizedDescription)"
+            errors.append("\(failure): \(error.localizedDescription)")
         }
     }
 }

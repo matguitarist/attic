@@ -170,3 +170,16 @@ struct AchievementsLaunchTests {
         #expect(pcsx2.value(section: "Achievements", key: "Enabled") == "true")
     }
 }
+
+struct CatalogCoreNameTests {
+    /// The buildbot names each core "<name>_libretro.dylib.zip": a
+    /// doubled suffix is a download that doesn't exist.
+    @Test func everyCoreIsNamedOnce() {
+        for recommendation in EmulatorCatalog.recommendations {
+            for core in recommendation.cores {
+                #expect(core.coreIdentifier.hasSuffix("_libretro"), "\(core.coreIdentifier)")
+                #expect(!core.coreIdentifier.hasSuffix("_libretro_libretro"), "\(core.coreIdentifier)")
+            }
+        }
+    }
+}

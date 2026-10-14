@@ -16,6 +16,7 @@ struct RetroArchSettingsView: View {
 
     var body: some View {
         Form {
+            updatesSection
             retroArchSection
             ShadersSection()
 
@@ -54,10 +55,56 @@ struct RetroArchSettingsView: View {
                 retroArchStore.refresh()
             }
         }
-        .alert("Install Failed", isPresented: Binding(get: { setup.lastError != nil }, set: { if !$0 { setup.dismissError() } })) {
+        .alert(setup.errors.count > 1 ? String(localized: "\(setup.errors.count) Installs Failed") : String(localized: "Install Failed"),
+               isPresented: Binding(get: { !setup.errors.isEmpty }, set: { if !$0 { setup.dismissError() } })) {
             Button("OK") { setup.dismissError() }
         } message: {
-            Text(setup.lastError ?? "")
+            // Every failure, one per line.
+            Text(setup.errors.joined(separator: "\n\n"))
+        }
+    }
+
+    /// Cores and standalone emulators together: what has an update, and
+    /// one button for all of it.
+    private var updatesSection: some View {
+        let cores = setup.coresWithUpdates(retroArchStore: retroArchStore)
+        let standalone = setup.standaloneEmulatorsWithUpdates
+        let count = cores.count + standalone.count
+        return Section {
+            LabeledContent {
+                HStack {
+                    if setup.isCheckingForCoreUpdates {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Button("Check Now") {
+                            Task { await setup.checkForCoreUpdates(retroArchStore: retroArchStore) }
+                        }
+                    }
+                    Button(count > 0 ? String(localized: "Update All (\(count))") : String(localized: "Update All")) {
+                        Task { await setup.updateEverything(retroArchStore: retroArchStore) }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(count == 0 || setup.isBusy)
+                }
+            } label: {
+                Text(count == 0 ? String(localized: "Everything is up to date") : String(localized: "\(count) updates available"))
+                Group {
+                    if count > 0 {
+                        Text((cores.map(\.displayName) + standalone.map(\.name)).formatted(.list(type: .and)))
+                    } else if let lastCheck = setup.lastCoreUpdateCheck {
+                        Text("Cores and standalone emulators, checked \(lastCheck.formatted(.relative(presentation: .named))).")
+                    }
+                }
+                .lineLimit(2)
+            }
+            if let label = setup.activeInstalls.values.sorted().first {
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small)
+                    Text(label).foregroundStyle(Color.secondaryText)
+                }
+            }
+        } header: {
+            Text("Updates")
         }
     }
 
@@ -143,14 +190,7 @@ struct RetroArchSettingsView: View {
             HStack {
                 Text("Installed Cores")
                 Spacer()
-                if setup.isCheckingForCoreUpdates {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Button("Check for Updates") {
-                        Task { await setup.checkForCoreUpdates(retroArchStore: retroArchStore) }
-                    }
-                    .buttonStyle(.link)
-                }
+                // Checking is at the top, in Updates.
                 if !updatable.isEmpty {
                     Button("Update All (\(updatable.count))") {
                         Task { await setup.updateAllCores(retroArchStore: retroArchStore) }
@@ -189,7 +229,17 @@ struct RetroArchSettingsView: View {
                 }
             }
         } header: {
-            Text("Standalone Emulators")
+            HStack {
+                Text("Standalone Emulators")
+                Spacer()
+                let updatable = setup.standaloneEmulatorsWithUpdates
+                if !updatable.isEmpty {
+                    Button("Update All (\(updatable.count))") {
+                        Task { await setup.updateAllStandalone() }
+                    }
+                    .disabled(setup.isBusy)
+                }
+            }
         } footer: {
             Text("Compared with each project's latest release when cores are checked. Saves and settings are kept when one updates.")
                 .font(.caption)
