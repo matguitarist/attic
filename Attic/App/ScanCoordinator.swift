@@ -55,7 +55,8 @@ final class ScanCoordinator {
         try? await libraryStore.setDATVerdicts(verdicts)
     }
 
-    func scan(romsRootURLs: [URL]) async {
+    /// Scans the ROMs folders: every system's, or only those of `only`.
+    func scan(romsRootURLs: [URL], only: Set<CanonicalSystemID>? = nil) async {
         guard !romsRootURLs.isEmpty else { return }
         state = .scanning
 
@@ -65,7 +66,7 @@ final class ScanCoordinator {
             // playlists for multi-disc games.
             Vita3KLibrary.addShortcuts(romsRoots: romsRootURLs)
             DiscPlaylists.createMissing(romsRoots: romsRootURLs)
-            return scanner.scan(romsRootURLs: romsRootURLs)
+            return scanner.scan(romsRootURLs: romsRootURLs, only: only)
         }.value
         // Systems the user removed stay out until added back.
         let systems = await Self.withArcadeNames(result.systems.filter { !RemovedSystems.contains($0.canonicalID) })

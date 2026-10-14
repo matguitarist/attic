@@ -21,6 +21,7 @@ struct LibrarySidebarView: View {
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(ToolsCoordinator.self) private var tools
     @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(RomsRootsStore.self) private var romsRootsStore
     @Environment(\.importROMs) private var importROMs
     @AppStorage(SystemSortOrder.key) private var sortOrder = SystemSortOrder.manufacturer
     @State private var systemToRemove: GameSystem?
@@ -140,6 +141,10 @@ struct LibrarySidebarView: View {
                 Button("System Settings…") { systemSettingsEditor.system = system }
                 Divider()
                 ScrapeSelectionMenu(title: "Scrape This System", selection: .system(system.systemID))
+                Button("Refresh This System") {
+                    Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs, only: [system.systemID]) }
+                }
+                .disabled(scanCoordinator.state == .scanning)
                 if ToolsCoordinator.canVerify(system.systemID) {
                     Button("Verify Games…") {
                         Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library, system: system.systemID) }

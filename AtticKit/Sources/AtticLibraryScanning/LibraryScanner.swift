@@ -37,7 +37,8 @@ public struct LibraryScanner: Sendable {
         self.importers = importers
     }
 
-    public func scan(romsRootURL: URL) -> ScanResult {
+    /// `only`, when given, limits the scan to those systems' folders.
+    public func scan(romsRootURL: URL, only: Set<CanonicalSystemID>? = nil) -> ScanResult {
         let fileManager = FileManager.default
         guard let entries = try? fileManager.contentsOfDirectory(
             at: romsRootURL,
@@ -57,6 +58,7 @@ public struct LibraryScanner: Sendable {
                 issues.append(ScanIssue(folderURL: folderURL, reason: .unrecognizedSystemFolderName))
                 continue
             }
+            if let only, !only.contains(definition.canonicalID) { continue }
 
             guard let importer = importers.first(where: { $0.detect(systemFolderURL: folderURL) }) else {
                 // An empty folder waiting for games (Attic makes one per
@@ -76,9 +78,13 @@ public struct LibraryScanner: Sendable {
                     libraryFormat: data.libraryFormat,
                     romsRootURL: data.romsRootURL,
                     // …and discs a .m3u playlist lists are part of that game.
+                    // A gamelist entry whose file is gone from this folder
+                    // (which is there: an unplugged drive is never scanned)
+                    // was deleted or moved.
                     games: data.games.filter { game in
                         SystemROMExtensions.accepts(game.romRelativePath, for: definition.canonicalID)
                             && !discs.contains(game.romRelativePath)
+                            && fileManager.fileExists(atPath: folderURL.appending(path: game.romRelativePath).path)
                     }
                 ))
             } catch {
@@ -93,8 +99,8 @@ public struct LibraryScanner: Sendable {
     /// name (e.g. "snes") appearing under more than one root produces one
     /// `ImportedSystemData` entry per root; `LibraryStore` upserts by
     /// canonical id, so the last one scanned wins.
-    public func scan(romsRootURLs: [URL]) -> ScanResult {
-        let results = romsRootURLs.map(scan(romsRootURL:))
+    public func scan(romsRootURLs: [URL], only: Set<CanonicalSystemID>? = nil) -> ScanResult {
+        let results = romsRootURLs.map { scan(romsRootURL: $0, only: only) }
         return ScanResult(
             systems: results.flatMap(\.systems),
             issues: results.flatMap(\.issues)

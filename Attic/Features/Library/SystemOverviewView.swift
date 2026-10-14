@@ -18,6 +18,7 @@ struct SystemOverviewView: View {
     @Environment(EmulatorSetupCoordinator.self) private var setup
     @Environment(ToolsCoordinator.self) private var tools
     @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(RomsRootsStore.self) private var romsRootsStore
     @Query(sort: \EmulatorProfile.name) private var profiles: [EmulatorProfile]
     /// Bumped when Attic comes back to the front, so BIOS files dropped in
     /// from the Finder show up as found.
@@ -60,6 +61,11 @@ struct SystemOverviewView: View {
             Section {
                 LabeledContent("Emulator", value: emulatorName ?? String(localized: "None chosen"))
                 Button("System Settings…") { systemSettingsEditor.system = system }
+                Button("Refresh This System") {
+                    Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs, only: [system.systemID]) }
+                }
+                .disabled(scanCoordinator.state == .scanning)
+                .help("Reads this system's folder again: games added or removed in the Finder show up.")
                 ScrapeSelectionButton(title: "Scrape This System", selection: .system(system.systemID))
                 Button("About This System") {
                     helpNavigator.open(.system(system.systemID), with: openWindow)

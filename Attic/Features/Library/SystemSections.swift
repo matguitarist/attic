@@ -68,7 +68,7 @@ struct SystemVerificationSection: View {
                     RemoveGamesView(systemName: SystemTaxonomy.definition(for: systemID)?.displayName ?? systemID.rawValue,
                                     isArcade: isArcade, games: games) { chosen in
                         Task {
-                            await tools.trashGames(chosen, romsRoots: romsRootsStore.rootURLs, scanCoordinator: scanCoordinator, from: host)
+                            await tools.trashGames(chosen, system: systemID, romsRoots: romsRootsStore.rootURLs, scanCoordinator: scanCoordinator, from: host)
                         }
                     }
                 }

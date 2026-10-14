@@ -125,4 +125,31 @@ import Testing
         #expect(first.systems.map(\.canonicalID) == second.systems.map(\.canonicalID))
         #expect(first.systems.first?.games.count == second.systems.first?.games.count)
     }
+
+    @Test func gamelistEntriesWhoseFileIsGoneAreDropped() throws {
+        let fm = FileManager.default
+        let parent = fm.temporaryDirectory.appending(path: "attic-scanner-gone-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let romsRoot = parent.appending(path: "ROMs")
+        let vb = romsRoot.appending(path: "virtualboy")
+        try fm.createDirectory(at: vb, withIntermediateDirectories: true)
+        try Data().write(to: vb.appending(path: "Red Alarm (USA).vb"))
+        let gamelists = parent.appending(path: "ES-DE/gamelists/virtualboy")
+        try fm.createDirectory(at: gamelists, withIntermediateDirectories: true)
+        try """
+        <?xml version="1.0"?>
+        <gameList>
+          <game><path>./Red Alarm (USA).vb</path><name>Red Alarm</name></game>
+          <game><path>./Bound High (Japan) (Proto).vb</path><name>Bound High</name></game>
+        </gameList>
+        """.write(to: gamelists.appending(path: "gamelist.xml"), atomically: true, encoding: .utf8)
+        let gba = romsRoot.appending(path: "gba")
+        try fm.createDirectory(at: gba, withIntermediateDirectories: true)
+        try Data().write(to: gba.appending(path: "Metroid Fusion.gba"))
+
+        let scanner = try isolatedScanner()
+        let all = scanner.scan(romsRootURL: romsRoot)
+        #expect(all.systems.first { $0.canonicalID == .virtualboy }?.games.map(\.romRelativePath) == ["Red Alarm (USA).vb"])
+        let one = scanner.scan(romsRootURL: romsRoot, only: [.virtualboy])
+        #expect(one.systems.map(\.canonicalID) == [.virtualboy])
+    }
 }

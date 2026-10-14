@@ -15,7 +15,7 @@ extension ToolsCoordinator {
     /// a playlist's discs, an arcade set's disc images) and its media, then
     /// rescans so they leave the library. The Finder's Put Back restores
     /// them.
-    func trashGames(_ games: [GameToRemove], romsRoots: [URL], scanCoordinator: ScanCoordinator, from host: Host) async {
+    func trashGames(_ games: [GameToRemove], system: CanonicalSystemID, romsRoots: [URL], scanCoordinator: ScanCoordinator, from host: Host) async {
         guard !isBusy, !games.isEmpty else { return }
         reportHost = host
         activity = Activity(title: String(localized: "Moving games to the Trash…"), fraction: 0)
@@ -27,7 +27,7 @@ extension ToolsCoordinator {
         }
         let (trashed, bytes) = await Task.detached(priority: .userInitiated) { Self.trash(games, progress: progress) }.value
         activity = Activity(title: String(localized: "Refreshing the library…"))
-        await scanCoordinator.scan(romsRootURLs: romsRoots)
+        await scanCoordinator.scan(romsRootURLs: romsRoots, only: [system])
         activity = nil
         outcome = Outcome(
             title: String(localized: "Remove Games"),
