@@ -14,12 +14,14 @@ final class ToolsCoordinator {
         case tidy(MediaTidyPlan)
         case compress(GameCompressionPlan)
         case verify(VerifyReport)
+        case mediaImport(MediaImportPlan)
 
         var id: String {
             switch self {
             case .tidy: "tidy"
             case .compress: "compress"
             case .verify: "verify"
+            case .mediaImport: "mediaImport"
             }
         }
     }
@@ -34,9 +36,9 @@ final class ToolsCoordinator {
     }
 
     var report: Report?
-    private(set) var reportHost: Host = .library
-    private(set) var isAnalyzing = false
-    private(set) var activity: Activity?
+    var reportHost: Host = .library
+    var isAnalyzing = false
+    var activity: Activity?
     /// What the last run did, for an alert.
     struct Outcome: Equatable {
         let title: String

@@ -172,6 +172,18 @@ struct ToolsCommands: Commands {
             .disabled(roots.isEmpty || tools.isBusy)
             .help("Checks your games against No-Intro's lists of known good dumps.")
 
+            Button("Import from Another Front-End…") {
+                let panel = NSOpenPanel()
+                panel.canChooseDirectories = true
+                panel.canChooseFiles = false
+                panel.prompt = String(localized: "Import")
+                panel.message = String(localized: "Choose RetroBat's or Batocera's roms folder, or one system's folder in it.")
+                guard panel.runModal() == .OK, let folder = panel.url else { return }
+                Task { await tools.analyzeMediaImport(from: folder, scanCoordinator: scanCoordinator, host: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+            .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games.")
+
             Divider()
 
             gameItems

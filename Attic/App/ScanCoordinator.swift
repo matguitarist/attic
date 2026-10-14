@@ -39,6 +39,14 @@ final class ScanCoordinator {
         (try? await libraryStore.gameFiles()) ?? []
     }
 
+    func gameMedia() async -> [LibraryStore.GameMedia] {
+        (try? await libraryStore.gameMedia()) ?? []
+    }
+
+    func applyImported(_ info: [String: LibraryStore.ImportedInfo], replacing: Bool) async -> Int {
+        (try? await libraryStore.applyImported(info, replacing: replacing)) ?? 0
+    }
+
     func applyRenames(_ renames: [LibraryStore.RenamedFile]) async {
         try? await libraryStore.applyRenames(renames)
     }

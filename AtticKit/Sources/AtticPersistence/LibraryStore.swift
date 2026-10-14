@@ -233,6 +233,104 @@ public actor LibraryStore {
         if modelContext.hasChanges { try modelContext.save() }
     }
 
+    /// What a game has, to fill in from another front-end.
+    public struct GameMedia: Sendable {
+        public let path: String
+        public let relativePath: String
+        public let system: CanonicalSystemID
+        /// The system's folder in ROMs, its media folder's name.
+        public let systemFolder: URL
+        public let hasCover: Bool
+        public let hasScreenshot: Bool
+        public let hasVideo: Bool
+        public let hasDescription: Bool
+    }
+
+    public func gameMedia() throws -> [GameMedia] {
+        func exists(_ path: String?) -> Bool { path.map { FileManager.default.fileExists(atPath: $0) } ?? false }
+        return try modelContext.fetch(FetchDescriptor<Game>()).map { game in
+            var folder = URL(fileURLWithPath: game.romAbsolutePath)
+            for _ in game.romRelativePath.split(separator: "/") { folder.deleteLastPathComponent() }
+            return GameMedia(
+                path: game.romAbsolutePath, relativePath: game.romRelativePath,
+                system: CanonicalSystemID(game.systemCanonicalID), systemFolder: game.system?.romsRootURL ?? folder,
+                hasCover: exists(game.coverArtPath), hasScreenshot: exists(game.titleScreenPath),
+                hasVideo: exists(game.videoPath), hasDescription: !(game.gameDescription ?? "").isEmpty
+            )
+        }
+    }
+
+    /// Info and media brought in for a game, by its path.
+    public struct ImportedInfo: Sendable {
+        public var description: String?
+        public var developer: String?
+        public var publisher: String?
+        public var genre: String?
+        public var players: String?
+        public var releaseDate: Date?
+        public var rating: Double?
+        public var coverPath: String?
+        public var screenshotPath: String?
+        public var videoPath: String?
+
+        public init(description: String? = nil, developer: String? = nil, publisher: String? = nil, genre: String? = nil,
+                    players: String? = nil, releaseDate: Date? = nil, rating: Double? = nil,
+                    coverPath: String? = nil, screenshotPath: String? = nil, videoPath: String? = nil) {
+            self.description = description
+            self.developer = developer
+            self.publisher = publisher
+            self.genre = genre
+            self.players = players
+            self.releaseDate = releaseDate
+            self.rating = rating
+            self.coverPath = coverPath
+            self.screenshotPath = screenshotPath
+            self.videoPath = videoPath
+        }
+    }
+
+    /// Fills in each game's empty fields, or every field it's given when
+    /// `replacing`. Like a scrape, what it sets is kept from rescans.
+    /// Returns how many games changed.
+    @discardableResult
+    public func applyImported(_ info: [String: ImportedInfo], replacing: Bool) throws -> Int {
+        var changedGames = 0
+        for game in try modelContext.fetch(FetchDescriptor<Game>()) {
+            guard let imported = info[game.romAbsolutePath] else { continue }
+            var changedText = false
+            func fill<Value: Equatable>(_ keyPath: ReferenceWritableKeyPath<Game, Value?>, _ value: Value?) {
+                guard let value, replacing || game[keyPath: keyPath] == nil, game[keyPath: keyPath] != value else { return }
+                game[keyPath: keyPath] = value
+                changedText = true
+            }
+            fill(\.gameDescription, imported.description)
+            fill(\.developer, imported.developer)
+            fill(\.publisher, imported.publisher)
+            fill(\.genre, imported.genre)
+            fill(\.players, imported.players)
+            fill(\.releaseDate, imported.releaseDate)
+            fill(\.rating, imported.rating)
+            if changedText { game.metadataManuallyEdited = true }
+            var changedMedia = false
+            if let cover = imported.coverPath, game.coverArtPath != cover || game.coverArtManuallySet {
+                game.coverArtPath = cover
+                game.coverArtManuallySet = false
+                changedMedia = true
+            }
+            if let screenshot = imported.screenshotPath, game.titleScreenPath != screenshot {
+                game.titleScreenPath = screenshot
+                changedMedia = true
+            }
+            if let video = imported.videoPath, game.videoPath != video {
+                game.videoPath = video
+                changedMedia = true
+            }
+            if changedText || changedMedia { changedGames += 1 }
+        }
+        if modelContext.hasChanges { try modelContext.save() }
+        return changedGames
+    }
+
     public func systemCount() throws -> Int {
         try modelContext.fetchCount(FetchDescriptor<GameSystem>())
     }

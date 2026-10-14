@@ -247,12 +247,92 @@
         }
       }
     },
+    "%lld covers": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld cover"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld covers"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jaquette"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jaquettes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld covers, videos and manuals came along.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "%lld jaquettes, vidéos et manuels ont suivi."
+          }
+        }
+      }
+    },
+    "%lld descriptions": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld description"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld descriptions"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld description"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld descriptions"
+                }
+              }
+            }
           }
         }
       }
@@ -415,6 +495,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld jeux compressés, %2$@ gagnés. %3$lld n’ont pas pu être convertis et n’ont pas changé."
+          }
+        }
+      }
+    },
+    "%lld games got media or info, %lld files copied.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld games got media or info, %2$lld files copied."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux ont reçu des médias ou des infos, %2$lld fichiers copiés."
           }
         }
       }
@@ -609,6 +705,46 @@
         }
       }
     },
+    "%lld manuals": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manual"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manuals"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manuel"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manuels"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld manuals redrawn at 150 dpi, kept only when that saves at least 40%%.": {
       "localizations": {
         "fr": {
@@ -717,6 +853,46 @@
         }
       }
     },
+    "%lld screenshots": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld screenshot"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld screenshots"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld capture d’écran"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld captures d’écran"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld sessions": {
       "localizations": {
         "fr": {
@@ -753,6 +929,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld pistes"
+          }
+        }
+      }
+    },
+    "%lld videos": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld video"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld videos"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vidéo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vidéos"
+                }
+              }
+            }
           }
         }
       }
@@ -1688,6 +1904,16 @@
         }
       }
     },
+    "Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupère les jaquettes, captures d’écran, vidéos, manuels et descriptions qu’un autre front-end a pour vos jeux."
+          }
+        }
+      }
+    },
     "Browse": {
       "localizations": {
         "fr": {
@@ -2004,6 +2230,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisir RetroArch.app…"
+          }
+        }
+      }
+    },
+    "Choose RetroBat's or Batocera's roms folder, or one system's folder in it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez le dossier roms de RetroBat ou de Batocera, ou le dossier d’un système qu’il contient."
           }
         }
       }
@@ -3870,6 +4106,16 @@
         }
       }
     },
+    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image; covers are saved as HEIC when that's smaller.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
+          }
+        }
+      }
+    },
     "Games can be .iso files or game folders named like Game.ps3 (containing PS3_GAME).": {
       "localizations": {
         "fr": {
@@ -4116,6 +4362,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Importer une collection…"
+          }
+        }
+      }
+    },
+    "Import from Another Front-End": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer depuis un autre front-end"
+          }
+        }
+      }
+    },
+    "Import from Another Front-End…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer depuis un autre front-end…"
+          }
+        }
+      }
+    },
+    "Importing media…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importation des médias…"
           }
         }
       }
@@ -5280,6 +5556,16 @@
         }
       }
     },
+    "No gamelist there lists your games. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune gamelist à cet endroit ne liste vos jeux. Choisissez le dossier qui contient le dossier de chaque système (le dossier roms de RetroBat ou de Batocera), ou le dossier d’un système."
+          }
+        }
+      }
+    },
     "No games match this selection.": {
       "localizations": {
         "fr": {
@@ -5506,6 +5792,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rien de nouveau pour « %@ » : il a déjà tout ce qui a été trouvé. Utilisez Récupérer les infos › Remplacer les infos existantes pour les écraser."
+          }
+        }
+      }
+    },
+    "Nothing to add": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à ajouter"
           }
         }
       }
@@ -6422,6 +6718,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remplacer les infos existantes"
+          }
+        }
+      }
+    },
+    "Replace what games already have": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer ce que les jeux ont déjà"
           }
         }
       }
@@ -7848,6 +8154,16 @@
         }
       }
     },
+    "Their media and info are replaced by the other front-end's, where it has some. The files replaced go to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leurs médias et infos sont remplacés par ceux de l’autre front-end, quand il en a. Les fichiers remplacés vont à la corbeille."
+          }
+        }
+      }
+    },
     "These games run in MAME's current core, so the romsets must come from the same MAME version.": {
       "localizations": {
         "fr": {
@@ -8480,6 +8796,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Votre dossier de ROMs"
+          }
+        }
+      }
+    },
+    "Your games already had all of it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos jeux avaient déjà tout."
+          }
+        }
+      }
+    },
+    "Your games it lists": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos jeux qu’il liste"
           }
         }
       }

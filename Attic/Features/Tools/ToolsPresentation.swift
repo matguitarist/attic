@@ -24,6 +24,10 @@ struct ToolsReports: ViewModifier {
                     CompressReportView(plan: plan, root: root) { approved in
                         Task { await tools.compress(approved, romsRoots: roots, scanCoordinator: scanCoordinator) }
                     }
+                case .mediaImport(let plan):
+                    MediaImportReportView(plan: plan) { replacing in
+                        Task { await tools.importMedia(plan, replacing: replacing, romsRoots: roots, scanCoordinator: scanCoordinator) }
+                    }
                 case .verify(let report):
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {
