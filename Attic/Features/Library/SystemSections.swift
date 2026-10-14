@@ -88,11 +88,12 @@ struct SystemVerificationSection: View {
     private func row(_ title: LocalizedStringKey, systemImage: String, color: Color, count: Int?, verdict: String? = nil) -> some View {
         if let count, count > 0 {
             LabeledContent {
+                // The button before the count, so counts line up.
                 HStack {
-                    Text(count.formatted()).monospacedDigit()
                     if let verdict {
                         DATGamesButton(games: games.filter { $0.datVerdict == verdict })
                     }
+                    Text(count.formatted()).monospacedDigit()
                 }
             } label: {
                 Label(title, systemImage: systemImage).foregroundStyle(color)
