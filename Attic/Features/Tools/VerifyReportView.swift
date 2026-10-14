@@ -31,6 +31,8 @@ struct VerifyReportView: View {
                     .font(.title2.bold())
                 Text(report.datCount == 0
                      ? String(localized: "Attic checks your games against No-Intro's lists of known good dumps, the DAT files. Nothing is changed.")
+                     : !report.systemDATs.isEmpty
+                     ? String(localized: "Each game's data, checked against \(report.systemDATs.formatted(.list(type: .and))). Nothing has been changed.")
                      : String(localized: "Each game's data, checked against \(report.datCount) No-Intro DAT files. Nothing has been changed."))
                     .foregroundStyle(.secondary)
             }

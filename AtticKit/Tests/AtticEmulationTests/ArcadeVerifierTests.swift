@@ -157,6 +157,41 @@ struct ArcadeVerifierTests {
         #expect(verifier.check(roms.appending(path: "ng0.zip"), preferring: .fbneo, biosDirectory: bios)?.verdict == .verified)
     }
 
+    /// A game listed on its own whose chips are kept in another set's zip,
+    /// and a game with BIOS versions of its own.
+    @Test func chipsElsewhereAndAGamesOwnBIOS() throws {
+        let dat = """
+        <?xml version="1.0"?>
+        <datafile>
+          <header><name>FinalBurn Neo - Arcade Games</name></header>
+          <game name="puzzle">
+            <description>Puzzle</description>
+            <rom name="p1.bin" size="1024" crc="\(crc(chip(1)))"/>
+          </game>
+          <game name="puzzler">
+            <description>Puzzle R</description>
+            <rom name="pr1.bin" size="1024" crc="\(crc(chip(2)))"/>
+            <rom name="p1.bin" size="1024" crc="\(crc(chip(1)))"/>
+          </game>
+          <game name="maze">
+            <description>Maze</description>
+            <rom name="m1.bin" size="1024" crc="\(crc(chip(3)))"/>
+            <rom name="maze-bios.sp1" size="1024" crc="\(crc(chip(4)))"/>
+            <rom name="maze-bios_hack.sp1" size="1024" crc="\(crc(chip(5)))"/>
+          </game>
+        </datafile>
+        """
+        try Data(dat.utf8).write(to: dats.appending(path: "fbneo.dat"))
+        try zip(roms.appending(path: "puzzle.zip"), ["p1.bin": chip(1)])
+        try zip(roms.appending(path: "puzzler.zip"), ["pr1.bin": chip(2)])
+        try zip(roms.appending(path: "maze.zip"), ["m1.bin": chip(3), "maze-bios.sp1": chip(4)])
+        let verifier = load(["puzzle", "puzzler", "maze"])
+        let puzzler = verifier.check(roms.appending(path: "puzzler.zip"), preferring: .fbneo, biosDirectory: bios)
+        #expect(puzzler?.verdict == .incomplete)
+        #expect(puzzler?.detail?.contains("puzzle.zip") == true)
+        #expect(verifier.check(roms.appending(path: "maze.zip"), preferring: .fbneo, biosDirectory: bios)?.verdict == .verified)
+    }
+
     @Test func arcadeDATsArentNoIntros() throws {
         try writeMAMEList()
         #expect(DATVerifier.load(from: dats).sets.isEmpty)

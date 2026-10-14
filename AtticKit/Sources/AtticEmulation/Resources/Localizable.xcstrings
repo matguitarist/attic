@@ -81,6 +81,46 @@
         }
       }
     },
+    "%lld ROMs missing (in %@)": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM missing (in %2$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROMs missing (in %2$@)"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquante (dans %2$@)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld ROM manquantes (dans %2$@)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Accurate ColecoVision core.": {
       "localizations": {
         "fr": {

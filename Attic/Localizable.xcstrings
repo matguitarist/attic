@@ -3074,6 +3074,16 @@
         }
       }
     },
+    "Each game's data, checked against %@. Nothing has been changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les données de chaque jeu, comparées à %@. Rien n’a été modifié."
+          }
+        }
+      }
+    },
     "Each game's data, checked against %lld No-Intro DAT files. Nothing has been changed.": {
       "localizations": {
         "fr": {

@@ -159,6 +159,8 @@ final class ToolsCoordinator {
         var datCount = 0
         /// The one system checked, when it wasn't the whole library.
         var system: CanonicalSystemID?
+        /// The DATs that one system was checked against.
+        var systemDATs: [String] = []
         /// Arcade DATs that would check games here, and aren't there.
         var missingArcadeDATs: [ArcadeVerifier.Source] = []
     }
@@ -227,6 +229,12 @@ final class ToolsCoordinator {
         var result = Self.report(files: files, checks: checks, verifier: verifier)
         result.system = system
         result.datCount += arcade.names.count
+        if let system {
+            // Only what concerns that system: its DAT, not those the
+            // library has no system for.
+            result.unmatchedDATs = []
+            result.systemDATs = Self.isArcade(system) ? arcade.names : verifier.sets.filter { $0.system == system }.map(\.name)
+        }
         let arcadeSystems = Set(files.map(\.system).filter(Self.isArcade))
         result.missingArcadeDATs = ArcadeVerifier.Source.allCases.filter { source in
             !arcade.sources.contains(source) && arcadeSystems.contains { Self.arcadeSource(for: $0) == source }

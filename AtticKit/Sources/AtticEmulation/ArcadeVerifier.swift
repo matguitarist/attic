@@ -82,11 +82,16 @@ public struct ArcadeVerifier: Sendable {
         let crcs = Swift.Set(pool.map(\.crc))
         let names = Swift.Set(pool.map { ($0.name as NSString).lastPathComponent.lowercased() })
 
-        var missing = 0
+        var missing: [UInt32] = []
         var wrong = 0
-        let biosROMs = machine.roms.filter { set.biosCRCs.contains($0.crc) }
-        for rom in machine.roms where !crcs.contains(rom.crc) && !set.biosCRCs.contains(rom.crc) {
-            if names.contains(rom.name.lowercased()) { wrong += 1 } else { missing += 1 }
+        // A board's BIOS versions, and those a game carries itself (The
+        // Irritating Maze's own and its Japanese hack): any one does.
+        func isBIOS(_ rom: ROM) -> Bool {
+            set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios")
+        }
+        let biosROMs = machine.roms.filter(isBIOS)
+        for rom in machine.roms where !crcs.contains(rom.crc) && !isBIOS(rom) {
+            if names.contains(rom.name.lowercased()) { wrong += 1 } else { missing.append(rom.crc) }
         }
         // Any one BIOS version does; none at all, and the game can't start.
         let biosMissing = !biosROMs.isEmpty && !biosROMs.contains { crcs.contains($0.crc) }
@@ -109,13 +114,27 @@ public struct ArcadeVerifier: Sendable {
             details.append(String(localized: "BIOS set \(bios).zip missing", bundle: .module))
         }
         if wrong > 0 { details.append(String(localized: "\(wrong) ROMs from another version", bundle: .module)) }
-        if missing > 0 { details.append(String(localized: "\(missing) ROMs missing", bundle: .module)) }
+        if !missing.isEmpty {
+            // Another set's zip may hold them: a game the emulator lists
+            // on its own, kept as another's clone ("in puzzledp.zip").
+            let elsewhere = Self.zips(holding: missing, in: folder, besides: [setName] + Self.chain(of: setName, in: set))
+            details.append(elsewhere.isEmpty
+                ? String(localized: "\(missing.count) ROMs missing", bundle: .module)
+                : String(localized: "\(missing.count) ROMs missing (in \(elsewhere.map { $0 + ".zip" }.formatted(.list(type: .and))))", bundle: .module))
+        }
         for disk in wrongDisks { details.append(String(localized: "disc image \(disk) from another version", bundle: .module)) }
         for disk in missingDisks { details.append(String(localized: "disc image \(disk).chd missing", bundle: .module)) }
         let detail = details.isEmpty ? nil : details.joined(separator: ", ")
         let verdict: DATVerifier.Verdict = wrong > 0 || !wrongDisks.isEmpty ? .differs
-            : missing > 0 || biosMissing || !missingDisks.isEmpty ? .incomplete : .verified
+            : !missing.isEmpty || biosMissing || !missingDisks.isEmpty ? .incomplete : .verified
         return DATVerifier.Check(verdict: verdict, name: machine.title, detail: detail.map { "\(set.name): \($0)" })
+    }
+
+    /// The other zips in `folder` that hold any of `crcs`, by set name.
+    private static func zips(holding crcs: [UInt32], in folder: URL, besides: [String]) -> [String] {
+        let index = FolderIndex.crcs(in: folder)
+        let skipped = Swift.Set(besides)
+        return Swift.Set(crcs.flatMap { index[$0] ?? [] }).filter { !skipped.contains($0) }.sorted()
     }
 
     /// The parents and BIOS sets a set leans on, nearest first.
@@ -320,5 +339,26 @@ public struct ArcadeVerifier: Sendable {
             }
             text = ""
         }
+    }
+}
+
+/// Which zips of a folder hold which chips, read once per folder for a
+/// run of checks.
+private enum FolderIndex {
+    nonisolated(unsafe) private static var cache: [String: (date: Date, index: [UInt32: [String]])] = [:]
+    private static let lock = NSLock()
+
+    static func crcs(in folder: URL) -> [UInt32: [String]] {
+        let date = (try? folder.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate ?? .distantPast
+        if let cached = lock.withLock({ cache[folder.path] }), cached.date == date { return cached.index }
+        var index: [UInt32: [String]] = [:]
+        let zips = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
+            .filter { $0.pathExtension.lowercased() == "zip" }
+        for zip in zips {
+            let name = zip.deletingPathExtension().lastPathComponent.lowercased()
+            for entry in ZipContents.entries(of: zip) ?? [] { index[entry.crc, default: []].append(name) }
+        }
+        lock.withLock { cache[folder.path] = (date, index) }
+        return index
     }
 }
