@@ -206,7 +206,7 @@ final class ROMImportCoordinator {
             if installed { sentToVita3K += 1 } else { vita3KFailed.append(item.lastPathComponent) }
         }
         let roots = romsRoots
-        await Task.detached { Vita3KLibrary.addShortcuts(romsRoots: roots) }.value
+        _ = await Task.detached { Vita3KLibrary.addShortcuts(romsRoots: roots) }.value
     }
 
     /// A PS Vita .pkg is encrypted; its zRIF (from the license that came

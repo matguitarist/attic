@@ -91,6 +91,8 @@ struct CollectionEditorView: View {
     /// Members unticked because their title has one of the "But not"
     /// words: ticked again once the word goes.
     @State private var untickedByExclusion: Set<PersistentIdentifier> = []
+    /// Members ticked back by hand despite a "But not" word: kept.
+    @State private var keptDespiteExclusion: Set<PersistentIdentifier> = []
     /// How many of the library's games each series template finds.
     @State private var templateCounts: [String: Int] = [:]
     /// Pictures picked here, put in place on save: nil leaves the current
@@ -425,7 +427,16 @@ struct CollectionEditorView: View {
     private func row(_ game: Game) -> some View {
         Toggle(isOn: Binding(
             get: { isTicked(game) },
-            set: { if $0 { unticked.remove(game.persistentModelID) } else { unticked.insert(game.persistentModelID) } }
+            set: { ticked in
+                let id = game.persistentModelID
+                if ticked {
+                    unticked.remove(id)
+                    if untickedByExclusion.remove(id) != nil { keptDespiteExclusion.insert(id) }
+                } else {
+                    unticked.insert(id)
+                    keptDespiteExclusion.remove(id)
+                }
+            }
         )) {
             HStack {
                 Text(game.title).lineLimit(1)
@@ -446,7 +457,7 @@ struct CollectionEditorView: View {
         let excludedTerms = search.excludedTerms
         let excludedMembers = Set(members.filter { game in
             excludedTerms.contains { game.title.localizedStandardContains($0) }
-        }.map(\.persistentModelID))
+        }.map(\.persistentModelID)).subtracting(keptDespiteExclusion)
         let memberIDs = Set(unticked.subtracting(untickedByExclusion).filter { id in members.contains { $0.persistentModelID == id } })
         unticked = memberIDs.union(excludedMembers)
             .union(matches.filter { excluded.contains($0.collectionKey) }.map(\.persistentModelID))

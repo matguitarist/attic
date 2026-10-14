@@ -351,11 +351,15 @@ private enum FolderIndex {
     private static let lock = NSLock()
 
     static func crcs(in folder: URL) -> [UInt32: [String]] {
-        let date = (try? folder.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate ?? .distantPast
+        let zips = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.contentModificationDateKey], options: .skipsHiddenFiles)) ?? [])
+            .filter { $0.pathExtension.lowercased() == "zip" }
+        // The folder's date (a zip added or removed), or the newest zip's:
+        // one changed in place leaves the folder's as it was.
+        let folderDate = (try? folder.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate ?? .distantPast
+        let date = zips.compactMap { try? $0.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate }
+            .reduce(folderDate, max)
         if let cached = lock.withLock({ cache[folder.path] }), cached.date == date { return cached.index }
         var index: [UInt32: [String]] = [:]
-        let zips = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
-            .filter { $0.pathExtension.lowercased() == "zip" }
         for zip in zips {
             let name = zip.deletingPathExtension().lastPathComponent.lowercased()
             for entry in ZipContents.entries(of: zip) ?? [] { index[entry.crc, default: []].append(name) }

@@ -116,6 +116,8 @@ public enum MediaFolder {
     public static func coverIsWorthCompressing(_ url: URL) -> Bool {
         ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased())
             && getxattr(url.path, coverCheckedAttribute, nil, 0, 0, 0) < 0
+            // One beside it already has the name it would take.
+            && !FileManager.default.fileExists(atPath: url.deletingPathExtension().appendingPathExtension("heic").path)
     }
 
     // MARK: - Manuals

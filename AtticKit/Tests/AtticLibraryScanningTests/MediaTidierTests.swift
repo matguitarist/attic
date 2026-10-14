@@ -257,6 +257,13 @@ struct MediaTidierTests {
         #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
     }
 
+    @Test func aCoverWithAHEICBesideItIsntOffered() throws {
+        try touch(roms.appending(path: "snes/Game.sfc"))
+        try touch(media.appending(path: "snes/covers/Game.png"))
+        try touch(media.appending(path: "snes/covers/Game.heic"))
+        #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
+    }
+
     @Test func storeReplacesTheEarlierFile() throws {
         let snes = roms.appending(path: "snes")
         try touch(media.appending(path: "snes/screenshots/Game.png"))
