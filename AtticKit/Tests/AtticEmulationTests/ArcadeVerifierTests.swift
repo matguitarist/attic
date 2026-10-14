@@ -83,14 +83,20 @@ struct ArcadeVerifierTests {
         let clone = roms.appending(path: "gamej", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: clone, withIntermediateDirectories: true)
         try chip(3).write(to: clone.appending(path: "g2j.bin"))
+        // A set nothing here completes.
+        try FileManager.default.createDirectory(at: roms.appending(path: "gdgame"), withIntermediateDirectories: true)
 
-        let verifier = load(["game", "gamej"])
+        let verifier = load(["game", "gamej", "gdgame"])
         let plan = verifier.rebuildPlan(folder: roms, preferring: .mame)
         #expect(plan.rebuilds.map(\.name) == ["game", "gamej"])
         let game = try #require(plan.rebuilds.first)
         #expect(game.parts.first { $0.name == "g1.bin" }?.entry == nil)
         #expect(game.parts.first { $0.name == "g2.bin" }?.entry == "g2.bin")
         #expect(plan.rebuilds.last?.parts.map(\.name) == ["g2j.bin"])
+        // The old zip's g1.bin, another version's, is replaced.
+        #expect(game.dropped == ["g1.bin"])
+        #expect(plan.incomplete.map(\.name) == ["gdgame"])
+        #expect(plan.incomplete.first?.missing == [SetProblems.File(name: "pic.pic", expected: crc(chip(4)))])
         #expect(Set(plan.leftovers.map(\.lastPathComponent)) == ["g1.bin", "g2.bin", "g2j.bin"])
         #expect(plan.leftovers.count == 4)
 

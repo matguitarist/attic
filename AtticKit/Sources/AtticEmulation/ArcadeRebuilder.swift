@@ -20,6 +20,9 @@ public struct SetRebuild: Sendable, Hashable, Identifiable {
     public let title: String
     public let zip: URL
     public let parts: [Part]
+    /// What the old zip holds that the new one won't: another version's
+    /// chips, or files the set doesn't use.
+    public var dropped: [String] = []
 
     public var id: String { name }
     public var fromLooseFiles: Int { parts.count(where: { $0.entry == nil }) }
@@ -27,9 +30,20 @@ public struct SetRebuild: Sendable, Hashable, Identifiable {
     public var isNew: Bool { !FileManager.default.fileExists(atPath: zip.path) }
 }
 
+/// A set that can't be made whole from what the folder holds: what was
+/// found, and what's still missing.
+public struct IncompleteSet: Sendable, Hashable, Identifiable {
+    public let name: String
+    public let title: String
+    public let found: [SetRebuild.Part]
+    public let missing: [SetProblems.File]
+    public var id: String { name }
+}
+
 /// What rebuilding a folder's sets would do.
 public struct RebuildPlan: Sendable {
     public var rebuilds: [SetRebuild] = []
+    public var incomplete: [IncompleteSet] = []
     /// Loose files with nothing left to give: their chip is in a zip (or
     /// will be), or none of the folder's sets uses it.
     public var leftovers: [URL] = []
@@ -104,8 +118,19 @@ extension ArcadeVerifier {
                 }
             }
             // Only a set that comes out whole.
-            guard parts.count == wanted.count else { continue }
-            plan.rebuilds.append(SetRebuild(name: name, title: machine.title, zip: folder.appending(path: name + ".zip"), parts: parts))
+            guard parts.count == wanted.count else {
+                let found = Swift.Set(parts.map(\.crc))
+                plan.incomplete.append(IncompleteSet(name: name, title: machine.title, found: parts,
+                                                     missing: wanted.filter { !found.contains($0.crc) }.map { .init(name: $0.name, expected: Self.hex($0.crc)) }))
+                continue
+            }
+            var rebuild = SetRebuild(name: name, title: machine.title, zip: folder.appending(path: name + ".zip"), parts: parts)
+            let kept = Swift.Set(wanted.map(\.crc))
+            let oldZip = folder.appending(path: name + ".zip")
+            if FileManager.default.fileExists(atPath: oldZip.path) {
+                rebuild.dropped = Self.entries(of: oldZip).filter { !kept.contains($0.crc) }.map(\.name)
+            }
+            plan.rebuilds.append(rebuild)
             inZips.formUnion(parts.map(\.crc))
         }
 

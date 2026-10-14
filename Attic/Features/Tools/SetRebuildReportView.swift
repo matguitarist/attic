@@ -34,19 +34,58 @@ struct SetRebuildReportView: View {
                 if !plan.rebuilds.isEmpty {
                     Section {
                         ForEach(plan.rebuilds) { rebuild in
-                            LabeledContent {
-                                Text(sources(of: rebuild))
-                                    .foregroundStyle(.secondary)
-                                    .multilineTextAlignment(.trailing)
+                            DisclosureGroup {
+                                chips(rebuild.parts)
+                                let replaced = rebuild.dropped.filter { name in rebuild.parts.contains { $0.name == name } }
+                                let left = rebuild.dropped.filter { !replaced.contains($0) }
+                                if !replaced.isEmpty {
+                                    note("Replaced, from another version: \(replaced.formatted(.list(type: .and)))")
+                                }
+                                if !left.isEmpty {
+                                    note("Left out, not part of this set: \(left.formatted(.list(type: .and)))")
+                                }
                             } label: {
-                                Text(rebuild.title)
-                                Text(verbatim: rebuild.zip.lastPathComponent).monospaced()
+                                LabeledContent {
+                                    Text(sources(of: rebuild))
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.trailing)
+                                } label: {
+                                    Text(rebuild.title)
+                                    Text(verbatim: rebuild.zip.lastPathComponent).monospaced()
+                                }
                             }
                         }
                     } header: {
                         Text("Sets")
                     } footer: {
                         Text("Each zip is written with exactly the chips \(plan.dat ?? "the DAT") lists, then checked; the zip it replaces goes to the Trash.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                if !plan.incomplete.isEmpty {
+                    Section {
+                        ForEach(plan.incomplete) { set in
+                            DisclosureGroup {
+                                missing(set.missing)
+                                if !set.found.isEmpty {
+                                    note("\(set.found.count) other chips were found.")
+                                }
+                            } label: {
+                                LabeledContent {
+                                    Text("\(set.missing.count) missing")
+                                        .foregroundStyle(.orange)
+                                } label: {
+                                    Text(set.title)
+                                    Text(verbatim: set.name + ".zip").monospaced()
+                                }
+                            }
+                        }
+                    } header: {
+                        Text("Can't Be Made Whole")
+                    } footer: {
+                        Text("No file here has these chips. They're left as they are, and so are the loose files they use.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -84,11 +123,66 @@ struct SetRebuildReportView: View {
                     onRebuild(trashingLeftovers)
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(plan.rebuilds.isEmpty && !trashingLeftovers)
+                .disabled(plan.rebuilds.isEmpty && (!trashingLeftovers || plan.leftovers.isEmpty))
             }
             .padding(20)
         }
         .frame(width: 600, height: 560)
+    }
+
+    /// Each chip, its CRC32, and where it's taken from.
+    private func chips(_ parts: [SetRebuild.Part]) -> some View {
+        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 3) {
+            GridRow {
+                Text("File")
+                Text(verbatim: "CRC32")
+                Text("From")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            ForEach(parts.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }, id: \.self) { part in
+                GridRow {
+                    Text(verbatim: part.name)
+                    Text(verbatim: String(format: "%08x", part.crc)).foregroundStyle(.green)
+                    Text(verbatim: part.entry == nil
+                         ? part.source.path.replacingOccurrences(of: report.folder.path + "/", with: "")
+                         : part.source.lastPathComponent)
+                        .foregroundStyle(part.entry == nil ? Color.accentColor : .secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+            }
+        }
+        .font(.caption.monospaced())
+        .textSelection(.enabled)
+        .padding(.vertical, 4)
+    }
+
+    private func missing(_ files: [SetProblems.File]) -> some View {
+        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 3) {
+            GridRow {
+                Text("File")
+                Text(verbatim: "CRC32")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            ForEach(files, id: \.self) { file in
+                GridRow {
+                    Text(verbatim: file.name)
+                    Text(verbatim: file.expected).foregroundStyle(.orange)
+                }
+            }
+        }
+        .font(.caption.monospaced())
+        .textSelection(.enabled)
+        .padding(.vertical, 4)
+    }
+
+    private func note(_ text: LocalizedStringKey) -> some View {
+        Text(text)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     /// "33 chips: 5 from loose files, 28 from jojoba.zip".

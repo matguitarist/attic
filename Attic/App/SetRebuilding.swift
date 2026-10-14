@@ -27,7 +27,7 @@ extension ToolsCoordinator {
             return verifier.rebuildPlan(folder: folder, preferring: source)
         }.value
         activity = nil
-        guard !plan.rebuilds.isEmpty || !plan.leftovers.isEmpty else {
+        guard !plan.rebuilds.isEmpty || !plan.leftovers.isEmpty || !plan.incomplete.isEmpty else {
             outcome = Outcome(title: String(localized: "Rebuild Sets"),
                               message: String(localized: "Nothing to rebuild: no set here can be made whole from the files beside it, and no loose files are left over."))
             return

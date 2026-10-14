@@ -946,6 +946,16 @@
         }
       }
     },
+    "%lld missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld manquantes"
+          }
+        }
+      }
+    },
     "%lld more, %@": {
       "localizations": {
         "en": {
@@ -1072,6 +1082,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld ou plus"
+          }
+        }
+      }
+    },
+    "%lld other chips were found.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld autres puces ont été trouvées."
           }
         }
       }
@@ -2353,6 +2373,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le mode Cabinet est une vue plein écran pensée pour la télé et une manette. Ouvrez-le avec ⌘⇧B, le bouton Mode Cabinet de la barre d’outils, ou Menu / Start sur une manette ; quittez-le avec le bouton retour."
+          }
+        }
+      }
+    },
+    "Can't Be Made Whole": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibles à compléter"
           }
         }
       }
@@ -4425,7 +4455,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "De"
+            "value": "Source"
           }
         }
       }
@@ -5486,6 +5516,16 @@
         }
       }
     },
+    "Left out, not part of this set: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirés, absents de ce jeu : %@"
+          }
+        }
+      }
+    },
     "Left stick also works as the D-pad": {
       "localizations": {
         "fr": {
@@ -6202,6 +6242,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun émulateur configuré pour ce jeu ou son système."
+          }
+        }
+      }
+    },
+    "No file here has these chips. They're left as they are, and so are the loose files they use.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun fichier ici n'a ces puces. Ces jeux restent tels quels, ainsi que les fichiers isolés qu'ils utilisent."
           }
         }
       }
@@ -7588,6 +7638,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remplacer ce que vos jeux ont déjà"
+          }
+        }
+      }
+    },
+    "Replaced, from another version: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacés, d'une autre version : %@"
           }
         }
       }
