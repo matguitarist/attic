@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.18.3</title>
+            <pubDate>Tue, 13 Oct 2026 20:52:05 -0400</pubDate>
+            <sparkle:version>27</sparkle:version>
+            <sparkle:shortVersionString>1.18.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Verify Games can update the arcade DATs it uses (FinalBurn Neo&#x27;s DAT, MAME&#x27;s latest list), and links to DAT-o-MATIC for newer No-Intro DATs; added DATs replace the older ones for the same systems</li>
+<li>Arcade checks take a game&#x27;s own BIOS versions as alternatives (The Irritating Maze is complete), and say which zip holds chips a set lacks</li>
+<li>Verifying one system shows only its own DAT</li>
+<li>Tidy Up now tries every PNG and JPEG cover, palette PNGs included, keeping the HEIC only when it&#x27;s smaller</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.18.3/Attic-1.18.3.zip" length="14119828" type="application/octet-stream" sparkle:edSignature="vcmZKsJTAKWthhz/LpGbWJnCKbetKsV8GUGHLFnFM1UbO80rYrJJf+7UwKPCpMEvnZdbMwYZwilbS1rwgA2ACQ=="/>
+        </item>
+        <item>
             <title>1.18.2</title>
             <pubDate>Tue, 13 Oct 2026 19:34:13 -0400</pubDate>
             <sparkle:version>26</sparkle:version>
