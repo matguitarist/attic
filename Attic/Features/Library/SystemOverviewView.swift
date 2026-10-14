@@ -67,11 +67,11 @@ struct SystemOverviewView: View {
             }
 
             if system.gameCount > 0 {
-                SystemGamesSection(games: system.games)
+                SystemGamesSection(systemID: system.systemID)
             }
 
             if ToolsCoordinator.canVerify(system.systemID), system.gameCount > 0 {
-                SystemVerificationSection(systemID: system.systemID, games: system.games, host: .library)
+                SystemVerificationSection(systemID: system.systemID, host: .library)
             }
 
             informationSection

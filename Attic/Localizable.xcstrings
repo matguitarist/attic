@@ -565,6 +565,22 @@
         }
       }
     },
+    "%lld games moved to the Trash, %@. To bring one back, use Put Back in the Trash, then File › Refresh Library.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld games moved to the Trash, %2$@. To bring one back, use Put Back in the Trash, then File › Refresh Library."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux placés dans la corbeille, %2$@. Pour en récupérer un, utilisez Remettre à sa place dans la corbeille, puis Fichier › Actualiser la bibliothèque."
+          }
+        }
+      }
+    },
     "%lld games on %lld systems": {
       "localizations": {
         "en": {
@@ -643,6 +659,22 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld games, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld games, %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux, %2$@"
           }
         }
       }
@@ -1131,6 +1163,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld étaient déjà dans votre dossier de ROMs."
+          }
+        }
+      }
+    },
+    "(Demo), (Sample), (Kiosk)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Demo), (Sample), (Kiosk)"
+          }
+        }
+      }
+    },
+    "(Hack), [h]": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Hack), [h]"
+          }
+        }
+      }
+    },
+    "(Proto), (Beta), (Alpha)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Proto), (Beta), (Alpha)"
+          }
+        }
+      }
+    },
+    "(Unl), (Pirate), (Aftermarket), (Homebrew)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Unl), (Pirate), (Aftermarket), (Homebrew)"
           }
         }
       }
@@ -2032,6 +2104,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Échec de la sauvegarde"
+          }
+        }
+      }
+    },
+    "Bad dumps": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mauvais dumps"
           }
         }
       }
@@ -3202,6 +3284,16 @@
         }
       }
     },
+    "Demos and samples": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Démos et échantillons"
+          }
+        }
+      }
+    },
     "Description": {
       "localizations": {
         "fr": {
@@ -3278,6 +3370,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Différent"
+          }
+        }
+      }
+    },
+    "Differs from No-Intro": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Différents de No-Intro"
           }
         }
       }
@@ -3768,6 +3870,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tous les jeux de cette liste ont déjà des infos"
+          }
+        }
+      }
+    },
+    "Every game is a released one the DAT lists, or hasn't been verified yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux sont des versions commercialisées listées dans le DAT, ou n'ont pas encore été vérifiés."
           }
         }
       }
@@ -4438,6 +4550,16 @@
         }
       }
     },
+    "Hacks": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hacks"
+          }
+        }
+      }
+    },
     "Handheld LCD": {
       "localizations": {
         "fr": {
@@ -4534,6 +4656,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Homebrew n’a pas pu installer rom-tools. Essayez « brew install rom-tools » dans le Terminal."
+          }
+        }
+      }
+    },
+    "Homebrew, hacks, translations or dumps No-Intro doesn't list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Homebrew, hacks, traductions ou dumps que No-Intro ne liste pas."
           }
         }
       }
@@ -5454,12 +5586,62 @@
         }
       }
     },
+    "Move %lld games to the Trash?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer %lld jeux dans la corbeille ?"
+          }
+        }
+      }
+    },
     "Move media into the Media folder": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Déplacer les médias dans le dossier Media"
+          }
+        }
+      }
+    },
+    "Move to Trash": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer dans la corbeille"
+          }
+        }
+      }
+    },
+    "Move to Trash…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer dans la corbeille…"
+          }
+        }
+      }
+    },
+    "Moves games that aren't in the DAT, prototypes, demos, unlicensed games or hacks to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place dans la corbeille les jeux absents du DAT, les prototypes, démos, jeux sans licence ou hacks."
+          }
+        }
+      }
+    },
+    "Moving games to the Trash…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placement des jeux dans la corbeille…"
           }
         }
       }
@@ -5500,6 +5682,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nommé comme un jeu listé par No-Intro, mais les données ne sont pas celles de ce jeu : un mauvais dump, un hack, ou une autre révision."
+          }
+        }
+      }
+    },
+    "Named like a listed game, with other data: bad dumps or other revisions.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nommés comme un jeu listé, avec d'autres données : mauvais dumps ou autres révisions."
           }
         }
       }
@@ -5934,6 +6126,16 @@
         }
       }
     },
+    "Not Listed and Differs come from the last Verify Games; the rest from the tags in file names, like (Proto), (Demo), (Unl) or [h1].": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non répertoriés et Différents viennent de la dernière vérification ; le reste, des étiquettes dans les noms de fichiers, comme (Proto), (Demo), (Unl) ou [h1]."
+          }
+        }
+      }
+    },
     "Not a known dump": {
       "localizations": {
         "fr": {
@@ -5954,12 +6156,32 @@
         }
       }
     },
+    "Not in No-Intro": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absents de No-Intro"
+          }
+        }
+      }
+    },
     "Not in No-Intro's list (%lld)": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Absents de la liste de No-Intro (%lld)"
+          }
+        }
+      }
+    },
+    "Not in the DAT": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absents du DAT"
           }
         }
       }
@@ -6244,6 +6466,16 @@
         }
       }
     },
+    "Other versions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autres versions"
+          }
+        }
+      }
+    },
     "PCSX2 needs a PS2 BIOS dump in the BIOS folder's pcsx2/bios folder (any region). Dumps work best as .chd or .iso.": {
       "localizations": {
         "fr": {
@@ -6510,6 +6742,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Profils"
+          }
+        }
+      }
+    },
+    "Prototypes and betas": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prototypes et bêtas"
           }
         }
       }
@@ -6830,6 +7072,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retirer %@ de la bibliothèque ?"
+          }
+        }
+      }
+    },
+    "Remove Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer des jeux"
+          }
+        }
+      }
+    },
+    "Remove Games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer des jeux…"
           }
         }
       }
@@ -7782,6 +8044,26 @@
         }
       }
     },
+    "Sets the emulator's version doesn't know by that name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux que la version de l'émulateur ne connaît pas sous ce nom."
+          }
+        }
+      }
+    },
+    "Sets with chips from another emulator version.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux avec des puces d'une autre version de l'émulateur."
+          }
+        }
+      }
+    },
     "Settings › Controller sets which button confirms: the bottom one (Xbox, PlayStation) or the right one (Nintendo, Switch). It applies to Attic, Cabinet Mode and RetroArch's menus.": {
       "localizations": {
         "fr": {
@@ -8462,6 +8744,16 @@
         }
       }
     },
+    "Their files and media go to the Trash, and they leave the library with their play history. Put Back in the Trash restores the files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leurs fichiers et médias vont dans la corbeille, et ils quittent la bibliothèque avec leur historique de jeu. Remettre à sa place dans la corbeille restaure les fichiers."
+          }
+        }
+      }
+    },
     "Their media and info are replaced by the other front-end's, where it has some. The files replaced go to the Trash.": {
       "localizations": {
         "fr": {
@@ -8658,6 +8950,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retirer des favoris"
+          }
+        }
+      }
+    },
+    "Unlicensed, pirate and homebrew": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans licence, pirates et homebrew"
           }
         }
       }
@@ -9184,6 +9486,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Compresse vos sauvegardes, états de sauvegarde, collections et gamelists dans votre dossier de sauvegarde."
+          }
+        }
+      }
+    },
+    "[b]": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[b]"
           }
         }
       }

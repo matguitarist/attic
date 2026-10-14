@@ -164,7 +164,11 @@ public enum FrontEndMedia {
         return lead
     }
 
-    static func bytes(under folder: URL) -> Int64 {
+    /// A file's size, or everything in a folder.
+    public static func bytes(under folder: URL) -> Int64 {
+        if let values = try? folder.resourceValues(forKeys: [.isDirectoryKey, .fileSizeKey]), values.isDirectory == false {
+            return Int64(values.fileSize ?? 0)
+        }
         guard let enumerator = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.fileSizeKey]) else { return 0 }
         var total: Int64 = 0
         for case let file as URL in enumerator {

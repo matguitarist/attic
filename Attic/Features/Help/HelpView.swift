@@ -108,9 +108,9 @@ private struct SystemHelpView: View {
             headerSection
             informationSection
             if let librarySystem, librarySystem.gameCount > 0 {
-                SystemGamesSection(games: librarySystem.games)
+                SystemGamesSection(systemID: systemID)
                 if ToolsCoordinator.canVerify(systemID) {
-                    SystemVerificationSection(systemID: systemID, games: librarySystem.games, host: .help)
+                    SystemVerificationSection(systemID: systemID, host: .help)
                 }
             }
             emulatorsSection
