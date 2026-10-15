@@ -3,6 +3,8 @@ import AtticLibraryScanning
 import SwiftData
 import AtticModels
 import AtticPersistence
+import AtticEmulation
+import UniformTypeIdentifiers
 
 /// Inspector contents for the selected game: a header (art, editable title,
 /// actions) above a native grouped `Form`, so labels, fields and section
@@ -51,6 +53,7 @@ struct GameDetailView: View {
                     }
                     LabeledContent("System", value: game.system?.displayName ?? game.systemCanonicalID)
                     DATVerdictRow(game: game)
+                    MissingBIOSRow(game: game)
                 }
 
                 if game.playCount > 0 || game.lastPlayedDate != nil {
@@ -354,14 +357,7 @@ private struct BIOSSetDrop: ViewModifier {
             return false
         }
         let folder = game.romAbsoluteURL.deletingLastPathComponent()
-        var added: [String] = []
-        for file in sets {
-            let destination = folder.appending(path: file.lastPathComponent)
-            if FileManager.default.fileExists(atPath: destination.path)
-                || (try? FileManager.default.copyItem(at: file, to: destination)) != nil {
-                added.append(file.lastPathComponent)
-            }
-        }
+        let added = sets.filter { Self.copy($0, as: $0.lastPathComponent, beside: game) }.map(\.lastPathComponent)
         guard !added.isEmpty else {
             message = String(localized: "Couldn't copy \(sets.map(\.lastPathComponent).formatted(.list(type: .and))) to \(folder.lastPathComponent).")
             return false
@@ -371,6 +367,63 @@ private struct BIOSSetDrop: ViewModifier {
             Task { _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator) }
         }
         return true
+    }
+
+    /// Copies a BIOS set into the game's folder as `name`, unless one is
+    /// there already.
+    static func copy(_ file: URL, as name: String, beside game: Game) -> Bool {
+        let destination = game.romAbsoluteURL.deletingLastPathComponent().appending(path: name)
+        return FileManager.default.fileExists(atPath: destination.path)
+            || (try? FileManager.default.copyItem(at: file, to: destination)) != nil
+    }
+}
+
+/// The BIOS set an arcade game was found to need, with Locate… to pick
+/// it, wherever it is, and put it beside the game.
+private struct MissingBIOSRow: View {
+    let game: Game
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @State private var checking = false
+    @State private var failed = false
+
+    var body: some View {
+        if let bios = game.datDetail.flatMap(SetProblems.init(json:))?.missingBIOS {
+            LabeledContent("BIOS Set") {
+                HStack {
+                    if checking {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Label(String(localized: "\(bios) missing"), systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                    }
+                    Button("Locate…") { locate(bios) }
+                        .buttonStyle(.link)
+                        .disabled(checking)
+                }
+            }
+            .help(String(localized: "The game boots from \(bios). Locate it and Attic puts a copy with the games, where the emulator looks for it."))
+            .alert(String(localized: "Couldn't copy \(bios) to \(game.romAbsoluteURL.deletingLastPathComponent().lastPathComponent)."), isPresented: $failed) {}
+        }
+    }
+
+    private func locate(_ bios: String) {
+        let panel = NSOpenPanel()
+        panel.message = String(localized: "Choose \(bios), still zipped.")
+        panel.allowedContentTypes = [.zip]
+        panel.canChooseDirectories = false
+        guard panel.runModal() == .OK, let file = panel.url else { return }
+        guard BIOSSetDrop.copy(file, as: bios, beside: game) else {
+            failed = true
+            return
+        }
+        checking = true
+        Task {
+            _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator)
+            checking = false
+        }
     }
 }
 

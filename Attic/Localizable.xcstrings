@@ -82,6 +82,16 @@
         }
       }
     },
+    "%@ missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ manquant"
+          }
+        }
+      }
+    },
     "%@ to the Trash": {
       "localizations": {
         "fr": {
@@ -2592,6 +2602,16 @@
         }
       }
     },
+    "BIOS Set": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS"
+          }
+        }
+      }
+    },
     "BIOS files": {
       "localizations": {
         "fr": {
@@ -3032,6 +3052,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisir"
+          }
+        }
+      }
+    },
+    "Choose %@, still zipped.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez %@, toujours zippé."
           }
         }
       }
@@ -4355,16 +4385,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux Dreamcast fonctionnent le mieux en .chd ou .gdi. Les fichiers BIOS vont dans un dossier dc à l’intérieur du dossier BIOS."
-          }
-        }
-      }
-    },
-    "Drop it on the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Déposez-le sur le panneau du jeu, ou placez-le avec les jeux, toujours zippé : c'est là que l'émulateur le cherche."
           }
         }
       }
@@ -6248,6 +6268,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Charger"
+          }
+        }
+      }
+    },
+    "Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Localisez-le depuis le panneau du jeu, ou placez-le avec les jeux, toujours zippé : c'est là que l'émulateur le cherche."
+          }
+        }
+      }
+    },
+    "Locate…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Localiser…"
           }
         }
       }
@@ -9809,6 +9849,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur « %@ » n’est plus installé."
+          }
+        }
+      }
+    },
+    "The game boots from %@. Locate it and Attic puts a copy with the games, where the emulator looks for it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le jeu démarre avec %@. Localisez-le et Attic en place une copie avec les jeux, là où l'émulateur le cherche."
           }
         }
       }

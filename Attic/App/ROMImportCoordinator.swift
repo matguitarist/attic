@@ -104,10 +104,10 @@ final class ROMImportCoordinator {
             for game in games {
                 if let target = system ?? game.folderSystem {
                     placements.append((game.files, target, game.destinationName))
-                } else if let shown, SystemROMExtensions.extensions(for: shown)?.contains(game.fileExtension) == true {
+                } else if let shown, Self.takes(shown, game) {
                     placements.append((game.files, shown, nil))
                 } else {
-                    let choices = ROMImport.systems(forExtension: game.fileExtension)
+                    let choices = Self.systems(for: game)
                     switch choices.count {
                     case 0: unknown.append(game.files[0].lastPathComponent)
                     case 1: placements.append((game.files, choices[0], nil))
@@ -480,6 +480,29 @@ extension ROMImportCoordinator {
         process.waitUntilExit()
         let inner = Set(output.split(separator: "\n").filter { !$0.hasSuffix("/") }.map { ($0 as NSString).pathExtension.lowercased() })
         return inner.count == 1 ? inner.first! : ext
+    }
+
+    /// Whether `system` takes the game: by what its zip holds, or for an
+    /// arcade system by the zip itself, whose chips may all share a type.
+    nonisolated private static func takes(_ system: CanonicalSystemID, _ game: Game) -> Bool {
+        let extensions = SystemROMExtensions.extensions(for: system) ?? []
+        if extensions.contains(game.fileExtension) { return true }
+        return ToolsCoordinator.isArcade(system) && extensions.contains(game.files[0].pathExtension.lowercased())
+    }
+
+    /// The systems that could take the game: an arcade board's BIOS set
+    /// goes to an arcade system; a zip of files no system takes, to those
+    /// that take zips.
+    nonisolated private static func systems(for game: Game) -> [CanonicalSystemID] {
+        let file = game.files[0]
+        if ArcadeBIOSSets.names.contains(file.deletingPathExtension().lastPathComponent.lowercased()) {
+            return SystemTaxonomy.allSystems.filter { $0.category == .arcade && takes($0.canonicalID, game) }
+                .sorted { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
+                .map(\.canonicalID)
+        }
+        let choices = ROMImport.systems(forExtension: game.fileExtension)
+        guard choices.isEmpty, file.pathExtension.lowercased() != game.fileExtension else { return choices }
+        return ROMImport.systems(forExtension: file.pathExtension)
     }
 
     /// Moves on the same disk, copies from another.

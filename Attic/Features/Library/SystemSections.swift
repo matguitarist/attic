@@ -588,7 +588,7 @@ struct SetProblemsView: View {
                         Image(systemName: "exclamationmark.triangle")
                     }
                     .foregroundStyle(.orange)
-                    Text("Drop it on the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
+                    Text("Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
