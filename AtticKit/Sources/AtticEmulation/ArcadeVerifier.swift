@@ -142,6 +142,17 @@ public struct ArcadeVerifier: Sendable {
         return Swift.Set(crcs.flatMap { index[$0] ?? [] }).filter { !skipped.contains($0) }.sorted()
     }
 
+    /// Where a BIOS set for `system`'s games goes in the BIOS folder, for
+    /// the emulator that runs them: FinalBurn Neo's fbneo, Flycast's dc,
+    /// else MAME's mame/bios.
+    public static func biosSetFolder(for system: CanonicalSystemID, in biosDirectory: URL) -> URL {
+        switch EmulatorCatalog.recommendation(for: system)?.recommendedCore?.coreIdentifier {
+        case "fbneo_libretro": biosDirectory.appending(path: "fbneo", directoryHint: .isDirectory)
+        case "flycast_libretro": biosDirectory.appending(path: "dc", directoryHint: .isDirectory)
+        default: biosDirectory.appending(path: "mame/bios", directoryHint: .isDirectory)
+        }
+    }
+
     /// The parents and BIOS sets a set leans on, nearest first.
     static func chain(of name: String, in set: Set) -> [String] {
         var result: [String] = []
@@ -161,7 +172,9 @@ public struct ArcadeVerifier: Sendable {
         let file = name + ".zip"
         let subfolders = ((try? FileManager.default.contentsOfDirectory(at: biosDirectory, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)) ?? [])
             .filter { (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true }
-        return ([folder, biosDirectory] + subfolders).map { $0.appending(path: file) }
+        // MAME's core also looks in the system folder's mame/bios and mame/roms.
+        let mame = ["mame/bios", "mame/roms"].map { biosDirectory.appending(path: $0, directoryHint: .isDirectory) }
+        return ([folder, biosDirectory] + subfolders + mame).map { $0.appending(path: file) }
             .first { FileManager.default.fileExists(atPath: $0.path) }
     }
 

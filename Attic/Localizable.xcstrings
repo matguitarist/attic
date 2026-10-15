@@ -3146,6 +3146,16 @@
         }
       }
     },
+    "Choose a folder with BIOS sets in it, such as another front-end's bios folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un dossier contenant des BIOS, comme le dossier bios d'un autre front-end."
+          }
+        }
+      }
+    },
     "Choose an emulator for %@ first, in Settings › Emulators.": {
       "localizations": {
         "fr": {
@@ -3613,16 +3623,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de rechercher les mises à jour des cœurs : %@"
-          }
-        }
-      }
-    },
-    "Couldn't copy %@ beside the games.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impossible de copier %@ à côté des jeux."
           }
         }
       }
@@ -6302,12 +6302,12 @@
         }
       }
     },
-    "Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.": {
+    "Locate it from the game's panel, or put it in the BIOS folder (mame/bios for MAME) or with the games, still zipped: the emulator looks in both.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Localisez-le depuis le panneau du jeu, ou placez-le avec les jeux, toujours zippé : c'est là que l'émulateur le cherche."
+            "value": "Localisez-le depuis le panneau du jeu, ou placez-le dans le dossier BIOS (mame/bios pour MAME) ou avec les jeux, toujours zippé : l'émulateur cherche aux deux endroits."
           }
         }
       }
@@ -7234,6 +7234,16 @@
         }
       }
     },
+    "Not in that folder: %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absents de ce dossier : %@."
+          }
+        }
+      }
+    },
     "Not in the DAT": {
       "localizations": {
         "fr": {
@@ -7935,6 +7945,22 @@
         }
       }
     },
+    "Put in %@: %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Put in %1$@: %2$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placé dans %@ : %@."
+          }
+        }
+      }
+    },
     "Put the ST-V BIOS (stvbios.zip) in the stv folder with the games: MAME looks for it there.": {
       "localizations": {
         "fr": {
@@ -7961,22 +7987,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez-les dans %@"
-          }
-        }
-      }
-    },
-    "Put with the games in %@: %@.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "Put with the games in %1$@: %2$@."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placé avec les jeux dans %@ : %@."
           }
         }
       }
@@ -9203,6 +9213,16 @@
         }
       }
     },
+    "Search a Folder…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chercher dans un dossier…"
+          }
+        }
+      }
+    },
     "Select All": {
       "localizations": {
         "fr": {
@@ -9883,12 +9903,18 @@
         }
       }
     },
-    "The game boots from %@. Locate it and Attic puts a copy with the games, where the emulator looks for it.": {
+    "The game boots from %@. Locate it and Attic puts a copy in %@, where the emulator looks for it.": {
       "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "The game boots from %1$@. Locate it and Attic puts a copy in %2$@, where the emulator looks for it."
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le jeu démarre avec %@. Localisez-le et Attic en place une copie avec les jeux, là où l'émulateur le cherche."
+            "value": "Le jeu démarre avec %@. Localisez-le et Attic en place une copie dans %@, là où l'émulateur le cherche."
           }
         }
       }
@@ -10053,12 +10079,12 @@
         }
       }
     },
-    "These games boot from a BIOS set that isn't with them. Locate it and Attic puts a copy with the games, still zipped, where the emulator looks for it.": {
+    "These games boot from a BIOS set Attic can't find. Locate each one, or search a folder that has them (another front-end's bios folder): Attic puts a copy in %@, still zipped, where the emulator looks for it.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ces jeux démarrent avec un BIOS qui n'est pas avec eux. Localisez-le et Attic en place une copie avec les jeux, toujours zippée, là où l'émulateur le cherche."
+            "value": "Ces jeux démarrent avec un BIOS qu'Attic ne trouve pas. Localisez-les un par un, ou cherchez dans un dossier qui les contient (le dossier bios d'un autre front-end) : Attic en place une copie dans %@, toujours zippée, là où l'émulateur les cherche."
           }
         }
       }

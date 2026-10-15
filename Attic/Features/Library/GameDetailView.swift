@@ -326,8 +326,8 @@ struct GameDetailView: View {
 }
 
 /// An arcade board's BIOS set (konamigx.zip) dropped on its game's panel
-/// goes beside the game, where MAME and FinalBurn Neo look for it, and the
-/// game is checked again.
+/// goes in the BIOS folder, where the emulator that runs the game looks
+/// for it (mame/bios for MAME), and the game is checked again.
 private struct BIOSSetDrop: ViewModifier {
     let game: Game
 
@@ -355,13 +355,14 @@ private struct BIOSSetDrop: ViewModifier {
             message = String(localized: "Only an arcade BIOS set (such as konamigx.zip) can be dropped on a game. Drop games on the list of games.")
             return false
         }
-        let folder = game.romAbsoluteURL.deletingLastPathComponent()
-        let added = sets.filter { BIOSSetLocating.copy($0, as: $0.lastPathComponent, into: [folder]) }.map(\.lastPathComponent)
+        let folder = BIOSSetLocating.destination(for: system, biosFolder: emulationFolderStore.folder.bios)
+        let added = sets.filter { BIOSSetLocating.copy($0, as: $0.lastPathComponent, into: folder) }.map(\.lastPathComponent)
+        let shown = BIOSSetLocating.shortPath(folder, in: emulationFolderStore.folder)
         guard !added.isEmpty else {
-            message = String(localized: "Couldn't copy \(sets.map(\.lastPathComponent).formatted(.list(type: .and))) to \(folder.lastPathComponent).")
+            message = String(localized: "Couldn't copy \(sets.map(\.lastPathComponent).formatted(.list(type: .and))) to \(shown).")
             return false
         }
-        message = String(localized: "Put with the games in \(folder.lastPathComponent): \(added.formatted(.list(type: .and))).")
+        message = String(localized: "Put in \(shown): \(added.formatted(.list(type: .and))).")
         if game.datVerdict != nil {
             Task { _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator) }
         }
@@ -370,7 +371,7 @@ private struct BIOSSetDrop: ViewModifier {
 }
 
 /// The BIOS set an arcade game was found to need, with Locate… to pick
-/// it, wherever it is, and put it beside the game.
+/// it, wherever it is, and put it in the BIOS folder.
 private struct MissingBIOSRow: View {
     let game: Game
 
@@ -379,6 +380,10 @@ private struct MissingBIOSRow: View {
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @State private var checking = false
     @State private var failed = false
+
+    private var folder: URL {
+        BIOSSetLocating.destination(for: CanonicalSystemID(game.systemCanonicalID), biosFolder: emulationFolderStore.folder.bios)
+    }
 
     var body: some View {
         if let bios = game.datDetail.flatMap(SetProblems.init(json:))?.missingBIOS {
@@ -395,14 +400,14 @@ private struct MissingBIOSRow: View {
                         .disabled(checking)
                 }
             }
-            .help(String(localized: "The game boots from \(bios). Locate it and Attic puts a copy with the games, where the emulator looks for it."))
-            .alert(String(localized: "Couldn't copy \(bios) to \(game.romAbsoluteURL.deletingLastPathComponent().lastPathComponent)."), isPresented: $failed) {}
+            .help(String(localized: "The game boots from \(bios). Locate it and Attic puts a copy in \(BIOSSetLocating.shortPath(folder, in: emulationFolderStore.folder)), where the emulator looks for it."))
+            .alert(String(localized: "Couldn't copy \(bios) to \(BIOSSetLocating.shortPath(folder, in: emulationFolderStore.folder))."), isPresented: $failed) {}
         }
     }
 
     private func locate(_ bios: String) {
         guard let file = BIOSSetLocating.choose(bios) else { return }
-        guard BIOSSetLocating.copy(file, as: bios, into: [game.romAbsoluteURL.deletingLastPathComponent()]) else {
+        guard BIOSSetLocating.copy(file, as: bios, into: folder) else {
             failed = true
             return
         }

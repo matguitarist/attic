@@ -528,6 +528,7 @@ struct DATGamesButton: View {
     @State private var shows = false
     @State private var locating: String?
     @State private var failed: String?
+    @State private var searchResult: String?
 
     private var sorted: [Game] {
         games.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
@@ -576,17 +577,23 @@ struct DATGamesButton: View {
                     .frame(width: 560, alignment: .leading)
                 }
                 .frame(maxHeight: 560)
-                .alert(failed.map { String(localized: "Couldn't copy \($0) beside the games.") } ?? "",
+                .alert(failed.map { String(localized: "Couldn't copy \($0) to \(shortDestination).") } ?? "",
                        isPresented: Binding(get: { failed != nil }, set: { if !$0 { failed = nil } })) {}
+                .alert(searchResult ?? "", isPresented: Binding(get: { searchResult != nil }, set: { if !$0 { searchResult = nil } })) {}
             }
     }
 
     private var biosSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("BIOS Sets Missing", systemImage: "exclamationmark.triangle.fill")
-                .font(.headline)
-                .foregroundStyle(.orange)
-            Text("These games boot from a BIOS set that isn't with them. Locate it and Attic puts a copy with the games, still zipped, where the emulator looks for it.")
+            HStack {
+                Label("BIOS Sets Missing", systemImage: "exclamationmark.triangle.fill")
+                    .font(.headline)
+                    .foregroundStyle(.orange)
+                Spacer()
+                Button("Search a Folder…", action: searchFolder)
+                    .disabled(locating != nil)
+            }
+            Text("These games boot from a BIOS set Attic can't find. Locate each one, or search a folder that has them (another front-end's bios folder): Attic puts a copy in \(shortDestination), still zipped, where the emulator looks for it.")
                 .font(.callout)
                 .foregroundStyle(Color.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -600,7 +607,7 @@ struct DATGamesButton: View {
                             .font(.callout)
                             .foregroundStyle(Color.secondaryText)
                         Spacer()
-                        if locating == bios.name {
+                        if locating == bios.name || locating == "" {
                             ProgressView().controlSize(.small)
                         } else {
                             Button("Locate…") { locate(bios.name, for: bios.games) }
@@ -637,9 +644,45 @@ struct DATGamesButton: View {
         }
     }
 
+    /// Where the system's BIOS sets go: they're all one system's games.
+    private var destination: URL {
+        BIOSSetLocating.destination(for: CanonicalSystemID(games.first?.systemCanonicalID ?? ""), biosFolder: emulationFolderStore.folder.bios)
+    }
+
+    private var shortDestination: String {
+        BIOSSetLocating.shortPath(destination, in: emulationFolderStore.folder)
+    }
+
+    /// Every missing BIOS set found in a folder, copied in at once.
+    private func searchFolder() {
+        guard let folder = BIOSSetLocating.chooseFolder() else { return }
+        let missing = missingBIOS
+        let names = Set(missing.map(\.name))
+        let destination = destination
+        locating = ""
+        Task {
+            let found = await Task.detached(priority: .userInitiated) {
+                BIOSSetLocating.find(names, in: folder)
+                    .filter { BIOSSetLocating.copy($0.value, as: $0.key, into: destination) }
+            }.value
+            let copied = missing.filter { found[$0.name.lowercased()] != nil }
+            await tools.recheck(copied.flatMap(\.games), datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator)
+            locating = nil
+            let absent = missing.filter { found[$0.name.lowercased()] == nil }.map(\.name)
+            var lines: [String] = []
+            if !copied.isEmpty {
+                lines.append(String(localized: "Put in \(shortDestination): \(copied.map(\.name).formatted(.list(type: .and)))."))
+            }
+            if !absent.isEmpty {
+                lines.append(String(localized: "Not in that folder: \(absent.formatted(.list(type: .and)))."))
+            }
+            searchResult = lines.joined(separator: "\n\n")
+        }
+    }
+
     private func locate(_ name: String, for games: [Game]) {
         guard let file = BIOSSetLocating.choose(name) else { return }
-        guard BIOSSetLocating.copy(file, as: name, into: Set(games.map { $0.romAbsoluteURL.deletingLastPathComponent() })) else {
+        guard BIOSSetLocating.copy(file, as: name, into: destination) else {
             failed = name
             return
         }
@@ -689,7 +732,7 @@ struct SetProblemsView: View {
                     }
                     .foregroundStyle(.orange)
                     if !compact {
-                        Text("Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
+                        Text("Locate it from the game's panel, or put it in the BIOS folder (mame/bios for MAME) or with the games, still zipped: the emulator looks in both.")
                             .font(.caption)
                             .foregroundStyle(Color.secondaryText)
                             .frame(maxWidth: .infinity, alignment: .leading)

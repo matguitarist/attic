@@ -240,7 +240,11 @@ struct ArcadeVerifierTests {
         #expect(problems?.missingBIOS == "maxaflex.zip")
         #expect(problems?.missingROMs.isEmpty == true)
         #expect(problems?.biosROMs?.map(\.name) == ["atarixl.rom", "maxaflex.uc"])
-        try zip(roms.appending(path: "maxaflex.zip"), ["atarixl.rom": chip(2), "maxaflex.uc": chip(3)])
+        // In the BIOS folder, where MAME's core looks: mame/bios.
+        let folder = ArcadeVerifier.biosSetFolder(for: .mame, in: bios)
+        #expect(folder == bios.appending(path: "mame/bios", directoryHint: .isDirectory))
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try zip(folder.appending(path: "maxaflex.zip"), ["atarixl.rom": chip(2), "maxaflex.uc": chip(3)])
         #expect(verifier.check(roms.appending(path: "mf_achas.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .verified)
     }
 
