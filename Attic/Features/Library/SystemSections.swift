@@ -517,39 +517,137 @@ struct DATDetailButton: View {
 }
 
 /// A verdict's games in the system's Verification section, each with
-/// what's wrong with it.
+/// what's wrong with it: the BIOS sets they're missing first, each with
+/// Locate…, then game by game.
 struct DATGamesButton: View {
     let games: [Game]
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @State private var shows = false
+    @State private var locating: String?
+    @State private var failed: String?
+
+    private var sorted: [Game] {
+        games.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
+    }
+
+    private func problems(_ game: Game) -> SetProblems? {
+        game.datDetail.flatMap(SetProblems.init(json:))
+    }
+
+    /// The DATs the games were checked against, said once.
+    private var dats: [String] {
+        Set(games.compactMap { problems($0)?.dat }).sorted()
+    }
+
+    /// Each missing BIOS set and the games waiting on it.
+    private var missingBIOS: [(name: String, games: [Game])] {
+        Dictionary(grouping: games.compactMap { game in problems(game)?.missingBIOS.map { ($0, game) } }, by: \.0)
+            .map { (name: $0.key, games: $0.value.map(\.1)) }
+            .sorted { $0.name < $1.name }
+    }
 
     var body: some View {
         Button("Show") { shows = true }
             .buttonStyle(.link)
             .popover(isPresented: $shows, arrowEdge: .trailing) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(games.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }) { game in
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(game.title).bold()
-                                Text(verbatim: game.romAbsoluteURL.lastPathComponent)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                if let detail = game.datDetail {
-                                    SavedDATDetail(detail: detail)
-                                } else if game.datVerdict != "differs" || ToolsCoordinator.isArcade(CanonicalSystemID(game.systemCanonicalID)) {
-                                    Text("Verify Again, or open the game's Details, to see what's wrong.")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
+                    VStack(alignment: .leading, spacing: 0) {
+                        if !missingBIOS.isEmpty {
+                            biosSection
+                                .padding(.bottom, 16)
+                        }
+                        ForEach(sorted) { game in
+                            gameRow(game)
+                                .padding(.vertical, 12)
+                            Divider()
+                        }
+                        if !dats.isEmpty {
+                            Text("Checked against \(dats.formatted(.list(type: .and))).")
+                                .font(.caption)
+                                .foregroundStyle(Color.secondaryText)
+                                .padding(.top, 12)
                         }
                     }
                     .textSelection(.enabled)
                     .padding(16)
-                    .frame(width: 520, alignment: .leading)
+                    .frame(width: 560, alignment: .leading)
                 }
-                .frame(maxHeight: 520)
+                .frame(maxHeight: 560)
+                .alert(failed.map { String(localized: "Couldn't copy \($0) beside the games.") } ?? "",
+                       isPresented: Binding(get: { failed != nil }, set: { if !$0 { failed = nil } })) {}
             }
+    }
+
+    private var biosSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("BIOS Sets Missing", systemImage: "exclamationmark.triangle.fill")
+                .font(.headline)
+                .foregroundStyle(.orange)
+            Text("These games boot from a BIOS set that isn't with them. Locate it and Attic puts a copy with the games, still zipped, where the emulator looks for it.")
+                .font(.callout)
+                .foregroundStyle(Color.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            VStack(spacing: 0) {
+                ForEach(Array(missingBIOS.enumerated()), id: \.element.name) { index, bios in
+                    if index > 0 { Divider() }
+                    HStack {
+                        Text(verbatim: bios.name)
+                            .font(.callout.monospaced())
+                        Text("\(bios.games.count) games")
+                            .font(.callout)
+                            .foregroundStyle(Color.secondaryText)
+                        Spacer()
+                        if locating == bios.name {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Button("Locate…") { locate(bios.name, for: bios.games) }
+                                .disabled(locating != nil)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                }
+            }
+            .background(Color.card, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+    }
+
+    @ViewBuilder
+    private func gameRow(_ game: Game) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(game.title).font(.headline)
+                Spacer()
+                Text(verbatim: game.romAbsoluteURL.lastPathComponent)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Color.secondaryText)
+            }
+            if let problems = problems(game) {
+                SetProblemsView(problems: problems, compact: true)
+            } else if let detail = game.datDetail {
+                SavedDATDetail(detail: detail)
+            } else if game.datVerdict != "differs" || ToolsCoordinator.isArcade(CanonicalSystemID(game.systemCanonicalID)) {
+                Text("Verify Again, or open the game's Details, to see what's wrong.")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondaryText)
+            }
+        }
+    }
+
+    private func locate(_ name: String, for games: [Game]) {
+        guard let file = BIOSSetLocating.choose(name) else { return }
+        guard BIOSSetLocating.copy(file, as: name, into: Set(games.map { $0.romAbsoluteURL.deletingLastPathComponent() })) else {
+            failed = name
+            return
+        }
+        locating = name
+        Task {
+            await tools.recheck(games, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator)
+            locating = nil
+        }
     }
 }
 
@@ -574,23 +672,36 @@ struct SavedDATDetail: View {
 }
 
 /// What's wrong with an arcade set, as tables: each file, the checksum
-/// the DAT lists, and the one yours has.
+/// the DAT lists, and the one yours has. `compact` in a list of games,
+/// which says once which DAT and where BIOS sets go.
 struct SetProblemsView: View {
     let problems: SetProblems
+    var compact = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if let bios = problems.missingBIOS {
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 6) {
                     Label {
                         Text("BIOS set \(bios) missing")
                     } icon: {
                         Image(systemName: "exclamationmark.triangle")
                     }
                     .foregroundStyle(.orange)
-                    Text("Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if !compact {
+                        Text("Locate it from the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondaryText)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                        if let chips = problems.biosROMs, !chips.isEmpty {
+                            DisclosureGroup("Its chips") {
+                                grid(chips, checksum: "CRC32", showsFound: false)
+                                    .padding(.top, 4)
+                            }
+                            .font(.callout)
+                        }
+                    }
                 }
             }
             table("From Another Version", problems.otherVersionROMs, checksum: "CRC32", showsFound: true)
@@ -598,13 +709,15 @@ struct SetProblemsView: View {
             if !problems.missingROMsIn.isEmpty {
                 Text("The missing ROMs are in \(problems.missingROMsIn.formatted(.list(type: .and))).")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondaryText)
             }
             table("Disc Images From Another Version", problems.otherVersionDisks, checksum: "SHA-1", showsFound: true)
             table("Disc Images Missing", problems.missingDisks, checksum: "SHA-1", showsFound: false)
-            Text("Checked against \(problems.dat).")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            if !compact {
+                Text("Checked against \(problems.dat).")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondaryText)
+            }
         }
         .textSelection(.enabled)
     }
@@ -613,7 +726,7 @@ struct SetProblemsView: View {
     private func table(_ title: LocalizedStringKey, _ files: [SetProblems.File], checksum: String, showsFound: Bool) -> some View {
         if !files.isEmpty, checksum == "SHA-1" {
             // Too long for columns side by side: one under the other.
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(title).font(.subheadline.bold())
                 ForEach(files, id: \.self) { file in
                     VStack(alignment: .leading, spacing: 2) {
@@ -629,26 +742,37 @@ struct SetProblemsView: View {
         } else if !files.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 Text(title).font(.subheadline.bold())
-                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 4) {
-                    GridRow {
-                        Text("File")
-                        Text(verbatim: checksum)
-                        if showsFound { Text("Yours") }
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    Divider()
-                    ForEach(files, id: \.self) { file in
-                        GridRow {
-                            Text(verbatim: file.name)
-                            Text(verbatim: file.expected).foregroundStyle(.green)
-                            if showsFound { Text(verbatim: file.found ?? "—").foregroundStyle(.orange) }
-                        }
-                    }
-                }
-                .font(.callout.monospaced())
+                grid(files, checksum: checksum, showsFound: showsFound)
             }
         }
+    }
+
+    /// File, the CRC the DAT lists and the one yours has, in a card.
+    private func grid(_ files: [SetProblems.File], checksum: String, showsFound: Bool) -> some View {
+        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
+            GridRow {
+                Text("File")
+                Text(verbatim: checksum)
+                if showsFound { Text("Yours") }
+            }
+            .font(.caption)
+            .foregroundStyle(Color.secondaryText)
+            .padding(.vertical, 5)
+            ForEach(files, id: \.self) { file in
+                Divider()
+                GridRow {
+                    Text(verbatim: file.name)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(verbatim: file.expected).foregroundStyle(.green)
+                    if showsFound { Text(verbatim: file.found ?? "—").foregroundStyle(.orange) }
+                }
+                .font(.callout.monospaced())
+                .padding(.vertical, 5)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 2)
+        .background(Color.card, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

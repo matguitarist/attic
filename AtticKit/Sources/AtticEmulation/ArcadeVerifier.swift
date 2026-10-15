@@ -92,8 +92,11 @@ public struct ArcadeVerifier: Sendable {
         var missing: [UInt32] = []
         // A board's BIOS versions, and those a game carries itself (The
         // Irritating Maze's own and its Japanese hack): any one does.
+        // A game that's no clone takes what it doesn't carry from its BIOS
+        // set (Astro Chase its Atari XL chips from maxaflex.zip).
+        let onBIOS = machine.cloneOf == nil && machine.romOf.map(ArcadeBIOSSets.names.contains) == true
         func isBIOS(_ rom: ROM) -> Bool {
-            set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios")
+            set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") || (onBIOS && rom.inParent)
         }
         let biosROMs = machine.roms.filter(isBIOS)
         for rom in machine.roms where !crcs.contains(rom.crc) && !isBIOS(rom) {
@@ -109,6 +112,7 @@ public struct ArcadeVerifier: Sendable {
         // Any one BIOS version does; none at all, and the game can't start.
         if !biosROMs.isEmpty, !biosROMs.contains(where: { crcs.contains($0.crc) }), let bios = Self.chain(of: setName, in: set).last {
             problems.missingBIOS = bios + ".zip"
+            problems.biosROMs = biosROMs.map { .init(name: $0.name, expected: Self.hex($0.crc)) }
         }
         let folders = [setName] + Self.chain(of: setName, in: set)
         for disk in machine.disks {
@@ -388,6 +392,8 @@ public struct SetProblems: Codable, Sendable, Hashable {
     /// The DAT checked against: "MAME 0.289".
     public let dat: String
     public var missingBIOS: String?
+    /// The missing BIOS set's chips, for finding it.
+    public var biosROMs: [File]?
     public var otherVersionROMs: [File] = []
     public var missingROMs: [File] = []
     /// Other sets' zips that hold the missing ROMs.

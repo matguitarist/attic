@@ -2612,6 +2612,16 @@
         }
       }
     },
+    "BIOS Sets Missing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BIOS manquants"
+          }
+        }
+      }
+    },
     "BIOS files": {
       "localizations": {
         "fr": {
@@ -3603,6 +3613,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de rechercher les mises à jour des cœurs : %@"
+          }
+        }
+      }
+    },
+    "Couldn't copy %@ beside the games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de copier %@ à côté des jeux."
           }
         }
       }
@@ -5962,6 +5982,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Son dossier de ROM reste où il est, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+          }
+        }
+      }
+    },
+    "Its chips": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ses puces"
           }
         }
       }
@@ -10019,6 +10049,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Leurs médias et infos sont remplacés par ceux de l’autre front-end, quand il en a. Les fichiers remplacés vont à la corbeille."
+          }
+        }
+      }
+    },
+    "These games boot from a BIOS set that isn't with them. Locate it and Attic puts a copy with the games, still zipped, where the emulator looks for it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ces jeux démarrent avec un BIOS qui n'est pas avec eux. Localisez-le et Attic en place une copie avec les jeux, toujours zippée, là où l'émulateur le cherche."
           }
         }
       }

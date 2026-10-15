@@ -216,6 +216,34 @@ struct ArcadeVerifierTests {
         #expect(verifier.check(roms.appending(path: "ng0.zip"), preferring: .fbneo, biosDirectory: bios)?.verdict == .verified)
     }
 
+    /// Astro Chase takes its Atari XL chips from maxaflex.zip: without it,
+    /// the BIOS set is missing, not three chips.
+    @Test func chipsFromABIOSSetAreItsOwn() throws {
+        let xml = """
+        <?xml version="1.0"?>
+        <mame build="0.289 (mame0289)">
+          <machine name="mf_achas" romof="maxaflex">
+            <description>Astro Chase (Max-A-Flex)</description>
+            <rom name="ac.rom" size="1024" crc="\(crc(chip(1)))"/>
+            <rom name="atarixl.rom" merge="atarixl.rom" size="1024" crc="\(crc(chip(2)))"/>
+            <rom name="maxaflex.uc" merge="maxaflex.uc" size="1024" crc="\(crc(chip(3)))"/>
+          </machine>
+          <machine name="maxaflex" isbios="yes">
+            <description>Max-A-Flex</description>
+          </machine>
+        </mame>
+        """
+        try Data(xml.utf8).write(to: dats.appending(path: "mame.xml"))
+        try zip(roms.appending(path: "mf_achas.zip"), ["ac.rom": chip(1)])
+        let verifier = load(["mf_achas"])
+        let problems = verifier.check(roms.appending(path: "mf_achas.zip"), preferring: .mame, biosDirectory: bios)?.problems
+        #expect(problems?.missingBIOS == "maxaflex.zip")
+        #expect(problems?.missingROMs.isEmpty == true)
+        #expect(problems?.biosROMs?.map(\.name) == ["atarixl.rom", "maxaflex.uc"])
+        try zip(roms.appending(path: "maxaflex.zip"), ["atarixl.rom": chip(2), "maxaflex.uc": chip(3)])
+        #expect(verifier.check(roms.appending(path: "mf_achas.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .verified)
+    }
+
     /// A game listed on its own whose chips are kept in another set's zip,
     /// and a game with BIOS versions of its own.
     @Test func chipsElsewhereAndAGamesOwnBIOS() throws {

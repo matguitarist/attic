@@ -329,6 +329,29 @@ final class ToolsCoordinator {
         return check
     }
 
+    /// Checks several games again, reading the DATs once: those a BIOS
+    /// set was just put beside.
+    func recheck(_ games: [Game], datsFolder: URL, scanCoordinator: ScanCoordinator) async {
+        let items = games.map { (url: $0.romAbsoluteURL, system: CanonicalSystemID($0.systemCanonicalID), path: $0.romAbsolutePath) }
+        guard !items.isEmpty else { return }
+        let biosDirectory = datsFolder.deletingLastPathComponent().appending(path: "BIOS", directoryHint: .isDirectory)
+        let checks = await Task.detached(priority: .userInitiated) { () -> [String: DATVerifier.Check] in
+            let arcadeItems = items.filter { Self.isArcade($0.system) }
+            let arcade = arcadeItems.isEmpty ? ArcadeVerifier.none
+                : ArcadeVerifier.load(from: datsFolder, wanted: Set(arcadeItems.map { $0.url.deletingPathExtension().lastPathComponent }), cacheDirectory: Self.arcadeCache)
+            let verifier = items.contains { !Self.isArcade($0.system) } ? DATVerifier.load(from: datsFolder) : nil
+            var checks: [String: DATVerifier.Check] = [:]
+            for item in items {
+                let check = Self.isArcade(item.system)
+                    ? arcade.check(item.url, preferring: Self.arcadeSource(for: item.system), biosDirectory: biosDirectory)
+                    : verifier?.check(item.url, system: item.system)
+                if let check { checks[item.path] = check }
+            }
+            return checks
+        }.value
+        await scanCoordinator.saveDATVerdicts(checks.mapValues { ($0.verdict.rawValue, $0.name, $0.problems?.json ?? $0.detail) })
+    }
+
     /// Downloads an arcade DAT into the DATs folder, from FinalBurn Neo's
     /// repository or MAME's latest release, then checks again.
     func downloadArcadeDAT(_ source: ArcadeVerifier.Source, datsFolder: URL, scanCoordinator: ScanCoordinator, system: CanonicalSystemID?) async {

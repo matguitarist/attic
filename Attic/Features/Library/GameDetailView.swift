@@ -4,7 +4,6 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticEmulation
-import UniformTypeIdentifiers
 
 /// Inspector contents for the selected game: a header (art, editable title,
 /// actions) above a native grouped `Form`, so labels, fields and section
@@ -357,7 +356,7 @@ private struct BIOSSetDrop: ViewModifier {
             return false
         }
         let folder = game.romAbsoluteURL.deletingLastPathComponent()
-        let added = sets.filter { Self.copy($0, as: $0.lastPathComponent, beside: game) }.map(\.lastPathComponent)
+        let added = sets.filter { BIOSSetLocating.copy($0, as: $0.lastPathComponent, into: [folder]) }.map(\.lastPathComponent)
         guard !added.isEmpty else {
             message = String(localized: "Couldn't copy \(sets.map(\.lastPathComponent).formatted(.list(type: .and))) to \(folder.lastPathComponent).")
             return false
@@ -367,14 +366,6 @@ private struct BIOSSetDrop: ViewModifier {
             Task { _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator) }
         }
         return true
-    }
-
-    /// Copies a BIOS set into the game's folder as `name`, unless one is
-    /// there already.
-    static func copy(_ file: URL, as name: String, beside game: Game) -> Bool {
-        let destination = game.romAbsoluteURL.deletingLastPathComponent().appending(path: name)
-        return FileManager.default.fileExists(atPath: destination.path)
-            || (try? FileManager.default.copyItem(at: file, to: destination)) != nil
     }
 }
 
@@ -410,12 +401,8 @@ private struct MissingBIOSRow: View {
     }
 
     private func locate(_ bios: String) {
-        let panel = NSOpenPanel()
-        panel.message = String(localized: "Choose \(bios), still zipped.")
-        panel.allowedContentTypes = [.zip]
-        panel.canChooseDirectories = false
-        guard panel.runModal() == .OK, let file = panel.url else { return }
-        guard BIOSSetDrop.copy(file, as: bios, beside: game) else {
+        guard let file = BIOSSetLocating.choose(bios) else { return }
+        guard BIOSSetLocating.copy(file, as: bios, into: [game.romAbsoluteURL.deletingLastPathComponent()]) else {
             failed = true
             return
         }
