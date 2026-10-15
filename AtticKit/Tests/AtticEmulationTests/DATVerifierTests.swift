@@ -241,6 +241,12 @@ struct DATCoverageTests {
         // Discs are Redump's, whatever DAT is there.
         #expect(DATCoverage.coverage(for: .dreamcast, isArcade: false, arcadeSource: .mame, datsFolder: folder).kind == .redump)
         #expect(DATCoverage.coverage(for: .snesh, isArcade: false, arcadeSource: .mame, datsFolder: folder).status == .notApplicable)
+        // The MAME system is checked against MAME's own list.
+        #expect(DATCoverage.coverage(for: .mame, isArcade: true, arcadeSource: .mame, datsFolder: folder).status == .missing)
+        try Data().write(to: folder.appending(path: "mame0289lx.zip"))
+        let mame = DATCoverage.coverage(for: .mame, isArcade: true, arcadeSource: .mame, datsFolder: folder)
+        guard case .present(let arcade, _) = mame.status else { Issue.record("\(mame)"); return }
+        #expect(arcade == ["MAME 0.289"])
         #expect(DATCoverage.isForSomethingElse("Nintendo - Nintendo GameCube (Memory Card)"))
         #expect(!DATCoverage.isForSomethingElse("Atari - Atari 7800 (A78)"))
     }

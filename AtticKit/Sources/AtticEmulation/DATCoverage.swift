@@ -90,7 +90,7 @@ public struct DATCoverage: Sendable, Equatable {
 
     /// Game engines, ports and fantasy consoles: no DAT lists them.
     static let unlisted: Swift.Set<CanonicalSystemID> = [
-        .scummvm, .doom, .quake, .easyrpg, .pico8, .tic80, .wasm4, .ps4, .psvita, .dos, .mame, .fbneo,
+        .scummvm, .doom, .quake, .easyrpg, .pico8, .tic80, .wasm4, .ps4, .psvita, .dos,
     ]
 
     /// DAT-o-MATIC's sets of things other than the games: a dev kit's
