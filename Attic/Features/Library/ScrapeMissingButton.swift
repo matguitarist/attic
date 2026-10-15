@@ -17,7 +17,8 @@ struct ScrapeMissingButton: View {
     }
 
     private var missingCount: Int {
-        games.filter { ScrapeCoordinator.lacksInfo($0, from: nil) }.count
+        let logos = LogoIndex()
+        return games.filter { ScrapeCoordinator.lacksInfo($0, from: nil, logos: logos) }.count
     }
 
     private var isRunning: Bool {
@@ -26,6 +27,7 @@ struct ScrapeMissingButton: View {
     }
 
     var body: some View {
+        let missingCount = missingCount
         Menu {
             Section("Scrape \(missingCount) Missing From") {
                 Button("ScreenScraper") {

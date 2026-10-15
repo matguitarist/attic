@@ -117,7 +117,7 @@ public struct MediaTidyPlan: Sendable {
 ///   with no games — empty folders of known systems stay, ready for games;
 /// - other apps' notes and spare gamelists (`systeminfo.txt`,
 ///   `gamelist_ARRM.xml`, ARRM's `html_arrm/`…);
-/// - media kinds Attic doesn't show (fan art, marquees, 3D boxes…) and
+/// - media kinds Attic doesn't show (fan art, 3D boxes…) and
 ///   media for games that aren't there any more.
 ///
 /// Batocera's in-folder media (`images/x-boxart.png`) is renamed into
@@ -137,7 +137,7 @@ public enum MediaTidier {
     /// no `boxart`.
     static let inFolderSuffixes: [String: MediaKind] = [
         "boxart": .covers, "image": .screenshots,
-        "video": .videos, "manual": .manuals,
+        "video": .videos, "manual": .manuals, "marquee": .marquees,
     ]
 
     public static func plan(romsRoots: [URL]) -> MediaTidyPlan {
@@ -310,7 +310,7 @@ public enum MediaTidier {
                 plan.moves.append(.init(from: file, to: destination))
                 if kind == .covers, isCompressible(destination) { plan.compress.append(destination) }
             }
-            // What's left (marquees, fan art, cartridges…) goes with the folder.
+            // What's left (fan art, cartridges…) goes with the folder.
             plan.discard(mediaFolder, .leftoverMedia)
         }
     }

@@ -15,6 +15,9 @@ enum ScreenScraperMapper {
     private static let screenshotMediaTypePreference = ["ss", "sstitle"]
     /// "video-normalized" is the smaller, re-encoded cut.
     private static let videoMediaTypePreference = ["video-normalized", "video"]
+    /// The logo: "wheel-hd" is the larger cut; the carbon and steel ones
+    /// are the logo on a backing plate.
+    private static let logoMediaTypePreference = ["wheel-hd", "wheel"]
 
     static func map(_ envelope: ScreenScraperResponseEnvelope) -> ScrapedGameInfo? {
         guard let jeu = envelope.response?.jeu else { return nil }
@@ -30,7 +33,8 @@ enum ScreenScraperMapper {
             rating: (jeu.note?.text).flatMap { Double($0) }.map { $0 / 20.0 },
             coverArtURL: bestMedia(jeu.medias, types: coverMediaTypePreference),
             screenshotURL: bestMedia(jeu.medias, types: screenshotMediaTypePreference),
-            videoURL: bestMedia(jeu.medias, types: videoMediaTypePreference)
+            videoURL: bestMedia(jeu.medias, types: videoMediaTypePreference),
+            logoURL: bestMedia(jeu.medias, types: logoMediaTypePreference)
         )
     }
 

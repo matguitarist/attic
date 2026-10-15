@@ -60,10 +60,10 @@ struct MediaTidierTests {
         #expect(moves["2020bb-image.png"] == target + "/screenshots/2020bb.png")
         #expect(moves["2020bb-video.mp4"] == target + "/videos/2020bb.mp4")
         #expect(moves["2020bb-manual.pdf"] == target + "/manuals/2020bb.pdf")
-        // A thumb only stands in for missing box art; marquees and art for
-        // games that aren't there stay behind and go with the folder.
+        #expect(moves["2020bb-marquee.png"] == target + "/marquees/2020bb.png")
+        // A thumb only stands in for missing box art; art for games that
+        // aren't there stays behind and goes with the folder.
         #expect(moves["2020bb-thumb.png"] == nil)
-        #expect(moves["2020bb-marquee.png"] == nil)
         #expect(moves["gone-boxart.png"] == nil)
         #expect(Set(plan.trash.map(\.lastPathComponent)).isSuperset(of: ["images", "videos", "manuals"]))
         #expect(plan.compress.map(\.lastPathComponent) == ["2020bb.png"])

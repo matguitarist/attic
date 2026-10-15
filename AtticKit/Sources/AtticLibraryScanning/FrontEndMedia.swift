@@ -10,6 +10,7 @@ import AtticModels
 ///     roms/nes/images/1942 (Japan, USA) (En)-image.png    <image>: a screenshot
 ///     roms/nes/videos/1942 (Japan, USA) (En)-video.mp4
 ///     roms/nes/manuals/1942 (Japan, USA) (En)-manual.pdf
+///     roms/nes/images/1942 (Japan, USA) (En)-marquee.png  <marquee>: the logo
 public enum FrontEndMedia {
     public struct Entry: Sendable, Equatable {
         /// The game's file (or folder), when it's there, and its path in
@@ -30,6 +31,7 @@ public enum FrontEndMedia {
         public var screenshot: URL?
         public var video: URL?
         public var manual: URL?
+        public var logo: URL?
     }
 
     /// A system's folder in the other front-end, with its entries by the
@@ -204,7 +206,8 @@ public enum FrontEndMedia {
             cover: file(["thumbnail", "boxart", "cover"]),
             screenshot: file(["screenshot", "image", "titleshot"]),
             video: file(["video"]),
-            manual: file(["manual"])
+            manual: file(["manual"]),
+            logo: file(["marquee", "wheel"])
         )
     }
 }

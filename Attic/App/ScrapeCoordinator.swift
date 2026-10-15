@@ -171,7 +171,8 @@ final class ScrapeCoordinator {
                 title: game.title,
                 platformID: platformID,
                 credentials: credentials,
-                wantsScreenshot: force || game.titleScreenPath == nil
+                wantsScreenshot: force || game.titleScreenPath == nil,
+                wantsLogo: force || game.logoURL == nil
             )
             let fields = try await apply(info, to: game, force: force)
             state = .idle
@@ -185,7 +186,7 @@ final class ScrapeCoordinator {
     }
 
     /// Scrapes every game in `games` missing its description, cover,
-    /// screenshot or video (see `lacksInfo`), skipping complete ones so a
+    /// screenshot, logo or video (see `lacksInfo`), skipping complete ones so a
     /// huge library doesn't re-request data it already has. Runs sequentially with a small pause between
     /// requests — free-tier accounts on both sources have tight rate/thread
     /// limits, and hundreds of games hammered concurrently would just get
@@ -219,16 +220,17 @@ final class ScrapeCoordinator {
         batchState = .idle
     }
 
-    /// What "missing" means for a batch: no description, cover or
-    /// screenshot, or no video from ScreenScraper (TheGamesDB has none).
-    static func lacksInfo(_ game: Game, from source: ScraperSource?) -> Bool {
-        if game.gameDescription == nil || game.coverArtPath == nil || game.titleScreenPath == nil { return true }
+    /// What "missing" means for a batch: no description, cover, screenshot
+    /// or logo, or no video from ScreenScraper (TheGamesDB has none).
+    static func lacksInfo(_ game: Game, from source: ScraperSource?, logos: LogoIndex = LogoIndex()) -> Bool {
+        if game.gameDescription == nil || game.coverArtPath == nil || game.titleScreenPath == nil || !logos.hasLogo(game) { return true }
         if case .theGamesDB? = source { return false }
         return game.videoPath == nil
     }
 
     private func runBatch(games: [Game], source: ScraperSource, onlyMissing: Bool = true, force: Bool = false) async {
-        let missing = onlyMissing ? games.filter { Self.lacksInfo($0, from: source) } : games
+        let logos = LogoIndex()
+        let missing = onlyMissing ? games.filter { Self.lacksInfo($0, from: source, logos: logos) } : games
         guard !missing.isEmpty else {
             batchState = .finished(scraped: 0, alreadyPresent: games.count, failed: 0)
             return
@@ -306,6 +308,13 @@ final class ScrapeCoordinator {
             if let localURL = try? await downloadMedia(from: remoteURL, for: game, kind: .videos) {
                 game.videoPath = localURL.path
                 changed.append(String(localized: "video"))
+            }
+        }
+
+        // Kept by file alone, like manuals: nothing in the library points to it.
+        if force || game.logoURL == nil, let remoteURL = info.logoURL {
+            if (try? await downloadMedia(from: remoteURL, for: game, kind: .marquees)) != nil {
+                changed.append(String(localized: "logo"))
             }
         }
 

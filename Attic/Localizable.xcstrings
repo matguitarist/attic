@@ -900,18 +900,34 @@
         }
       }
     },
-    "%lld items, %@: fan art, marquees, 3D boxes, mix images, title screens…": {
+    "%lld items, %@: fan art, 3D boxes, mix images, title screens…": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
-            "value": "%1$lld items, %2$@: fan art, marquees, 3D boxes, mix images, title screens…"
+            "value": "%1$lld items, %2$@: fan art, 3D boxes, mix images, title screens…"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld éléments, %2$@ : fan art, marquees, boîtes 3D, mix images, écrans titres…"
+            "value": "%1$lld éléments, %2$@ : fan art, boîtes 3D, mix images, écrans titres…"
+          }
+        }
+      }
+    },
+    "%lld items, %@: fan art, cartridges and the like, once the rest has moved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld items, %2$@: fan art, cartridges and the like, once the rest has moved."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld éléments, %2$@ : fan art, cartouches et autres, une fois le reste déplacé."
           }
         }
       }
@@ -928,22 +944,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld éléments, %2$@ : dossiers d’aucun système connu d’Attic, et dossiers de gamelist vides."
-          }
-        }
-      }
-    },
-    "%lld items, %@: marquees, fan art and the like, once the rest has moved.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld items, %2$@: marquees, fan art and the like, once the rest has moved."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld éléments, %2$@ : marquees, fan art et autres, une fois le reste déplacé."
           }
         }
       }
@@ -986,6 +986,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld ont gardé leur nom : un autre fichier porte déjà le nouveau, avec d'autres données."
+          }
+        }
+      }
+    },
+    "%lld logos": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld logo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld logos"
+                }
+              }
+            }
           }
         }
       }
@@ -5080,12 +5102,12 @@
         }
       }
     },
-    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image; covers are saved as HEIC when that's smaller.": {
+    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee; covers are saved as HEIC when that's smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
+            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
           }
         }
       }
@@ -6032,6 +6054,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Logo"
+          }
+        }
+      }
+    },
+    "Logos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logos"
           }
         }
       }
@@ -10549,6 +10581,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "libretro ne publie pas ce cœur pour Apple Silicon, il n’y a donc rien à comparer."
+          }
+        }
+      }
+    },
+    "logo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "logo"
           }
         }
       }

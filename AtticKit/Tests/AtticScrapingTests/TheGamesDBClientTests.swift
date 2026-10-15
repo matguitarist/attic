@@ -165,6 +165,24 @@ final class TheGamesDBStubURLProtocol: URLProtocol, @unchecked Sendable {
         #expect(without.screenshotURL == nil)
     }
 
+    @Test func screenshotAndLogoComeFromOneImagesRequest() async throws {
+        let requests = RequestLog()
+        TheGamesDBNamesStubURLProtocol.handler = { request in
+            let path = request.url?.path ?? ""
+            if path.hasSuffix("/Games/Images") {
+                requests.append(request.url!)
+                return (200, #"{"data": {"count": 2, "base_url": {"original": "https://cdn.thegamesdb.net/images/original/"}, "images": {"1": [{"id": 10, "type": "screenshot", "filename": "screenshot/1-1.jpg"}, {"id": 11, "type": "clearlogo", "filename": "clearlogo/1.png"}]}}}"#)
+            }
+            return Self.respond(to: request)
+        }
+        let info = try await makeClient().fetchGameInfo(title: "Sonic the Hedgehog", platformID: 18, credentials: TheGamesDBCredentials(apiKey: "k"),
+                                                        wantsScreenshot: true, wantsLogo: true)
+        #expect(info.screenshotURL == URL(string: "https://cdn.thegamesdb.net/images/original/screenshot/1-1.jpg"))
+        #expect(info.logoURL == URL(string: "https://cdn.thegamesdb.net/images/original/clearlogo/1.png"))
+        #expect(requests.urls.count == 1)
+        #expect(requests.urls.first?.query(percentEncoded: false)?.contains("filter[type]=screenshot,titlescreen,clearlogo") == true)
+    }
+
     @Test func failingNameListsStillReturnTheGame() async throws {
         TheGamesDBNamesStubURLProtocol.handler = { request in
             (request.url?.path ?? "").hasSuffix("/ByGameName") ? (200, Self.gameResponse) : (500, "down")
@@ -190,4 +208,13 @@ final class TheGamesDBNamesStubURLProtocol: URLProtocol, @unchecked Sendable {
     }
 
     override func stopLoading() {}
+}
+
+/// The URLs a stub was asked for, from whichever thread the loading
+/// system calls it on.
+private final class RequestLog: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored: [URL] = []
+    var urls: [URL] { lock.withLock { stored } }
+    func append(_ url: URL) { lock.withLock { stored.append(url) } }
 }

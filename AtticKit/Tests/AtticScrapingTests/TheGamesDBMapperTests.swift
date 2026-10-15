@@ -72,6 +72,20 @@ import Testing
         #expect(info.coverArtURL == URL(string: "https://cdn.thegamesdb.net/images/original/back.jpg"))
     }
 
+    @Test func picksTheClearLogoFromTheGamesImages() throws {
+        let fixture = """
+        {"data": {"base_url": {"original": "https://cdn.thegamesdb.net/images/original/"},
+                  "images": {"1001": [
+                    {"type": "screenshot", "side": null, "filename": "screenshots/1001-1.jpg"},
+                    {"type": "clearlogo", "side": null, "filename": "clearlogo/1001.png"}
+                  ]}}}
+        """
+        let envelope = try JSONDecoder().decode(TheGamesDBImagesEnvelope.self, from: Data(fixture.utf8))
+        #expect(TheGamesDBMapper.logoURL(forGameID: 1001, in: envelope) == URL(string: "https://cdn.thegamesdb.net/images/original/clearlogo/1001.png"))
+        #expect(TheGamesDBMapper.screenshotURL(forGameID: 1001, in: envelope) == URL(string: "https://cdn.thegamesdb.net/images/original/screenshots/1001-1.jpg"))
+        #expect(TheGamesDBMapper.logoURL(forGameID: 2002, in: envelope) == nil)
+    }
+
     @Test func noGamesHasNoBestMatch() {
         #expect(TheGamesDBMapper.bestMatch(in: [], for: "Anything") == nil)
     }

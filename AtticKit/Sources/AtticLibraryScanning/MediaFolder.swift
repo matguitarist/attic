@@ -7,8 +7,12 @@ import UniformTypeIdentifiers
 /// The kinds of media Attic keeps, named like ES-DE's folders so the same
 /// tree still works there. (ES-DE's mix images and title screens aren't
 /// among them: Attic shows the cover and a screenshot instead.)
+///
+/// `marquees` holds each game's logo, its title on a transparent
+/// background: ES-DE's name for it, and RetroBat's and Batocera's
+/// (`<marquee>`, `Game-marquee.png`); ScreenScraper calls it a wheel.
 public enum MediaKind: String, CaseIterable, Sendable {
-    case covers, screenshots, videos, manuals
+    case covers, screenshots, videos, manuals, marquees
 }
 
 /// Where a game's media lives: one tree next to the ROMs folder, in

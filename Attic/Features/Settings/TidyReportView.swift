@@ -127,9 +127,9 @@ struct TidyReportView: View {
             case .unusedFolders: return String(localized: "\(count) items, \(size): folders for no system Attic knows, and empty gamelist folders.")
             case .noGames: return String(localized: "\(count) items, \(size).")
             case .otherApps: return String(localized: "\(count) items, \(size): systeminfo.txt, spare gamelists, scraper leftovers.")
-            case .unshownMedia: return String(localized: "\(count) items, \(size): fan art, marquees, 3D boxes, mix images, title screens…")
+            case .unshownMedia: return String(localized: "\(count) items, \(size): fan art, 3D boxes, mix images, title screens…")
             case .missingGames: return String(localized: "\(count) items, \(size).")
-            case .leftoverMedia: return String(localized: "\(count) items, \(size): marquees, fan art and the like, once the rest has moved.")
+            case .leftoverMedia: return String(localized: "\(count) items, \(size): fan art, cartridges and the like, once the rest has moved.")
             case .duplicates: return String(localized: "\(count) items, \(size): other regions, revisions and betas of games you have, with their media. The kept copy is a finished release: World, then USA, Europe, Japan, then the latest revision. Your games themselves, so it's off unless you tick it.")
             }
         }

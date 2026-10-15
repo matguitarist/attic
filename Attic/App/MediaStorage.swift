@@ -28,6 +28,11 @@ extension Game {
         return FileManager.default.fileExists(atPath: manual.path) ? manual : nil
     }
 
+    /// The game's logo, when there's one in its media folder.
+    var logoURL: URL? {
+        MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .marquees)).first
+    }
+
     /// Stores downloaded or picked media for this game where the scanner
     /// finds it (see `MediaFolder`).
     func storeMedia(_ data: Data, fileExtension: String, kind: MediaKind) throws -> URL {
@@ -35,6 +40,24 @@ extension Game {
         CoverArtThumbnailCache.shared.invalidate(url)
         // A video isn't a thumbnail, but its view watches the same revision.
         return url
+    }
+}
+
+/// Which games have a logo, from one listing of each logo folder rather
+/// than a lookup per game: counting what a list of thousands of games is
+/// missing happens as it's drawn.
+final class LogoIndex {
+    private var names: [URL: Set<String>] = [:]
+
+    func hasLogo(_ game: Game) -> Bool {
+        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .marquees)
+        let folder = base.deletingLastPathComponent()
+        if names[folder] == nil {
+            let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
+            names[folder] = Set(files.filter { MediaFolder.imageExtensions.contains(($0 as NSString).pathExtension.lowercased()) }
+                .map { ($0 as NSString).deletingPathExtension })
+        }
+        return names[folder]?.contains(base.lastPathComponent) == true
     }
 }
 
