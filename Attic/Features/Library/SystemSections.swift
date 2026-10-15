@@ -18,7 +18,9 @@ struct SystemVerificationSection: View {
     @Query private var games: [Game]
 
     @Environment(ToolsCoordinator.self) private var tools
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @State private var showsDetails = false
+    @State private var coverage: DATCoverage?
 
     init(systemID: CanonicalSystemID, host: ToolsCoordinator.Host) {
         self.systemID = systemID
@@ -33,6 +35,10 @@ struct SystemVerificationSection: View {
         let verdicts = Dictionary(grouping: games, by: { $0.datVerdict ?? "" }).mapValues(\.count)
         let verification = tools.verifications[systemID.rawValue]
         Section {
+            if let coverage {
+                DATCoverageRow(coverage: coverage)
+            }
+            if ToolsCoordinator.canVerify(systemID), coverage?.isCheckable ?? true {
             LabeledContent {
                 Button("Details…") { showsDetails = true }
                     .popover(isPresented: $showsDetails, arrowEdge: .leading) {
@@ -66,6 +72,7 @@ struct SystemVerificationSection: View {
             if let activity = tools.activity, tools.reportHost == host {
                 ProgressView(value: activity.fraction ?? 0)
             }
+            }
         } header: {
             Text("Verification")
         } footer: {
@@ -74,6 +81,17 @@ struct SystemVerificationSection: View {
                     .font(.caption)
                     .foregroundStyle(Color.secondaryText)
             }
+        }
+        // Read again for another system, and after a verify, which may
+        // have downloaded one.
+        .task(id: "\(systemID.rawValue) \(verification?.date.timeIntervalSince1970 ?? 0)") {
+            coverage = nil
+            let id = systemID
+            let source = ToolsCoordinator.arcadeSource(for: id)
+            let folder = emulationFolderStore.folder.dats
+            coverage = await Task.detached(priority: .utility) {
+                DATCoverage.coverage(for: id, isArcade: ToolsCoordinator.isArcade(id), arcadeSource: source, datsFolder: folder)
+            }.value
         }
     }
 
@@ -208,15 +226,15 @@ struct SystemGamesSection: View {
             }
             .padding(.vertical, 2)
             // How many have each kind of media, orange while some lack it.
-            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
-                GridRow {
-                    coverage("photo", "Covers", games.count { $0.coverArtPath != nil })
-                    coverage("tv", "Screenshots", games.count { $0.titleScreenPath != nil })
-                }
-                GridRow {
-                    coverage("film", "Videos", games.count { $0.videoPath != nil })
-                    coverage("text.alignleft", "Descriptions", games.count { !($0.gameDescription ?? "").isEmpty })
-                }
+            let counts = [games.count { $0.coverArtPath != nil }, games.count { $0.titleScreenPath != nil },
+                          games.count { $0.videoPath != nil }, games.count { !($0.gameDescription ?? "").isEmpty }]
+            // Two columns while every count is whole; "719/721" needs the width.
+            let columns = counts.allSatisfy { $0 == games.count } ? 2 : 1
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns), alignment: .leading, spacing: 6) {
+                coverage("photo", "Covers", counts[0])
+                coverage("tv", "Screenshots", counts[1])
+                coverage("film", "Videos", counts[2])
+                coverage("text.alignleft", "Descriptions", counts[3])
             }
             .padding(.vertical, 2)
             if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {
@@ -641,5 +659,78 @@ struct SetProblemsButton: View {
                 }
                 .frame(maxHeight: 520)
             }
+    }
+}
+
+/// Which DAT a system's games are checked against, and whether it's
+/// there: "No-Intro · Nintendo - Game Boy, Oct 12, 2026".
+struct DATCoverageRow: View {
+    let coverage: DATCoverage
+
+    var body: some View {
+        LabeledContent {
+            status
+        } label: {
+            HStack(spacing: 6) {
+                Text("DAT")
+                StatusTag(text: kindName, tint: .accentColor)
+            }
+            if let detail {
+                Text(verbatim: detail)
+                    .lineLimit(3)
+            }
+        }
+    }
+
+    private var kindName: String {
+        switch coverage.kind {
+        case .noIntro: "No-Intro"
+        case .redump: "Redump"
+        case .mame: "MAME"
+        case .fbneo: "FinalBurn Neo"
+        case .none: String(localized: "None")
+        }
+    }
+
+    @ViewBuilder
+    private var status: some View {
+        switch coverage.status {
+        case .present:
+            StatusTag(text: String(localized: "Present"), systemImage: "checkmark.circle.fill", tint: .green)
+        case .missing:
+            VStack(alignment: .trailing, spacing: 4) {
+                StatusTag(text: String(localized: "Missing"), systemImage: "exclamationmark.triangle.fill", tint: .orange)
+                if coverage.kind == .noIntro {
+                    Link("DAT-o-MATIC", destination: URL(string: "https://datomatic.no-intro.org/index.php?page=download")!)
+                        .font(.caption)
+                }
+            }
+        case .incompatible:
+            StatusTag(text: String(localized: "Not compatible"), systemImage: "exclamationmark.circle", tint: .orange)
+        case .notSupported:
+            StatusTag(text: String(localized: "Not checked yet"), tint: .secondary)
+        case .notApplicable:
+            StatusTag(text: String(localized: "Not listed"), tint: .secondary)
+        }
+    }
+
+    private var detail: String? {
+        switch coverage.status {
+        case .present(let names, let date):
+            let list = names.formatted(.list(type: .and))
+            return date.map { "\(list), \($0.formatted(date: .abbreviated, time: .omitted))" } ?? list
+        case .missing:
+            switch coverage.kind {
+            case .noIntro: return String(localized: "Add its DAT from DAT-o-MATIC to the DATs folder.")
+            case .mame, .fbneo: return String(localized: "Verify Games offers to download it.")
+            default: return nil
+            }
+        case .incompatible(let names):
+            return String(localized: "Only DATs for something else: \(names.formatted(.list(type: .and))).")
+        case .notSupported:
+            return String(localized: "Disc images aren't verified yet.")
+        case .notApplicable:
+            return String(localized: "No DAT lists these games: hacks, ports and engines.")
+        }
     }
 }

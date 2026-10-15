@@ -225,3 +225,23 @@ struct DATVerifierTests {
         #expect(DATVerifier.load(from: folder).check(chd, system: .psx) == nil)
     }
 }
+
+struct DATCoverageTests {
+    @Test func findsASystemsDATByItsFileName() throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "DATCoverage-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        for name in ["Nintendo - Game Boy (20261012-103405).dat", "Sega - Dreamcast (Visual Memory Unit) (20230103-091559).dat"] {
+            try Data().write(to: folder.appending(path: name))
+        }
+        let gb = DATCoverage.coverage(for: .gb, isArcade: false, arcadeSource: .mame, datsFolder: folder)
+        guard case .present(let names, let date) = gb.status else { Issue.record("\(gb)"); return }
+        #expect(names == ["Nintendo - Game Boy"])
+        #expect(date != nil)
+        #expect(DATCoverage.coverage(for: .gba, isArcade: false, arcadeSource: .mame, datsFolder: folder).status == .missing)
+        // Discs are Redump's, whatever DAT is there.
+        #expect(DATCoverage.coverage(for: .dreamcast, isArcade: false, arcadeSource: .mame, datsFolder: folder).kind == .redump)
+        #expect(DATCoverage.coverage(for: .snesh, isArcade: false, arcadeSource: .mame, datsFolder: folder).status == .notApplicable)
+        #expect(DATCoverage.isForSomethingElse("Nintendo - Nintendo GameCube (Memory Card)"))
+        #expect(!DATCoverage.isForSomethingElse("Atari - Atari 7800 (A78)"))
+    }
+}

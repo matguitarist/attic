@@ -68,7 +68,8 @@ public struct DATFile: Sendable {
         systemKey("Nintendo - Family Computer Disk System"): .fds,
         systemKey("Nintendo - Family Computer"): .nes,
         systemKey("Nintendo - Super Famicom"): .snes,
-        systemKey("Atari - 8-bit Family"): .atari800
+        systemKey("Atari - 8-bit Family"): .atari800,
+        systemKey("Nintendo - Game & Watch"): .gameandwatch
     ]
 
     // MARK: - clrmamepro

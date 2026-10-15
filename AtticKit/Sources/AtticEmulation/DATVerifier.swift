@@ -211,7 +211,7 @@ public struct DATVerifier: Sendable {
 
     // MARK: - Archives
 
-    private static func zipListing(_ url: URL) -> [String] {
+    static func zipListing(_ url: URL) -> [String] {
         (ZipContents.entries(of: url) ?? []).map(\.name).filter { !$0.hasSuffix("/") && !$0.hasPrefix("__MACOSX/") }
     }
 

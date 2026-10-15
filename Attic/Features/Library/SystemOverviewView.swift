@@ -73,7 +73,9 @@ struct SystemOverviewView: View {
                 SystemGamesSection(systemID: system.systemID)
             }
 
-            if canVerify {
+            // The DAT row for every system with games; verdicts where
+            // its games can be verified.
+            if system.gameCount > 0 {
                 SystemVerificationSection(systemID: system.systemID, host: .library)
             }
 

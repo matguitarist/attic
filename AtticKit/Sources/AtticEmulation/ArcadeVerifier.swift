@@ -213,7 +213,7 @@ public struct ArcadeVerifier: Sendable {
     }
 
     /// Newest first, so a newer MAME list wins over an older one.
-    private static func datFiles(in folder: URL) -> [URL] {
+    static func datFiles(in folder: URL) -> [URL] {
         let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
         return files.filter { file in
             if isArcadeZip(file) { return true }

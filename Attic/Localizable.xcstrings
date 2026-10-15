@@ -1974,6 +1974,16 @@
         }
       }
     },
+    "Add its DAT from DAT-o-MATIC to the DATs folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez son DAT depuis DAT-o-MATIC dans le dossier DATs."
+          }
+        }
+      }
+    },
     "Add new matching games automatically": {
       "localizations": {
         "fr": {
@@ -3673,6 +3683,26 @@
         }
       }
     },
+    "DAT": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DAT"
+          }
+        }
+      }
+    },
+    "DAT-o-MATIC": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DAT-o-MATIC"
+          }
+        }
+      }
+    },
     "DATs for systems Attic doesn't have": {
       "localizations": {
         "fr": {
@@ -3949,6 +3979,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux sur disque en CHD, les jeux cartouche en ZIP, sans rien perdre. Un rapport s’affiche d’abord. Les deux sont aussi dans le menu Outils."
+          }
+        }
+      }
+    },
+    "Disc images aren't verified yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les images disque ne sont pas encore vérifiées."
           }
         }
       }
@@ -6568,6 +6608,16 @@
         }
       }
     },
+    "No DAT lists these games: hacks, ports and engines.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun DAT ne liste ces jeux : hacks, portages et moteurs."
+          }
+        }
+      }
+    },
     "No Game Selected": {
       "localizations": {
         "fr": {
@@ -6828,6 +6878,26 @@
         }
       }
     },
+    "Not checked yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore vérifié"
+          }
+        }
+      }
+    },
+    "Not compatible": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non compatible"
+          }
+        }
+      }
+    },
     "Not in No-Intro": {
       "localizations": {
         "fr": {
@@ -7075,6 +7145,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Seulement %@ libres sur ce disque."
+          }
+        }
+      }
+    },
+    "Only DATs for something else: %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seulement des DAT pour autre chose : %@."
           }
         }
       }
@@ -7405,6 +7485,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jouer"
+          }
+        }
+      }
+    },
+    "Present": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Présent"
           }
         }
       }
@@ -10113,6 +10203,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifier les jeux"
+          }
+        }
+      }
+    },
+    "Verify Games offers to download it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier les jeux propose de le télécharger."
           }
         }
       }
