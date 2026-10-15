@@ -160,6 +160,24 @@ struct ArcadeVerifierTests {
         #expect(verifier.check(roms.appending(path: "gdgame.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .differs)
     }
 
+    @Test func aLooseDiscImageGoesIntoItsSetsFolder() throws {
+        try writeMAMEList()
+        try zip(roms.appending(path: "gdgame.zip"), ["pic.pic": chip(4)])
+        // The right disc, by its SHA-1, under any name beside the zips.
+        var header = Data("MComprHD".utf8) + Data([0, 0, 0, 124, 0, 0, 0, 5]) + Data(count: 68)
+        header += Data(repeating: 0xab, count: 20) + Data(count: 20)
+        try header.write(to: roms.appending(path: "gdl-0001.chd"))
+        let verifier = load(["gdgame"])
+        let plan = verifier.rebuildPlan(folder: roms, preferring: .mame)
+        let move = try #require(plan.discMoves.first)
+        #expect(move.to == roms.appending(path: "gdgame/gdl-0001.chd"))
+        // Disc images are never leftovers.
+        #expect(plan.leftovers.isEmpty)
+        try ArcadeVerifier.move(move)
+        #expect(verifier.check(roms.appending(path: "gdgame.zip"), preferring: .mame, biosDirectory: bios)?.verdict == .verified)
+        #expect(verifier.rebuildPlan(folder: roms, preferring: .mame).discMoves.isEmpty)
+    }
+
     @Test func anUnknownSetAndNoDAT() throws {
         try writeMAMEList()
         try zip(roms.appending(path: "other.zip"), ["x.bin": chip(5)])

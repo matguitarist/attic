@@ -64,6 +64,28 @@ struct SetRebuildReportView: View {
                     }
                 }
 
+                if !plan.discMoves.isEmpty {
+                    Section {
+                        ForEach(plan.discMoves) { move in
+                            LabeledContent {
+                                Text(verbatim: move.to.path.replacingOccurrences(of: report.folder.path + "/", with: ""))
+                                    .monospaced()
+                                    .foregroundStyle(Color.secondaryText)
+                            } label: {
+                                Text(move.title)
+                                Text(verbatim: move.from.path.replacingOccurrences(of: report.folder.path + "/", with: ""))
+                                    .monospaced()
+                            }
+                        }
+                    } header: {
+                        Text("Disc Images")
+                    } footer: {
+                        Text("Each is moved into the folder of the set that uses it, where emulators look for it; its SHA-1 matches the one the DAT lists.")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondaryText)
+                    }
+                }
+
                 if !plan.incomplete.isEmpty {
                     Section {
                         ForEach(plan.incomplete) { set in
@@ -118,12 +140,12 @@ struct SetRebuildReportView: View {
                 Spacer()
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
-                Button(plan.rebuilds.isEmpty ? String(localized: "Move to Trash") : String(localized: "Rebuild")) {
+                Button(plan.rebuilds.isEmpty && plan.discMoves.isEmpty ? String(localized: "Move to Trash") : String(localized: "Rebuild")) {
                     dismiss()
                     onRebuild(trashingLeftovers)
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(plan.rebuilds.isEmpty && (!trashingLeftovers || plan.leftovers.isEmpty))
+                .disabled(plan.rebuilds.isEmpty && plan.discMoves.isEmpty && (!trashingLeftovers || plan.leftovers.isEmpty))
             }
             .padding(20)
         }

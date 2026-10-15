@@ -40,8 +40,21 @@ public struct IncompleteSet: Sendable, Hashable, Identifiable {
     public var id: String { name }
 }
 
+/// A disc image found away from its set's folder, and where it goes.
+public struct DiscMove: Sendable, Hashable, Identifiable {
+    public let set: String
+    public let title: String
+    public let from: URL
+    public let to: URL
+    public let sha1: String
+    public var id: URL { to }
+}
+
 /// What rebuilding a folder's sets would do.
 public struct RebuildPlan: Sendable {
+    /// Disc images (CHDs) to move into the folder of the set that uses
+    /// them, matched by the SHA-1 in their header.
+    public var discMoves: [DiscMove] = []
     public var rebuilds: [SetRebuild] = []
     public var incomplete: [IncompleteSet] = []
     /// Loose files with nothing left to give: their chip is in a zip (or
@@ -134,6 +147,34 @@ extension ArcadeVerifier {
             inZips.formUnion(parts.map(\.crc))
         }
 
+        // Disc images anywhere in the folder, by the SHA-1 in their header,
+        // for sets whose own folder (or a parent's) lacks the right one.
+        var chds: [String: URL] = [:]
+        if let enumerator = manager.enumerator(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
+            for case let url as URL in enumerator where url.pathExtension.lowercased() == "chd" {
+                if let sha1 = CHDHeader.read(url)?.sha1.lowercased(), chds[sha1] == nil { chds[sha1] = url }
+            }
+        }
+        var claimed: Swift.Set<URL> = []
+        for name in names.sorted() {
+            guard let machine = set.machines[name] else { continue }
+            let folders = [name] + Self.chain(of: name, in: set)
+            for disk in machine.disks {
+                let sha1 = disk.sha1.lowercased()
+                let placed = folders.map { folder.appending(path: $0).appending(path: disk.name + ".chd") }
+                if placed.contains(where: { CHDHeader.read($0)?.sha1.lowercased() == sha1 }) { continue }
+                guard let found = chds[sha1], !claimed.contains(found) else { continue }
+                let target = folder.appending(path: name).appending(path: disk.name + ".chd")
+                // Already where another set of the folder needs it: left there.
+                let home = found.deletingLastPathComponent().lastPathComponent.lowercased()
+                guard found.deletingLastPathComponent().standardizedFileURL == folder.standardizedFileURL || !names.contains(home) || home == name else { continue }
+                // Something else in the way: left for a look.
+                guard !manager.fileExists(atPath: target.path) else { continue }
+                claimed.insert(found)
+                plan.discMoves.append(DiscMove(set: name, title: machine.title, from: found, to: target, sha1: sha1))
+            }
+        }
+
         // What the folder's sets use at all, parents' chips included
         // through their own zips.
         let used = names.reduce(into: Swift.Set<UInt32>()) { result, name in
@@ -144,6 +185,15 @@ extension ArcadeVerifier {
             plan.leftoverBytes += file.size
         }
         return plan
+    }
+
+    /// Moves a disc image into its set's folder, once its SHA-1 still
+    /// matches.
+    public static func move(_ move: DiscMove) throws {
+        guard CHDHeader.read(move.from)?.sha1.lowercased() == move.sha1 else { throw RebuildError.unreadable(move.from.lastPathComponent) }
+        let manager = FileManager.default
+        try manager.createDirectory(at: move.to.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try manager.moveItem(at: move.from, to: move.to)
     }
 
     public enum RebuildError: Error {

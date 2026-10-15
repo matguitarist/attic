@@ -27,7 +27,7 @@ extension ToolsCoordinator {
             return verifier.rebuildPlan(folder: folder, preferring: source)
         }.value
         activity = nil
-        guard !plan.rebuilds.isEmpty || !plan.leftovers.isEmpty || !plan.incomplete.isEmpty else {
+        guard !plan.rebuilds.isEmpty || !plan.leftovers.isEmpty || !plan.incomplete.isEmpty || !plan.discMoves.isEmpty else {
             outcome = Outcome(title: String(localized: "Rebuild Sets"),
                               message: String(localized: "Nothing to rebuild: no set here can be made whole from the files beside it, and no loose files are left over."))
             return
@@ -49,6 +49,10 @@ extension ToolsCoordinator {
         }
         let failed = await Task.detached(priority: .userInitiated) { () -> [String] in
             var failed: [String] = []
+            // Disc images first: a quick move into their set's folder.
+            for move in report.plan.discMoves where (try? ArcadeVerifier.move(move)) == nil {
+                failed.append(move.from.lastPathComponent)
+            }
             for (index, rebuild) in report.plan.rebuilds.enumerated() {
                 progress(Double(index) / Double(report.plan.rebuilds.count), rebuild.name)
                 if (try? ArcadeVerifier.rebuild(rebuild)) == nil { failed.append(rebuild.name) }

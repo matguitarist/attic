@@ -139,7 +139,7 @@ public struct ArcadeVerifier: Sendable {
     }
 
     /// The parents and BIOS sets a set leans on, nearest first.
-    private static func chain(of name: String, in set: Set) -> [String] {
+    static func chain(of name: String, in set: Set) -> [String] {
         var result: [String] = []
         var queue = set.parents[name] ?? []
         while let next = queue.first {
