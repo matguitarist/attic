@@ -79,6 +79,25 @@ struct FrontEndMediaTests {
         #expect(FileManager.default.fileExists(atPath: destination.appending(path: "Folder Game.ps3/EBOOT.BIN").path))
     }
 
+    /// RetroBat's: discs in a MultiDisc folder, named the Windows way.
+    @Test func copiesAMultiDiscGameAndMakesItsPlaylistWorkHere() throws {
+        let base = FileManager.default.temporaryDirectory.appending(path: "FrontEndMultiDisc-\(UUID().uuidString)", directoryHint: .isDirectory)
+        let source = base.appending(path: "psx", directoryHint: .isDirectory)
+        let destination = base.appending(path: "mine", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: source.appending(path: "MultiDisc"), withIntermediateDirectories: true)
+        for disc in [1, 2] { try Data("chd".utf8).write(to: source.appending(path: "MultiDisc/Wild Arms 2 (USA) (Disc \(disc)).chd")) }
+        let playlist = source.appending(path: "Wild Arms 2 (MultiDisc).m3u")
+        try Data("\\MultiDisc\\Wild Arms 2 (USA) (Disc 1).chd\r\n\\MultiDisc\\Wild Arms 2 (USA) (Disc 2).chd\r\n".utf8).write(to: playlist)
+
+        #expect(FrontEndMedia.files(ofGame: playlist).count == 3)
+        _ = FrontEndMedia.copyGame(playlist, from: source, to: destination)
+        #expect(FileManager.default.fileExists(atPath: destination.appending(path: "MultiDisc/Wild Arms 2 (USA) (Disc 2).chd").path))
+        #expect(try String(contentsOf: destination.appending(path: "Wild Arms 2 (MultiDisc).m3u"), encoding: .utf8)
+                == "MultiDisc/Wild Arms 2 (USA) (Disc 1).chd\nMultiDisc/Wild Arms 2 (USA) (Disc 2).chd\n")
+        // The source is left as it was.
+        #expect(try Data(contentsOf: playlist).contains(UInt8(ascii: "\\")))
+    }
+
     @Test func readsAGDI() {
         let gdi = "3\n1 0 4 2352 track01.bin 0\n2 756 0 2352 \"track 02.raw\" 0\n3 45000 4 2352 track03.bin 0\n"
         #expect(FrontEndMedia.referencedFiles(in: gdi, playlist: false, sheet: false) == ["track01.bin", "track 02.raw", "track03.bin"])

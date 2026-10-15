@@ -15,10 +15,10 @@ import UniformTypeIdentifiers
 public enum MediaKind: String, CaseIterable, Sendable {
     case covers, screenshots, videos, manuals, logos, fanart
 
-    /// Painted art, stored as HEIC when that's smaller. Screenshots stay
-    /// as they are, since compressing pixel art blurs it, and logos keep
-    /// their PNG's sharp edges.
-    public var isStoredAsHEIC: Bool { self == .covers || self == .fanart }
+    /// Stored as HEIC when that's smaller, which keeps a logo's
+    /// transparency. Screenshots stay as they are, since compressing
+    /// pixel art blurs it.
+    public var isStoredAsHEIC: Bool { self == .covers || self == .fanart || self == .logos }
 }
 
 /// Where a game's media lives: one tree next to the ROMs folder, in

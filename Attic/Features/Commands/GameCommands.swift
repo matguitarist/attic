@@ -166,6 +166,12 @@ struct ToolsCommands: Commands {
             }
             .disabled(roots.isEmpty || tools.isBusy)
 
+            Button("Disc Playlists…") {
+                Task { await tools.analyzePlaylists(romsRoots: roots, from: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+            .help("Makes a playlist for each multi-disc game, so it's one game and emulators can swap its discs, and fixes playlists made on Windows.")
+
             Button("Verify Games…") {
                 Task { await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator, from: .library) }
             }

@@ -38,6 +38,10 @@ struct ToolsReports: ViewModifier {
                                                 romsRoots: roots, scanCoordinator: scanCoordinator)
                         }
                     }
+                case .playlists(let plan):
+                    DiscPlaylistReportView(plan: plan, root: root) { approved in
+                        Task { await tools.applyPlaylists(approved, romsRoots: roots, scanCoordinator: scanCoordinator) }
+                    }
                 case .verify(let report):
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {

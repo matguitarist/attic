@@ -97,7 +97,7 @@ struct TidyReportView: View {
         switch step {
         case .moveMedia: String(localized: "Move media into the Media folder")
         case .gamelists: String(localized: "Fix gamelists")
-        case .compressCovers: String(localized: "Save covers and fan art as HEIC")
+        case .compressCovers: String(localized: "Save covers, logos and fan art as HEIC")
         case .compressManuals: String(localized: "Compress heavy manual scans")
         case .trash(.unusedFolders): String(localized: "Folders Attic doesn't use")
         case .trash(.noGames): String(localized: "Media and gamelists of systems with no games")
@@ -117,7 +117,7 @@ struct TidyReportView: View {
         case .gamelists:
             return String(localized: "\(count) gamelists: Batocera's move to Gamelists, and old media paths and missing games come out.")
         case .compressCovers:
-            return String(localized: "\(count) PNG and JPEG covers and fan art, kept only when HEIC is smaller.")
+            return String(localized: "\(count) PNG and JPEG covers, logos and fan art, kept only when HEIC is smaller.")
         case .compressManuals:
             return String(localized: "\(count) manuals redrawn at 150 dpi, kept only when that saves at least 40%.")
         case .trash(let reason):

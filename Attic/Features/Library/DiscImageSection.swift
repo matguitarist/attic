@@ -80,10 +80,7 @@ struct DiscDetails {
     init?(_ url: URL) {
         let ext = url.pathExtension.lowercased()
         if ext == "m3u" {
-            let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
-            let parts = text.split(whereSeparator: \.isNewline)
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+            let parts = DiscPlaylists.parts(of: url)
                 .compactMap { DiscDetails(url.deletingLastPathComponent().appending(path: $0)) }
             guard let first = parts.first else { return nil }
             self = first

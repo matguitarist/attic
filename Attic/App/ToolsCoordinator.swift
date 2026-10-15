@@ -16,6 +16,7 @@ final class ToolsCoordinator {
         case verify(VerifyReport)
         case mediaImport(MediaImportPlan)
         case rebuild(SetRebuildReport)
+        case playlists(DiscPlaylistPlan)
 
         var id: String {
             switch self {
@@ -24,6 +25,7 @@ final class ToolsCoordinator {
             case .verify: "verify"
             case .mediaImport: "mediaImport"
             case .rebuild: "rebuild"
+            case .playlists: "playlists"
             }
         }
     }
@@ -95,6 +97,34 @@ final class ToolsCoordinator {
         // Media and gamelists moved: the library picks up their new places.
         await scanCoordinator.scan(romsRootURLs: romsRoots)
         activity = nil
+    }
+
+    /// Looks for multi-disc games without a playlist, and playlists that
+    /// need fixing, and shows them.
+    func analyzePlaylists(romsRoots: [URL], from host: Host) async {
+        guard !isBusy else { return }
+        reportHost = host
+        isAnalyzing = true
+        let plan = await Task.detached(priority: .userInitiated) { DiscPlaylistPlan.plan(romsRoots: romsRoots) }.value
+        isAnalyzing = false
+        guard !plan.isEmpty else {
+            outcome = Outcome(title: String(localized: "Disc Playlists"),
+                              message: String(localized: "Every multi-disc game has a playlist, and they all work here."))
+            return
+        }
+        report = .playlists(plan)
+    }
+
+    func applyPlaylists(_ plan: DiscPlaylistPlan, romsRoots: [URL], scanCoordinator: ScanCoordinator) async {
+        activity = Activity(title: String(localized: "Writing playlists…"))
+        let (created, fixed) = await Task.detached(priority: .userInitiated) { DiscPlaylistPlan.apply(plan) }.value
+        // The discs become one game each.
+        await scanCoordinator.scan(romsRootURLs: romsRoots)
+        activity = nil
+        var lines: [String] = []
+        if created > 0 { lines.append(String(localized: "\(created) playlists created.")) }
+        if fixed > 0 { lines.append(String(localized: "\(fixed) playlists fixed.")) }
+        outcome = Outcome(title: String(localized: "Disc Playlists"), message: lines.isEmpty ? String(localized: "Nothing was changed.") : lines.joined(separator: " "))
     }
 
     /// Looks for games that could take less room, and shows them.

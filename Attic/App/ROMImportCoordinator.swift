@@ -332,11 +332,21 @@ extension ROMImportCoordinator {
     /// and what's in its other folders — a system folder inside (a whole
     /// `roms` folder) going to that system. Media folders are left for
     /// the games' media.
-    nonisolated private static func games(inFolder folder: URL, system: CanonicalSystemID?, notGames: inout Int, vita: inout [URL]) -> [Game] {
+    nonisolated private static func games(inFolder folder: URL, system: CanonicalSystemID?, notGames: inout Int, vita: inout [URL],
+                                          skipping listed: Set<URL> = []) -> [Game] {
         let entries = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)) ?? []
         var files: [URL] = []
         var games: [Game] = []
-        for entry in entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+        // A playlist and its discs are one game, wherever they are beside
+        // it (RetroBat keeps them in a MultiDisc folder).
+        var listed = listed
+        for playlist in entries where playlist.pathExtension.lowercased() == "m3u" && !listed.contains(playlist.standardizedFileURL) {
+            let parts = FrontEndMedia.files(ofGame: playlist)
+            guard parts.count > 1, system.map({ SystemROMExtensions.accepts(playlist.lastPathComponent, for: $0) }) ?? true else { continue }
+            listed.formUnion(parts.map(\.standardizedFileURL))
+            games.append(game(parts, system: system))
+        }
+        for entry in entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) where !listed.contains(entry.standardizedFileURL) {
             let name = entry.lastPathComponent.lowercased()
             if let console = consoleGame(entry, vita: &vita) {
                 games.append(console)
@@ -347,7 +357,7 @@ extension ROMImportCoordinator {
                     games.append(game([entry], system: system))
                 } else if !ImportedMedia.nonGameFolderNames.contains(name) {
                     let inner = SystemTaxonomy.system(forShortName: name)?.canonicalID ?? system
-                    games += self.games(inFolder: entry, system: inner, notGames: &notGames, vita: &vita)
+                    games += self.games(inFolder: entry, system: inner, notGames: &notGames, vita: &vita, skipping: listed)
                 }
             } else if isForVita3K(entry) {
                 vita.append(entry)
@@ -378,12 +388,23 @@ extension ROMImportCoordinator {
         // Looked up before the game moves away from its media.
         let media = ImportedMedia.media(forROM: lead, system: system)
         for (index, file) in files.enumerated() {
-            let destination = folder.appending(path: index == 0 ? (name ?? file.lastPathComponent) : file.lastPathComponent)
+            // The rest keep their place beside the lead: a playlist's discs
+            // in their MultiDisc folder.
+            let destination = folder.appending(path: index == 0 ? (name ?? file.lastPathComponent)
+                                                   : DiscPlaylists.relativePath(of: file, in: lead.deletingLastPathComponent()))
             guard !fileManager.fileExists(atPath: destination.path) else {
                 if index == 0 { result.alreadyThere = true }
                 continue
             }
-            if transfer(file, to: destination), index == 0 { result.added = true }
+            try? fileManager.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+            if transfer(file, to: destination), index == 0 {
+                result.added = true
+                // A playlist made on Windows, made for here.
+                if destination.pathExtension.lowercased() == "m3u", let text = try? String(contentsOf: destination, encoding: .utf8),
+                   let mac = DiscPlaylists.macText(of: text) {
+                    try? mac.write(to: destination, atomically: true, encoding: .utf8)
+                }
+            }
         }
         for (file, kind) in media {
             let base = MediaFolder.baseURL(forSystemFolder: folder, romRelativePath: lead.lastPathComponent, kind: kind)
@@ -416,12 +437,18 @@ extension ROMImportCoordinator {
     /// it, and so on. The lead file comes first.
     nonisolated static func groups(_ urls: [URL]) -> [[URL]] {
         let sorted = urls.sorted { $0.lastPathComponent < $1.lastPathComponent }
+        // Playlists first: they take their discs' sheets along.
         let leads = sorted.filter { leadExtensions.contains($0.pathExtension.lowercased()) }
+            .sorted { ($0.pathExtension.lowercased() == "m3u" ? 0 : 1) < ($1.pathExtension.lowercased() == "m3u" ? 0 : 1) }
         var taken = Set<URL>()
         var groups: [[URL]] = []
-        for lead in leads {
+        for lead in leads where !taken.contains(lead) {
             let stem = lead.deletingPathExtension().lastPathComponent
-            let companions = sorted.filter { $0 != lead && !taken.contains($0) && !leads.contains($0) && $0.lastPathComponent.hasPrefix(stem) }
+            var companions = sorted.filter { $0 != lead && !taken.contains($0) && !leads.contains($0) && $0.lastPathComponent.hasPrefix(stem) }
+            // A playlist's discs, dropped with it or not.
+            if lead.pathExtension.lowercased() == "m3u" {
+                companions += FrontEndMedia.files(ofGame: lead).dropFirst().filter { !companions.contains($0) }
+            }
             taken.formUnion(companions + [lead])
             groups.append([lead] + companions)
         }

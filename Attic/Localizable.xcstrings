@@ -197,12 +197,12 @@
         }
       }
     },
-    "%lld PNG and JPEG covers and fan art, kept only when HEIC is smaller.": {
+    "%lld PNG and JPEG covers, logos and fan art, kept only when HEIC is smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld jaquettes et fan arts PNG et JPEG, conservés seulement si le HEIC est plus léger."
+            "value": "%lld jaquettes, logos et fan arts PNG et JPEG, conservés seulement si le HEIC est plus léger."
           }
         }
       }
@@ -1110,6 +1110,28 @@
         }
       }
     },
+    "%lld multi-disc games have none. Each gets one named after the game, listing its discs in order.": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu multi-disques n’en a pas. Il en reçoit une à son nom, listant ses disques dans l’ordre."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux multi-disques n’en ont pas. Chacun en reçoit une à son nom, listant ses disques dans l’ordre."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld not checked": {
       "localizations": {
         "fr": {
@@ -1359,6 +1381,70 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld playlists created.": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld playlist créée."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld playlists créées."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld playlists fixed.": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld playlist corrigée."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld playlists corrigées."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld playlists name discs that aren't there. Attic leaves them be: add the discs, or remove the playlist.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld playlists nomment des disques absents. Attic n’y touche pas : ajoutez les disques ou retirez la playlist."
+          }
+        }
+      }
+    },
+    "%lld playlists name their discs the Windows way (\\MultiDisc\\Game.chd), which emulators here can't follow. Their paths are rewritten.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld playlists nomment leurs disques à la façon de Windows (\\MultiDisc\\Game.chd), que les émulateurs ici ne suivent pas. Leurs chemins sont réécrits."
           }
         }
       }
@@ -3627,6 +3713,16 @@
         }
       }
     },
+    "Create playlists": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer les playlists"
+          }
+        }
+      }
+    },
     "Curved CRT TV": {
       "localizations": {
         "fr": {
@@ -4003,6 +4099,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Images disque manquantes"
+          }
+        }
+      }
+    },
+    "Disc Playlists": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlists de disques"
+          }
+        }
+      }
+    },
+    "Disc Playlists…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlists de disques…"
           }
         }
       }
@@ -4537,6 +4653,16 @@
         }
       }
     },
+    "Every multi-disc game has a playlist, and they all work here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu multi-disques a sa playlist, et elles fonctionnent toutes ici."
+          }
+        }
+      }
+    },
     "Every system has an emulator": {
       "localizations": {
         "fr": {
@@ -4809,6 +4935,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Corriger les gamelists"
+          }
+        }
+      }
+    },
+    "Fix playlists made on Windows": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corriger les playlists faites sous Windows"
           }
         }
       }
@@ -5134,12 +5270,12 @@
         }
       }
     },
-    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers and fan art are saved as HEIC when that's smaller.": {
+    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers, logos and fan art are saved as HEIC when that's smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee (là où RetroBat et Batocera les rangent) ; les jaquettes et fan arts sont enregistrés en HEIC quand c’est plus léger."
+            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee (là où RetroBat et Batocera les rangent) ; jaquettes, logos et fan arts sont enregistrés en HEIC quand c’est plus léger."
           }
         }
       }
@@ -6190,6 +6326,16 @@
         }
       }
     },
+    "Makes a playlist for each multi-disc game, so it's one game and emulators can swap its discs, and fixes playlists made on Windows.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crée une playlist pour chaque jeu multi-disques, pour qu’il ne compte qu’une fois et que l’émulateur puisse changer de disque, et corrige les playlists faites sous Windows."
+          }
+        }
+      }
+    },
     "Makes sets whole from loose files and other zips in this system's folder, then clears out what's left over.": {
       "extractionState": "stale",
       "localizations": {
@@ -7083,6 +7229,16 @@
         }
       }
     },
+    "Nothing has changed yet. A playlist (.m3u) lists a game's discs, so the game shows once and the emulator can swap discs when it asks. Discs stay where they are.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien n’a encore changé. Une playlist (.m3u) liste les disques d’un jeu : le jeu n’apparaît qu’une fois et l’émulateur peut changer de disque quand il le demande. Les disques restent où ils sont."
+          }
+        }
+      }
+    },
     "Nothing has changed yet. Compression is lossless: games play as before, and keep their saves, media and play history. Each new file is checked before the old ones go to the Trash.": {
       "localizations": {
         "fr": {
@@ -7139,6 +7295,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rien à reconstruire : aucun jeu ici ne peut être complété avec les fichiers à côté, et il ne reste aucun fichier isolé."
+          }
+        }
+      }
+    },
+    "Nothing was changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien n’a été modifié."
           }
         }
       }
@@ -7549,6 +7715,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jouer"
+          }
+        }
+      }
+    },
+    "Playlists with missing discs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlists aux disques manquants"
           }
         }
       }
@@ -8603,12 +8779,12 @@
         }
       }
     },
-    "Save covers and fan art as HEIC": {
+    "Save covers, logos and fan art as HEIC": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enregistrer les jaquettes et fan arts en HEIC"
+            "value": "Enregistrer jaquettes, logos et fan arts en HEIC"
           }
         }
       }
@@ -10417,6 +10593,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Avec le rendu rétro, les systèmes laissés « Par défaut » ont des lignes de balayage CRT (consoles 2D et arcade) ou une grille LCD (consoles portables). Choisissez un autre rendu par système avec clic droit › Réglages du système…"
+          }
+        }
+      }
+    },
+    "Write Playlists": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrire les playlists"
+          }
+        }
+      }
+    },
+    "Writing playlists…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écriture des playlists…"
           }
         }
       }

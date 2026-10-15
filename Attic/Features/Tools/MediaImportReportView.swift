@@ -83,7 +83,7 @@ struct MediaImportReportView: View {
                     }
                     .buttonStyle(.link)
                 } footer: {
-                    Text("Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers and fan art are saved as HEIC when that's smaller.")
+                    Text("Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers, logos and fan art are saved as HEIC when that's smaller.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

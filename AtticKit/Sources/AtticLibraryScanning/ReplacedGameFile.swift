@@ -12,8 +12,7 @@ enum ReplacedGameFile {
         for playlist in playlists {
             rewrite(playlist) { text in
                 text.components(separatedBy: "\n").map { line in
-                    let name = line.trimmingCharacters(in: .whitespacesAndNewlines)
-                    return name == old || name == "./" + old ? line.replacingOccurrences(of: old, with: new) : line
+                    DiscPlaylists.partName(line.trimmingCharacters(in: .whitespacesAndNewlines), in: "m3u") == old ? new : line
                 }
                 .joined(separator: "\n")
             }

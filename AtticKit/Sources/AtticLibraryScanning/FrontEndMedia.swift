@@ -133,7 +133,7 @@ public enum FrontEndMedia {
     static func referencedFiles(in text: String, playlist: Bool, sheet: Bool) -> [String] {
         text.split(whereSeparator: \.isNewline).compactMap { raw in
             let line = raw.trimmingCharacters(in: .whitespaces)
-            if playlist { return line.isEmpty || line.hasPrefix("#") ? nil : line }
+            if playlist { return DiscPlaylists.partName(line, in: "m3u") }
             if sheet {
                 guard line.uppercased().hasPrefix("FILE") else { return nil }
                 if let quoted = line.firstMatch(of: #/"([^"]+)"/#) { return String(quoted.output.1) }
@@ -162,6 +162,11 @@ public enum FrontEndMedia {
             if !manager.fileExists(atPath: target.path) {
                 try? manager.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
                 guard (try? manager.copyItem(at: file, to: target)) != nil else { continue }
+                // A playlist made on Windows, made for here.
+                if target.pathExtension.lowercased() == "m3u", let text = DiscPlaylists.text(of: target),
+                   let mac = DiscPlaylists.macText(of: text) {
+                    try? mac.write(to: target, atomically: true, encoding: .utf8)
+                }
             }
             if file == url { lead = target }
         }
