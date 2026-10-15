@@ -8,17 +8,19 @@ public enum ImportedMedia {
     /// Media folder names other apps use, by the kind they hold. Files
     /// inside are named after the game (`Game.png`), or Batocera-style
     /// (`Game-boxart.png`, see `MediaTidier.inFolderSuffixes`) in `images`.
+    /// A `marquees` folder isn't taken for logos: MAME's hold the cabinets'
+    /// real marquees.
     static let folderKinds: [String: MediaKind] = [
         "covers": .covers, "boxart": .covers, "box2dfront": .covers, "box - front": .covers, "boxes": .covers,
         "screenshots": .screenshots, "snap": .screenshots, "snaps": .screenshots, "screenshot - gameplay": .screenshots,
         "videos": .videos, "video": .videos, "snap videos": .videos,
         "manuals": .manuals, "manual": .manuals,
-        "marquees": .marquees, "marquee": .marquees, "wheel": .marquees, "logos": .marquees, "clear logo": .marquees,
+        "logos": .logos, "logo": .logos, "wheel": .logos, "clear logo": .logos,
     ]
     /// Folders that hold media or other apps' files, never games.
     public static let nonGameFolderNames: Set<String> = Set(folderKinds.keys)
         .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "collections", "html_arrm",
-                "fanart", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
+                "marquees", "marquee", "fanart", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
                 "miximages", "mix", "mixrbv2", "titlescreens", "titles", "screenshot - game title",
                 // A whole Batocera or ES-DE folder's other parts.
                 "bios", "saves", "states", "themes", "music", "splash", "cheats", "decorations", "overlays", "shaders"])

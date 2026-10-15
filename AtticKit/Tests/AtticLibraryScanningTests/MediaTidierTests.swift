@@ -60,7 +60,7 @@ struct MediaTidierTests {
         #expect(moves["2020bb-image.png"] == target + "/screenshots/2020bb.png")
         #expect(moves["2020bb-video.mp4"] == target + "/videos/2020bb.mp4")
         #expect(moves["2020bb-manual.pdf"] == target + "/manuals/2020bb.pdf")
-        #expect(moves["2020bb-marquee.png"] == target + "/marquees/2020bb.png")
+        #expect(moves["2020bb-marquee.png"] == target + "/logos/2020bb.png")
         // A thumb only stands in for missing box art; art for games that
         // aren't there stays behind and goes with the folder.
         #expect(moves["2020bb-thumb.png"] == nil)

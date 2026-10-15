@@ -207,6 +207,7 @@ public enum FrontEndMedia {
             screenshot: file(["screenshot", "image", "titleshot"]),
             video: file(["video"]),
             manual: file(["manual"]),
+            // RetroBat and Batocera scrape the logo into <marquee>.
             logo: file(["marquee", "wheel"])
         )
     }

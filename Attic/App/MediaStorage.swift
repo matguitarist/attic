@@ -30,7 +30,7 @@ extension Game {
 
     /// The game's logo, when there's one in its media folder.
     var logoURL: URL? {
-        MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .marquees)).first
+        MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .logos)).first
     }
 
     /// Stores downloaded or picked media for this game where the scanner
@@ -50,7 +50,7 @@ final class LogoIndex {
     private var names: [URL: Set<String>] = [:]
 
     func hasLogo(_ game: Game) -> Bool {
-        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .marquees)
+        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .logos)
         let folder = base.deletingLastPathComponent()
         if names[folder] == nil {
             let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []

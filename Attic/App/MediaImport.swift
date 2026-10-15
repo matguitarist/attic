@@ -117,7 +117,7 @@ extension ToolsCoordinator {
             guard let entry = source.entries[FrontEndMedia.key(for: game.relativePath)] else { return nil }
             let manual = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .manuals)
                 .appendingPathExtension("pdf")
-            let logo = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .marquees)
+            let logo = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .logos)
             return MediaImportMatch(game: game, entry: entry, hasManual: FileManager.default.fileExists(atPath: manual.path),
                                     hasLogo: !MediaFolder.existingFiles(base: logo).isEmpty)
         }
@@ -229,7 +229,7 @@ extension ToolsCoordinator {
             if replacing || !game.hasScreenshot { imported.screenshotPath = copy(entry.screenshot, .screenshots, for: game)?.path }
             if replacing || !game.hasVideo { imported.videoPath = copy(entry.video, .videos, for: game)?.path }
             if replacing || !match.hasManual { _ = copy(entry.manual, .manuals, for: game) }
-            if replacing || !match.hasLogo { _ = copy(entry.logo, .marquees, for: game) }
+            if replacing || !match.hasLogo { _ = copy(entry.logo, .logos, for: game) }
             info[game.path] = imported
             progress(Double(index + 1) / Double(max(matches.count, 1)))
         }

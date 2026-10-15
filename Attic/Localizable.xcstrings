@@ -5102,12 +5102,12 @@
         }
       }
     },
-    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee; covers are saved as HEIC when that's smaller.": {
+    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers are saved as HEIC when that's smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
+            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee (là où RetroBat et Batocera les rangent) ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
           }
         }
       }

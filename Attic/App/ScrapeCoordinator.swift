@@ -313,7 +313,7 @@ final class ScrapeCoordinator {
 
         // Kept by file alone, like manuals: nothing in the library points to it.
         if force || game.logoURL == nil, let remoteURL = info.logoURL {
-            if (try? await downloadMedia(from: remoteURL, for: game, kind: .marquees)) != nil {
+            if (try? await downloadMedia(from: remoteURL, for: game, kind: .logos)) != nil {
                 changed.append(String(localized: "logo"))
             }
         }
