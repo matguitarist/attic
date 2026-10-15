@@ -95,6 +95,7 @@ struct GameDetailView: View {
                     descriptionHeight = target
                 }
             }
+            .modifier(BIOSSetDrop(game: game))
             // Fresh field state per game — see CommitOnBlurField.
             .id(game.persistentModelID)
         } else if let system {
@@ -319,6 +320,57 @@ struct GameDetailView: View {
         game[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
         game.metadataManuallyEdited = true
         try? game.modelContext?.save()
+    }
+}
+
+/// An arcade board's BIOS set (konamigx.zip) dropped on its game's panel
+/// goes beside the game, where MAME and FinalBurn Neo look for it, and the
+/// game is checked again.
+private struct BIOSSetDrop: ViewModifier {
+    let game: Game
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
+    @State private var message: String?
+
+    func body(content: Content) -> some View {
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        if ToolsCoordinator.isArcade(system) {
+            content
+                .dropDestination(for: URL.self) { urls, _ in
+                    add(urls, system: system)
+                }
+                .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {}
+        } else {
+            content
+        }
+    }
+
+    private func add(_ urls: [URL], system: CanonicalSystemID) -> Bool {
+        let sets = urls.filter { ArcadeBIOSSets.isBIOSSet($0.lastPathComponent, system: system) }
+        guard !sets.isEmpty else {
+            message = String(localized: "Only an arcade BIOS set (such as konamigx.zip) can be dropped on a game. Drop games on the list of games.")
+            return false
+        }
+        let folder = game.romAbsoluteURL.deletingLastPathComponent()
+        var added: [String] = []
+        for file in sets {
+            let destination = folder.appending(path: file.lastPathComponent)
+            if FileManager.default.fileExists(atPath: destination.path)
+                || (try? FileManager.default.copyItem(at: file, to: destination)) != nil {
+                added.append(file.lastPathComponent)
+            }
+        }
+        guard !added.isEmpty else {
+            message = String(localized: "Couldn't copy \(sets.map(\.lastPathComponent).formatted(.list(type: .and))) to \(folder.lastPathComponent).")
+            return false
+        }
+        message = String(localized: "Put with the games in \(folder.lastPathComponent): \(added.formatted(.list(type: .and))).")
+        if game.datVerdict != nil {
+            Task { _ = await tools.recheck(game, datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator) }
+        }
+        return true
     }
 }
 

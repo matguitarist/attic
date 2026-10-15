@@ -77,13 +77,15 @@ public struct LibraryScanner: Sendable {
                     canonicalID: data.canonicalID,
                     libraryFormat: data.libraryFormat,
                     romsRootURL: data.romsRootURL,
-                    // …and discs a .m3u playlist lists are part of that game.
+                    // …and discs a .m3u playlist lists are part of that game,
+                    // and an arcade board's BIOS set is no game at all.
                     // A gamelist entry whose file is gone from this folder
                     // (which is there: an unplugged drive is never scanned)
                     // was deleted or moved.
                     games: data.games.filter { game in
                         SystemROMExtensions.accepts(game.romRelativePath, for: definition.canonicalID)
                             && !discs.contains(game.romRelativePath)
+                            && !ArcadeBIOSSets.isBIOSSet(game.romRelativePath, system: definition.canonicalID)
                             && fileManager.fileExists(atPath: folderURL.appending(path: game.romRelativePath).path)
                     }
                 ))

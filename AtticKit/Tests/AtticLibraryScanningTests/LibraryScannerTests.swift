@@ -108,6 +108,20 @@ import Testing
         #expect(canonicalIDs == [.snes, .gba, .nes])
     }
 
+    /// konamigx.zip sits with the games for MAME to find, but isn't one.
+    @Test func anArcadeBIOSSetIsNoGame() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "attic-scanner-bios-\(UUID().uuidString)/ROMs")
+        for name in ["mame/konamigx.zip", "mame/salmndr2.zip", "neogeo/neogeo.zip", "neogeo/mslug.zip"] {
+            try FileManager.default.createDirectory(at: root.appending(path: name).deletingLastPathComponent(), withIntermediateDirectories: true)
+            try Data().write(to: root.appending(path: name))
+        }
+        let games = try isolatedScanner().scan(romsRootURL: root).systems.flatMap(\.games).map(\.romRelativePath)
+        #expect(Set(games) == ["salmndr2.zip", "mslug.zip"])
+        // Only in an arcade system's folder.
+        #expect(!ArcadeBIOSSets.isBIOSSet("naomi.zip", system: .dreamcast))
+        #expect(ArcadeBIOSSets.isBIOSSet("AR_BIOS.7z", system: .mame))
+    }
+
     @Test func scanOfNonexistentRootReturnsEmptyResultWithoutThrowing() throws {
         let missing = FileManager.default.temporaryDirectory.appending(path: "attic-does-not-exist-\(UUID().uuidString)")
         let result = try isolatedScanner().scan(romsRootURL: missing)

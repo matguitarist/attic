@@ -60,6 +60,8 @@ final class ROMImportCoordinator {
     private var romsRoots: [URL] = []
     private var added: [CanonicalSystemID: Int] = [:]
     private var mediaAdded = 0
+    /// Arcade BIOS sets, which go beside the games but aren't games.
+    private var biosSets: [String] = []
     private var alreadyThere = 0
     private var notGames = 0
     private var unknown: [String] = []
@@ -85,6 +87,7 @@ final class ROMImportCoordinator {
         self.finish = finish
         added = [:]
         mediaAdded = 0
+        biosSets = []
         alreadyThere = 0
         notGames = 0
         unknown = []
@@ -159,7 +162,10 @@ final class ROMImportCoordinator {
             let result = await Task.detached(priority: .userInitiated) {
                 Self.place(placement.files, in: placement.system, romsRoots: roots, as: placement.name)
             }.value
-            if result.added {
+            let name = placement.name ?? placement.files[0].lastPathComponent
+            if result.added, ArcadeBIOSSets.isBIOSSet(name, system: placement.system) {
+                biosSets.append(name)
+            } else if result.added {
                 added[placement.system, default: 0] += 1
                 destinations[placement.files[0].deletingLastPathComponent(), default: [:]][placement.system, default: 0] += 1
             }
@@ -242,6 +248,9 @@ final class ROMImportCoordinator {
                 "\(SystemTaxonomy.definition(for: system)?.displayName ?? system.rawValue) (\(count))"
             }
             parts.append(String(localized: "Added to \(systems.formatted(.list(type: .and)))."))
+        }
+        if !biosSets.isEmpty {
+            parts.append(String(localized: "BIOS sets put beside the games, which can now start: \(biosSets.formatted(.list(type: .and)))."))
         }
         if mediaAdded > 0 {
             parts.append(String(localized: "\(mediaAdded) covers, videos and manuals came along."))

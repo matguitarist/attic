@@ -581,12 +581,17 @@ struct SetProblemsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if let bios = problems.missingBIOS {
-                Label {
-                    Text("BIOS set \(bios) missing")
-                } icon: {
-                    Image(systemName: "exclamationmark.triangle")
+                VStack(alignment: .leading, spacing: 2) {
+                    Label {
+                        Text("BIOS set \(bios) missing")
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle")
+                    }
+                    .foregroundStyle(.orange)
+                    Text("Drop it on the game's panel, or put it with the games, still zipped: that's where the emulator looks for it.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.orange)
             }
             table("From Another Version", problems.otherVersionROMs, checksum: "CRC32", showsFound: true)
             table("Missing", problems.missingROMs, checksum: "CRC32", showsFound: false)
