@@ -117,7 +117,7 @@ public struct MediaTidyPlan: Sendable {
 ///   with no games — empty folders of known systems stay, ready for games;
 /// - other apps' notes and spare gamelists (`systeminfo.txt`,
 ///   `gamelist_ARRM.xml`, ARRM's `html_arrm/`…);
-/// - media kinds Attic doesn't show (fan art, 3D boxes…) and
+/// - media kinds Attic doesn't keep (3D boxes, back covers…) and
 ///   media for games that aren't there any more.
 ///
 /// Batocera's in-folder media (`images/x-boxart.png`) is renamed into
@@ -137,7 +137,7 @@ public enum MediaTidier {
     /// no `boxart`.
     static let inFolderSuffixes: [String: MediaKind] = [
         "boxart": .covers, "image": .screenshots,
-        "video": .videos, "manual": .manuals, "marquee": .logos,
+        "video": .videos, "manual": .manuals, "marquee": .logos, "fanart": .fanart,
     ]
 
     public static func plan(romsRoots: [URL]) -> MediaTidyPlan {
@@ -308,9 +308,9 @@ public enum MediaTidier {
                 taken.insert(key)
                 let destination = base.appendingPathExtension(file.pathExtension.lowercased())
                 plan.moves.append(.init(from: file, to: destination))
-                if kind == .covers, isCompressible(destination) { plan.compress.append(destination) }
+                if kind.isStoredAsHEIC, isCompressible(destination) { plan.compress.append(destination) }
             }
-            // What's left (fan art, cartridges…) goes with the folder.
+            // What's left (cartridges, back covers…) goes with the folder.
             plan.discard(mediaFolder, .leftoverMedia)
         }
     }
@@ -333,7 +333,7 @@ public enum MediaTidier {
                 let relative = String(file.path.dropFirst(kindFolder.path.count + 1))
                 if !games.contains((relative as NSString).deletingPathExtension) {
                     plan.discard(file, .missingGames)
-                } else if kind == .covers, isCompressible(file) {
+                } else if kind.isStoredAsHEIC, isCompressible(file) {
                     plan.compress.append(file)
                 } else if kind == .manuals, MediaFolder.manualIsWorthCompressing(file) {
                     plan.manuals.append(file)
@@ -352,7 +352,7 @@ public enum MediaTidier {
             guard games.contains(game), MediaFolder.existingFiles(base: base).isEmpty, !planned.contains(base.path) else { continue }
             let destination = base.appendingPathExtension(file.pathExtension.lowercased())
             plan.moves.append(.init(from: file, to: destination))
-            if kind == .covers, isCompressible(file) { plan.compress.append(destination) }
+            if kind.isStoredAsHEIC, isCompressible(file) { plan.compress.append(destination) }
         }
     }
 

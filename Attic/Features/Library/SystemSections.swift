@@ -226,10 +226,10 @@ struct SystemGamesSection: View {
             }
             .padding(.vertical, 2)
             // How many have each kind of media, orange while some lack it.
-            let logos = LogoIndex()
+            let media = MediaIndex()
             let counts = [games.count { $0.coverArtPath != nil }, games.count { $0.titleScreenPath != nil },
-                          games.count { $0.videoPath != nil }, games.count { logos.hasLogo($0) },
-                          games.count { !($0.gameDescription ?? "").isEmpty }]
+                          games.count { $0.videoPath != nil }, games.count { media.has(.logos, $0) },
+                          games.count { media.has(.fanart, $0) }, games.count { !($0.gameDescription ?? "").isEmpty }]
             // Two columns while every count is whole; "719/721" needs the width.
             let columns = counts.allSatisfy { $0 == games.count } ? 2 : 1
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns), alignment: .leading, spacing: 6) {
@@ -237,7 +237,8 @@ struct SystemGamesSection: View {
                 coverage("tv", "Screenshots", counts[1])
                 coverage("film", "Videos", counts[2])
                 coverage("textformat", "Logos", counts[3])
-                coverage("text.alignleft", "Descriptions", counts[4])
+                coverage("photo.artframe", "Fan Art", counts[4])
+                coverage("text.alignleft", "Descriptions", counts[5])
             }
             .padding(.vertical, 2)
             if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {

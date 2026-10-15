@@ -11,9 +11,14 @@ import UniformTypeIdentifiers
 /// `logos` holds each game's logo, its title on a transparent background
 /// (ScreenScraper's wheel, TheGamesDB's clear logo). Not a marquee, the
 /// cabinet's lit header, though RetroBat and Batocera file logos under
-/// that name.
+/// that name. `fanart` is a wide piece of art for behind the game.
 public enum MediaKind: String, CaseIterable, Sendable {
-    case covers, screenshots, videos, manuals, logos
+    case covers, screenshots, videos, manuals, logos, fanart
+
+    /// Painted art, stored as HEIC when that's smaller. Screenshots stay
+    /// as they are, since compressing pixel art blurs it, and logos keep
+    /// their PNG's sharp edges.
+    public var isStoredAsHEIC: Bool { self == .covers || self == .fanart }
 }
 
 /// Where a game's media lives: one tree next to the ROMs folder, in
@@ -55,16 +60,15 @@ public enum MediaFolder {
     }
 
     /// Puts `data` in place as the game's `kind`, replacing any earlier one
-    /// whatever its type (which goes to the Trash). Covers are stored as
-    /// HEIC when that's smaller; screenshots stay as they are, since
-    /// compressing pixel art blurs it.
+    /// whatever its type (which goes to the Trash). Covers and fan art are
+    /// stored as HEIC when that's smaller (see `MediaKind.isStoredAsHEIC`).
     public static func store(_ data: Data, fileExtension: String, forSystemFolder systemFolder: URL, romRelativePath: String, kind: MediaKind) throws -> URL {
         let base = baseURL(forSystemFolder: systemFolder, romRelativePath: romRelativePath, kind: kind)
         try FileManager.default.createDirectory(at: base.deletingLastPathComponent(), withIntermediateDirectories: true)
         for existing in existingFiles(base: base) {
             try? FileManager.default.trashItem(at: existing, resultingItemURL: nil)
         }
-        if kind == .covers, let heic = heicData(from: data) {
+        if kind.isStoredAsHEIC, let heic = heicData(from: data) {
             let destination = base.appendingPathExtension("heic")
             try heic.write(to: destination, options: .atomic)
             return destination

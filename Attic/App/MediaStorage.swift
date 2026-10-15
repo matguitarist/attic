@@ -29,8 +29,14 @@ extension Game {
     }
 
     /// The game's logo, when there's one in its media folder.
-    var logoURL: URL? {
-        MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: .logos)).first
+    var logoURL: URL? { mediaURL(.logos) }
+
+    /// Its fan art, likewise.
+    var fanartURL: URL? { mediaURL(.fanart) }
+
+    /// Media kept by file alone, with nothing in the library pointing to it.
+    private func mediaURL(_ kind: MediaKind) -> URL? {
+        MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: kind)).first
     }
 
     /// Stores downloaded or picked media for this game where the scanner
@@ -43,14 +49,14 @@ extension Game {
     }
 }
 
-/// Which games have a logo, from one listing of each logo folder rather
-/// than a lookup per game: counting what a list of thousands of games is
-/// missing happens as it's drawn.
-final class LogoIndex {
+/// Which games have a logo or fan art, from one listing of each folder
+/// rather than a lookup per game: counting what a list of thousands of
+/// games is missing happens as it's drawn.
+final class MediaIndex {
     private var names: [URL: Set<String>] = [:]
 
-    func hasLogo(_ game: Game) -> Bool {
-        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .logos)
+    func has(_ kind: MediaKind, _ game: Game) -> Bool {
+        let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: kind)
         let folder = base.deletingLastPathComponent()
         if names[folder] == nil {
             let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []

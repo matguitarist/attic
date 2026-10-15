@@ -104,17 +104,19 @@ import Testing
         #expect(info.videoURL == URL(string: "https://example.com/mediaVideoJeu.php?media=video-normalized"))
     }
 
-    @Test func picksTheWheelAsTheLogoInTheBestRegion() throws {
+    @Test func picksTheWheelAsTheLogoAndTheFanArt() throws {
         let fixture = """
         {"response": {"jeu": {"medias": [
           {"type": "wheel-carbon", "region": "us", "url": "https://example.com/wheel-carbon-us.png"},
           {"type": "wheel", "region": "jp", "url": "https://example.com/wheel-jp.png"},
-          {"type": "wheel", "region": "wor", "url": "https://example.com/wheel-wor.png"}
+          {"type": "wheel", "region": "wor", "url": "https://example.com/wheel-wor.png"},
+          {"type": "fanart", "url": "https://example.com/fanart.jpg"}
         ]}}}
         """
         let envelope = try JSONDecoder().decode(ScreenScraperResponseEnvelope.self, from: Data(fixture.utf8))
         let info = try #require(ScreenScraperMapper.map(envelope))
         #expect(info.logoURL == URL(string: "https://example.com/wheel-wor.png"))
+        #expect(info.fanartURL == URL(string: "https://example.com/fanart.jpg"))
     }
 
     @Test func missingJeuReturnsNil() throws {

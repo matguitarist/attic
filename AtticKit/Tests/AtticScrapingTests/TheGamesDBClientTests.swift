@@ -165,22 +165,23 @@ final class TheGamesDBStubURLProtocol: URLProtocol, @unchecked Sendable {
         #expect(without.screenshotURL == nil)
     }
 
-    @Test func screenshotAndLogoComeFromOneImagesRequest() async throws {
+    @Test func screenshotLogoAndFanArtComeFromOneImagesRequest() async throws {
         let requests = RequestLog()
         TheGamesDBNamesStubURLProtocol.handler = { request in
             let path = request.url?.path ?? ""
             if path.hasSuffix("/Games/Images") {
                 requests.append(request.url!)
-                return (200, #"{"data": {"count": 2, "base_url": {"original": "https://cdn.thegamesdb.net/images/original/"}, "images": {"1": [{"id": 10, "type": "screenshot", "filename": "screenshot/1-1.jpg"}, {"id": 11, "type": "clearlogo", "filename": "clearlogo/1.png"}]}}}"#)
+                return (200, #"{"data": {"count": 2, "base_url": {"original": "https://cdn.thegamesdb.net/images/original/"}, "images": {"1": [{"id": 10, "type": "screenshot", "filename": "screenshot/1-1.jpg"}, {"id": 11, "type": "clearlogo", "filename": "clearlogo/1.png"}, {"id": 12, "type": "fanart", "filename": "fanart/1-1.jpg"}]}}}"#)
             }
             return Self.respond(to: request)
         }
         let info = try await makeClient().fetchGameInfo(title: "Sonic the Hedgehog", platformID: 18, credentials: TheGamesDBCredentials(apiKey: "k"),
-                                                        wantsScreenshot: true, wantsLogo: true)
+                                                        wantsScreenshot: true, wantsLogo: true, wantsFanart: true)
         #expect(info.screenshotURL == URL(string: "https://cdn.thegamesdb.net/images/original/screenshot/1-1.jpg"))
         #expect(info.logoURL == URL(string: "https://cdn.thegamesdb.net/images/original/clearlogo/1.png"))
+        #expect(info.fanartURL == URL(string: "https://cdn.thegamesdb.net/images/original/fanart/1-1.jpg"))
         #expect(requests.urls.count == 1)
-        #expect(requests.urls.first?.query(percentEncoded: false)?.contains("filter[type]=screenshot,titlescreen,clearlogo") == true)
+        #expect(requests.urls.first?.query(percentEncoded: false)?.contains("filter[type]=screenshot,titlescreen,clearlogo,fanart") == true)
     }
 
     @Test func failingNameListsStillReturnTheGame() async throws {

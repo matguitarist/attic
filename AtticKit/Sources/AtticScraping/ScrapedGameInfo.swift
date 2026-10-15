@@ -24,6 +24,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
     /// The game's logo on a transparent background (ScreenScraper's wheel,
     /// TheGamesDB's clear logo).
     public var logoURL: URL?
+    /// Wide art for behind the game.
+    public var fanartURL: URL?
 
     public init(
         title: String? = nil,
@@ -37,7 +39,8 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         coverArtURL: URL? = nil,
         screenshotURL: URL? = nil,
         videoURL: URL? = nil,
-        logoURL: URL? = nil
+        logoURL: URL? = nil,
+        fanartURL: URL? = nil
     ) {
         self.title = title
         self.description = description
@@ -51,5 +54,6 @@ public struct ScrapedGameInfo: Sendable, Equatable {
         self.screenshotURL = screenshotURL
         self.videoURL = videoURL
         self.logoURL = logoURL
+        self.fanartURL = fanartURL
     }
 }

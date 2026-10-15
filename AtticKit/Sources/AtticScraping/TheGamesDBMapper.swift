@@ -54,8 +54,17 @@ enum TheGamesDBMapper {
 
     /// The clear logo, from the same `/v1/Games/Images`.
     static func logoURL(forGameID gameID: Int, in envelope: TheGamesDBImagesEnvelope) -> URL? {
-        guard let data = envelope.data, let logo = data.images[String(gameID)]?.first(where: { $0.type == "clearlogo" }) else { return nil }
-        return URL(string: data.baseURL.original + logo.filename)
+        image("clearlogo", forGameID: gameID, in: envelope)
+    }
+
+    /// Fan art, likewise.
+    static func fanartURL(forGameID gameID: Int, in envelope: TheGamesDBImagesEnvelope) -> URL? {
+        image("fanart", forGameID: gameID, in: envelope)
+    }
+
+    private static func image(_ type: String, forGameID gameID: Int, in envelope: TheGamesDBImagesEnvelope) -> URL? {
+        guard let data = envelope.data, let image = data.images[String(gameID)]?.first(where: { $0.type == type }) else { return nil }
+        return URL(string: data.baseURL.original + image.filename)
     }
 
     private static func coverArtURL(forGameID gameID: Int, include: TheGamesDBBoxArtInclude?) -> URL? {

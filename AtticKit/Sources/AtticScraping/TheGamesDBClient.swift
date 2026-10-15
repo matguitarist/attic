@@ -6,15 +6,16 @@ import AtticModels
 public protocol TheGamesDBClientProtocol: Sendable {
     /// `title` is the game's title as the library shows it (already cleaned
     /// of release tags, and resolved from arcade DATs for romsets).
-    /// `wantsScreenshot` and `wantsLogo` cost one more request between them
-    /// (TheGamesDB's search results carry box art only), so callers ask
-    /// only when they need one.
+    /// `wantsScreenshot`, `wantsLogo` and `wantsFanart` cost one more
+    /// request between them (TheGamesDB's search results carry box art
+    /// only), so callers ask only when they need one.
     func fetchGameInfo(
         title: String,
         platformID: Int,
         credentials: TheGamesDBCredentials,
         wantsScreenshot: Bool,
-        wantsLogo: Bool
+        wantsLogo: Bool,
+        wantsFanart: Bool
     ) async throws -> ScrapedGameInfo
 }
 
@@ -45,7 +46,8 @@ public struct TheGamesDBClient: TheGamesDBClientProtocol {
         platformID: Int,
         credentials: TheGamesDBCredentials,
         wantsScreenshot: Bool = false,
-        wantsLogo: Bool = false
+        wantsLogo: Bool = false,
+        wantsFanart: Bool = false
     ) async throws -> ScrapedGameInfo {
         guard credentials.isConfigured else { throw TheGamesDBError.notConfigured }
         let searchName = Self.searchName(fromTitle: title)
@@ -61,15 +63,17 @@ public struct TheGamesDBClient: TheGamesDBClientProtocol {
             try await fetchNames(credentials: credentials)
         }
         var info = TheGamesDBMapper.map(game, include: envelope.include, names: names)
-        if wantsScreenshot || wantsLogo {
+        if wantsScreenshot || wantsLogo || wantsFanart {
             // Like the names, a nice-to-have: the scrape stands without it.
             // One request for both.
             var types: [String] = []
             if wantsScreenshot { types += ["screenshot", "titlescreen"] }
             if wantsLogo { types.append("clearlogo") }
+            if wantsFanart { types.append("fanart") }
             if let images = try? await images(forGameID: game.id, types: types, credentials: credentials) {
                 if wantsScreenshot { info.screenshotURL = TheGamesDBMapper.screenshotURL(forGameID: game.id, in: images) }
                 if wantsLogo { info.logoURL = TheGamesDBMapper.logoURL(forGameID: game.id, in: images) }
+                if wantsFanart { info.fanartURL = TheGamesDBMapper.fanartURL(forGameID: game.id, in: images) }
             }
         }
         return info

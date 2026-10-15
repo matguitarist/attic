@@ -34,7 +34,8 @@ enum ScreenScraperMapper {
             coverArtURL: bestMedia(jeu.medias, types: coverMediaTypePreference),
             screenshotURL: bestMedia(jeu.medias, types: screenshotMediaTypePreference),
             videoURL: bestMedia(jeu.medias, types: videoMediaTypePreference),
-            logoURL: bestMedia(jeu.medias, types: logoMediaTypePreference)
+            logoURL: bestMedia(jeu.medias, types: logoMediaTypePreference),
+            fanartURL: bestMedia(jeu.medias, types: ["fanart"])
         )
     }
 

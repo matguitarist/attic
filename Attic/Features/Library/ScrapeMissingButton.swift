@@ -17,8 +17,8 @@ struct ScrapeMissingButton: View {
     }
 
     private var missingCount: Int {
-        let logos = LogoIndex()
-        return games.filter { ScrapeCoordinator.lacksInfo($0, from: nil, logos: logos) }.count
+        let media = MediaIndex()
+        return games.filter { ScrapeCoordinator.lacksInfo($0, from: nil, media: media) }.count
     }
 
     private var isRunning: Bool {

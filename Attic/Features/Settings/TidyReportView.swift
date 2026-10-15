@@ -97,7 +97,7 @@ struct TidyReportView: View {
         switch step {
         case .moveMedia: String(localized: "Move media into the Media folder")
         case .gamelists: String(localized: "Fix gamelists")
-        case .compressCovers: String(localized: "Save covers as HEIC")
+        case .compressCovers: String(localized: "Save covers and fan art as HEIC")
         case .compressManuals: String(localized: "Compress heavy manual scans")
         case .trash(.unusedFolders): String(localized: "Folders Attic doesn't use")
         case .trash(.noGames): String(localized: "Media and gamelists of systems with no games")
@@ -117,7 +117,7 @@ struct TidyReportView: View {
         case .gamelists:
             return String(localized: "\(count) gamelists: Batocera's move to Gamelists, and old media paths and missing games come out.")
         case .compressCovers:
-            return String(localized: "\(count) PNG and JPEG covers, kept only when HEIC is smaller.")
+            return String(localized: "\(count) PNG and JPEG covers and fan art, kept only when HEIC is smaller.")
         case .compressManuals:
             return String(localized: "\(count) manuals redrawn at 150 dpi, kept only when that saves at least 40%.")
         case .trash(let reason):
@@ -127,9 +127,9 @@ struct TidyReportView: View {
             case .unusedFolders: return String(localized: "\(count) items, \(size): folders for no system Attic knows, and empty gamelist folders.")
             case .noGames: return String(localized: "\(count) items, \(size).")
             case .otherApps: return String(localized: "\(count) items, \(size): systeminfo.txt, spare gamelists, scraper leftovers.")
-            case .unshownMedia: return String(localized: "\(count) items, \(size): fan art, 3D boxes, mix images, title screens…")
+            case .unshownMedia: return String(localized: "\(count) items, \(size): 3D boxes, back covers, mix images, title screens…")
             case .missingGames: return String(localized: "\(count) items, \(size).")
-            case .leftoverMedia: return String(localized: "\(count) items, \(size): fan art, cartridges and the like, once the rest has moved.")
+            case .leftoverMedia: return String(localized: "\(count) items, \(size): cartridges, back covers and the like, once the rest has moved.")
             case .duplicates: return String(localized: "\(count) items, \(size): other regions, revisions and betas of games you have, with their media. The kept copy is a finished release: World, then USA, Europe, Japan, then the latest revision. Your games themselves, so it's off unless you tick it.")
             }
         }

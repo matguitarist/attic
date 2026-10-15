@@ -11,6 +11,7 @@ import AtticModels
 ///     roms/nes/videos/1942 (Japan, USA) (En)-video.mp4
 ///     roms/nes/manuals/1942 (Japan, USA) (En)-manual.pdf
 ///     roms/nes/images/1942 (Japan, USA) (En)-marquee.png  <marquee>: the logo
+///     roms/nes/images/1942 (Japan, USA) (En)-fanart.jpg   <fanart>
 public enum FrontEndMedia {
     public struct Entry: Sendable, Equatable {
         /// The game's file (or folder), when it's there, and its path in
@@ -32,6 +33,7 @@ public enum FrontEndMedia {
         public var video: URL?
         public var manual: URL?
         public var logo: URL?
+        public var fanart: URL?
     }
 
     /// A system's folder in the other front-end, with its entries by the
@@ -208,7 +210,8 @@ public enum FrontEndMedia {
             video: file(["video"]),
             manual: file(["manual"]),
             // RetroBat and Batocera scrape the logo into <marquee>.
-            logo: file(["marquee", "wheel"])
+            logo: file(["marquee", "wheel"]),
+            fanart: file(["fanart"])
         )
     }
 }

@@ -197,12 +197,12 @@
         }
       }
     },
-    "%lld PNG and JPEG covers, kept only when HEIC is smaller.": {
+    "%lld PNG and JPEG covers and fan art, kept only when HEIC is smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld jaquettes PNG et JPEG, gardées en HEIC seulement si c’est plus léger."
+            "value": "%lld jaquettes et fan arts PNG et JPEG, conservés seulement si le HEIC est plus léger."
           }
         }
       }
@@ -456,6 +456,28 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld échecs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld fan art images": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fan art"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fan arts"
                 }
               }
             }
@@ -900,34 +922,34 @@
         }
       }
     },
-    "%lld items, %@: fan art, 3D boxes, mix images, title screens…": {
+    "%lld items, %@: 3D boxes, back covers, mix images, title screens…": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
-            "value": "%1$lld items, %2$@: fan art, 3D boxes, mix images, title screens…"
+            "value": "%1$lld items, %2$@: 3D boxes, back covers, mix images, title screens…"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld éléments, %2$@ : fan art, boîtes 3D, mix images, écrans titres…"
+            "value": "%1$lld éléments, %2$@ : boîtes 3D, dos de boîtes, mix images, écrans titres…"
           }
         }
       }
     },
-    "%lld items, %@: fan art, cartridges and the like, once the rest has moved.": {
+    "%lld items, %@: cartridges, back covers and the like, once the rest has moved.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
-            "value": "%1$lld items, %2$@: fan art, cartridges and the like, once the rest has moved."
+            "value": "%1$lld items, %2$@: cartridges, back covers and the like, once the rest has moved."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld éléments, %2$@ : fan art, cartouches et autres, une fois le reste déplacé."
+            "value": "%1$lld éléments, %2$@ : cartouches, dos de boîtes et autres, une fois le reste déplacé."
           }
         }
       }
@@ -4681,6 +4703,16 @@
         }
       }
     },
+    "Fan Art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fan art"
+          }
+        }
+      }
+    },
     "Favorite": {
       "localizations": {
         "fr": {
@@ -5102,12 +5134,12 @@
         }
       }
     },
-    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers are saved as HEIC when that's smaller.": {
+    "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers and fan art are saved as HEIC when that's smaller.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee (là où RetroBat et Batocera les rangent) ; les jaquettes sont enregistrées en HEIC quand c’est plus léger."
+            "value": "Les jeux sont associés par nom de fichier. Les jaquettes viennent de la vignette de chaque jeu (la boîte), les captures d’écran de son image, les logos de son marquee (là où RetroBat et Batocera les rangent) ; les jaquettes et fan arts sont enregistrés en HEIC quand c’est plus léger."
           }
         }
       }
@@ -8571,12 +8603,12 @@
         }
       }
     },
-    "Save covers as HEIC": {
+    "Save covers and fan art as HEIC": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enregistrer les jaquettes en HEIC"
+            "value": "Enregistrer les jaquettes et fan arts en HEIC"
           }
         }
       }
@@ -10535,6 +10567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "p. ex. Mario"
+          }
+        }
+      }
+    },
+    "fan art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "fan art"
           }
         }
       }

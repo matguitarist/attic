@@ -13,13 +13,15 @@ struct MediaImportPlan {
         var videos = 0
         var manuals = 0
         var logos = 0
+        var fanart = 0
         var descriptions = 0
 
         var isEmpty: Bool { self == Counts() }
 
         static func + (lhs: Counts, rhs: Counts) -> Counts {
             Counts(covers: lhs.covers + rhs.covers, screenshots: lhs.screenshots + rhs.screenshots, videos: lhs.videos + rhs.videos,
-                   manuals: lhs.manuals + rhs.manuals, logos: lhs.logos + rhs.logos, descriptions: lhs.descriptions + rhs.descriptions)
+                   manuals: lhs.manuals + rhs.manuals, logos: lhs.logos + rhs.logos,
+                   fanart: lhs.fanart + rhs.fanart, descriptions: lhs.descriptions + rhs.descriptions)
         }
     }
 
@@ -49,6 +51,7 @@ private struct MediaImportMatch {
     let entry: FrontEndMedia.Entry
     let hasManual: Bool
     let hasLogo: Bool
+    let hasFanart: Bool
 }
 
 extension ToolsCoordinator {
@@ -90,7 +93,7 @@ extension ToolsCoordinator {
                 system.matched += 1
                 let game = match.game
                 let (missing, available) = counts(match.entry, hasCover: game.hasCover, hasScreenshot: game.hasScreenshot,
-                                                  hasVideo: game.hasVideo, hasManual: match.hasManual, hasLogo: match.hasLogo,
+                                                  hasVideo: game.hasVideo, hasManual: match.hasManual, hasLogo: match.hasLogo, hasFanart: match.hasFanart,
                                                   hasDescription: game.hasDescription)
                 system.missing = system.missing + missing
                 system.available = system.available + available
@@ -117,15 +120,17 @@ extension ToolsCoordinator {
             guard let entry = source.entries[FrontEndMedia.key(for: game.relativePath)] else { return nil }
             let manual = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .manuals)
                 .appendingPathExtension("pdf")
-            let logo = MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: .logos)
+            func has(_ kind: MediaKind) -> Bool {
+                !MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: game.systemFolder, romRelativePath: game.relativePath, kind: kind)).isEmpty
+            }
             return MediaImportMatch(game: game, entry: entry, hasManual: FileManager.default.fileExists(atPath: manual.path),
-                                    hasLogo: !MediaFolder.existingFiles(base: logo).isEmpty)
+                                    hasLogo: has(.logos), hasFanart: has(.fanart))
         }
     }
 
     /// What a game lacks that the entry has, and what the entry has.
     nonisolated private static func counts(_ entry: FrontEndMedia.Entry, hasCover: Bool = false, hasScreenshot: Bool = false, hasVideo: Bool = false,
-                                           hasManual: Bool = false, hasLogo: Bool = false, hasDescription: Bool = false)
+                                           hasManual: Bool = false, hasLogo: Bool = false, hasFanart: Bool = false, hasDescription: Bool = false)
         -> (missing: MediaImportPlan.Counts, available: MediaImportPlan.Counts) {
         var missing = MediaImportPlan.Counts()
         var available = MediaImportPlan.Counts()
@@ -134,6 +139,7 @@ extension ToolsCoordinator {
         if entry.video != nil { available.videos += 1; if !hasVideo { missing.videos += 1 } }
         if entry.manual != nil { available.manuals += 1; if !hasManual { missing.manuals += 1 } }
         if entry.logo != nil { available.logos += 1; if !hasLogo { missing.logos += 1 } }
+        if entry.fanart != nil { available.fanart += 1; if !hasFanart { missing.fanart += 1 } }
         if entry.description != nil { available.descriptions += 1; if !hasDescription { missing.descriptions += 1 } }
         return (missing, available)
     }
@@ -230,6 +236,7 @@ extension ToolsCoordinator {
             if replacing || !game.hasVideo { imported.videoPath = copy(entry.video, .videos, for: game)?.path }
             if replacing || !match.hasManual { _ = copy(entry.manual, .manuals, for: game) }
             if replacing || !match.hasLogo { _ = copy(entry.logo, .logos, for: game) }
+            if replacing || !match.hasFanart { _ = copy(entry.fanart, .fanart, for: game) }
             info[game.path] = imported
             progress(Double(index + 1) / Double(max(matches.count, 1)))
         }

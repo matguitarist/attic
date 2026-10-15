@@ -49,6 +49,7 @@ struct MediaTidierTests {
         try touch(neogeo.appending(path: "images/2020bb-thumb.png"))
         try touch(neogeo.appending(path: "images/2020bb-image.png"))
         try touch(neogeo.appending(path: "images/2020bb-marquee.png"))
+        try touch(neogeo.appending(path: "images/2020bb-fanart.jpg"))
         try touch(neogeo.appending(path: "images/gone-boxart.png"))
         try touch(neogeo.appending(path: "videos/2020bb-video.mp4"))
         try touch(neogeo.appending(path: "manuals/2020bb-manual.pdf"))
@@ -61,12 +62,13 @@ struct MediaTidierTests {
         #expect(moves["2020bb-video.mp4"] == target + "/videos/2020bb.mp4")
         #expect(moves["2020bb-manual.pdf"] == target + "/manuals/2020bb.pdf")
         #expect(moves["2020bb-marquee.png"] == target + "/logos/2020bb.png")
+        #expect(moves["2020bb-fanart.jpg"] == target + "/fanart/2020bb.jpg")
         // A thumb only stands in for missing box art; art for games that
         // aren't there stays behind and goes with the folder.
         #expect(moves["2020bb-thumb.png"] == nil)
         #expect(moves["gone-boxart.png"] == nil)
         #expect(Set(plan.trash.map(\.lastPathComponent)).isSuperset(of: ["images", "videos", "manuals"]))
-        #expect(plan.compress.map(\.lastPathComponent) == ["2020bb.png"])
+        #expect(Set(plan.compress.map(\.lastPathComponent)) == ["2020bb.png", "2020bb.jpg"])
 
         MediaTidier.apply(plan)
         #expect(exists(media.appending(path: "neogeo/videos/2020bb.mp4")))
@@ -89,11 +91,11 @@ struct MediaTidierTests {
         try touch(media.appending(path: "snes/covers/Sub/Other (USA).webp"))
         try touch(media.appending(path: "snes/covers/Game (USA)_240.jpg"))
         try touch(media.appending(path: "snes/videos/Gone (USA).mp4"))
-        try touch(media.appending(path: "snes/fanart/Game (USA).png"))
+        try touch(media.appending(path: "snes/3dboxes/Game (USA).png"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         let trashed = Set(plan.trash.map(\.lastPathComponent))
-        #expect(trashed == ["Game (USA)_240.jpg", "Gone (USA).mp4", "fanart"])
+        #expect(trashed == ["Game (USA)_240.jpg", "Gone (USA).mp4", "3dboxes"])
         // Already compact, so not recompressed.
         #expect(plan.compress.isEmpty)
     }
@@ -120,7 +122,7 @@ struct MediaTidierTests {
         try touch(neogeo.appending(path: "2020bb.zip"))
         try touch(neogeo.appending(path: "images/2020bb-boxart.png"))
         try touch(neogeo.appending(path: "readme.txt"))
-        try touch(media.appending(path: "neogeo/fanart/2020bb.png"))
+        try touch(media.appending(path: "neogeo/3dboxes/2020bb.png"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         #expect(plan.steps == [.moveMedia, .compressCovers, .trash(.otherApps), .trash(.unshownMedia), .trash(.leftoverMedia)])
@@ -130,7 +132,7 @@ struct MediaTidierTests {
         // would otherwise go to the Trash unmoved.
         let noMove = plan.only([.trash(.otherApps), .trash(.leftoverMedia), .trash(.unshownMedia)])
         #expect(noMove.moves.isEmpty && noMove.compress.isEmpty)
-        #expect(Set(noMove.trash.map(\.lastPathComponent)) == ["readme.txt", "fanart"])
+        #expect(Set(noMove.trash.map(\.lastPathComponent)) == ["readme.txt", "3dboxes"])
 
         let onlyReadme = plan.only([.moveMedia, .trash(.otherApps)])
         #expect(onlyReadme.trash.map(\.lastPathComponent) == ["readme.txt"])

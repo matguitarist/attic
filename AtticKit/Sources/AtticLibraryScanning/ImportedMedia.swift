@@ -16,11 +16,12 @@ public enum ImportedMedia {
         "videos": .videos, "video": .videos, "snap videos": .videos,
         "manuals": .manuals, "manual": .manuals,
         "logos": .logos, "logo": .logos, "wheel": .logos, "clear logo": .logos,
+        "fanart": .fanart, "fan art": .fanart, "fanart - background": .fanart, "backgrounds": .fanart,
     ]
     /// Folders that hold media or other apps' files, never games.
     public static let nonGameFolderNames: Set<String> = Set(folderKinds.keys)
         .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "collections", "html_arrm",
-                "marquees", "marquee", "fanart", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
+                "marquees", "marquee", "3dboxes", "backcovers", "physicalmedia", "box3d", "support",
                 "miximages", "mix", "mixrbv2", "titlescreens", "titles", "screenshot - game title",
                 // A whole Batocera or ES-DE folder's other parts.
                 "bios", "saves", "states", "themes", "music", "splash", "cheats", "decorations", "overlays", "shaders"])

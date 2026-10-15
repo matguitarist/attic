@@ -83,7 +83,7 @@ struct MediaImportReportView: View {
                     }
                     .buttonStyle(.link)
                 } footer: {
-                    Text("Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers are saved as HEIC when that's smaller.")
+                    Text("Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers and fan art are saved as HEIC when that's smaller.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -157,6 +157,7 @@ struct MediaImportReportView: View {
         if counts.videos > 0 { parts.append(String(localized: "\(counts.videos) videos")) }
         if counts.manuals > 0 { parts.append(String(localized: "\(counts.manuals) manuals")) }
         if counts.logos > 0 { parts.append(String(localized: "\(counts.logos) logos")) }
+        if counts.fanart > 0 { parts.append(String(localized: "\(counts.fanart) fan art images")) }
         if counts.descriptions > 0 { parts.append(String(localized: "\(counts.descriptions) descriptions")) }
         return parts.formatted(.list(type: .and))
     }

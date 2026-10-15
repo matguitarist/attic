@@ -18,11 +18,12 @@ struct ImportedMediaTests {
         _ = try touch("atari2600/images/Pitfall-boxart.png")
         _ = try touch("atari2600/images/Pitfall-image.png")
         _ = try touch("atari2600/images/Pitfall-marquee.png")
+        _ = try touch("atari2600/images/Pitfall-fanart.jpg")
         _ = try touch("atari2600/videos/Pitfall-video.mp4")
         _ = try touch("atari2600/manuals/Pitfall-manual.pdf")
         let found = Dictionary(uniqueKeysWithValues: ImportedMedia.media(forROM: rom, system: .atari2600).map { ($0.kind, $0.file.lastPathComponent) })
         #expect(found == [.covers: "Pitfall-boxart.png", .screenshots: "Pitfall-image.png", .videos: "Pitfall-video.mp4", .manuals: "Pitfall-manual.pdf",
-                          .logos: "Pitfall-marquee.png"])
+                          .logos: "Pitfall-marquee.png", .fanart: "Pitfall-fanart.jpg"])
     }
 
     @Test func findsMediaFoldersAndImagesBesideTheGame() throws {
