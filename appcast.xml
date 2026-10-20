@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.20.1</title>
+            <pubDate>Tue, 20 Oct 2026 13:15:19 -0400</pubDate>
+            <sparkle:version>31</sparkle:version>
+            <sparkle:shortVersionString>1.20.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>When an arcade game can&#x27;t start, Attic says which files its set is missing or has as a bad dump, instead of leaving the emulator on a paused screen</li>
+<li>A Log button in the toolbar; Log is also in the Window menu (⌥⌘L)</li>
+<li>RetroArch&#x27;s harmless file-interface warning no longer shows as a warning</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.20.1/Attic-1.20.1.zip" length="15620862" type="application/octet-stream" sparkle:edSignature="rNUvOAS7Qx0UIKFzlTcoyj6PyeNlgRiN1/QeXKmRZgllwwTzZYE+8pIazw/DBF4kPtLPiHQRDtnZhMfpC85RCg=="/>
+        </item>
+        <item>
             <title>1.20.0</title>
             <pubDate>Tue, 20 Oct 2026 12:36:14 -0400</pubDate>
             <sparkle:version>30</sparkle:version>
