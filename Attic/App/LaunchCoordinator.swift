@@ -34,6 +34,15 @@ final class LaunchCoordinator {
         let folder: URL
     }
     var missingBIOS: MissingBIOS?
+
+    /// A game the emulator couldn't run, by what it printed (MAME's missing
+    /// chips). Shown as an alert once the emulator has closed.
+    struct FailedLaunch: Identifiable {
+        let id = UUID()
+        let game: Game
+        let problem: LaunchProblem
+    }
+    var failedLaunch: FailedLaunch?
     private var currentSession: RunningGameSession?
     private let zippedROMExtractor = ZippedROMExtractor()
 
@@ -81,14 +90,21 @@ final class LaunchCoordinator {
         let emulator = emulatorName(for: target, game: game)
         AppLog.post(.info, "Launching “\(game.title)” (\(game.systemCanonicalID)) with \(emulator.description): \(game.romAbsoluteURL.path)")
 
+        let diagnosis = LaunchDiagnosis()
+        // Filled in once launched, for the output handler to close it.
+        let sessionBox = SessionBox()
         let session: RunningGameSession
         do {
-            session = try launch(target, game: game, retroArchStore: retroArchStore, onOutput: Self.outputLogger(source: emulator.source))
+            session = try launch(
+                target, game: game, retroArchStore: retroArchStore,
+                onOutput: Self.outputHandler(source: emulator.source, diagnosis: diagnosis, session: sessionBox)
+            )
         } catch {
             state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
             AppLog.post(.error, "Couldn't launch “\(game.title)”: \(error.localizedDescription)")
             return
         }
+        sessionBox.session = session
         AppLog.post(.debug, "Command: \(session.commandLine.map(Self.shellQuoted).joined(separator: " "))")
 
         currentSession = session
@@ -97,7 +113,12 @@ final class LaunchCoordinator {
 
         Task {
             let status = await session.waitUntilExit()
-            logExit(of: game, emulator: emulator.source, status: status, startedAt: playSession?.startedAt)
+            if let problem = diagnosis.problem {
+                logProblem(problem, game: game)
+                failedLaunch = FailedLaunch(game: game, problem: problem)
+            } else {
+                logExit(of: game, emulator: emulator.source, status: status, startedAt: playSession?.startedAt)
+            }
             recordSessionEnded(game: game, playSession: playSession)
         }
         Task { await handFocus(to: session) }
@@ -137,12 +158,39 @@ final class LaunchCoordinator {
         }
     }
 
-    /// Turns each line an emulator prints into a log entry.
-    private nonisolated static func outputLogger(source: String) -> @Sendable (String) -> Void {
+    /// The session a launch's output handler belongs to, which only exists
+    /// once the emulator is running.
+    private final class SessionBox: @unchecked Sendable {
+        private let lock = NSLock()
+        private var _session: RunningGameSession?
+        var session: RunningGameSession? {
+            get { lock.withLock { _session } }
+            set { lock.withLock { _session = newValue } }
+        }
+    }
+
+    /// Turns each line an emulator prints into a log entry. When one says
+    /// the game can't run, the emulator is closed if it stays open (RetroArch
+    /// can sit on a black, paused screen), and Attic says why.
+    private nonisolated static func outputHandler(source: String, diagnosis: LaunchDiagnosis, session: SessionBox) -> @Sendable (String) -> Void {
         { line in
             let (level, message) = EmulatorOutput.parse(line)
             AppLog.post(level, message, source: source)
+            guard diagnosis.read(line) else { return }
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                guard let running = session.session, running.isRunning else { return }
+                AppLog.post(.info, "Closing \(source): the game can't run.")
+                running.terminate()
+            }
         }
+    }
+
+    private func logProblem(_ problem: LaunchProblem, game: Game) {
+        var parts = ["“\(game.title)” couldn't start: \(problem.fatalMessage ?? "")"]
+        if !problem.missingFiles.isEmpty { parts.append("Missing: \(problem.missingFiles.joined(separator: ", ")).") }
+        if !problem.wrongFiles.isEmpty { parts.append("Wrong version or bad dump: \(problem.wrongFiles.joined(separator: ", ")).") }
+        AppLog.post(.error, parts.joined(separator: " "))
     }
 
     private func logExit(of game: Game, emulator: String, status: Int32, startedAt: Date?) {

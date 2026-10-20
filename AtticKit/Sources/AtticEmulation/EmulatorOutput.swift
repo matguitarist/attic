@@ -39,6 +39,7 @@ public enum EmulatorOutput {
         for (tag, level) in tags where line.hasPrefix(tag) {
             // The core's lines and MoltenVK's say whose they are.
             let rest = line.dropFirst(tag.count).trimmingCharacters(in: .whitespaces)
+            if harmless.contains(where: rest.hasPrefix) { return (.debug, rest) }
             if tag.hasPrefix("[libretro") { return (level, "[Core] " + rest) }
             if tag.hasPrefix("[mvk") { return (level, "[MoltenVK] " + rest) }
             return (level, rest)
@@ -46,13 +47,67 @@ public enum EmulatorOutput {
         return (freeTextLevel(line), line)
     }
 
+    /// Warnings RetroArch prints on every start that never matter: the MAME
+    /// core asks for a newer file interface and works with the older one.
+    private static let harmless = ["[Environ] GET_VFS_INTERFACE. Core requested version"]
+
     private static func freeTextLevel(_ line: String) -> LogLevel {
         let lower = line.lowercased()
-        if lower.firstMatch(of: /\b(error|fatal|failed|failure|cannot|can't|couldn't|unable|missing|not found|segmentation fault|abort)/) != nil {
+        // MAME: a chip no good dump exists of, which still runs.
+        if lower.contains("needs redump") || lower.contains("no good dump") { return .warning }
+        if lower.firstMatch(of: /\b(error|fatal|failed|failure|cannot|can't|couldn't|unable|missing|not found|wrong|segmentation fault|abort)/) != nil {
             return .error
         }
         if lower.firstMatch(of: /\bwarn(ing)?\b/) != nil { return .warning }
         return .info
+    }
+}
+
+/// Why a game couldn't start, read from what the emulator printed.
+public struct LaunchProblem: Sendable, Equatable {
+    /// "MAME 0.289", when the core said.
+    public var emulator: String?
+    /// Files the set lacks: MAME's "NOT FOUND", FinalBurn Neo's "is required".
+    public var missingFiles: [String] = []
+    /// Files there but not the ones expected: a bad dump or another version.
+    public var wrongFiles: [String] = []
+    /// What the emulator said when it gave up.
+    public var fatalMessage: String?
+}
+
+/// Reads an emulator's lines as a game starts, for `LaunchProblem`.
+public final class LaunchDiagnosis: Sendable {
+    private let state = Mutex(LaunchProblem())
+
+    public init() {}
+
+    /// Reads one line; true the first time it says the game can't run.
+    @discardableResult
+    public func read(_ line: String) -> Bool {
+        let message = EmulatorOutput.parse(line).message
+            .replacing(#/^\[Core\] /#, with: "")
+        return state.withLock { problem in
+            if problem.emulator == nil, let match = message.wholeMatch(of: /(MAME \d+\.\d+).*/) {
+                problem.emulator = String(match.1)
+            }
+            if let match = message.firstMatch(of: /^(\S+) NOT FOUND/) ?? message.firstMatch(of: /ROM at index \d+ with name (\S+) .*is required/) {
+                let file = String(match.1)
+                if !problem.missingFiles.contains(file) { problem.missingFiles.append(file) }
+            } else if let match = message.firstMatch(of: /^(\S+) WRONG (CHECKSUMS|LENGTH)/) {
+                let file = String(match.1)
+                if !problem.wrongFiles.contains(file) { problem.wrongFiles.append(file) }
+            }
+            let isFatal = message.contains("Required files are missing, the machine cannot be run")
+                || message.contains("Failed to load content")
+            guard isFatal, problem.fatalMessage == nil else { return false }
+            problem.fatalMessage = message.replacing(#/^Fatal error: /#, with: "")
+            return true
+        }
+    }
+
+    /// The problem, once the emulator said the game can't run.
+    public var problem: LaunchProblem? {
+        state.withLock { $0.fatalMessage == nil ? nil : $0 }
     }
 }
 

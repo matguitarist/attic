@@ -168,6 +168,7 @@ struct LibraryBrowserView: View {
             }
         }
         .missingBIOSAlert(isActive: !gamepad.isCabinetActive)
+        .failedLaunchAlert(isActive: !gamepad.isCabinetActive)
         .onAppear {
             if startsInCabinet, !Self.didAutoOpenCabinet {
                 Self.didAutoOpenCabinet = true
@@ -380,7 +381,14 @@ struct LibraryBrowserView: View {
             }
         }
 
-        ToolbarItem {
+        ToolbarItemGroup {
+            Button {
+                openWindow(id: LogView.windowID)
+            } label: {
+                Label("Log", systemImage: "list.bullet.rectangle")
+            }
+            .help("What Attic did and what emulators said, to see why a game won't start (⌥⌘L)")
+
             Button {
                 openWindow(id: CabinetView.windowID)
             } label: {

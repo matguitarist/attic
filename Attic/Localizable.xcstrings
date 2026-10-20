@@ -52,6 +52,22 @@
         }
       }
     },
+    "%@ and %lld more": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ and %2$lld more"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ et %2$lld autres"
+          }
+        }
+      }
+    },
     "%@ connected": {
       "localizations": {
         "fr": {
@@ -88,6 +104,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ manquant"
+          }
+        }
+      }
+    },
+    "%@ needs files that aren't in this game's set: %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ needs files that aren't in this game's set: %2$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ a besoin de fichiers absents du set de ce jeu : %2$@."
+          }
+        }
+      }
+    },
+    "%@ said: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ said: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ a dit : %2$@"
           }
         }
       }
@@ -2458,6 +2506,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les sets arcade sont vérifiés d’après la version de l’émulateur qui les lance : puce par puce, avec ce qu’un clone prend à son parent et un jeu à son set BIOS, et chaque image disque."
+          }
+        }
+      }
+    },
+    "Arcade sets have to match the emulator's version. Verify the game to see what differs, or replace the set with one made for %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sets d’arcade doivent correspondre à la version de l’émulateur. Vérifiez le jeu pour voir ce qui diffère, ou remplacez le set par un set fait pour %@."
           }
         }
       }
@@ -9793,6 +9851,16 @@
         }
       }
     },
+    "Some of its files are a bad dump or from another version: %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains de ses fichiers sont un mauvais dump ou viennent d’une autre version : %@."
+          }
+        }
+      }
+    },
     "Some systems need the console's BIOS. These files are copyrighted, so Attic never downloads them: dump them from hardware you own and put them in the Emulation folder's BIOS folder. Each system's page shows which files it needs and whether they're there.": {
       "localizations": {
         "fr": {
@@ -10129,6 +10197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur « %@ » n’est plus installé."
+          }
+        }
+      }
+    },
+    "The emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur"
           }
         }
       }
@@ -10945,6 +11023,16 @@
         }
       }
     },
+    "What Attic did and what emulators said, to see why a game won't start (⌥⌘L)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce qu’a fait Attic et ce qu’ont dit les émulateurs, pour voir pourquoi un jeu ne démarre pas (⌥⌘L)"
+          }
+        }
+      }
+    },
     "What's left in Batocera's media folders": {
       "localizations": {
         "fr": {
@@ -11367,6 +11455,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "xemu utilise sa propre configuration de manette — réglez-la une fois dans xemu."
+          }
+        }
+      }
+    },
+    "“%@” Can't Start": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %@ » ne peut pas démarrer"
           }
         }
       }

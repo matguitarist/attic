@@ -60,6 +60,7 @@ struct CabinetView: View {
         .preferredColorScheme(.dark)
         .background(FullScreenWindowConfigurator())
         .missingBIOSAlert(isActive: gamepad.isCabinetActive)
+        .failedLaunchAlert(isActive: gamepad.isCabinetActive)
         .focusable()
         .focusEffectDisabled()
         .focused($hasKeyboardFocus)
