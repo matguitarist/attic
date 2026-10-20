@@ -63,6 +63,7 @@ final class LaunchCoordinator {
             systemDefault: game.system?.defaultLaunchTarget
         ) else {
             state = .failed(String(localized: "No emulator configured for this game or its system."))
+            AppLog.post(.error, "Couldn't launch “\(game.title)”: no emulator is set for it or for \(game.systemCanonicalID).")
             return
         }
 
@@ -72,25 +73,31 @@ final class LaunchCoordinator {
         }
         if checkingBIOS, let missing = missingBIOS(for: game, target: target, biosFolder: folder.bios) {
             missingBIOS = missing
+            AppLog.post(.warning, "“\(game.title)” needs BIOS files that aren't in \(missing.folder.path): \(missing.fileNames.joined(separator: ", ")).")
             return
         }
 
         state = .launching
+        let emulator = emulatorName(for: target, game: game)
+        AppLog.post(.info, "Launching “\(game.title)” (\(game.systemCanonicalID)) with \(emulator.description): \(game.romAbsoluteURL.path)")
 
         let session: RunningGameSession
         do {
-            session = try launch(target, game: game, retroArchStore: retroArchStore)
+            session = try launch(target, game: game, retroArchStore: retroArchStore, onOutput: Self.outputLogger(source: emulator.source))
         } catch {
             state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
+            AppLog.post(.error, "Couldn't launch “\(game.title)”: \(error.localizedDescription)")
             return
         }
+        AppLog.post(.debug, "Command: \(session.commandLine.map(Self.shellQuoted).joined(separator: " "))")
 
         currentSession = session
         state = .running(gameID: game.persistentModelID)
         let playSession = recordSessionStarted(game: game, launchMethod: target)
 
         Task {
-            _ = await session.waitUntilExit()
+            let status = await session.waitUntilExit()
+            logExit(of: game, emulator: emulator.source, status: status, startedAt: playSession?.startedAt)
             recordSessionEnded(game: game, playSession: playSession)
         }
         Task { await handFocus(to: session) }
@@ -106,20 +113,59 @@ final class LaunchCoordinator {
     /// explicitly instead. Stops after the first success, so switching away
     /// mid-game is never undone.
     private func handFocus(to session: RunningGameSession) async {
-        for _ in 0..<60 {
+        for attempt in 0..<60 {
             try? await Task.sleep(for: .milliseconds(500))
             guard session.isRunning else { return }
             guard let app = NSRunningApplication(processIdentifier: session.processIdentifier) else { continue }
-            if app.isActive { return }
+            if app.isActive {
+                if attempt > 0 { AppLog.post(.debug, "The emulator came to the front after \(Double(attempt + 1) / 2) s.") }
+                return
+            }
             NSApp.yieldActivation(to: app)
             app.activate()
         }
+        AppLog.post(.warning, "The emulator never came to the front, so it may sit paused in the background without controller input. Click its window to play.")
+    }
+
+    /// Who's launching, for the log: "RetroArch (MAME)", source "RetroArch".
+    private func emulatorName(for target: LaunchTargetReference, game: Game) -> (description: String, source: String) {
+        switch target {
+        case .retroArchCore(let identifier):
+            ("RetroArch (\(identifier))", "RetroArch")
+        case .emulatorProfile(let id):
+            fetchEmulatorProfile(id: id, context: game.modelContext).map { ($0.name, $0.name) } ?? ("an emulator", "Emulator")
+        }
+    }
+
+    /// Turns each line an emulator prints into a log entry.
+    private nonisolated static func outputLogger(source: String) -> @Sendable (String) -> Void {
+        { line in
+            let (level, message) = EmulatorOutput.parse(line)
+            AppLog.post(level, message, source: source)
+        }
+    }
+
+    private func logExit(of game: Game, emulator: String, status: Int32, startedAt: Date?) {
+        let seconds = startedAt.map { Date.now.timeIntervalSince($0) } ?? 0
+        let duration = Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes, .seconds], width: .abbreviated))
+        if status != 0 {
+            AppLog.post(.error, "\(emulator) quit with error code \(status) after \(duration) playing “\(game.title)”. The messages above usually say why.")
+        } else if seconds < 5 {
+            AppLog.post(.warning, "\(emulator) closed \(duration) after starting “\(game.title)”: the game probably didn't load. The messages above usually say why.")
+        } else {
+            AppLog.post(.info, "\(emulator) quit after \(duration) playing “\(game.title)”.")
+        }
+    }
+
+    private nonisolated static func shellQuoted(_ argument: String) -> String {
+        argument.contains(where: { " '\"$\\()&;".contains($0) }) ? "'" + argument.replacingOccurrences(of: "'", with: "'\\''") + "'" : argument
     }
 
     private func launch(
         _ target: LaunchTargetReference,
         game: Game,
-        retroArchStore: RetroArchSettingsStore
+        retroArchStore: RetroArchSettingsStore,
+        onOutput: @escaping @Sendable (String) -> Void
     ) throws -> RunningGameSession {
         switch target {
         case .retroArchCore(let identifier):
@@ -159,7 +205,8 @@ final class LaunchCoordinator {
             ))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL).launch(
                 coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL,
-                extraArguments: folder.retroArchShaderArguments(for: systemSettings)
+                extraArguments: folder.retroArchShaderArguments(for: systemSettings),
+                onOutput: onOutput
             )
 
         case .emulatorProfile(let id):
@@ -191,7 +238,8 @@ final class LaunchCoordinator {
                 romURL: game.romAbsoluteURL,
                 workingDirectoryURL: profile.workingDirectoryURL,
                 environmentOverrides: environment,
-                extraArguments: extraArguments
+                extraArguments: extraArguments,
+                onOutput: onOutput
             )
         }
     }

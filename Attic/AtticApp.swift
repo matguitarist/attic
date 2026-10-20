@@ -24,6 +24,8 @@ struct AtticApp: App {
     init() {
         // Before any store reads its settings.
         LegacyRomsBoxMigration.migrateSettings()
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+        AppLog.post(.info, "Attic \(version) started on macOS \(ProcessInfo.processInfo.operatingSystemVersionString).")
         // One library window: no window tabs (View › Show Tab Bar would
         // open more).
         NSWindow.allowsAutomaticWindowTabbing = false
@@ -153,6 +155,14 @@ struct AtticApp: App {
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
         .modelContainer(modelContainer)
+
+        Window("Log", id: LogView.windowID) {
+            LogView()
+                .frame(minWidth: 640, minHeight: 360)
+        }
+        .defaultSize(width: 1000, height: 600)
+        .defaultLaunchBehavior(.suppressed)
+        .restorationBehavior(.disabled)
 
         Settings {
             withAppEnvironment(SettingsTabView())

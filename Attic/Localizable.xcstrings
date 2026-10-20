@@ -3236,6 +3236,26 @@
         }
       }
     },
+    "Clear": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacer"
+          }
+        }
+      }
+    },
+    "Clear the window (⌘K). The log file keeps everything.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vider la fenêtre (⌘K). Le fichier journal garde tout."
+          }
+        }
+      }
+    },
     "Click to choose another logo, or drop a picture on it": {
       "localizations": {
         "fr": {
@@ -3536,6 +3556,16 @@
         }
       }
     },
+    "Copy Log File": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier le fichier journal"
+          }
+        }
+      }
+    },
     "Copy MD5": {
       "extractionState": "stale",
       "localizations": {
@@ -3543,6 +3573,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copier le MD5"
+          }
+        }
+      }
+    },
+    "Copy Shown Messages": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier les messages affichés"
           }
         }
       }
@@ -3563,6 +3603,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copier les jeux que vous n’avez pas"
+          }
+        }
+      }
+    },
+    "Copy the log, or find its file to attach to a bug report": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier le journal, ou trouver son fichier à joindre à un rapport de bogue"
           }
         }
       }
@@ -3955,6 +4005,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Date d’ajout"
+          }
+        }
+      }
+    },
+    "Debug": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débogage"
           }
         }
       }
@@ -4689,6 +4749,16 @@
         }
       }
     },
+    "Errors": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreurs"
+          }
+        }
+      }
+    },
     "Every chip, and disc image, its emulator's version expects.": {
       "localizations": {
         "fr": {
@@ -5051,6 +5121,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dossiers qu’Attic n’utilise pas"
+          }
+        }
+      }
+    },
+    "Follow Live": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suivre en direct"
           }
         }
       }
@@ -5552,6 +5632,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Masquer l’inspecteur"
+          }
+        }
+      }
+    },
+    "Hide these messages": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer ces messages"
           }
         }
       }
@@ -6322,6 +6412,16 @@
         }
       }
     },
+    "Log": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal"
+          }
+        }
+      }
+    },
     "Logo": {
       "localizations": {
         "fr": {
@@ -6964,6 +7064,16 @@
         }
       }
     },
+    "No Matching Messages": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun message correspondant"
+          }
+        }
+      }
+    },
     "No Shaders": {
       "localizations": {
         "fr": {
@@ -7341,6 +7451,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remarques"
+          }
+        }
+      }
+    },
+    "Nothing Logged Yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal vide pour l’instant"
           }
         }
       }
@@ -7761,6 +7881,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Temps de jeu, 12 derniers mois"
+          }
+        }
+      }
+    },
+    "Play a game: what Attic does and what the emulator says while it starts and runs appear here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancez un jeu : ce que fait Attic et ce que dit l’émulateur au démarrage et pendant la partie s’affichent ici."
           }
         }
       }
@@ -8521,6 +8651,16 @@
         }
       }
     },
+    "Repeated %lld times in a row": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répété %lld fois de suite"
+          }
+        }
+      }
+    },
     "Replace Existing Info": {
       "localizations": {
         "fr": {
@@ -9183,6 +9323,16 @@
         }
       }
     },
+    "Scroll to new messages as they arrive": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Défiler jusqu’aux nouveaux messages à leur arrivée"
+          }
+        }
+      }
+    },
     "Search": {
       "localizations": {
         "fr": {
@@ -9219,6 +9369,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chercher dans un dossier…"
+          }
+        }
+      }
+    },
+    "Search log": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher dans le journal"
           }
         }
       }
@@ -9383,6 +9543,16 @@
         }
       }
     },
+    "Share": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager"
+          }
+        }
+      }
+    },
     "Sharp pixels": {
       "localizations": {
         "fr": {
@@ -9423,6 +9593,26 @@
         }
       }
     },
+    "Show Log": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le journal"
+          }
+        }
+      }
+    },
+    "Show Log File in Finder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le fichier journal dans le Finder"
+          }
+        }
+      }
+    },
     "Show ROMs Folder": {
       "localizations": {
         "fr": {
@@ -9443,6 +9633,36 @@
         }
       }
     },
+    "Show messages from everything": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les messages de toutes les sources"
+          }
+        }
+      }
+    },
+    "Show only %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher seulement %@"
+          }
+        }
+      }
+    },
+    "Show only messages from %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher seulement les messages de %@"
+          }
+        }
+      }
+    },
     "Show systems without games": {
       "localizations": {
         "fr": {
@@ -9459,6 +9679,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher l’inspecteur"
+          }
+        }
+      }
+    },
+    "Show these messages": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher ces messages"
           }
         }
       }
@@ -10691,6 +10921,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vita3K utilise sa propre configuration de manette. Configurez-la une fois dans Vita3K (Controls) — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "Warnings": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avertissements"
           }
         }
       }

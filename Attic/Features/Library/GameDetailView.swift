@@ -20,6 +20,7 @@ struct GameDetailView: View {
     @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
     @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
     @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+    @Environment(\.openWindow) private var openWindow
     @Environment(GameInfoEditor.self) private var infoEditor
 
     /// The description box grows into whatever height the panel has spare,
@@ -180,6 +181,9 @@ struct GameDetailView: View {
 
             if case .failed(let message) = launchCoordinator.state {
                 Text(message).foregroundStyle(.red).font(.callout)
+                Button("Show Log") { openWindow(id: LogView.windowID) }
+                    .buttonStyle(.link)
+                    .font(.callout)
             }
         }
         .frame(maxWidth: .infinity)

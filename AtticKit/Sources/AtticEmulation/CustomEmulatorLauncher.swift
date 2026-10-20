@@ -12,7 +12,8 @@ public struct CustomEmulatorLauncher: Sendable {
         romURL: URL,
         workingDirectoryURL: URL? = nil,
         environmentOverrides: [String: String] = [:],
-        extraArguments: [String] = []
+        extraArguments: [String] = [],
+        onOutput: (@Sendable (String) -> Void)? = nil
     ) throws -> RunningGameSession {
         let process = Process()
         process.executableURL = executableURL
@@ -25,7 +26,6 @@ public struct CustomEmulatorLauncher: Sendable {
         if let workingDirectoryURL {
             process.currentDirectoryURL = workingDirectoryURL
         }
-        try process.run()
-        return RunningGameSession(process: process)
+        return try RunningGameSession(starting: process, onOutput: onOutput)
     }
 }

@@ -75,7 +75,7 @@ struct EmulationFolderTests {
     @Test func prepareRetroArchLaunchWritesConfigAndCreatesFolders() throws {
         let (config, append) = try folder.prepareRetroArchLaunch(for: .gba)
         #expect(config == folder.retroArchConfigFile)
-        #expect(try String(contentsOf: append, encoding: .utf8) == folder.retroArchPathsConfig(for: .gba))
+        #expect(try String(contentsOf: append, encoding: .utf8) == folder.retroArchPathsConfig(for: .gba) + EmulationFolder.retroArchLogSettings)
         #expect(FileManager.default.fileExists(atPath: folder.saves(for: .gba).path))
         #expect(FileManager.default.fileExists(atPath: folder.states(for: .gba).path))
     }

@@ -194,11 +194,17 @@ public struct EmulationFolder: Sendable, Hashable {
             previouslyWritten: previous, systemSettingsOwned: readOwned("retroarch-system") ?? [:]
         )
         let text = config.text.hasSuffix("\n") || config.text.isEmpty ? config.text : config.text + "\n"
-        try (text + Self.retroArchAchievementSettings(achievements)).write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
+        try (text + Self.retroArchAchievementSettings(achievements) + Self.retroArchLogSettings)
+            .write(to: retroArchPathsConfigFile, atomically: true, encoding: .utf8)
         try writeOwnedSettings(config.controllerSettingsWritten, for: "retroarch")
         try writeOwned(config.systemSettingsOwned, for: "retroarch-system")
         return (retroArchConfigFile, retroArchPathsConfigFile)
     }
+
+    /// RetroArch's messages and the core's go to its output, where Attic's
+    /// log reads them, rather than to a file of its own; the core's from
+    /// Info up, since MAME and FinalBurn Neo say what's missing as Info.
+    static let retroArchLogSettings = "log_to_file = \"false\"\nlibretro_log_level = \"1\"\n"
 
     /// RetroAchievements for this launch, when signed in through Attic;
     /// otherwise nothing, so a sign-in made in RetroArch itself still holds.

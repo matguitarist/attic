@@ -11,8 +11,31 @@ import Foundation
 public final class RunningGameSession: @unchecked Sendable {
     private let process: Process
 
-    init(process: Process) {
+    /// The program and its arguments, for Attic's log.
+    public var commandLine: [String] {
+        [process.executableURL?.path ?? ""] + (process.arguments ?? [])
+    }
+
+    /// Starts `process`. With `onOutput`, what it prints comes back line by
+    /// line, on a background thread: standard error, and standard output
+    /// unless `readsStandardOutput` is false (RetroArch prints its messages
+    /// to both). Without, it goes wherever Attic's own output goes.
+    init(starting process: Process, onOutput: (@Sendable (String) -> Void)?, readsStandardOutput: Bool = true) throws {
         self.process = process
+        if let onOutput {
+            let error = Pipe()
+            process.standardError = error
+            LineSplitter(onLine: onOutput).attach(to: error)
+            if readsStandardOutput {
+                // Its own splitter, so the two never mix mid-line.
+                let output = Pipe()
+                process.standardOutput = output
+                LineSplitter(onLine: onOutput).attach(to: output)
+            } else {
+                process.standardOutput = FileHandle.nullDevice
+            }
+        }
+        try process.run()
     }
 
     public var isRunning: Bool { process.isRunning }

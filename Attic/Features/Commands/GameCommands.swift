@@ -273,6 +273,12 @@ struct HelpCommands: Commands {
                 openWindow(id: HelpView.windowID)
             }
             .keyboardShortcut("?", modifiers: .command)
+
+            // What emulators said, for when a game won't start.
+            Button("Log") {
+                openWindow(id: LogView.windowID)
+            }
+            .keyboardShortcut("l", modifiers: [.command, .option])
         }
     }
 }

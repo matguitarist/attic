@@ -17,12 +17,17 @@ public struct RetroArchLauncher: Sendable {
     /// touching the user's global retroarch.cfg.
     /// `extraArguments` go before the core and content (`--set-shader` for
     /// System Settings' looks).
-    public func launch(coreDylibURL: URL, romURL: URL, configURL: URL? = nil, appendConfigURL: URL? = nil, extraArguments: [String] = []) throws -> RunningGameSession {
+    /// With `onOutput`, RetroArch runs `--verbose` and its messages, and the
+    /// core's (MAME's "required files are missing"), come back line by line.
+    public func launch(
+        coreDylibURL: URL, romURL: URL, configURL: URL? = nil, appendConfigURL: URL? = nil, extraArguments: [String] = [],
+        onOutput: (@Sendable (String) -> Void)? = nil
+    ) throws -> RunningGameSession {
         let process = Process()
         process.executableURL = retroArchBinaryURL
-        process.arguments = Self.buildArguments(coreDylibURL: coreDylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL, extraArguments: extraArguments)
-        try process.run()
-        return RunningGameSession(process: process)
+        process.arguments = (onOutput == nil ? [] : ["--verbose"])
+            + Self.buildArguments(coreDylibURL: coreDylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL, extraArguments: extraArguments)
+        return try RunningGameSession(starting: process, onOutput: onOutput, readsStandardOutput: false)
     }
 
     /// Pure argv construction, split out so it's testable without spawning
