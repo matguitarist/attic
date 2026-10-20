@@ -3,6 +3,26 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>1.20.0</title>
+            <pubDate>Tue, 20 Oct 2026 12:36:14 -0400</pubDate>
+            <sparkle:version>30</sparkle:version>
+            <sparkle:shortVersionString>1.20.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Help › Log shows what Attic did and what the emulator said, color-coded by level, with filters and search, to see why a game won&#x27;t start</li>
+<li>Attic is now signed with a Developer ID and notarized by Apple: it opens without &quot;Open Anyway&quot;</li>
+<li>Arcade BIOS sets aren&#x27;t listed as games; a missing one can be located from the game&#x27;s panel or found in a whole folder at once, and goes in the BIOS folder where the emulator looks</li>
+<li>MAME and FinalBurn Neo systems show their DAT and can be verified, with missing BIOS sets listed first</li>
+<li>Rebuild Sets makes arcade zips whole from loose files and other zips, shows each set&#x27;s chips, and moves loose disc images into their set&#x27;s folder</li>
+<li>Game logos and fan art are imported, tidied in and scraped</li>
+<li>Disc Playlists tool; RetroBat&#x27;s MultiDisc playlists work too</li>
+<li>Settings report every failed install and offer Update All for cores and standalone emulators</li>
+<li>Tidier system and collection panels, and a softer light theme</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v1.20.0/Attic-1.20.0.zip" length="15579673" type="application/octet-stream" sparkle:edSignature="DripDVVrT0ldYoGC9+yIKoTOJWQuq0pqB5/1n0ZxGW2avOZ2xXcJOXJpko+JlHPPNgdvfno9Tto18sv8ZcEGCw=="/>
+        </item>
+        <item>
             <title>1.19.1</title>
             <pubDate>Wed, 14 Oct 2026 17:41:53 -0400</pubDate>
             <sparkle:version>29</sparkle:version>
