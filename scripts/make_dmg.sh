@@ -3,8 +3,9 @@
 #
 #   scripts/make_dmg.sh <Attic.app> <out.dmg>
 #
-# The window shows the app, an Applications shortcut, and a note about
-# macOS's warning for apps without an Apple Developer ID.
+# The window shows the app, an Applications shortcut, and (unless
+# NOTARIZED is set) a note about macOS's warning for apps that aren't
+# notarized.
 set -euo pipefail
 
 APP="${1:?usage: make_dmg.sh <Attic.app> <out.dmg>}"
@@ -17,7 +18,8 @@ trap 'rm -rf "$STAGE"' EXIT
 ditto --noextattr --norsrc "$APP" "$STAGE/Attic.app"
 xattr -cr "$STAGE/Attic.app"
 ln -s /Applications "$STAGE/Applications"
-cat > "$STAGE/If macOS blocks Attic.txt" <<'NOTE'
+# Notarized apps open without a warning: the note is for the others.
+[[ -n "${NOTARIZED:-}" ]] || cat > "$STAGE/If macOS blocks Attic.txt" <<'NOTE'
 Install: drag Attic onto the Applications folder.
 
 The first time you open it, macOS may say it can't check Attic for

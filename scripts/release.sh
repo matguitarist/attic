@@ -4,16 +4,19 @@
 #
 #   scripts/release.sh
 #
-# Builds a universal app signed ad-hoc (no paid Developer ID, so no
-# notarization), packs a disk image for new installs and a zip for Sparkle,
-# uploads both as release v<version>, then adds the zip to appcast.xml and
-# pushes that to main (the feed in Info.plist). Sparkle checks every update
-# against the EdDSA key, so it doesn't need an Apple signature.
+# Builds a universal app signed with your Developer ID and notarized by
+# Apple (scripts/sign_app.sh, scripts/notarize.sh), packs a disk image for
+# new installs and a zip for Sparkle, uploads both as release v<version>,
+# then adds the zip to appcast.xml and pushes that to main (the feed in
+# Info.plist). Sparkle also checks every update against the EdDSA key.
+# Without a Developer ID certificate in the Keychain it signs ad hoc, as
+# releases up to 1.19 were, and the disk image explains "Open Anyway".
 #
 # The release notes are the last commit's message body, so commit the
 # version bump as "Release x.y.z: summary" with notes as "- item" lines.
 #
-# Needs `gh` logged in, and Sparkle's EdDSA key in the login Keychain under
+# Needs `gh` logged in, notarytool's credentials (see scripts/notarize.sh),
+# and Sparkle's EdDSA key in the login Keychain under
 # the account "attic" (`generate_keys --account attic`, from the Sparkle
 # tools this script downloads to .sparkle/). Its public half is
 # SUPublicEDKey in Attic/Info.plist. Back the private half up with
@@ -52,7 +55,8 @@ if [[ ! -x "$SPARKLE/bin/generate_appcast" || "$(cat "$SPARKLE/VERSION" 2>/dev/n
     echo "$SPARKLE_VERSION" > "$SPARKLE/VERSION"
 fi
 
-print "Releasing Attic $VERSION ($BUILD)"
+IDENTITY=$(scripts/signing_identity.sh)
+print "Releasing Attic $VERSION ($BUILD), signed ${IDENTITY:-ad hoc}"
 
 # --- Build --------------------------------------------------------------------
 
@@ -71,6 +75,12 @@ APP="$WORK/Attic.app"
 # No extended attributes: they break the code signature check.
 ditto --noextattr --norsrc "$WORK/derived/Build/Products/Release/Attic.app" "$APP"
 xattr -cr "$APP"
+if [[ -n "$IDENTITY" ]]; then
+    # Notarized before zipping, so the ticket stapled to the app is in
+    # Sparkle's archive too.
+    SIGNING_IDENTITY="$IDENTITY" scripts/sign_app.sh "$APP"
+    scripts/notarize.sh "$APP"
+fi
 codesign --verify --deep --strict "$APP"
 
 # --- Sparkle archive and appcast --------------------------------------------
@@ -118,7 +128,11 @@ grep -q "Attic-$VERSION.zip" "$RELEASES/appcast.xml" || fail "the appcast doesn'
 # The disk image is for first installs. A fixed name keeps the README's
 # ".../releases/latest/download/Attic.dmg" link working.
 DMG="$RELEASES/Attic.dmg"
-scripts/make_dmg.sh "$APP" "$DMG"
+NOTARIZED=$IDENTITY scripts/make_dmg.sh "$APP" "$DMG"
+if [[ -n "$IDENTITY" ]]; then
+    codesign --force --timestamp --sign "$IDENTITY" "$DMG"
+    scripts/notarize.sh "$DMG"
+fi
 
 # --- Publish ----------------------------------------------------------------
 

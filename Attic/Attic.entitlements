@@ -2,9 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Releases are signed ad-hoc (no paid Developer ID), and an ad-hoc
-	     signed app with the hardened runtime can't load Sparkle.framework
-	     without this. -->
+	<!-- Releases up to 1.19 were signed ad hoc, and an ad-hoc signed app
+	     with the hardened runtime can't load Sparkle.framework without
+	     this. Kept so a build signed without a Developer ID still runs. -->
 	<key>com.apple.security.cs.disable-library-validation</key>
 	<true/>
 </dict>

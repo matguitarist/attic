@@ -31,11 +31,9 @@ macOS 26 or later.
 
 **[Download Attic for Mac](https://github.com/matguitarist/attic/releases/latest/download/Attic.dmg)**
 
-1. Open the disk image and drag **Attic** onto **Applications**.
-2. The first time, macOS says it can't check Attic, because it isn't signed
-   with a paid Apple Developer ID. Open **System Settings → Privacy &
-   Security**, scroll down, and click **Open Anyway**. This is needed only
-   once: Attic updates itself after that (Attic › Check for Updates…).
+Open the disk image and drag **Attic** onto **Applications**. Attic is
+signed and notarized by Apple, and updates itself (Attic › Check for
+Updates…).
 
 ## Building
 
