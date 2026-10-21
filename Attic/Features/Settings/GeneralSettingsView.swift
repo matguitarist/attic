@@ -18,6 +18,8 @@ struct GeneralSettingsView: View {
     @State private var language = AppLanguage.current
     @AppStorage(AppAppearance.key) private var appearance = AppAppearance.system
     @Environment(ToolsCoordinator.self) private var tools
+    @Environment(CabinetThemeStore.self) private var cabinetThemes
+    @State private var themeError: String?
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
@@ -26,6 +28,30 @@ struct GeneralSettingsView: View {
     @AppStorage(ToolsCoordinator.backsUpWeeklyKey) private var backsUpWeekly = false
     @State private var logosResult: String?
     @Query private var collections: [GameCollection]
+
+    private func themeSummary(_ installed: CabinetThemeStore.Installed) -> String {
+        let layout = switch installed.theme.layout {
+        case .carousel: String(localized: "A row of big covers")
+        case .grid: String(localized: "A grid of covers beside the game's details")
+        case .wheel: String(localized: "A wheel of logos beside the game's video")
+        }
+        return installed.isBuiltIn ? layout : String(localized: "\(layout), from the Themes folder")
+    }
+
+    private func customizeTheme() {
+        do {
+            let file = try cabinetThemes.makeEditableCopy(of: cabinetThemes.current)
+            themeError = nil
+            NSWorkspace.shared.activateFileViewerSelecting([file])
+        } catch {
+            themeError = error.localizedDescription
+        }
+    }
+
+    private func showThemesFolder() {
+        try? FileManager.default.createDirectory(at: CabinetThemeStore.folderURL, withIntermediateDirectories: true)
+        NSWorkspace.shared.open(CabinetThemeStore.folderURL)
+    }
 
     private func chooseLogosFolder() {
         let panel = NSOpenPanel()
@@ -122,10 +148,34 @@ struct GeneralSettingsView: View {
 
             Section {
                 Toggle("Open Cabinet Mode at launch", isOn: $startsInCabinet)
+                @Bindable var cabinetThemes = cabinetThemes
+                LabeledContent {
+                    HStack {
+                        Picker("Theme", selection: $cabinetThemes.selectedID) {
+                            ForEach(cabinetThemes.themes) { installed in
+                                Text(verbatim: installed.theme.name).tag(installed.id)
+                            }
+                        }
+                        .labelsHidden()
+                        .fixedSize()
+                        Button("Customize…") { customizeTheme() }
+                            .help("Copy this theme into the Themes folder as a file to edit")
+                        Button("Show Themes Folder") { showThemesFolder() }
+                    }
+                } label: {
+                    Text("Theme")
+                    Text(themeSummary(cabinetThemes.current))
+                }
+                .onAppear { cabinetThemes.reload() }
+                if let themeError {
+                    Text(themeError)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
             } header: {
                 Text("Cabinet Mode")
             } footer: {
-                Text("Full-screen couch mode (⌘⇧B, or Menu/Start on a controller)")
+                Text("Full-screen couch mode (⌘⇧B, or Menu/Start on a controller). A theme is a theme.json file in the Themes folder: Customize makes one from the selected theme, and Cabinet Mode reads it again each time it opens.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -42,6 +42,32 @@
         }
       }
     },
+    "%@ Copy": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ copie"
+          }
+        }
+      }
+    },
+    "%@ Copy %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ Copy %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ copie %2$lld"
+          }
+        }
+      }
+    },
     "%@ Needs a BIOS": {
       "localizations": {
         "fr": {
@@ -215,6 +241,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@, %2$lld %% de %3$@"
+          }
+        }
+      }
+    },
+    "%@, from the Themes folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, du dossier Themes"
           }
         }
       }
@@ -1942,6 +1978,16 @@
         }
       }
     },
+    "A grid of covers beside the game's details": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une grille de jaquettes à côté des détails du jeu"
+          }
+        }
+      }
+    },
     "A known good dump.": {
       "localizations": {
         "fr": {
@@ -1952,12 +1998,32 @@
         }
       }
     },
+    "A row of big covers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une rangée de grandes jaquettes"
+          }
+        }
+      }
+    },
     "A set this emulator's version doesn't know by that name.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Un set que cette version de l’émulateur ne connaît pas sous ce nom."
+          }
+        }
+      }
+    },
+    "A wheel of logos beside the game's video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une roue de logos à côté de la vidéo du jeu"
           }
         }
       }
@@ -3675,6 +3741,16 @@
         }
       }
     },
+    "Copy this theme into the Themes folder as a file to edit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier ce thème dans le dossier Themes, en un fichier à modifier"
+          }
+        }
+      }
+    },
     "Copying games…": {
       "localizations": {
         "fr": {
@@ -3943,6 +4019,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Émulateurs personnalisés"
+          }
+        }
+      }
+    },
+    "Customize…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personnaliser…"
           }
         }
       }
@@ -5339,6 +5425,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette)"
+          }
+        }
+      }
+    },
+    "Full-screen couch mode (⌘⇧B, or Menu/Start on a controller). A theme is a theme.json file in the Themes folder: Customize makes one from the selected theme, and Cabinet Mode reads it again each time it opens.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette). Un thème est un fichier theme.json dans le dossier Themes : Personnaliser en crée un à partir du thème choisi, et le mode Cabinet le relit à chaque ouverture."
           }
         }
       }
@@ -9441,6 +9537,16 @@
         }
       }
     },
+    "Sections": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sections"
+          }
+        }
+      }
+    },
     "Select All": {
       "localizations": {
         "fr": {
@@ -9677,6 +9783,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher le dossier des ROMs"
+          }
+        }
+      }
+    },
+    "Show Themes Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le dossier Themes"
           }
         }
       }
@@ -10031,12 +10147,12 @@
         }
       }
     },
-    "Switch systems with LB / RB.": {
+    "Switch sections with LB / RB.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Changez de système avec LB / RB."
+            "value": "Changez de section avec LB / RB."
           }
         }
       }
@@ -10383,6 +10499,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Leurs médias et infos sont remplacés par ceux de l’autre front-end, quand il en a. Les fichiers remplacés vont à la corbeille."
+          }
+        }
+      }
+    },
+    "Theme": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thème"
           }
         }
       }
@@ -11209,6 +11335,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "[b]"
+          }
+        }
+      }
+    },
+    "^[%lld game](inflect: true)": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux"
+                }
+              }
+            }
           }
         }
       }

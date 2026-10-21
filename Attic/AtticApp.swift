@@ -20,6 +20,7 @@ struct AtticApp: App {
     @State private var appUpdater = AppUpdater()
     @State private var toolsCoordinator = ToolsCoordinator()
     @State private var shaderPackStore: ShaderPackStore
+    @State private var cabinetThemeStore = CabinetThemeStore()
 
     init() {
         // Before any store reads its settings.
@@ -212,5 +213,6 @@ struct AtticApp: App {
             .environment(appUpdater)
             .environment(shaderPackStore)
             .environment(toolsCoordinator)
+            .environment(cabinetThemeStore)
     }
 }
