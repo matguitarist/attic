@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.1.0</title>
+            <pubDate>Wed, 21 Oct 2026 19:10:37 -0400</pubDate>
+            <sparkle:version>33</sparkle:version>
+            <sparkle:shortVersionString>2.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Press Start in Cabinet Mode for a menu, like EmulationStation&#x27;s: pick a theme, turn video previews and their sound on or off, set the controller&#x27;s confirm button and options, rescan the library, exit or quit</li>
+<li>Each theme styles the menu: centered in Showcase and Arcade, a side panel in Big Picture</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.1.0/Attic-2.1.0.zip" length="16116662" type="application/octet-stream" sparkle:edSignature="CvIbQ7ddgf5GYQEVS8W0iP3C/e7m6HWQ3huxBbCG5+yG7blO/qfNkrICrdWA2FTURzmyoIwIQlExdwCtIl2eAw=="/>
+        </item>
+        <item>
             <title>2.0.0</title>
             <pubDate>Wed, 21 Oct 2026 18:25:04 -0400</pubDate>
             <sparkle:version>32</sparkle:version>
