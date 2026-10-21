@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.0.0</title>
+            <pubDate>Wed, 21 Oct 2026 18:25:04 -0400</pubDate>
+            <sparkle:version>32</sparkle:version>
+            <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Cabinet Mode has themes: Showcase (big covers in a row), Big Picture (a grid beside the game&#x27;s video and details) and Arcade (a wheel of logos beside a screen, like CoinOps)</li>
+<li>Pick one in Settings › General; Customize copies it into the Themes folder as a theme.json to edit, colors, fonts, layout and all</li>
+<li>Browse with the stick or arrows in each layout&#x27;s direction; the other directions and LB/RB switch sections</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.0.0/Attic-2.0.0.zip" length="15974649" type="application/octet-stream" sparkle:edSignature="uDYsiHd5u71mNSJLQsnAKepeTRyc0r3GnzvCFTTV8+1eRuysFhu4mcFiK49ouShdbA4bTMDPQ3tbz3SHZ9upCQ=="/>
+        </item>
+        <item>
             <title>1.20.1</title>
             <pubDate>Tue, 20 Oct 2026 13:15:19 -0400</pubDate>
             <sparkle:version>31</sparkle:version>
