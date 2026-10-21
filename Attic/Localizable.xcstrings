@@ -2786,6 +2786,16 @@
         }
       }
     },
+    "Back": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour"
+          }
+        }
+      }
+    },
     "Back Up Now": {
       "localizations": {
         "fr": {
@@ -2936,6 +2946,16 @@
         }
       }
     },
+    "By": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par"
+          }
+        }
+      }
+    },
     "By default games use buttons by position, like the console's own pad. Button mapping changes which of your controller's buttons does what in RetroArch games, for every player. Select + Start quits a game in RetroArch and DuckStation.": {
       "localizations": {
         "fr": {
@@ -3022,6 +3042,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de trouver ce fichier de shader."
+          }
+        }
+      }
+    },
+    "Carousel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carrousel"
           }
         }
       }
@@ -3400,6 +3430,16 @@
         }
       }
     },
+    "Close": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fermer"
+          }
+        }
+      }
+    },
     "Collection": {
       "localizations": {
         "fr": {
@@ -3586,6 +3626,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bouton de validation"
+          }
+        }
+      }
+    },
+    "Connected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectée"
           }
         }
       }
@@ -3989,6 +4039,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Téléviseur CRT bombé"
+          }
+        }
+      }
+    },
+    "Custom": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personnalisé"
           }
         }
       }
@@ -5700,6 +5760,16 @@
         }
       }
     },
+    "Grid": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grille"
+          }
+        }
+      }
+    },
     "Hacks": {
       "localizations": {
         "fr": {
@@ -6190,6 +6260,16 @@
         }
       }
     },
+    "Interface": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface"
+          }
+        }
+      }
+    },
     "Internal resolution": {
       "localizations": {
         "fr": {
@@ -6422,6 +6502,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dernière vérification %@. Les mises à jour proviennent des mêmes versions nocturnes que le Online Updater de RetroArch, comparées par somme de contrôle — un cœur n’affiche une mise à jour que si son code a vraiment changé."
+          }
+        }
+      }
+    },
+    "Last scan": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière analyse"
           }
         }
       }
@@ -6753,6 +6843,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Médias de jeux absents"
+          }
+        }
+      }
+    },
+    "Menu": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu"
           }
         }
       }
@@ -8069,6 +8169,16 @@
         }
       }
     },
+    "Play videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lire les vidéos"
+          }
+        }
+      }
+    },
     "Played": {
       "localizations": {
         "fr": {
@@ -8169,12 +8279,32 @@
         }
       }
     },
+    "Press again to confirm": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyez encore pour confirmer"
+          }
+        }
+      }
+    },
     "Previous / next system": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Système précédent / suivant"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil"
           }
         }
       }
@@ -8271,6 +8401,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez-les dans %@"
+          }
+        }
+      }
+    },
+    "Quit Attic": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter Attic"
           }
         }
       }
@@ -8585,6 +8725,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sortie"
+          }
+        }
+      }
+    },
+    "Reload Themes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recharger les thèmes"
           }
         }
       }
@@ -9543,6 +9693,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sections"
+          }
+        }
+      }
+    },
+    "Select": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir"
           }
         }
       }
@@ -11089,6 +11249,16 @@
         }
       }
     },
+    "Video sound": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son des vidéos"
+          }
+        }
+      }
+    },
     "Videos": {
       "localizations": {
         "fr": {
@@ -11169,6 +11339,16 @@
         }
       }
     },
+    "Wheel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Roue"
+          }
+        }
+      }
+    },
     "Where the game sorts in the library, e.g. “Legend of Zelda, The”. Leave empty to sort by title.": {
       "localizations": {
         "fr": {
@@ -11245,6 +11425,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Écriture des playlists…"
+          }
+        }
+      }
+    },
+    "You": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous"
           }
         }
       }

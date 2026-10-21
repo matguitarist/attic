@@ -90,7 +90,7 @@ struct CabinetShelf: View {
                 focusedGame.favorite.toggle()
                 try? focusedGame.modelContext?.save()
             }
-        case .previousSection, .nextSection:
+        case .previousSection, .nextSection, .back, .menu:
             break
         }
     }

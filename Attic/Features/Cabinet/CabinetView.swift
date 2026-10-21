@@ -13,6 +13,9 @@ struct CabinetEvent: Equatable {
         case toggleFavorite
         case previousSection
         case nextSection
+        case back
+        /// Start: opens or closes the menu.
+        case menu
     }
 
     let command: Command
@@ -41,6 +44,9 @@ struct CabinetView: View {
     @State private var gameCount = 0
     @State private var event: CabinetEvent?
     @State private var eventSequence = 0
+    /// The menu's open pages; empty while it's closed.
+    @State private var menuPath: [CabinetMenuPage] = []
+    @State private var menuEvent: CabinetEvent?
     @FocusState private var hasKeyboardFocus: Bool
 
     var body: some View {
@@ -59,11 +65,17 @@ struct CabinetView: View {
                     .id(selection)
 
                 if theme.showsHints {
-                    CabinetHintBar()
+                    CabinetHintBar(onMenu: { send(.menu) })
                         .padding(.bottom, 28)
                 }
             }
+
+            if !menuPath.isEmpty {
+                CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit)
+                    .transition(.opacity)
+            }
         }
+        .animation(.snappy(duration: 0.2), value: menuPath.isEmpty)
         .foregroundStyle(theme.palette.text.color)
         .tint(theme.palette.accent.color)
         .environment(\.cabinetTheme, installed)
@@ -87,7 +99,8 @@ struct CabinetView: View {
         }
         .onKeyPress(.return) { send(.activate); return .handled }
         .onKeyPress(.tab) { send(.nextSection); return .handled }
-        .onExitCommand(perform: exit)
+        .onKeyPress("m") { send(.menu); return .handled }
+        .onExitCommand { send(.back) }
         .onChange(of: gamepad.lastEvent) { _, gamepadEvent in
             guard let gamepadEvent else { return }
             switch gamepadEvent.command {
@@ -96,7 +109,8 @@ struct CabinetView: View {
             case .nextSection: send(.nextSection)
             case .activate: send(.activate)
             case .toggleFavorite: send(.toggleFavorite)
-            case .back, .toggleCabinet: exit()
+            case .back: send(.back)
+            case .toggleCabinet: send(.menu)
             }
         }
         .onChange(of: event) { _, newEvent in
@@ -139,9 +153,20 @@ struct CabinetView: View {
             .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.systemID.logo) }
     }
 
+    /// While the menu is open, it gets every command but Start.
     private func send(_ command: CabinetEvent.Command) {
         eventSequence += 1
-        event = CabinetEvent(command: command, sequence: eventSequence)
+        let newEvent = CabinetEvent(command: command, sequence: eventSequence)
+        switch command {
+        case .menu:
+            menuPath = menuPath.isEmpty ? [.main] : []
+        case _ where !menuPath.isEmpty:
+            menuEvent = newEvent
+        case .back:
+            exit()
+        default:
+            event = newEvent
+        }
     }
 
     private func stepSection(by offset: Int) {
@@ -260,6 +285,8 @@ private struct CabinetHeader: View {
 }
 
 private struct CabinetHintBar: View {
+    let onMenu: () -> Void
+
     @Environment(GamepadInputMonitor.self) private var gamepad
     // Read so the hints update as soon as the layout changes.
     @Environment(ControllerSettingsStore.self) private var controllerSettings
@@ -273,6 +300,10 @@ private struct CabinetHintBar: View {
             hint("dpad.fill", "Browse")
             hint("lb.rectangle.roundedbottom.fill", "Sections")
             hint(gamepad.backButtonSymbol, "Exit")
+            Button(action: onMenu) {
+                hint(gamepad.menuButtonSymbol, "Menu")
+            }
+            .buttonStyle(.plain)
         }
         .font(installed.theme.bodyFont())
         .foregroundStyle(installed.theme.palette.secondaryText.color)

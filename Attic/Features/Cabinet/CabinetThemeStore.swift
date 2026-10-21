@@ -143,6 +143,9 @@ final class CabinetThemeStore {
           `showsDescription`, `descriptionLines`.
         - `header`: `showsLogos` (systems as logos), `showsClock`,
           `showsGameCount`.
+        - `menu`: the menu Start opens. `position` (`center`, `leading`,
+          `trailing`), `width` (points), `cornerRadius`, `dim` (how much the
+          screen behind darkens, 0 to 1).
         - `showsHints`: the controller buttons along the bottom.
 
         """

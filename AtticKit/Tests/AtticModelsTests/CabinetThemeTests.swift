@@ -44,6 +44,15 @@ struct CabinetThemeTests {
         #expect(theme.typography.titleSize == CabinetTheme.bigPicture.typography.titleSize)
     }
 
+    @Test func aFullFileFromBeforeASettingExistedStillReads() throws {
+        // Customize in 2.0.0 wrote every value, but there was no menu yet.
+        var object = try #require(JSONSerialization.jsonObject(with: CabinetTheme.arcade.encoded()) as? [String: Any])
+        object["menu"] = nil
+        object["base"] = "arcade"
+        let theme = try CabinetTheme.decode(JSONSerialization.data(withJSONObject: object), id: "old")
+        #expect(theme.menu == CabinetTheme.arcade.menu)
+    }
+
     @Test func badValuesAreErrors() {
         #expect(throws: (any Error).self) {
             try CabinetTheme.decode(Data(#"{ "palette": { "accent": "pink" } }"#.utf8), id: "bad")

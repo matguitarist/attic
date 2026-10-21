@@ -277,6 +277,10 @@ final class GamepadInputMonitor {
         glyph(\.buttonY, fallback: "y.circle")
     }
 
+    var menuButtonSymbol: String {
+        glyph(\.buttonMenu, fallback: "line.3.horizontal.circle")
+    }
+
     private func glyph(_ button: KeyPath<GCExtendedGamepad, GCControllerButtonInput>, fallback: String) -> String {
         let name = gamepad?[keyPath: button].sfSymbolsName ?? fallback
         let filled = name + ".fill"

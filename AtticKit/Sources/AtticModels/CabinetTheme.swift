@@ -20,6 +20,7 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
     public var tiles: Tiles
     public var details: Details
     public var header: Header
+    public var menu: Menu
     public var showsHints: Bool
 
     public enum Layout: String, Codable, CaseIterable, Sendable {
@@ -123,6 +124,20 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var showsClock: Bool
         /// How many games the section has.
         public var showsGameCount: Bool
+    }
+
+    /// The menu Start opens: theme, interface, controller, library.
+    public struct Menu: Codable, Hashable, Sendable {
+        public enum Position: String, Codable, CaseIterable, Sendable {
+            case center, leading, trailing
+        }
+        /// In the middle, or a full-height panel along a side.
+        public var position: Position
+        /// In points.
+        public var width: Double
+        public var cornerRadius: Double
+        /// How much the screen behind darkens, 0 to 1.
+        public var dim: Double
     }
 }
 
@@ -233,6 +248,7 @@ extension CabinetTheme {
                      focusScale: 1.38, unfocusedOpacity: 0.45, focusRing: false, focusGlow: false, showsTitles: false),
         details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 3),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: false),
+        menu: Menu(position: .center, width: 640, cornerRadius: 28, dim: 0.55),
         showsHints: true
     )
 
@@ -257,6 +273,7 @@ extension CabinetTheme {
                      focusScale: 1.06, unfocusedOpacity: 0.85, focusRing: true, focusGlow: true, showsTitles: false),
         details: Details(media: .screenshot, playsVideo: true, showsLogo: true, showsMetadata: true, showsDescription: true, descriptionLines: 6),
         header: Header(showsLogos: false, showsClock: true, showsGameCount: true),
+        menu: Menu(position: .leading, width: 560, cornerRadius: 0, dim: 0.5),
         showsHints: true
     )
 
@@ -281,6 +298,7 @@ extension CabinetTheme {
                      focusScale: 1.35, unfocusedOpacity: 0.4, focusRing: false, focusGlow: true, showsTitles: true),
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: false, descriptionLines: 2),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
+        menu: Menu(position: .center, width: 600, cornerRadius: 12, dim: 0.7),
         showsHints: true
     )
 }
