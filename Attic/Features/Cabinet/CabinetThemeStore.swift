@@ -207,7 +207,9 @@ final class CabinetThemeStore {
           (0 to 1), `focusRing`, `focusGlow`, `showsTitles`.
         - `details`: `media` (`none`, `cover`, `screenshot`, `fanart`),
           `playsVideo`, `showsLogo` (in place of the title), `titlePosition`
-          (`top`, `bottom`: where the grid's panel puts it), `showsMetadata`,
+          (`top`, `bottom`: where the grid's panel puts it), `side`
+          (`leading`, `trailing`: the grid's panel and the game page's
+          art and facts), `showsMetadata`,
           `showsDescription`, `descriptionLines`.
         - `header`: `showsLogos` (systems as logos), `showsClock`,
           `showsGameCount`.
@@ -272,6 +274,15 @@ extension CabinetTheme.Layout {
         case .grid: String(localized: "A grid of covers beside the game's details")
         case .wheel: String(localized: "A wheel of logos beside the game's video")
         case .list: String(localized: "A list of titles beside the game's art and details")
+        }
+    }
+}
+
+extension CabinetTheme.Details.Side {
+    var title: String {
+        switch self {
+        case .leading: String(localized: "Left")
+        case .trailing: String(localized: "Right")
         }
     }
 }

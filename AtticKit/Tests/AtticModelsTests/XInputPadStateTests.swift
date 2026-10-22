@@ -36,6 +36,17 @@ struct XInputPadStateTests {
         #expect(state.heldDirections() == [.right, .down])
     }
 
+    @Test func triggersPastHalfwayArePresses() throws {
+        var report = lunaIdleReport
+        report[4] = 0x40   // left trigger a quarter pulled
+        report[5] = 0xFF   // right trigger fully pulled
+        let state = try #require(XInputPadState(report: report))
+        #expect(state.leftTrigger == 0x40)
+        #expect(!state.leftTriggerPressed)
+        #expect(state.rightTriggerPressed)
+        #expect(state.heldDirections().isEmpty)
+    }
+
     @Test func rejectsNonInputMessages() {
         // LED status message: type 0x01.
         #expect(XInputPadState(report: [0x01, 0x03, 0x06]) == nil)

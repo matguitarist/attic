@@ -85,7 +85,12 @@ struct CabinetGridLayout: View {
             let tileHeight = max(120, geometry.size.height * tiles.size)
             let tileWidth = tileHeight * 0.75
             let columnCount = GridNavigation.columnCount(availableWidth: gridWidth, cellWidth: tileWidth, spacing: tiles.spacing)
+            let details = installed.theme.details
+            let panel = CabinetDetailsPanel(game: shelf.focusedGame)
+                .frame(width: panelWidth)
+                .padding(.vertical, 24)
             HStack(alignment: .top, spacing: 40) {
+                if details.side == .leading { panel }
                 ScrollViewReader { proxy in
                     ScrollView(.vertical) {
                         LazyVGrid(columns: Array(repeating: GridItem(.fixed(tileWidth), spacing: tiles.spacing), count: columnCount),
@@ -112,9 +117,7 @@ struct CabinetGridLayout: View {
                 }
                 .frame(maxWidth: .infinity)
 
-                CabinetDetailsPanel(game: shelf.focusedGame)
-                    .frame(width: panelWidth)
-                    .padding(.vertical, 24)
+                if details.side == .trailing { panel }
             }
             .padding(.horizontal, 40)
             .onChange(of: columnCount, initial: true) { _, count in columns = count }
@@ -139,7 +142,8 @@ private struct CabinetDetailsPanel: View {
                 }
                 let titleAtBottom = theme.details.titlePosition == .bottom
                 CabinetGameInfo(game: game, alignment: .leading, showsTitle: !titleAtBottom)
-                Spacer(minLength: 0)
+                    .padding(.top, 10)
+                Spacer(minLength: 24)
                 if titleAtBottom {
                     CabinetGameTitle(game: game, alignment: .center, isLarge: true)
                         .id(game.persistentModelID)
@@ -309,7 +313,7 @@ struct CabinetListLayout: View {
                         Text(theme.cased(game.title))
                             .lineLimit(1)
                         Spacer(minLength: 8)
-                        if let year = game.releaseDate.map({ Calendar.current.component(.year, from: $0) }) {
+                        if let year = game.releaseYear {
                             Text(verbatim: String(year))
                                 .foregroundStyle(isFocused ? theme.palette.background.color.opacity(0.8) : theme.palette.secondaryText.color)
                         }

@@ -10,7 +10,6 @@ struct CabinetSettingsView: View {
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
-    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
     @State private var themeError: String?
 
     var body: some View {
@@ -20,10 +19,6 @@ struct CabinetSettingsView: View {
         Form {
             Section {
                 Toggle("Open Cabinet Mode at launch", isOn: $startsInCabinet)
-                Toggle(isOn: $opensGamePage) {
-                    Text("Show a game's page before playing")
-                    Text("Its video, facts, description and manual; A again plays")
-                }
                 Toggle("Play video sound", isOn: Binding(get: { !videoPreviewsMuted }, set: { videoPreviewsMuted = !$0 }))
                     .disabled(!playsVideoPreviews)
                 Toggle(isOn: $playsSystemVideos) {
@@ -79,6 +74,15 @@ struct CabinetSettingsView: View {
                     set: { cabinetThemes.adjust("tiles.art", to: $0.rawValue) }
                 )) {
                     ForEach(CabinetTheme.Tiles.Art.allCases, id: \.self) { Text($0.title).tag($0) }
+                }
+                Picker(selection: Binding(
+                    get: { theme.details.side },
+                    set: { cabinetThemes.adjust("details.side", to: $0.rawValue) }
+                )) {
+                    ForEach(CabinetTheme.Details.Side.allCases, id: \.self) { Text($0.title).tag($0) }
+                } label: {
+                    Text("Details Side")
+                    Text("The grid's details panel, and the art and facts on a game's page")
                 }
                 LabeledContent("Colors") {
                     // Names and wells in their own columns, so the wells

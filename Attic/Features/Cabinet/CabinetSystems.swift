@@ -270,22 +270,60 @@ struct CabinetSectionStats {
     /// Favorites and the most played first.
     var covers: [Game.CoverRef] = []
 
+    /// Counted by the database, loading only the few games it shows: a
+    /// system can hold thousands, and focus passes over it in a moment.
     @MainActor
     init(selection: LibrarySelection, context: ModelContext) {
-        var games = (try? context.fetch(FetchDescriptor(predicate: GameGridView.selectionPredicate(selection)))) ?? []
+        // Only the newest count there, which the database can't limit a
+        // count to; it's a hundred games at most.
         if selection == .recentlyAdded {
-            games = Array(games.sorted { ($0.dateAdded ?? .distantPast) > ($1.dateAdded ?? .distantPast) }.prefix(GameGridView.recentlyAddedCount))
+            self = Self.recentlyAdded(context)
+            return
         }
-        self.games = games.count
+        let base = GameGridView.selectionPredicate(selection)
+        func count(_ predicate: Predicate<Game>) -> Int {
+            (try? context.fetchCount(FetchDescriptor(predicate: predicate))) ?? 0
+        }
+        func fetch(_ predicate: Predicate<Game>, sortBy: [SortDescriptor<Game>] = [], limit: Int? = nil) -> [Game] {
+            var descriptor = FetchDescriptor(predicate: predicate, sortBy: sortBy)
+            descriptor.fetchLimit = limit
+            return (try? context.fetch(descriptor)) ?? []
+        }
+
+        games = count(base)
+        let playedGames = fetch(#Predicate<Game> { base.evaluate($0) && $0.playCount > 0 })
+        played = playedGames.count
+        playtime = playedGames.reduce(0) { $0 + $1.totalPlaytimeSeconds }
+        favorites = count(#Predicate<Game> { base.evaluate($0) && $0.favorite })
+        lastPlayed = fetch(#Predicate<Game> { base.evaluate($0) && $0.lastPlayedDate != nil },
+                           sortBy: [SortDescriptor(\.lastPlayedDate, order: .reverse)], limit: 1).first?.title
+        // Favorites first, then the most played.
+        let byPlays = [SortDescriptor(\Game.playCount, order: .reverse)]
+        let ranked = fetch(#Predicate<Game> { base.evaluate($0) && $0.favorite && $0.coverArtPath != nil }, sortBy: byPlays, limit: 5)
+            + fetch(#Predicate<Game> { base.evaluate($0) && !$0.favorite && $0.coverArtPath != nil }, sortBy: byPlays, limit: 5)
+        covers = ranked.prefix(5).compactMap { game in game.coverArtURL.map { Game.CoverRef(url: $0, title: game.title) } }
+    }
+
+    private init() {}
+
+    @MainActor
+    private static func recentlyAdded(_ context: ModelContext) -> CabinetSectionStats {
+        var stats = CabinetSectionStats()
+        var descriptor = FetchDescriptor(predicate: GameGridView.selectionPredicate(.recentlyAdded),
+                                         sortBy: [SortDescriptor(\.dateAdded, order: .reverse)])
+        descriptor.fetchLimit = GameGridView.recentlyAddedCount
+        let games = (try? context.fetch(descriptor)) ?? []
+        stats.games = games.count
         for game in games {
-            if game.playCount > 0 { played += 1 }
-            if game.favorite { favorites += 1 }
-            playtime += game.totalPlaytimeSeconds
+            if game.playCount > 0 { stats.played += 1 }
+            if game.favorite { stats.favorites += 1 }
+            stats.playtime += game.totalPlaytimeSeconds
         }
-        lastPlayed = games.filter { $0.lastPlayedDate != nil }.max { $0.lastPlayedDate! < $1.lastPlayedDate! }?.title
+        stats.lastPlayed = games.filter { $0.lastPlayedDate != nil }.max { $0.lastPlayedDate! < $1.lastPlayedDate! }?.title
         let ranked = games.filter { $0.coverArtPath != nil }
             .sorted { ($0.favorite ? 1 : 0, $0.playCount) > ($1.favorite ? 1 : 0, $1.playCount) }
-        covers = ranked.prefix(5).compactMap { game in game.coverArtURL.map { Game.CoverRef(url: $0, title: game.title) } }
+        stats.covers = ranked.prefix(5).compactMap { game in game.coverArtURL.map { Game.CoverRef(url: $0, title: game.title) } }
+        return stats
     }
 }
 

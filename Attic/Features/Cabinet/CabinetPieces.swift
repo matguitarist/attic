@@ -126,9 +126,13 @@ struct CabinetGameTitle: View {
     let alignment: HorizontalAlignment
     /// At a panel's foot, where there's room for a bigger logo.
     var isLarge = false
-    /// A logo sits centered, even in a leading column, except on the
-    /// game page where it heads the facts.
+    /// A logo sits centered, even in a leading column, unless it's to
+    /// follow `alignment`.
     var centersLogo = true
+
+    private var logoAlignment: Alignment {
+        centersLogo ? .center : Alignment(horizontal: alignment, vertical: .center)
+    }
 
     @Environment(\.cabinetTheme) private var installed
     @State private var logoURL: URL?
@@ -137,17 +141,18 @@ struct CabinetGameTitle: View {
         let theme = installed.theme
         Group {
             if theme.details.showsLogo, let logoURL {
-                GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
+                GameCoverArtView(url: logoURL, title: game.title, showBackground: false,
+                                 alignment: logoAlignment)
                     .frame(maxWidth: isLarge ? 500 : 420, maxHeight: theme.typography.titleSize * (isLarge ? 3.4 : 2.4))
                     .padding(.vertical, 12)
-                    .frame(maxWidth: .infinity, alignment: centersLogo ? .center : .leading)
+                    .frame(maxWidth: .infinity, alignment: logoAlignment)
             } else {
                 Text(theme.cased(game.title))
                     .font(theme.titleFont)
                     .lineLimit(2)
                     .minimumScaleFactor(0.6)
-                    .multilineTextAlignment(alignment == .center ? .center : .leading)
-                    .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
+                    .multilineTextAlignment(alignment == .center ? .center : alignment == .trailing ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : alignment == .trailing ? .trailing : .leading)
             }
         }
         .task(id: game.persistentModelID) {
@@ -166,9 +171,10 @@ struct CabinetGameInfo: View {
     var showsDescription = true
     /// A panel can put the title elsewhere (`Details.titlePosition`).
     var showsTitle = true
-    /// The game page's: developer, publisher, play time, last played,
-    /// under a logo kept to the left.
+    /// The game page's: developer, publisher, play time, last played.
     var showsMoreFacts = false
+    /// Side by side, when there's the width.
+    var factColumns = 1
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(\.cabinetTheme) private var installed
@@ -179,7 +185,7 @@ struct CabinetGameInfo: View {
             let textAlignment: TextAlignment = alignment == .center ? .center : .leading
             VStack(alignment: alignment, spacing: alignment == .center ? 10 : 16) {
                 if showsTitle {
-                    CabinetGameTitle(game: game, alignment: alignment, centersLogo: !showsMoreFacts)
+                    CabinetGameTitle(game: game, alignment: alignment)
                 }
 
                 if theme.details.showsMetadata {
@@ -215,29 +221,60 @@ struct CabinetGameInfo: View {
         }
     }
 
+    /// In `factColumns` columns, filled top to bottom then across.
     private func factRows(for game: Game, theme: CabinetTheme) -> some View {
-        Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 14, verticalSpacing: 8) {
-            ForEach(facts(for: game), id: \.symbol) { fact in
+        let facts = facts(for: game)
+        let columns = max(1, factColumns)
+        let rows = (facts.count + columns - 1) / columns
+        return Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 14, verticalSpacing: 8) {
+            ForEach(0..<rows, id: \.self) { row in
                 GridRow {
-                    Image(systemName: fact.symbol)
-                        .foregroundStyle(theme.palette.accent.color)
-                        .frame(width: theme.typography.bodySize * 1.3)
-                    Text(fact.label)
-                        .foregroundStyle(theme.palette.secondaryText.color)
-                    Text(verbatim: fact.value)
-                        .foregroundStyle(theme.palette.text.color)
-                        .lineLimit(2)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(0..<columns, id: \.self) { column in
+                        if let fact = facts[safe: column * rows + row] {
+                            factCells(fact, gap: column > 0 ? 28 : 0, theme: theme)
+                        }
+                    }
                 }
             }
         }
         .font(theme.bodyFont())
     }
 
+    /// The icon, label and value, as three grid cells; `gap` goes before
+    /// the icon, between columns.
+    @ViewBuilder
+    private func factCells(_ fact: Fact, gap: CGFloat, theme: CabinetTheme) -> some View {
+        Image(systemName: fact.symbol)
+            .foregroundStyle(theme.palette.accent.color)
+            .frame(width: theme.typography.bodySize * 1.3)
+            .padding(.leading, gap)
+        Text(fact.label)
+            .foregroundStyle(theme.palette.secondaryText.color)
+        Group {
+            if let stars = fact.stars {
+                HStack(spacing: 3) {
+                    ForEach(1...5, id: \.self) { star in
+                        Image(systemName: star <= stars ? "star.fill" : "star")
+                            .foregroundStyle(star <= stars ? theme.palette.favorite.color : theme.palette.secondaryText.color)
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(fact.value))
+            } else {
+                Text(verbatim: fact.value)
+                    .foregroundStyle(theme.palette.text.color)
+                    .lineLimit(2)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
     private struct Fact {
         let symbol: String
         let label: String
         let value: String
+        /// A rating, out of five, drawn as stars beside the label.
+        var stars: Int?
     }
 
     private func facts(for game: Game) -> [Fact] {
@@ -245,7 +282,11 @@ struct CabinetGameInfo: View {
         if let system = game.system?.displayName {
             facts.append(Fact(symbol: "gamecontroller", label: String(localized: "System"), value: system))
         }
-        if let year = game.releaseDate.map({ Calendar.current.component(.year, from: $0) }) {
+        // Release dates are stored at midnight UTC.
+        if let released = game.releaseDate, showsMoreFacts {
+            facts.append(Fact(symbol: "calendar", label: String(localized: "Released"),
+                              value: released.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, timeZone: .gmt))))
+        } else if let year = game.releaseYear {
             facts.append(Fact(symbol: "calendar", label: String(localized: "Year"), value: String(year)))
         }
         if let genre = game.genre {
@@ -256,6 +297,12 @@ struct CabinetGameInfo: View {
         if let players = game.players {
             facts.append(Fact(symbol: "person.2", label: String(localized: "Players"),
                               value: alignment == .center ? String(localized: "Players: \(players)") : players))
+        }
+        if let rating = game.rating, rating > 0 {
+            let stars = Int((rating * 5).rounded())
+            facts.append(Fact(symbol: "star", label: String(localized: "Rating"),
+                              value: String(repeating: "★", count: stars) + String(repeating: "☆", count: 5 - stars),
+                              stars: stars))
         }
         if showsMoreFacts {
             if let developer = game.developer {
@@ -280,5 +327,15 @@ struct CabinetGameInfo: View {
                               value: last.formatted(.relative(presentation: .named))))
         }
         return facts
+    }
+}
+
+extension Game {
+    /// Gamelists store release dates as UTC midnight: read in the local
+    /// time zone, west of Greenwich, January 1st falls in the year before.
+    var releaseYear: Int? {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .gmt
+        return releaseDate.map { calendar.component(.year, from: $0) }
     }
 }

@@ -20,9 +20,39 @@ struct CabinetShelf: View {
     private let isRecentlyPlayed: Bool
     @AppStorage("collectionSortOrder") private var collectionSortOrder = GameSortOrder.systemThenRelease
 
+    /// What `games` is worked out from.
+    private struct GamesKey: Equatable {
+        let games: [Game]
+        let collectionSortOrder: GameSortOrder
+        let search: String
+        let sort: CabinetSort
+        let favoritesOnly: Bool
+        let minPlayers: Int
+        let genre: String
+        /// Favorites only drops a game when it stops being one.
+        let favorites: Int
+        /// Most and Last Played reorder after a game is played.
+        let plays: Int
+
+        static func == (a: Self, b: Self) -> Bool {
+            a.collectionSortOrder == b.collectionSortOrder && a.search == b.search && a.sort == b.sort
+                && a.favoritesOnly == b.favoritesOnly && a.minPlayers == b.minPlayers && a.genre == b.genre
+                && a.favorites == b.favorites && a.plays == b.plays && sameGames(a.games, b.games)
+        }
+    }
+
     /// The section's games in its own order, then searched, filtered and
-    /// sorted (see `CabinetBrowse`).
+    /// sorted (see `CabinetBrowse`) — once per change to any of those, not
+    /// per redraw: a press redraws, and asks for them again besides.
     private var games: [Game] {
+        let key = GamesKey(games: queriedGames, collectionSortOrder: collectionSortOrder, search: browse.appliedSearch,
+                           sort: browse.sort, favoritesOnly: browse.favoritesOnly, minPlayers: browse.minPlayers,
+                           genre: browse.genre, favorites: browse.favoritesOnly ? queriedGames.count(where: \.favorite) : 0,
+                           plays: browse.sort == .mostPlayed || browse.sort == .lastPlayed ? queriedGames.reduce(0) { $0 + $1.playCount } : 0)
+        return shown(key) { shownGames }
+    }
+
+    private var shownGames: [Game] {
         let ordered = if limit {
             Array(queriedGames.prefix(GameGridView.recentlyAddedCount))
         } else if sortsBySystem && collectionSortOrder == .systemThenRelease {
@@ -48,34 +78,49 @@ struct CabinetShelf: View {
     /// Opens on a random game (Select on the systems).
     let startsRandom: Bool
     let onSectionStep: (Int) -> Void
-    /// The game page, or playing straight away.
-    let onActivate: (Game) -> Void
+    /// A: straight into the game.
+    let onPlay: (Game) -> Void
+    /// X: the game's page.
+    let onDetails: (Game) -> Void
     /// Shows the letter (or position) a jump landed on.
     let onJump: (String) -> Void
 
     @Environment(CabinetBrowse.self) private var browse
     @Environment(\.cabinetTheme) private var installed
+    @State private var shown = Memo<GamesKey, [Game]>()
     /// The grid's, for moving up and down a row.
     @State private var columns = 1
 
-    init(selection: LibrarySelection, event: CabinetEvent?, focusedGame: Binding<Game?>, gameCount: Binding<Int>,
+    /// `search`, when there is one, looks through every game rather than
+    /// the section's: the database narrows by its first word, and
+    /// `CabinetBrowse` checks the rest.
+    init(selection: LibrarySelection, search: String = "", event: CabinetEvent?, focusedGame: Binding<Game?>, gameCount: Binding<Int>,
          startsRandom: Bool = false, onSectionStep: @escaping (Int) -> Void,
-         onActivate: @escaping (Game) -> Void, onJump: @escaping (String) -> Void) {
+         onPlay: @escaping (Game) -> Void, onDetails: @escaping (Game) -> Void, onJump: @escaping (String) -> Void) {
         let sort: [SortDescriptor<Game>] = switch selection {
         case .recentlyPlayed: [SortDescriptor(\.lastPlayedDate, order: .reverse)]
         case .recentlyAdded: [SortDescriptor(\.dateAdded, order: .reverse), SortDescriptor(\.sortTitle)]
         default: [SortDescriptor(\.sortTitle)]
         }
-        _queriedGames = Query(filter: GameGridView.selectionPredicate(selection), sort: sort)
-        if case .collection = selection { sortsBySystem = true } else { sortsBySystem = false }
-        limit = selection == .recentlyAdded
-        isRecentlyPlayed = selection == .recentlyPlayed
+        if let word = search.split(separator: " ").first.map(String.init) {
+            _queriedGames = Query(filter: #Predicate<Game> { $0.title.localizedStandardContains(word) },
+                                  sort: [SortDescriptor(\.sortTitle)])
+            sortsBySystem = false
+            limit = false
+            isRecentlyPlayed = false
+        } else {
+            _queriedGames = Query(filter: GameGridView.selectionPredicate(selection), sort: sort)
+            if case .collection = selection { sortsBySystem = true } else { sortsBySystem = false }
+            limit = selection == .recentlyAdded
+            isRecentlyPlayed = selection == .recentlyPlayed
+        }
         self.event = event
         _focusedGame = focusedGame
         _gameCount = gameCount
         self.startsRandom = startsRandom
         self.onSectionStep = onSectionStep
-        self.onActivate = onActivate
+        self.onPlay = onPlay
+        self.onDetails = onDetails
         self.onJump = onJump
     }
 
@@ -100,7 +145,7 @@ struct CabinetShelf: View {
                 .frame(maxHeight: .infinity)
             } else {
                 let shelf = CabinetShelfContent(games: games, focusedID: focusedGame?.persistentModelID,
-                                                onFocus: { focus($0) }, onPlay: onActivate)
+                                                onFocus: { focus($0) }, onPlay: onPlay)
                 switch installed.theme.layout {
                 case .carousel: CabinetCarouselLayout(shelf: shelf)
                 case .grid: CabinetGridLayout(shelf: shelf, columns: $columns)
@@ -128,12 +173,16 @@ struct CabinetShelf: View {
         switch command {
         case .move(let direction):
             move(direction)
+        // Only a game the shelf shows: a search with no results keeps the
+        // last focused game around.
         case .activate:
-            if let focusedGame { onActivate(focusedGame) }
+            if let game = shownFocusedGame { onPlay(game) }
+        case .details:
+            if let game = shownFocusedGame { onDetails(game) }
         case .toggleFavorite:
-            if let focusedGame {
-                focusedGame.favorite.toggle()
-                try? focusedGame.modelContext?.save()
+            if let game = shownFocusedGame {
+                game.favorite.toggle()
+                try? game.modelContext?.save()
             }
         case .random:
             focus(games.randomElement())
@@ -144,6 +193,10 @@ struct CabinetShelf: View {
         case .previousSection, .nextSection, .back, .menu, .search, .character, .deleteCharacter:
             break
         }
+    }
+
+    private var shownFocusedGame: Game? {
+        games.first { $0.persistentModelID == focusedGame?.persistentModelID }
     }
 
     private func move(_ direction: GridMoveDirection) {

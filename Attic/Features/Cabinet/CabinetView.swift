@@ -17,9 +17,11 @@ struct CabinetEvent: Equatable {
         case back
         /// Start: opens or closes the menu.
         case menu
-        /// X: the on-screen keyboard.
+        /// X: the game's page.
+        case details
+        /// Select: the on-screen keyboard.
         case search
-        /// Select: a random game.
+        /// Right stick click: a random game.
         case random
         /// L2 / R2: the previous or next letter.
         case previousLetter
@@ -42,20 +44,19 @@ struct CabinetEvent: Equatable {
 struct CabinetView: View {
     static let windowID = "cabinet"
     static let startInCabinetKey = "startInCabinet"
-    /// A opens a game's page rather than playing it straight away.
-    static let opensGamePageKey = "cabinetOpensGamePage"
 
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
+    @State private var builtSections: [CabinetSection] = []
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(CabinetThemeStore.self) private var themeStore
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
-    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
 
-    @State private var selection: LibrarySelection = .allGames
+    /// The first section once they're built (see `sections`).
+    @State private var selection: LibrarySelection = .favorites
     /// The systems, or a section's games (see `CabinetTheme.Systems`).
     @State private var level = Level.systems
     @State private var focusedGame: Game?
@@ -99,11 +100,14 @@ struct CabinetView: View {
                         CabinetHeader(sections: sections, selection: $selection, gameCount: gameCount, chips: browse.chips)
                             .padding(.top, 36)
 
-                        CabinetShelf(selection: selection, event: event, focusedGame: $focusedGame, gameCount: $gameCount,
+                        CabinetShelf(selection: selection, search: browse.appliedSearch, event: event,
+                                     focusedGame: $focusedGame, gameCount: $gameCount,
                                      startsRandom: opensRandom, onSectionStep: stepSection(by:),
-                                     onActivate: activate, onJump: showJump)
-                            // A new Query per section; the shelf picks its own first game.
-                            .id(selection)
+                                     onPlay: play, onDetails: showDetails, onJump: showJump)
+                            // A new Query per section, and per search (which
+                            // looks through every game); the shelf picks its
+                            // own first game.
+                            .id("\(selection)|\(browse.appliedSearch)")
                             .onAppear { opensRandom = false }
                     }
                     .opacity(pageGame == nil ? 1 : 0)
@@ -112,7 +116,7 @@ struct CabinetView: View {
 
                 if theme.showsHints && pageGame == nil {
                     CabinetHintBar(level: level, backGoesToSystems: theme.systems.isEnabled, isFiltered: browse.isFiltered,
-                                   opensGamePage: opensGamePage, onMenu: { send(.menu) })
+                                   onMenu: { send(.menu) })
                         .padding(.bottom, 28)
                 }
             }
@@ -175,8 +179,9 @@ struct CabinetView: View {
         // Letter jumps on any keyboard layout.
         .onKeyPress(.pageUp) { send(.previousLetter); return .handled }
         .onKeyPress(.pageDown) { send(.nextLetter); return .handled }
-        // While searching, letters type; otherwise m opens the menu, /
-        // searches, r picks a random game, [ and ] jump letters.
+        // While searching, letters type; otherwise i (or space) opens
+        // the game's page, m the menu, / searches, r picks a random game,
+        // [ and ] jump letters.
         .onKeyPress(characters: .alphanumerics.union(.punctuationCharacters).union(.whitespaces)) { press in
             guard let character = press.characters.first else { return .ignored }
             if isSearching {
@@ -184,6 +189,7 @@ struct CabinetView: View {
                 return .handled
             }
             switch character {
+            case "i", " ": send(.details)
             case "m": send(.menu)
             case "/": send(.search)
             case "r": send(.random)
@@ -194,13 +200,14 @@ struct CabinetView: View {
             return .handled
         }
         .onExitCommand { send(.back) }
-        .onChange(of: gamepad.lastEvent) { _, gamepadEvent in
+        .onChange(of: gamepad.cabinetEvent) { _, gamepadEvent in
             guard let gamepadEvent else { return }
             switch gamepadEvent.command {
             case .move(let direction): send(.move(direction))
             case .previousSection: send(.previousSection)
             case .nextSection: send(.nextSection)
             case .activate: send(.activate)
+            case .details: send(.details)
             case .toggleFavorite: send(.toggleFavorite)
             case .back: send(.back)
             case .toggleCabinet: send(.menu)
@@ -217,7 +224,15 @@ struct CabinetView: View {
             default: break // Game-level commands belong to the shelf.
             }
         }
+        .onChange(of: sectionsKey, initial: true) {
+            builtSections = buildSections()
+            // A collection hidden or emptied meanwhile.
+            if !builtSections.contains(where: { $0.selection == selection }), let first = builtSections.first {
+                selection = first.selection
+            }
+        }
         .onAppear {
+            CabinetWindows.hideOthers()
             gamepad.isCabinetActive = true
             hasKeyboardFocus = true
             // Picks up themes added or edited since.
@@ -229,14 +244,32 @@ struct CabinetView: View {
         }
         .onDisappear {
             gamepad.isCabinetActive = false
+            CabinetWindows.showOthers()
+        }
+        // Quitting a game (Select + Start, or RetroArch's menu) comes back
+        // here, not to whichever Attic window macOS would pick.
+        .onChange(of: launchCoordinator.state) { old, new in
+            if case .running = old, new == .idle { CabinetWindows.bringCabinetForward() }
         }
     }
 
+    /// Built when the systems or collections change, not on every redraw:
+    /// finding their logos and pictures reads folders, and every press
+    /// redraws.
+    private var sections: [CabinetSection] { builtSections }
+
+    /// What `sections` depends on, cheap to compare.
+    private var sectionsKey: [String] {
+        collections.map { "\($0.collectionID)|\($0.name)|\($0.isHidden)|\($0.games.isEmpty)" }
+            + systems.map { "\($0.systemID)|\($0.gameCount > 0)" }
+            + [emulationFolderStore.folder.root.path]
+    }
+
     /// Library shortcuts first, then non-empty collections, then every
-    /// system that actually has games.
-    private var sections: [CabinetSection] {
+    /// system that actually has games. No All Games: thousands of games in
+    /// one shelf made everything slower, and search covers finding one.
+    private func buildSections() -> [CabinetSection] {
         [
-            CabinetSection(selection: .allGames, title: String(localized: "All Games")),
             CabinetSection(selection: .favorites, title: String(localized: "Favorites")),
             CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played")),
             CabinetSection(selection: .recentlyAdded, title: String(localized: "Recently Added"))
@@ -280,7 +313,7 @@ struct CabinetView: View {
                 setLevel(.games)
                 isSearching = true
             case .back: exit()
-            case .move, .toggleFavorite, .menu, .previousLetter, .nextLetter, .character, .deleteCharacter: break
+            case .move, .details, .toggleFavorite, .menu, .previousLetter, .nextLetter, .character, .deleteCharacter: break
             }
         case .back:
             // A search or filter clears first, then back to the systems.
@@ -300,13 +333,15 @@ struct CabinetView: View {
         }
     }
 
-    /// A on a game: its page, or straight into it.
-    private func activate(_ game: Game) {
+    /// X on a game: its video, facts, description and manual.
+    private func showDetails(_ game: Game) {
         focusedGame = game
-        if opensGamePage { pageGame = game } else { play(game) }
+        pageGame = game
     }
 
+    /// A on a game, or Play on its page.
     private func play(_ game: Game) {
+        focusedGame = game
         launchCoordinator.play(game: game, retroArchStore: retroArchStore)
     }
 
@@ -513,7 +548,6 @@ private struct CabinetHintBar: View {
     let level: CabinetView.Level
     let backGoesToSystems: Bool
     let isFiltered: Bool
-    let opensGamePage: Bool
     let onMenu: () -> Void
 
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -527,14 +561,15 @@ private struct CabinetHintBar: View {
             switch level {
             case .systems:
                 hint(gamepad.confirmButtonSymbol, "Open")
-                hint(gamepad.symbol(for: .left), "Search")
-                hint(gamepad.symbol(for: .select), "Random")
+                hint(gamepad.symbol(for: .select), "Search")
+                hint(gamepad.symbol(for: .r3), "Random")
                 hint(gamepad.backButtonSymbol, "Exit")
             case .games:
-                hint(gamepad.confirmButtonSymbol, opensGamePage ? "Open" : "Play")
+                hint(gamepad.confirmButtonSymbol, "Play")
+                hint(gamepad.symbol(for: .left), "Details")
                 hint(gamepad.favoriteButtonSymbol, "Favorite")
-                hint(gamepad.symbol(for: .left), "Search")
-                hint(gamepad.symbol(for: .select), "Random")
+                hint(gamepad.symbol(for: .select), "Search")
+                hint(gamepad.symbol(for: .r3), "Random")
                 hint(gamepad.symbol(for: .l2), "A–Z")
                 if isFiltered {
                     hint(gamepad.backButtonSymbol, "Clear")
@@ -636,6 +671,34 @@ enum CabinetArt {
 }
 
 /// Puts Cabinet Mode's window into native full screen as soon as it appears.
+/// The other Attic windows, put away while Cabinet Mode is open: it takes
+/// the whole screen, and a library window coming forward (after a game,
+/// say) pulled people out of it.
+@MainActor
+enum CabinetWindows {
+    private static var hidden: [NSWindow] = []
+    fileprivate static weak var cabinet: NSWindow?
+
+    static func hideOthers() {
+        hidden = NSApp.windows.filter { window in
+            window.isVisible && window.canBecomeMain && window !== cabinet
+                // Cabinet Mode's own, should it not have reported in yet.
+                && window.identifier?.rawValue.hasPrefix(CabinetView.windowID) != true
+        }
+        hidden.forEach { $0.orderOut(nil) }
+    }
+
+    static func showOthers() {
+        hidden.forEach { $0.makeKeyAndOrderFront(nil) }
+        hidden = []
+    }
+
+    static func bringCabinetForward() {
+        NSApp.activate()
+        cabinet?.makeKeyAndOrderFront(nil)
+    }
+}
+
 private struct FullScreenWindowConfigurator: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView { WindowObservingView() }
     func updateNSView(_ nsView: NSView, context: Context) {}
@@ -646,6 +709,7 @@ private struct FullScreenWindowConfigurator: NSViewRepresentable {
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
             guard let window else { return }
+            CabinetWindows.cabinet = window
             window.collectionBehavior.insert(.fullScreenPrimary)
             // Toggling while SwiftUI is still setting the window up is
             // silently ignored, so wait until it's actually on screen and key.

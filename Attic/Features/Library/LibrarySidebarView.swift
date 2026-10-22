@@ -34,8 +34,6 @@ struct LibrarySidebarView: View {
         let _ = sortOrder
         List(selection: $selection) {
             Section("Library") {
-                Label("All Games", systemImage: "square.grid.2x2")
-                    .tag(LibrarySelection.allGames)
                 Label("Favorites", systemImage: "star")
                     .tag(LibrarySelection.favorites)
                 Label("Recently Played", systemImage: "clock")

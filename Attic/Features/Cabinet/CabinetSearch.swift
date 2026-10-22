@@ -107,8 +107,8 @@ struct CabinetSearchView: View {
             focused = GridNavigation.index(movingFrom: focused, direction: direction,
                                            itemCount: Self.keys.count, columns: Self.columns) ?? focused
         case .activate: press(Self.keys[focused])
-        case .search: press(.delete)
-        case .back: onDone()
+        case .details: press(.delete)
+        case .search, .back: onDone()
         case .character(let character): browse.search.append(character)
         case .deleteCharacter: press(.delete)
         default: break

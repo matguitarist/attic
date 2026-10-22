@@ -4593,6 +4593,16 @@
         }
       }
     },
+    "Details Side": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Côté des détails"
+          }
+        }
+      }
+    },
     "Details…": {
       "localizations": {
         "fr": {
@@ -5893,6 +5903,7 @@
       }
     },
     "Game page before playing": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -6724,6 +6735,7 @@
       }
     },
     "Its video, facts, description and manual; A again plays": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -6975,6 +6987,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Disposition"
+          }
+        }
+      }
+    },
+    "Left": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gauche"
           }
         }
       }
@@ -9897,6 +9919,16 @@
         }
       }
     },
+    "Right": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Droite"
+          }
+        }
+      }
+    },
     "Right (B / Circle)": {
       "localizations": {
         "fr": {
@@ -10379,6 +10411,16 @@
         }
       }
     },
+    "Search Results": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résultats de recherche"
+          }
+        }
+      }
+    },
     "Search Shaders": {
       "localizations": {
         "fr": {
@@ -10731,6 +10773,7 @@
       }
     },
     "Show a game's page before playing": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -11423,6 +11466,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux restent dans votre bibliothèque. Le dossier de la collection, avec ses images, va à la corbeille."
+          }
+        }
+      }
+    },
+    "The grid's details panel, and the art and facts on a game's page": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le panneau de détails de la grille, et l’image et les infos de la page d’un jeu"
           }
         }
       }

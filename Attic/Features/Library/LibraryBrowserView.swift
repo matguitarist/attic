@@ -11,7 +11,9 @@ import AtticModels
 struct LibraryBrowserView: View {
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
-    @State private var selection: LibrarySelection? = .allGames
+    /// No All Games: every game in one grid made the whole window slow.
+    /// A search looks through all of them instead (see `GameGridView`).
+    @State private var selection: LibrarySelection? = .favorites
     @State private var searchText = ""
     @State private var sortOrder: GameSortOrder = .title
     /// Collections keep their own order, by system then release date
@@ -49,7 +51,8 @@ struct LibraryBrowserView: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } detail: {
             GameGridView(
-                selection: currentSelection,
+                // A search looks through every game, whatever's selected.
+                selection: searchText.trimmingCharacters(in: .whitespaces).isEmpty ? currentSelection : .allGames,
                 searchText: searchText,
                 sortOrder: shownSortOrder.wrappedValue,
                 cellScale: CGFloat(cellScale),
@@ -128,7 +131,7 @@ struct LibraryBrowserView: View {
             presenting: collectionCoordinator.pendingDeletion
         ) { collection in
             Button("Delete Collection", role: .destructive) {
-                if selection == .collection(collection.collectionID) { selection = .allGames }
+                if selection == .collection(collection.collectionID) { selection = .favorites }
                 CollectionFolders.remove(collection, root: collectionsRoot)
                 let context = collection.modelContext
                 context?.delete(collection)
@@ -164,7 +167,7 @@ struct LibraryBrowserView: View {
         // A removed (or now hidden) system's page goes with it.
         .onChange(of: shownSystems.map(\.systemID)) { _, ids in
             if case .system(let id) = currentSelection, !ids.contains(id) {
-                selection = .allGames
+                selection = .favorites
             }
         }
         .missingBIOSAlert(isActive: !gamepad.isCabinetActive)
@@ -175,9 +178,8 @@ struct LibraryBrowserView: View {
                 openWindow(id: CabinetView.windowID)
             }
         }
-        .onChange(of: gamepad.lastEvent) { _, event in
-            guard !gamepad.isCabinetActive else { return }
-            switch event?.command {
+        .onGamepadEvent { event in
+            switch event.command {
             case .previousSection: stepSection(by: -1)
             case .nextSection: stepSection(by: 1)
             case .toggleCabinet: openWindow(id: CabinetView.windowID)
@@ -186,7 +188,7 @@ struct LibraryBrowserView: View {
         }
     }
 
-    private var currentSelection: LibrarySelection { selection ?? .allGames }
+    private var currentSelection: LibrarySelection { selection ?? .favorites }
 
     /// The sort the toolbar shows and changes: the collections' own while
     /// one is shown.
@@ -404,7 +406,7 @@ struct LibraryBrowserView: View {
     /// Same order the sidebar lists them in, wrapping at either end so a
     /// shoulder button can cycle through everything without a dead stop.
     private func stepSection(by offset: Int) {
-        let sections: [LibrarySelection] = [.allGames, .favorites, .recentlyPlayed, .recentlyAdded]
+        let sections: [LibrarySelection] = [.favorites, .recentlyPlayed, .recentlyAdded]
             + collections.map { .collection($0.collectionID) }
             + shownSystems.orderedByCategory().map { .system($0.systemID) }
         let currentIndex = sections.firstIndex(of: currentSelection) ?? 0
@@ -413,7 +415,8 @@ struct LibraryBrowserView: View {
     }
 
     private var selectionTitle: String {
-        switch currentSelection {
+        if !searchText.trimmingCharacters(in: .whitespaces).isEmpty { return String(localized: "Search Results") }
+        return switch currentSelection {
         case .allGames: String(localized: "All Games")
         case .favorites: String(localized: "Favorites")
         case .recentlyPlayed: String(localized: "Recently Played")

@@ -39,14 +39,23 @@ public struct XInputPadState: Sendable, Equatable {
     public var buttons: XInputButtons
     public var leftStickX: Int16
     public var leftStickY: Int16
+    /// 0 (released) to 255 (fully pulled).
+    public var leftTrigger: UInt8
+    public var rightTrigger: UInt8
 
     public static let neutral = XInputPadState(buttons: [], leftStickX: 0, leftStickY: 0)
 
-    public init(buttons: XInputButtons, leftStickX: Int16, leftStickY: Int16) {
+    public init(buttons: XInputButtons, leftStickX: Int16, leftStickY: Int16, leftTrigger: UInt8 = 0, rightTrigger: UInt8 = 0) {
         self.buttons = buttons
         self.leftStickX = leftStickX
         self.leftStickY = leftStickY
+        self.leftTrigger = leftTrigger
+        self.rightTrigger = rightTrigger
     }
+
+    /// The triggers pulled past halfway, as presses of L2 and R2.
+    public var leftTriggerPressed: Bool { leftTrigger >= 128 }
+    public var rightTriggerPressed: Bool { rightTrigger >= 128 }
 
     /// Returns `nil` for anything that isn't an input report — the same
     /// pipe also carries short status messages (LED state, rumble acks)
@@ -55,6 +64,8 @@ public struct XInputPadState: Sendable, Equatable {
         guard report.count >= 10, report[0] == 0x00, report[1] >= 0x0A else { return nil }
         func u16(_ index: Int) -> UInt16 { UInt16(report[index]) | UInt16(report[index + 1]) << 8 }
         buttons = XInputButtons(rawValue: u16(2))
+        leftTrigger = report[4]
+        rightTrigger = report[5]
         leftStickX = Int16(bitPattern: u16(6))
         leftStickY = Int16(bitPattern: u16(8))
     }

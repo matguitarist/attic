@@ -23,6 +23,7 @@ struct GameGridView: View {
     private let cellScale: CGFloat
 
     @State private var availableWidth: CGFloat = 0
+    @State private var ordered = Memo<OrderKey, [Game]>()
     @FocusState private var isGridFocused: Bool
 
     // Fixed (not ranged) min==max width so every column — and therefore
@@ -45,7 +46,7 @@ struct GameGridView: View {
         [GridItem(.adaptive(minimum: cellWidth, maximum: cellWidth), spacing: Self.spacing)]
     }
     private var columnCount: Int {
-        GridNavigation.columnCount(availableWidth: availableWidth - Self.padding * 2, cellWidth: cellWidth, spacing: Self.spacing)
+        GridNavigation.columnCount(availableWidth: availableWidth, cellWidth: cellWidth, spacing: Self.spacing)
     }
 
     /// Each change picks a game at random.
@@ -82,7 +83,28 @@ struct GameGridView: View {
     static let recentlyAddedCount = 100
     private let limit: Int?
 
+    /// What `displayedGames` is ordered from.
+    private struct OrderKey: Equatable {
+        let games: [Game]
+        let sortOrder: GameSortOrder
+        let limit: Int?
+        /// Favorites First moves a game when it becomes one.
+        let favorites: Int
+
+        static func == (a: Self, b: Self) -> Bool {
+            a.sortOrder == b.sortOrder && a.limit == b.limit && a.favorites == b.favorites && sameGames(a.games, b.games)
+        }
+    }
+
+    /// Ordered once per change to the games or the order, not per redraw:
+    /// every selection move redraws.
     private var displayedGames: [Game] {
+        let key = OrderKey(games: games, sortOrder: sortOrder, limit: limit,
+                           favorites: sortOrder == .favoriteFirst ? games.count(where: \.favorite) : 0)
+        return ordered(key) { orderedGames }
+    }
+
+    private var orderedGames: [Game] {
         if let limit { return Array(games.prefix(limit)) }
         if sortOrder == .systemThenRelease { return Self.bySystemThenRelease(games) }
         guard sortOrder == .favoriteFirst else { return games }
@@ -99,7 +121,6 @@ struct GameGridView: View {
     var body: some View {
         ScrollViewReader { proxy in
             grid
-                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
                 .focusable()
                 .focusEffectDisabled()
                 .focused($isGridFocused)
@@ -124,10 +145,7 @@ struct GameGridView: View {
                     play(selectedGame)
                     return .handled
                 }
-                .onChange(of: gamepad.lastEvent) { _, event in
-                    guard let event, !gamepad.isCabinetActive else { return }
-                    handle(event.command, proxy: proxy)
-                }
+                .onGamepadEvent { handle($0.command, proxy: proxy) }
                 .onChange(of: randomPicks) { pickRandom(proxy: proxy) }
         }
     }
@@ -158,6 +176,10 @@ struct GameGridView: View {
                             .id(game.persistentModelID)
                     }
                 }
+                // The grid's own width, inside the padding and beside any
+                // scroll bar: the scroll view's counted the bar as room for
+                // a column, so down moved down and one to the right.
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
                 .padding(Self.padding)
                 // Clicking between or below the covers deselects, as in
                 // Finder; a cover's own click wins over this one. At least
@@ -193,7 +215,7 @@ struct GameGridView: View {
             }
         case .previousSection, .nextSection, .back, .toggleCabinet:
             break // Owned by LibraryBrowserView.
-        case .search, .random, .previousLetter, .nextLetter:
+        case .details, .search, .random, .previousLetter, .nextLetter:
             break // Cabinet Mode's.
         }
     }

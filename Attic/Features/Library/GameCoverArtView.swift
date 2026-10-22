@@ -19,6 +19,8 @@ struct GameCoverArtView: View {
     /// and centered on its own, where a visible card edge around
     /// differently-shaped art reads as clutter rather than alignment.
     var showBackground: Bool = true
+    /// Where art narrower than the frame sits, such as a wide logo.
+    var alignment: Alignment = .center
 
     @Environment(\.displayScale) private var displayScale
     @State private var loadedImage: LoadedImage?
@@ -60,7 +62,7 @@ struct GameCoverArtView: View {
                     placeholderGlyph
                 }
             }
-            .frame(width: proxy.size.width, height: proxy.size.height)
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: alignment)
             .task(id: request) {
                 guard let request, request.maxPixelSize > 0 else { return }
                 if let image = await CoverArtThumbnailCache.shared.thumbnail(for: request.url, maxPixelSize: request.maxPixelSize),

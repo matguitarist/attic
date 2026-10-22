@@ -1,3 +1,4 @@
+import ImageIO
 import PDFKit
 import SwiftUI
 import SwiftData
@@ -23,6 +24,11 @@ struct CabinetGamePage: View {
     @State private var focusedAction = Action.play
     @State private var videoURL: URL?
     @State private var manualURL: URL?
+    /// Looked up once: the 3D box lives by file alone.
+    @State private var box3DURL: URL?
+    /// The box picture's width over its height: SNES boxes lie wide,
+    /// most others stand tall.
+    @State private var boxAspect: CGFloat?
     @State private var descriptionScroll = ScrollPosition(y: 0)
     @State private var descriptionOffset: CGFloat = 0
     /// What's open over the page.
@@ -47,39 +53,13 @@ struct CabinetGamePage: View {
         ZStack {
             Color.black.opacity(0.35).ignoresSafeArea()
 
-            HStack(alignment: .top, spacing: 48) {
-                VStack(spacing: 24) {
-                    CabinetTile(game: game, isFocused: true, showsFavoriteBadge: true)
-                        .frame(width: 400, height: 520)
-                    if let videoURL {
-                        VideoPreviewView(url: videoURL, isMuted: isMuted)
-                            .aspectRatio(4 / 3, contentMode: .fit)
-                            .clipShape(RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
-                            .frame(maxHeight: 300)
-                            .transition(.opacity)
-                    }
-                }
-                .frame(maxWidth: 520)
-
-                VStack(alignment: .leading, spacing: 20) {
-                    CabinetGameInfo(game: game, alignment: .leading, showsDescription: false, showsMoreFacts: true)
-                    if let description = game.gameDescription, !description.isEmpty {
-                        ScrollView(.vertical) {
-                            Text(description)
-                                .font(theme.bodyFont())
-                                .foregroundStyle(theme.palette.secondaryText.color)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .scrollPosition($descriptionScroll)
-                        .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: { _, y in descriptionOffset = y }
-                        .scrollIndicators(.never)
-                        .frame(maxHeight: .infinity)
-                    } else {
-                        Spacer(minLength: 0)
-                    }
-                    actionRow(theme)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // What the game is on one side: box, logo and facts, the
+            // description, the actions. Its video, centered, on the other.
+            // Details Side says which side the box and facts take.
+            HStack(spacing: 64) {
+                if theme.details.side == .leading { info(theme) }
+                video(theme)
+                if theme.details.side == .trailing { info(theme) }
             }
             .padding(.horizontal, 64)
             .padding(.vertical, 56)
@@ -101,6 +81,8 @@ struct CabinetGamePage: View {
         }
         .task(id: game.persistentModelID) {
             manualURL = game.manualURL
+            box3DURL = game.box3DURL
+            boxAspect = Self.aspectRatio(of: box3DURL ?? game.coverArtURL)
             videoURL = nil
             guard playsPreviews, let url = game.previewVideoURL, GameHeaderMedia.canPlay(url) else { return }
             try? await Task.sleep(for: .seconds(0.5))
@@ -110,6 +92,86 @@ struct CabinetGamePage: View {
     }
 
     // MARK: Pieces
+
+    private func info(_ theme: CabinetTheme) -> some View {
+        VStack(alignment: .leading, spacing: 32) {
+            HStack(alignment: .top, spacing: 32) {
+                box(theme)
+                VStack(alignment: .leading, spacing: 16) {
+                    CabinetGameTitle(game: game, alignment: .leading, centersLogo: false)
+                    CabinetGameInfo(game: game, alignment: .leading, showsDescription: false, showsTitle: false,
+                                    showsMoreFacts: true)
+                }
+            }
+            description(theme)
+            actionRow(theme)
+        }
+        // Two fifths of the page: the description reads as a block
+        // rather than one long line, and the video gets the rest.
+        .containerRelativeFrame(.horizontal) { width, _ in width * 0.4 }
+        .frame(maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    /// The 3D box when there is one, else the 2D one, at its own shape
+    /// within a square: as tall as the facts when it stands, as wide
+    /// when it lies.
+    private func box(_ theme: CabinetTheme) -> some View {
+        GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false)
+            .aspectRatio(boxAspect ?? 0.75, contentMode: .fit)
+            .frame(maxWidth: 300, maxHeight: 300)
+            .frame(width: 300, alignment: .topLeading)
+            .shadow(color: .black.opacity(0.5), radius: 20, y: 10)
+    }
+
+    /// Read from the file's header, without decoding the picture.
+    private static func aspectRatio(of url: URL?) -> CGFloat? {
+        guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
+              let height = properties[kCGImagePropertyPixelHeight] as? CGFloat, height > 0 else { return nil }
+        return width / height
+    }
+
+    /// The whole description, scrolled with up and down.
+    @ViewBuilder
+    private func description(_ theme: CabinetTheme) -> some View {
+        if let description = game.gameDescription, !description.isEmpty {
+            ScrollView(.vertical) {
+                Text(description)
+                    .font(theme.bodyFont())
+                    .lineSpacing(4)
+                    .foregroundStyle(theme.palette.secondaryText.color)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .scrollPosition($descriptionScroll)
+            .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: { _, y in descriptionOffset = y }
+            .scrollIndicators(.never)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        } else {
+            Spacer(minLength: 0)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    /// The screenshot, the video fading in over it, kept to a modest size
+    /// and centered in its column.
+    @ViewBuilder
+    private func video(_ theme: CabinetTheme) -> some View {
+        if videoURL != nil || game.titleScreenURL != nil {
+            ZStack {
+                GameCoverArtView(url: game.titleScreenURL, title: game.title, showBackground: false)
+                if let videoURL {
+                    VideoPreviewView(url: videoURL, isMuted: isMuted)
+                        .transition(.opacity)
+                }
+            }
+            .aspectRatio(4 / 3, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
+            .shadow(color: .black.opacity(0.4), radius: 16, y: 8)
+            .frame(maxWidth: 1280, maxHeight: 960)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
 
     private func actionRow(_ theme: CabinetTheme) -> some View {
         HStack(spacing: 14) {
@@ -166,7 +228,7 @@ struct CabinetGamePage: View {
         case .move(.down): scrollDescription(by: 160)
         case .activate: perform(focusedAction)
         case .toggleFavorite: perform(.favorite)
-        case .back: onClose()
+        case .back, .details: onClose()
         default: break
         }
     }

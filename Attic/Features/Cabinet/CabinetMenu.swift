@@ -57,7 +57,6 @@ struct CabinetMenuView: View {
 
     @Environment(\.cabinetTheme) private var installed
     @Environment(CabinetBrowse.self) private var browse
-    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
     @Environment(CabinetThemeStore.self) private var themeStore
     @Environment(ControllerSettingsStore.self) private var controllerSettings
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -349,6 +348,7 @@ struct CabinetMenuView: View {
         let current = themeStore.current
         let layouts = CabinetTheme.Layout.allCases
         let arts = CabinetTheme.Tiles.Art.allCases
+        let sides = CabinetTheme.Details.Side.allCases
         // The theme's own accent first, then the presets.
         let original = themes.first { $0.id == current.id }?.theme.palette.accent ?? current.theme.palette.accent
         let accents = [original] + CabinetTheme.accentPresets.map(\.color)
@@ -367,6 +367,11 @@ struct CabinetMenuView: View {
                             kind: .choice(options: arts.map(\.title), selection: Binding(
                                 get: { arts.firstIndex(of: current.theme.tiles.art) ?? 0 },
                                 set: { themeStore.adjust("tiles.art", to: arts[$0].rawValue) }
+                            ))),
+            CabinetMenuItem(id: "side", title: String(localized: "Details Side"), symbol: "sidebar.left",
+                            kind: .choice(options: sides.map(\.title), selection: Binding(
+                                get: { sides.firstIndex(of: current.theme.details.side) ?? 0 },
+                                set: { themeStore.adjust("details.side", to: sides[$0].rawValue) }
                             ))),
             CabinetMenuItem(id: "accent", title: String(localized: "Accent Color"), symbol: "paintbrush",
                             kind: .choice(options: [String(localized: "Theme's")] + CabinetTheme.accentPresets.map(\.name), selection: Binding(
@@ -421,8 +426,6 @@ struct CabinetMenuView: View {
 
     private var interfaceItems: [CabinetMenuItem] {
         [
-            CabinetMenuItem(id: "gamePage", title: String(localized: "Game page before playing"), symbol: "doc.richtext",
-                            kind: .toggle($opensGamePage)),
             CabinetMenuItem(id: "videos", title: String(localized: "Play videos"), symbol: "play.rectangle",
                             kind: .toggle($playsVideoPreviews)),
             CabinetMenuItem(id: "systemVideos", title: String(localized: "System videos"), symbol: "film",

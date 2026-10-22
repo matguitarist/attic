@@ -119,6 +119,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public enum TitlePosition: String, Codable, CaseIterable, Sendable {
             case top, bottom
         }
+        public enum Side: String, Codable, CaseIterable, Sendable {
+            case leading, trailing
+        }
         /// The picture in the details: a video plays over it after a
         /// moment when `playsVideo` is on.
         public var media: Media
@@ -128,6 +131,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// Where a side panel puts the title or logo: under the picture,
         /// or at the panel's foot.
         public var titlePosition: TitlePosition = .top
+        /// Which side the grid's details panel and the game page's art and
+        /// facts take.
+        public var side: Side = .leading
         public var showsMetadata: Bool
         public var showsDescription: Bool
         public var descriptionLines: Int

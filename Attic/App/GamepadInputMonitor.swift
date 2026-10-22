@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import GameController
 import Observation
 import AtticModels
@@ -17,9 +18,11 @@ enum GamepadCommand: Equatable {
     case back
     /// Menu / Start — open or close Cabinet Mode.
     case toggleCabinet
-    /// X / Square — search Cabinet Mode.
+    /// X / Square — the game's page in Cabinet Mode.
+    case details
+    /// Select / View — search Cabinet Mode.
     case search
-    /// Select / View — a random game.
+    /// Right stick click — a random game.
     case random
     /// L2 / R2 — the previous or next letter.
     case previousLetter
@@ -54,7 +57,13 @@ struct GamepadEvent: Equatable {
 @Observable
 @MainActor
 final class GamepadInputMonitor {
+    /// For the library window.
     private(set) var lastEvent: GamepadEvent?
+    /// For Cabinet Mode, while it's open. A channel of its own, not just
+    /// a flag the library checks: everything reading `lastEvent` gets
+    /// rebuilt when it changes, and rebuilding the library window behind
+    /// on every press made the pad lag in Cabinet Mode.
+    private(set) var cabinetEvent: GamepadEvent?
     /// While Cabinet Mode is open it owns the controller; the library window
     /// behind it must ignore events, or one press would act in both.
     var isCabinetActive = false
@@ -83,8 +92,11 @@ final class GamepadInputMonitor {
     private var repeatTasks: [GridMoveDirection: Task<Void, Never>] = [:]
 
     private static let stickThreshold: Float = 0.5
-    private static let repeatInitialDelay: Duration = .milliseconds(400)
-    private static let repeatInterval: Duration = .milliseconds(110)
+    /// Holding a direction repeats like a keyboard: a short wait, then
+    /// faster the longer it's held, so long lists go by quickly.
+    private static let repeatInitialDelay: Duration = .milliseconds(280)
+    private static let repeatIntervals: [Duration] = [.milliseconds(90), .milliseconds(70), .milliseconds(55), .milliseconds(40)]
+    private static let repeatsPerStep = 6
 
     private enum InputSource: Hashable {
         case gameController
@@ -150,6 +162,9 @@ final class GamepadInputMonitor {
         for (button, position) in physical where newlyPressed.contains(button) {
             handlePress(position)
         }
+        // The triggers are analog, so a press is crossing halfway.
+        if state.leftTriggerPressed && !previous.leftTriggerPressed { handlePress(.l2) }
+        if state.rightTriggerPressed && !previous.rightTriggerPressed { handlePress(.r2) }
 
         setHeldDirections(combinedUSBDirections, from: .xinputUSB)
     }
@@ -225,8 +240,9 @@ final class GamepadInputMonitor {
         case (.l1, _): .previousSection
         case (.r1, _): .nextSection
         case (.start, _): .toggleCabinet
-        case (.left, _): .search
-        case (.select, _): .random
+        case (.left, _): .details
+        case (.select, _): .search
+        case (.r3, _): .random
         case (.l2, _): .previousLetter
         case (.r2, _): .nextLetter
         default: nil
@@ -336,9 +352,12 @@ final class GamepadInputMonitor {
             send(.move(direction))
             repeatTasks[direction] = Task { [weak self] in
                 try? await Task.sleep(for: Self.repeatInitialDelay)
+                var repeats = 0
                 while !Task.isCancelled {
                     self?.send(.move(direction))
-                    try? await Task.sleep(for: Self.repeatInterval)
+                    let step = min(repeats / Self.repeatsPerStep, Self.repeatIntervals.count - 1)
+                    repeats += 1
+                    try? await Task.sleep(for: Self.repeatIntervals[step])
                 }
             }
         }
@@ -363,6 +382,37 @@ final class GamepadInputMonitor {
             return
         }
         sequence += 1
-        lastEvent = GamepadEvent(command: command, sequence: sequence)
+        let event = GamepadEvent(command: command, sequence: sequence)
+        if isCabinetActive {
+            cabinetEvent = event
+        } else {
+            lastEvent = event
+        }
+    }
+}
+
+/// Hands the library window's gamepad events to `action`. Whatever reads
+/// `lastEvent` in its body is rebuilt on every press, and the library's
+/// views are big — the whole grid re-sorted its games each time, which
+/// made the pad sluggish — so a small view of its own does the reading.
+private struct GamepadEventReceiver: View {
+    let action: (GamepadEvent) -> Void
+
+    @Environment(GamepadInputMonitor.self) private var gamepad
+
+    var body: some View {
+        Color.clear
+            .onChange(of: gamepad.lastEvent) { _, event in
+                guard let event, !gamepad.isCabinetActive else { return }
+                action(event)
+            }
+    }
+}
+
+extension View {
+    /// The library window's gamepad events, without rebuilding this view
+    /// for each one.
+    func onGamepadEvent(perform action: @escaping (GamepadEvent) -> Void) -> some View {
+        background(GamepadEventReceiver(action: action))
     }
 }

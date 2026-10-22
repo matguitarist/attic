@@ -6,9 +6,14 @@ import AtticPersistence
 /// browser based on whether anything has been scanned yet.
 struct ContentView: View {
     @Query private var systems: [GameSystem]
+    @Environment(GamepadInputMonitor.self) private var gamepad
 
     var body: some View {
-        if systems.isEmpty {
+        // Cabinet Mode hides this window; the library isn't kept loaded
+        // behind it, querying and redrawing for nobody.
+        if gamepad.isCabinetActive {
+            Color.clear
+        } else if systems.isEmpty {
             ChooseROMsRootView()
         } else {
             LibraryBrowserView()
