@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.6.0</title>
+            <pubDate>Thu, 22 Oct 2026 11:06:36 -0400</pubDate>
+            <sparkle:version>41</sparkle:version>
+            <sparkle:shortVersionString>2.6.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>New Apple TV theme: the game&#x27;s art fills the screen and fades to black, with its logo, facts and description at the top left and a row of wide cards along the bottom</li>
+<li>After a moment on a game, its video plays behind everything, like trailers on the Apple TV (follows the video setting in Settings › Cabinet Mode)</li>
+<li>The new Hero layout and Fan Art tile art can be used with any theme</li>
+<li>Wide cards fill with their art, without the black bars many screenshots come with</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.6.0/Attic-2.6.0.zip" length="17009825" type="application/octet-stream" sparkle:edSignature="ao1YhkP6ipiK0HxwuVusMk9keRKQRNsa7RJfKA3oh1lciq26iOGiMr4GAKLJeQ3vLGqE4XKqSmd79/3UJllJBw=="/>
+        </item>
+        <item>
             <title>2.5.2</title>
             <pubDate>Thu, 22 Oct 2026 10:36:20 -0400</pubDate>
             <sparkle:version>40</sparkle:version>
