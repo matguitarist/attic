@@ -32,6 +32,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// A vertical wheel of logos beside a screen playing the focused
         /// game's video (CoinOps, HyperSpin).
         case wheel
+        /// A list of titles beside the focused game's art and details
+        /// (EmulationStation's gamelist). The art is the tiles' `art`.
+        case list
     }
 
     public struct Palette: Codable, Hashable, Sendable {
@@ -81,9 +84,14 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
 
     public struct Tiles: Codable, Hashable, Sendable {
         public enum Art: String, Codable, CaseIterable, Sendable {
-            case cover, screenshot, logo
+            /// The 2D box art.
+            case cover
+            /// A rendered 3D box.
+            case box3D
+            case screenshot, logo
         }
-        /// What each game's tile shows. A logo falls back to the title.
+        /// What each game's tile shows. A 3D box falls back to the cover,
+        /// a logo to the title.
         public var art: Art
         /// Of the shelf's height (the room between the header and the
         /// hints): carousel covers and grid tiles. In the wheel, of one
@@ -106,7 +114,7 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
 
     public struct Details: Codable, Hashable, Sendable {
         public enum Media: String, Codable, CaseIterable, Sendable {
-            case none, cover, screenshot, fanart
+            case none, cover, box3D, screenshot, fanart
         }
         /// The picture in the details: a video plays over it after a
         /// moment when `playsVideo` is on.
@@ -212,6 +220,15 @@ extension CabinetTheme {
         return try JSONDecoder().decode(CabinetTheme.self, from: JSONSerialization.data(withJSONObject: merged))
     }
 
+    /// The theme with some of its values replaced, written as in a theme
+    /// file: `["palette": ["accent": "#B04CFF"], "layout": "grid"]`.
+    public func applying(_ overrides: [String: Any]) throws -> CabinetTheme {
+        guard !overrides.isEmpty else { return self }
+        var merged = Self.merging(overrides, over: try jsonObject())
+        merged["id"] = id
+        return try JSONDecoder().decode(CabinetTheme.self, from: JSONSerialization.data(withJSONObject: merged))
+    }
+
     /// The theme as a file to edit: every value, keys sorted.
     public func encoded() throws -> Data {
         let encoder = JSONEncoder()
@@ -237,7 +254,7 @@ extension CabinetTheme {
 // MARK: - Built-in themes
 
 extension CabinetTheme {
-    public static let builtIns: [CabinetTheme] = [.showcase, .bigPicture, .arcade]
+    public static let builtIns: [CabinetTheme] = [.showcase, .bigPicture, .arcade, .classic]
 
     public static func builtIn(id: String) -> CabinetTheme? {
         builtIns.first { $0.id == id }
@@ -316,6 +333,32 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: false, descriptionLines: 2),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 12, dim: 0.7),
+        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// A list of titles beside the focused game's 3D box and details, like
+    /// EmulationStation.
+    public static let classic = CabinetTheme(
+        id: "classic",
+        name: "Classic",
+        author: "Attic",
+        layout: .list,
+        palette: Palette(
+            background: ThemeColor(hex: "#15171C")!,
+            surface: ThemeColor(hex: "#262A33E6")!,
+            accent: ThemeColor(hex: "#E8A33D")!,
+            text: ThemeColor(hex: "#FFFFFF")!,
+            secondaryText: ThemeColor(hex: "#A9B0BC")!,
+            favorite: ThemeColor(hex: "#FFD60A")!
+        ),
+        typography: Typography(design: .standard, titleSize: 32, bodySize: 18, uppercase: false),
+        backdrop: Backdrop(source: .fanart, blur: 30, dim: 0.82),
+        tiles: Tiles(art: .box3D, size: 1, spacing: 2, cornerRadius: 8, showsBackground: false,
+                     focusScale: 1.2, unfocusedOpacity: 0.6, focusRing: false, focusGlow: false, showsTitles: false),
+        details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 8),
+        header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
+        menu: Menu(position: .center, width: 600, cornerRadius: 14, dim: 0.6),
         systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
         showsHints: true
     )

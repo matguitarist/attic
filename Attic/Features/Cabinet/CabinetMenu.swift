@@ -25,7 +25,7 @@ struct CabinetMenuItem: Identifiable {
         /// Left and right flip it, as does the confirm button.
         case toggle(Binding<Bool>)
         /// Left and right step through the options; confirm steps forward.
-        case choice(options: [String], selection: Binding<Int>)
+        case choice(options: [String], selection: Binding<Int>, swatches: [Color]? = nil)
         /// Runs on confirm. A confirming action asks for a second press.
         case action(confirm: Bool, perform: () -> Void)
         /// A value to read, never focused.
@@ -197,9 +197,15 @@ struct CabinetMenuView: View {
                 .padding(.vertical, 4)
                 .background(isOn.wrappedValue ? theme.palette.accent.color : theme.palette.surface.color, in: Capsule())
                 .foregroundStyle(isOn.wrappedValue ? theme.palette.background.color : secondary)
-        case .choice(let options, let selection):
+        case .choice(let options, let selection, let swatches):
             HStack(spacing: 10) {
                 if isFocused { Image(systemName: "chevron.left").foregroundStyle(secondary) }
+                if let swatch = swatches?[safe: selection.wrappedValue] {
+                    Circle()
+                        .fill(swatch)
+                        .overlay(Circle().strokeBorder(.white.opacity(0.4)))
+                        .frame(width: 18, height: 18)
+                }
                 Text(verbatim: options[safe: selection.wrappedValue] ?? "")
                     .lineLimit(1)
                 if isFocused { Image(systemName: "chevron.right").foregroundStyle(secondary) }
@@ -269,7 +275,7 @@ struct CabinetMenuView: View {
     private func adjust(_ item: CabinetMenuItem, by offset: Int) {
         switch item.kind {
         case .toggle(let isOn): isOn.wrappedValue.toggle()
-        case .choice(let options, let selection) where !options.isEmpty:
+        case .choice(let options, let selection, _) where !options.isEmpty:
             selection.wrappedValue = (selection.wrappedValue + offset + options.count) % options.count
         case .page(let target) where offset > 0: open(target)
         case .page, .choice, .action, .info:
@@ -327,23 +333,45 @@ struct CabinetMenuView: View {
 
     private var themeItems: [CabinetMenuItem] {
         let themes = themeStore.themes
-        let layout = switch themeStore.current.theme.layout {
-        case .carousel: String(localized: "Carousel")
-        case .grid: String(localized: "Grid")
-        case .wheel: String(localized: "Wheel")
-        }
-        return [
+        let current = themeStore.current
+        let layouts = CabinetTheme.Layout.allCases
+        let arts = CabinetTheme.Tiles.Art.allCases
+        // The theme's own accent first, then the presets.
+        let original = themes.first { $0.id == current.id }?.theme.palette.accent ?? current.theme.palette.accent
+        let accents = [original] + CabinetTheme.accentPresets.map(\.color)
+        var items = [
             CabinetMenuItem(id: "theme", title: String(localized: "Theme"), symbol: "paintpalette",
                             kind: .choice(options: themes.map(\.theme.name), selection: Binding(
                                 get: { themes.firstIndex { $0.id == themeStore.selectedID } ?? 0 },
                                 set: { if themes.indices.contains($0) { themeStore.selectedID = themes[$0].id } }
                             ))),
-            CabinetMenuItem(id: "layout", title: String(localized: "Layout"), symbol: "square.grid.2x2", kind: .info(layout)),
+            CabinetMenuItem(id: "layout", title: String(localized: "Layout"), symbol: "square.grid.2x2",
+                            kind: .choice(options: layouts.map(\.title), selection: Binding(
+                                get: { layouts.firstIndex(of: current.theme.layout) ?? 0 },
+                                set: { themeStore.adjust("layout", to: layouts[$0].rawValue) }
+                            ))),
+            CabinetMenuItem(id: "art", title: String(localized: "Game Art"), symbol: "photo.on.rectangle",
+                            kind: .choice(options: arts.map(\.title), selection: Binding(
+                                get: { arts.firstIndex(of: current.theme.tiles.art) ?? 0 },
+                                set: { themeStore.adjust("tiles.art", to: arts[$0].rawValue) }
+                            ))),
+            CabinetMenuItem(id: "accent", title: String(localized: "Accent Color"), symbol: "paintbrush",
+                            kind: .choice(options: [String(localized: "Theme's")] + CabinetTheme.accentPresets.map(\.name), selection: Binding(
+                                get: { accents.dropFirst().firstIndex(of: current.theme.palette.accent) ?? 0 },
+                                set: { themeStore.adjust("palette.accent", to: $0 == 0 ? nil : accents[$0].hex) }
+                            ), swatches: accents.map(\.color)))
+        ]
+        if current.isAdjusted {
+            items.append(CabinetMenuItem(id: "reset", title: String(localized: "Back to the Theme's Own"), symbol: "arrow.uturn.backward",
+                                         kind: .action(confirm: false, perform: { themeStore.resetAdjustments() })))
+        }
+        items += [
             CabinetMenuItem(id: "author", title: String(localized: "By"), symbol: "person",
-                            kind: .info(themeStore.current.theme.author ?? (themeStore.current.isBuiltIn ? "Attic" : String(localized: "You")))),
+                            kind: .info(current.theme.author ?? (current.isBuiltIn ? "Attic" : String(localized: "You")))),
             CabinetMenuItem(id: "reload", title: String(localized: "Reload Themes"), symbol: "arrow.clockwise",
                             kind: .action(confirm: false, perform: { themeStore.reload() }))
         ]
+        return items
     }
 
     private var interfaceItems: [CabinetMenuItem] {

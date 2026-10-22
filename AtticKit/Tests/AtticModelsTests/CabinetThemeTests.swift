@@ -53,6 +53,17 @@ struct CabinetThemeTests {
         #expect(theme.menu == CabinetTheme.arcade.menu)
     }
 
+    @Test func adjustmentsReplaceOnlyWhatTheyName() throws {
+        let theme = try CabinetTheme.arcade.applying(["palette": ["accent": "#3DDC84"], "tiles": ["art": "box3D"], "layout": "list"])
+        #expect(theme.id == "arcade")
+        #expect(theme.palette.accent.hex == "#3DDC84")
+        #expect(theme.palette.background == CabinetTheme.arcade.palette.background)
+        #expect(theme.tiles.art == .box3D)
+        #expect(theme.tiles.focusScale == CabinetTheme.arcade.tiles.focusScale)
+        #expect(theme.layout == .list)
+        #expect(try CabinetTheme.arcade.applying([:]) == .arcade)
+    }
+
     @Test func badValuesAreErrors() {
         #expect(throws: (any Error).self) {
             try CabinetTheme.decode(Data(#"{ "palette": { "accent": "pink" } }"#.utf8), id: "bad")

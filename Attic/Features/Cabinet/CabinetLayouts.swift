@@ -234,3 +234,108 @@ struct CabinetWheelLayout: View {
         .scrollIndicators(.never)
     }
 }
+
+// MARK: - List
+
+/// A list of titles beside the focused game's art, picture and details,
+/// like EmulationStation's gamelist. The art is the tiles' `art`.
+struct CabinetListLayout: View {
+    let shelf: CabinetShelfContent
+
+    @Environment(\.cabinetTheme) private var installed
+    @State private var scrolledID: PersistentIdentifier?
+
+    var body: some View {
+        let theme = installed.theme
+        GeometryReader { geometry in
+            let rowHeight = theme.typography.bodySize * 2.3
+            HStack(alignment: .top, spacing: 40) {
+                list(rowHeight: rowHeight, height: geometry.size.height)
+                    .frame(width: min(640, geometry.size.width * 0.42))
+                    .background(theme.palette.surface.color.opacity(0.5),
+                                in: RoundedRectangle(cornerRadius: theme.tiles.cornerRadius + 6, style: .continuous))
+
+                if let game = shelf.focusedGame {
+                    CabinetListDetails(game: game)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                }
+            }
+            .padding(.horizontal, 40)
+            .padding(.vertical, 20)
+        }
+        .onChange(of: shelf.focusedID, initial: true) { old, id in
+            withAnimation(old == nil ? nil : .snappy(duration: 0.15)) { scrolledID = id }
+        }
+        .onChange(of: scrolledID) { _, id in
+            if let id, id != shelf.focusedID, let game = shelf.games.first(where: { $0.persistentModelID == id }) {
+                shelf.onFocus(game)
+            }
+        }
+    }
+
+    private func list(rowHeight: CGFloat, height: CGFloat) -> some View {
+        let theme = installed.theme
+        return ScrollView(.vertical) {
+            LazyVStack(spacing: theme.tiles.spacing) {
+                ForEach(shelf.games) { game in
+                    let isFocused = shelf.isFocused(game)
+                    HStack(spacing: 10) {
+                        if game.favorite {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(theme.palette.favorite.color)
+                        }
+                        Text(theme.cased(game.title))
+                            .lineLimit(1)
+                        Spacer(minLength: 8)
+                        if let year = game.releaseDate.map({ Calendar.current.component(.year, from: $0) }) {
+                            Text(verbatim: String(year))
+                                .foregroundStyle(isFocused ? theme.palette.background.color.opacity(0.8) : theme.palette.secondaryText.color)
+                        }
+                    }
+                    .font(theme.bodyFont(isFocused ? .semibold : .regular))
+                    .foregroundStyle(isFocused ? theme.palette.background.color : theme.palette.text.color)
+                    .padding(.horizontal, 16)
+                    .frame(height: rowHeight)
+                    .background(isFocused ? theme.palette.accent.color : .clear,
+                                in: RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
+                    .contentShape(Rectangle())
+                    .id(game.persistentModelID)
+                    .onTapGesture(count: 2) { shelf.onPlay(game) }
+                    .onTapGesture { shelf.onFocus(game) }
+                }
+            }
+            .scrollTargetLayout()
+            .padding(8)
+        }
+        .contentMargins(.vertical, max(0, (height - rowHeight) / 2 - 20), for: .scrollContent)
+        .scrollPosition(id: $scrolledID, anchor: .center)
+        .scrollIndicators(.never)
+    }
+}
+
+/// The list's other side: the game's art beside its picture, its details
+/// below.
+private struct CabinetListDetails: View {
+    let game: Game
+
+    @Environment(\.cabinetTheme) private var installed
+
+    var body: some View {
+        let theme = installed.theme
+        VStack(alignment: .leading, spacing: 24) {
+            HStack(alignment: .top, spacing: 24) {
+                CabinetTile(game: game, isFocused: true)
+                    .aspectRatio(0.75, contentMode: .fit)
+                    .frame(maxWidth: 300, maxHeight: 400)
+                if theme.details.media != .none {
+                    CabinetMedia(game: game)
+                        .aspectRatio(4 / 3, contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
+                        .frame(maxHeight: 400)
+                }
+            }
+            CabinetGameInfo(game: game, alignment: .leading)
+        }
+        .id(game.persistentModelID)
+    }
+}

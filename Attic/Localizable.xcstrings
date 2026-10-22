@@ -1888,12 +1888,42 @@
         }
       }
     },
+    "2D Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîte 2D"
+          }
+        }
+      }
+    },
     "3 or more": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "3 ou plus"
+          }
+        }
+      }
+    },
+    "3D Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîte 3D"
+          }
+        }
+      }
+    },
+    "3D box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "boîte 3D"
           }
         }
       }
@@ -1998,6 +2028,16 @@
         }
       }
     },
+    "A list of titles beside the game's art and details": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une liste de titres à côté de l'illustration et des détails du jeu"
+          }
+        }
+      }
+    },
     "A row of big covers": {
       "localizations": {
         "fr": {
@@ -2014,6 +2054,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un set que cette version de l’émulateur ne connaît pas sous ce nom."
+          }
+        }
+      }
+    },
+    "A theme is a theme.json file in the Themes folder. Customize makes one from the selected theme with your changes below, and Cabinet Mode reads the folder again each time it opens.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un thème est un fichier theme.json dans le dossier Themes. Personnaliser en crée un à partir du thème choisi avec vos changements ci-dessous, et le mode Cabinet relit le dossier à chaque ouverture."
           }
         }
       }
@@ -2074,6 +2124,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "À propos de ce système"
+          }
+        }
+      }
+    },
+    "Accent": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accent"
+          }
+        }
+      }
+    },
+    "Accent Color": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleur d'accent"
           }
         }
       }
@@ -2470,6 +2540,16 @@
         }
       }
     },
+    "Amber": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambre"
+          }
+        }
+      }
+    },
     "Analyze…": {
       "localizations": {
         "fr": {
@@ -2816,12 +2896,32 @@
         }
       }
     },
+    "Back to the Theme's Own": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenir à celui du thème"
+          }
+        }
+      }
+    },
     "Back up every week": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Sauvegarder chaque semaine"
+          }
+        }
+      }
+    },
+    "Background": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fond"
           }
         }
       }
@@ -2852,6 +2952,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mauvais dumps"
+          }
+        }
+      }
+    },
+    "Blue": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bleu"
           }
         }
       }
@@ -3466,6 +3576,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Collections"
+          }
+        }
+      }
+    },
+    "Colors": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleurs"
           }
         }
       }
@@ -4399,6 +4519,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Différents de No-Intro"
+          }
+        }
+      }
+    },
+    "Dim Text": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte atténué"
           }
         }
       }
@@ -5490,11 +5620,33 @@
       }
     },
     "Full-screen couch mode (⌘⇧B, or Menu/Start on a controller). A theme is a theme.json file in the Themes folder: Customize makes one from the selected theme, and Cabinet Mode reads it again each time it opens.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette). Un thème est un fichier theme.json dans le dossier Themes : Personnaliser en crée un à partir du thème choisi, et le mode Cabinet le relit à chaque ouverture."
+          }
+        }
+      }
+    },
+    "Full-screen couch mode (⌘⇧B, or Menu/Start on a controller). Layout, art and colors change the selected theme for you, kept apart from it. A theme is a theme.json file in the Themes folder: Customize makes one from the selected theme with your changes, and Cabinet Mode reads it again each time it opens.": {
+      "extractionState": "stale",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode canapé en plein écran (⌘⇧B, ou Menu/Start sur la manette). La disposition, les illustrations et les couleurs modifient le thème choisi pour vous, sans toucher au thème lui-même. Un thème est un fichier theme.json dans le dossier Themes : Personnaliser en crée un à partir du thème choisi avec vos changements, et le mode Cabinet le relit à chaque ouverture."
+          }
+        }
+      }
+    },
+    "Full-screen couch mode: ⌘⇧B, or Menu/Start on a controller. Start opens its menu, where all of this can be set from the couch too.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode canapé en plein écran : ⌘⇧B, ou Menu/Start sur la manette. Start ouvre son menu, où tout ceci se règle aussi depuis le canapé."
           }
         }
       }
@@ -5535,6 +5687,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux Game & Watch sont des fichiers .mgw, convertis depuis les illustrations et romsets de MAME."
+          }
+        }
+      }
+    },
+    "Game Art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Illustration des jeux"
           }
         }
       }
@@ -5756,6 +5918,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "De bons dumps avec leurs propres noms de fichiers. Leurs médias, entrées de gamelist et sauvegardes suivent, et ils gardent leur historique de jeu et leurs collections."
+          }
+        }
+      }
+    },
+    "Green": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vert"
           }
         }
       }
@@ -6036,6 +6208,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Incomplets (%lld)"
+          }
+        }
+      }
+    },
+    "Indigo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indigo"
           }
         }
       }
@@ -6632,6 +6814,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clair"
+          }
+        }
+      }
+    },
+    "List": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liste"
           }
         }
       }
@@ -7939,6 +8131,16 @@
         }
       }
     },
+    "Open on the systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir sur les systèmes"
+          }
+        }
+      }
+    },
     "Open the game's manual": {
       "localizations": {
         "fr": {
@@ -7965,6 +8167,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Facultatif"
+          }
+        }
+      }
+    },
+    "Orange": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orange"
           }
         }
       }
@@ -8029,6 +8241,16 @@
         }
       }
     },
+    "Panels": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Panneaux"
+          }
+        }
+      }
+    },
     "Password": {
       "localizations": {
         "fr": {
@@ -8065,6 +8287,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Images"
+          }
+        }
+      }
+    },
+    "Pink": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rose"
           }
         }
       }
@@ -8185,6 +8417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lire les aperçus vidéo"
+          }
+        }
+      }
+    },
+    "Play video sound": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son des vidéos"
           }
         }
       }
@@ -8355,6 +8597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Éditeur"
+          }
+        }
+      }
+    },
+    "Purple": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Violet"
           }
         }
       }
@@ -8645,6 +8897,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Émulateur recommandé"
+          }
+        }
+      }
+    },
+    "Red": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rouge"
           }
         }
       }
@@ -9637,6 +9899,16 @@
         }
       }
     },
+    "Screenshot": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capture d'écran"
+          }
+        }
+      }
+    },
     "Screenshots": {
       "localizations": {
         "fr": {
@@ -10027,6 +10299,16 @@
         }
       }
     },
+    "Show the controller's buttons": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les boutons de la manette"
+          }
+        }
+      }
+    },
     "Show the inspector": {
       "localizations": {
         "fr": {
@@ -10397,12 +10679,32 @@
         }
       }
     },
+    "Teal": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turquoise"
+          }
+        }
+      }
+    },
     "Tennis, Golf, Kart": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Tennis, Golf, Kart"
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte"
           }
         }
       }
@@ -10689,6 +10991,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thème"
+          }
+        }
+      }
+    },
+    "Theme's": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celle du thème"
+          }
+        }
+      }
+    },
+    "These change %@ for you, kept apart from the theme itself.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ces réglages modifient %@ pour vous, sans toucher au thème lui-même."
           }
         }
       }
@@ -11389,6 +11711,16 @@
         }
       }
     },
+    "White": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blanc"
+          }
+        }
+      }
+    },
     "Widescreen (16:9)": {
       "localizations": {
         "fr": {
@@ -11445,6 +11777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Écriture des playlists…"
+          }
+        }
+      }
+    },
+    "Yellow": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jaune"
           }
         }
       }

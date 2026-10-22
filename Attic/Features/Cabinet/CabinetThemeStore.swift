@@ -5,14 +5,21 @@ import AtticModels
 /// Cabinet Mode's themes: the built-in ones, then each folder in
 /// Application Support/Attic/Themes holding a `theme.json`, its pictures
 /// beside it. A folder named like a built-in theme replaces it.
+///
+/// Over each theme sit the person's adjustments — layout, art, colors set
+/// in Settings or the Start menu — written like a theme file's values and
+/// kept per theme, so the theme itself stays as it came.
 @Observable @MainActor
 final class CabinetThemeStore {
     static let selectedKey = "cabinetTheme"
+    static let adjustmentsKey = "cabinetThemeAdjustments"
 
     struct Installed: Identifiable, Hashable {
         var theme: CabinetTheme
         /// Nil for a built-in theme.
         var folder: URL?
+        /// Whether the person's adjustments changed it.
+        var isAdjusted = false
         var id: String { theme.id }
         var isBuiltIn: Bool { folder == nil }
 
@@ -24,14 +31,20 @@ final class CabinetThemeStore {
         }
     }
 
+    /// As they came, without adjustments.
     private(set) var themes: [Installed] = []
     var selectedID: String {
-        didSet { UserDefaults.standard.set(selectedID, forKey: Self.selectedKey) }
+        didSet {
+            UserDefaults.standard.set(selectedID, forKey: Self.selectedKey)
+            refresh()
+        }
     }
 
-    var current: Installed {
-        themes.first { $0.id == selectedID } ?? Installed(theme: .showcase)
-    }
+    /// The selected theme, adjusted.
+    private(set) var current = Installed(theme: .showcase)
+
+    /// By theme id.
+    private var adjustments: [String: [String: Any]] = [:]
 
     static var folderURL: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -42,7 +55,60 @@ final class CabinetThemeStore {
 
     init() {
         selectedID = UserDefaults.standard.string(forKey: Self.selectedKey) ?? CabinetTheme.showcase.id
+        if let data = UserDefaults.standard.data(forKey: Self.adjustmentsKey),
+           let stored = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]] {
+            adjustments = stored
+        }
         reload()
+    }
+
+    // MARK: Adjustments
+
+    /// Sets one of the selected theme's values, named by its path in a
+    /// theme file ("palette.accent", "tiles.art"); nil goes back to the
+    /// theme's own.
+    func adjust(_ path: String, to value: Any?) {
+        var object = adjustments[selectedID] ?? [:]
+        Self.set(value, at: path.split(separator: ".").map(String.init), in: &object)
+        adjustments[selectedID] = object.isEmpty ? nil : object
+        saveAdjustments()
+    }
+
+    /// Back to the selected theme as it came.
+    func resetAdjustments() {
+        adjustments[selectedID] = nil
+        saveAdjustments()
+    }
+
+    private static func set(_ value: Any?, at path: [String], in object: inout [String: Any]) {
+        guard let key = path.first else { return }
+        if path.count == 1 {
+            object[key] = value
+        } else {
+            var child = object[key] as? [String: Any] ?? [:]
+            set(value, at: Array(path.dropFirst()), in: &child)
+            object[key] = child.isEmpty ? nil : child
+        }
+    }
+
+    private func saveAdjustments() {
+        if let data = try? JSONSerialization.data(withJSONObject: adjustments) {
+            UserDefaults.standard.set(data, forKey: Self.adjustmentsKey)
+        }
+        refresh()
+    }
+
+    private func refresh() {
+        var installed = themes.first { $0.id == selectedID } ?? Installed(theme: .showcase)
+        if let adjustment = adjustments[installed.id], !adjustment.isEmpty {
+            do {
+                installed.theme = try installed.theme.applying(adjustment)
+                installed.isAdjusted = true
+            } catch {
+                AppLog.post(.warning, "Ignored adjustments to the \(installed.theme.name) theme: \(Self.describe(error))")
+            }
+        }
+        if installed != current { current = installed }
     }
 
     /// Reads the Themes folder again, for themes added or edited since.
@@ -61,6 +127,7 @@ final class CabinetThemeStore {
             }
         }
         if installed != themes { themes = installed }
+        refresh()
     }
 
     /// Copies a theme into the Themes folder as a file to edit, selects
@@ -184,6 +251,62 @@ extension CabinetTheme {
     /// Section names and titles, uppercased when the theme says.
     func cased(_ text: String) -> String {
         typography.uppercase ? text.localizedUppercase : text
+    }
+}
+
+extension CabinetTheme.Layout {
+    var title: String {
+        switch self {
+        case .carousel: String(localized: "Carousel")
+        case .grid: String(localized: "Grid")
+        case .wheel: String(localized: "Wheel")
+        case .list: String(localized: "List")
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .carousel: String(localized: "A row of big covers")
+        case .grid: String(localized: "A grid of covers beside the game's details")
+        case .wheel: String(localized: "A wheel of logos beside the game's video")
+        case .list: String(localized: "A list of titles beside the game's art and details")
+        }
+    }
+}
+
+extension CabinetTheme.Tiles.Art {
+    var title: String {
+        switch self {
+        case .cover: String(localized: "2D Box")
+        case .box3D: String(localized: "3D Box")
+        case .screenshot: String(localized: "Screenshot")
+        case .logo: String(localized: "Logo")
+        }
+    }
+}
+
+extension CabinetTheme {
+    /// Accent colors to pick from with a controller.
+    static let accentPresets: [(name: String, color: ThemeColor)] = [
+        (String(localized: "Pink"), ThemeColor(hex: "#FF2E88")!),
+        (String(localized: "Red"), ThemeColor(hex: "#FF453A")!),
+        (String(localized: "Orange"), ThemeColor(hex: "#FF9F0A")!),
+        (String(localized: "Amber"), ThemeColor(hex: "#E8A33D")!),
+        (String(localized: "Yellow"), ThemeColor(hex: "#FFD60A")!),
+        (String(localized: "Green"), ThemeColor(hex: "#30D158")!),
+        (String(localized: "Teal"), ThemeColor(hex: "#40C8E0")!),
+        (String(localized: "Blue"), ThemeColor(hex: "#1A9FFF")!),
+        (String(localized: "Indigo"), ThemeColor(hex: "#5E5CE6")!),
+        (String(localized: "Purple"), ThemeColor(hex: "#BF5AF2")!),
+        (String(localized: "White"), ThemeColor(hex: "#FFFFFF")!)
+    ]
+}
+
+extension ThemeColor {
+    /// The color as a picker gives it, in sRGB.
+    init(_ color: Color) {
+        let ns = NSColor(color).usingColorSpace(.sRGB) ?? .white
+        self.init(red: ns.redComponent, green: ns.greenComponent, blue: ns.blueComponent, alpha: ns.alphaComponent)
     }
 }
 

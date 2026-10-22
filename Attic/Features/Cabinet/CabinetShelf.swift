@@ -8,7 +8,7 @@ import AtticPersistence
 /// the whole shelf.
 ///
 /// Each layout moves along its own axis — the carousel left and right,
-/// the wheel up and down, the grid both — and the other directions step
+/// the wheel and list up and down, the grid both — and the other directions step
 /// through sections, so a pad without (or with awkward) shoulder buttons
 /// can still get everywhere.
 struct CabinetShelf: View {
@@ -68,6 +68,7 @@ struct CabinetShelf: View {
                 case .carousel: CabinetCarouselLayout(shelf: shelf)
                 case .grid: CabinetGridLayout(shelf: shelf, columns: $columns)
                 case .wheel: CabinetWheelLayout(shelf: shelf)
+                case .list: CabinetListLayout(shelf: shelf)
                 }
             }
         }
@@ -99,10 +100,10 @@ struct CabinetShelf: View {
         let games = games
         let index = focusedGame.flatMap { focused in games.firstIndex { $0.persistentModelID == focused.persistentModelID } }
         switch (installed.theme.layout, direction) {
-        case (.carousel, .left), (.wheel, .up): focus(games[safe: (index ?? 0) - 1])
-        case (.carousel, .right), (.wheel, .down): focus(games[safe: (index ?? 0) + 1])
-        case (.carousel, .up), (.wheel, .left): onSectionStep(-1)
-        case (.carousel, .down), (.wheel, .right): onSectionStep(1)
+        case (.carousel, .left), (.wheel, .up), (.list, .up): focus(games[safe: (index ?? 0) - 1])
+        case (.carousel, .right), (.wheel, .down), (.list, .down): focus(games[safe: (index ?? 0) + 1])
+        case (.carousel, .up), (.wheel, .left), (.list, .left): onSectionStep(-1)
+        case (.carousel, .down), (.wheel, .right), (.list, .right): onSectionStep(1)
         case (.grid, _):
             let target = GridNavigation.index(movingFrom: index, direction: direction, itemCount: games.count, columns: columns)
             focus(target.map { games[$0] })

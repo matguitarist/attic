@@ -12,13 +12,16 @@ import UniformTypeIdentifiers
 /// (ScreenScraper's wheel, TheGamesDB's clear logo). Not a marquee, the
 /// cabinet's lit header, though RetroBat and Batocera file logos under
 /// that name. `fanart` is a wide piece of art for behind the game.
+/// `boxes3D` holds a rendered 3D box (ScreenScraper's box-3D), in ES-DE's
+/// `3dboxes` folder.
 public enum MediaKind: String, CaseIterable, Sendable {
     case covers, screenshots, videos, manuals, logos, fanart
+    case boxes3D = "3dboxes"
 
     /// Stored as HEIC when that's smaller, which keeps a logo's
     /// transparency. Screenshots stay as they are, since compressing
     /// pixel art blurs it.
-    public var isStoredAsHEIC: Bool { self == .covers || self == .fanart || self == .logos }
+    public var isStoredAsHEIC: Bool { self == .covers || self == .fanart || self == .logos || self == .boxes3D }
 }
 
 /// Where a game's media lives: one tree next to the ROMs folder, in

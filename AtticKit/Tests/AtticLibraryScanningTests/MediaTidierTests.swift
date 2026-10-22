@@ -91,13 +91,20 @@ struct MediaTidierTests {
         try touch(media.appending(path: "snes/covers/Sub/Other (USA).webp"))
         try touch(media.appending(path: "snes/covers/Game (USA)_240.jpg"))
         try touch(media.appending(path: "snes/videos/Gone (USA).mp4"))
-        try touch(media.appending(path: "snes/3dboxes/Game (USA).png"))
+        try touch(media.appending(path: "snes/backcovers/Game (USA).png"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         let trashed = Set(plan.trash.map(\.lastPathComponent))
-        #expect(trashed == ["Game (USA)_240.jpg", "Gone (USA).mp4", "3dboxes"])
+        #expect(trashed == ["Game (USA)_240.jpg", "Gone (USA).mp4", "backcovers"])
         // Already compact, so not recompressed.
         #expect(plan.compress.isEmpty)
+    }
+
+    @Test func threeDBoxesStay() throws {
+        try touch(roms.appending(path: "snes/Game (USA).sfc"))
+        try touch(media.appending(path: "snes/3dboxes/Game (USA).webp"))
+        let plan = MediaTidier.plan(romsRoots: [roms])
+        #expect(plan.trash.isEmpty)
     }
 
     @Test func mixImagesAndTitleScreensOnlyStayAsStandIns() throws {
@@ -122,7 +129,7 @@ struct MediaTidierTests {
         try touch(neogeo.appending(path: "2020bb.zip"))
         try touch(neogeo.appending(path: "images/2020bb-boxart.png"))
         try touch(neogeo.appending(path: "readme.txt"))
-        try touch(media.appending(path: "neogeo/3dboxes/2020bb.png"))
+        try touch(media.appending(path: "neogeo/backcovers/2020bb.png"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         #expect(plan.steps == [.moveMedia, .compressCovers, .trash(.otherApps), .trash(.unshownMedia), .trash(.leftoverMedia)])
@@ -132,7 +139,7 @@ struct MediaTidierTests {
         // would otherwise go to the Trash unmoved.
         let noMove = plan.only([.trash(.otherApps), .trash(.leftoverMedia), .trash(.unshownMedia)])
         #expect(noMove.moves.isEmpty && noMove.compress.isEmpty)
-        #expect(Set(noMove.trash.map(\.lastPathComponent)) == ["readme.txt", "3dboxes"])
+        #expect(Set(noMove.trash.map(\.lastPathComponent)) == ["readme.txt", "backcovers"])
 
         let onlyReadme = plan.only([.moveMedia, .trash(.otherApps)])
         #expect(onlyReadme.trash.map(\.lastPathComponent) == ["readme.txt"])

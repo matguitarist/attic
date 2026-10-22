@@ -9,8 +9,9 @@ struct CabinetTile: View {
     let isFocused: Bool
 
     @Environment(\.cabinetTheme) private var installed
-    /// Looked up once: the logo lives by file alone.
+    /// Looked up once: the logo and 3D box live by file alone.
     @State private var logoURL: URL?
+    @State private var box3DURL: URL?
 
     var body: some View {
         let theme = installed.theme
@@ -47,8 +48,9 @@ struct CabinetTile: View {
         .opacity(isFocused ? 1 : tiles.unfocusedOpacity)
         .shadow(color: glowColor(theme), radius: isFocused ? 24 : 0, y: tiles.focusGlow ? 0 : 16)
         .animation(.snappy(duration: 0.25), value: isFocused)
-        .task(id: game.persistentModelID) {
-            if tiles.art == .logo { logoURL = game.logoURL }
+        .task(id: [game.persistentModelID.hashValue, tiles.art.hashValue]) {
+            logoURL = tiles.art == .logo ? game.logoURL : nil
+            box3DURL = tiles.art == .box3D ? game.box3DURL : nil
         }
     }
 
@@ -57,6 +59,8 @@ struct CabinetTile: View {
         switch theme.tiles.art {
         case .cover:
             GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
+        case .box3D:
+            GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false)
         case .screenshot:
             GameCoverArtView(url: game.titleScreenURL ?? game.coverArtURL, title: game.title, showBackground: false)
         case .logo:

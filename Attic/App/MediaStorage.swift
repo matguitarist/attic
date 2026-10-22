@@ -34,6 +34,9 @@ extension Game {
     /// Its fan art, likewise.
     var fanartURL: URL? { mediaURL(.fanart) }
 
+    /// Its rendered 3D box, likewise.
+    var box3DURL: URL? { mediaURL(.boxes3D) }
+
     /// Media kept by file alone, with nothing in the library pointing to it.
     private func mediaURL(_ kind: MediaKind) -> URL? {
         MediaFolder.existingFiles(base: MediaFolder.baseURL(forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: kind)).first

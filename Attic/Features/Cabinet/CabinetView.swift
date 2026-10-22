@@ -444,6 +444,7 @@ enum CabinetArt {
         switch media {
         case .none: nil
         case .cover: url(for: game, CabinetTheme.Backdrop.Source.cover)
+        case .box3D: game.box3DURL ?? game.coverArtURL
         case .screenshot: url(for: game, CabinetTheme.Backdrop.Source.screenshot)
         case .fanart: url(for: game, CabinetTheme.Backdrop.Source.fanart)
         }

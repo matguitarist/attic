@@ -324,6 +324,11 @@ final class ScrapeCoordinator {
                 changed.append(String(localized: "fan art"))
             }
         }
+        if force || game.box3DURL == nil, let remoteURL = info.box3DURL {
+            if (try? await downloadMedia(from: remoteURL, for: game, kind: .boxes3D)) != nil {
+                changed.append(String(localized: "3D box"))
+            }
+        }
 
         if changedProtectedField {
             game.metadataManuallyEdited = true
