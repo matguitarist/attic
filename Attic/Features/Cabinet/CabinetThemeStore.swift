@@ -146,6 +146,10 @@ final class CabinetThemeStore {
         - `menu`: the menu Start opens. `position` (`center`, `leading`,
           `trailing`), `width` (points), `cornerRadius`, `dim` (how much the
           screen behind darkens, 0 to 1).
+        - `systems`: the level before the games. `isEnabled` (open on the
+          systems, B going back to them), `showsStats`, `artFolder` (a
+          folder in the theme with a picture per system, named after its
+          ROMs folder: `systems/snes.png`; without one, its covers fan out).
         - `showsHints`: the controller buttons along the bottom.
 
         """

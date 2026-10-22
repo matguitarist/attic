@@ -6506,6 +6506,16 @@
         }
       }
     },
+    "Last played: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière partie : %@"
+          }
+        }
+      }
+    },
     "Last scan": {
       "localizations": {
         "fr": {
@@ -7885,6 +7895,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Seul un BIOS d'arcade (comme konamigx.zip) peut être déposé sur un jeu. Déposez les jeux sur la liste des jeux."
+          }
+        }
+      }
+    },
+    "Open": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir"
           }
         }
       }

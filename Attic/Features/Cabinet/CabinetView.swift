@@ -40,6 +40,8 @@ struct CabinetView: View {
     @Environment(\.dismissWindow) private var dismissWindow
 
     @State private var selection: LibrarySelection = .allGames
+    /// The systems, or a section's games (see `CabinetTheme.Systems`).
+    @State private var level = Level.systems
     @State private var focusedGame: Game?
     @State private var gameCount = 0
     @State private var event: CabinetEvent?
@@ -49,23 +51,36 @@ struct CabinetView: View {
     @State private var menuEvent: CabinetEvent?
     @FocusState private var hasKeyboardFocus: Bool
 
+    enum Level {
+        case systems, games
+    }
+
     var body: some View {
         let installed = themeStore.current
         let theme = installed.theme
         ZStack {
-            CabinetBackdrop(game: focusedGame)
+            CabinetBackdrop(game: level == .games ? focusedGame : nil)
 
             VStack(spacing: 0) {
-                CabinetHeader(sections: sections, selection: $selection, gameCount: gameCount)
-                    .padding(.top, 36)
+                switch level {
+                case .systems:
+                    CabinetSystemsView(sections: sections, selection: $selection, onOpen: { send(.activate) })
+                        .transition(.opacity.combined(with: .scale(scale: 1.04)))
+                case .games:
+                    VStack(spacing: 0) {
+                        CabinetHeader(sections: sections, selection: $selection, gameCount: gameCount)
+                            .padding(.top, 36)
 
-                CabinetShelf(selection: selection, event: event, focusedGame: $focusedGame, gameCount: $gameCount,
-                             onSectionStep: stepSection(by:))
-                    // A new Query per section; the shelf picks its own first game.
-                    .id(selection)
+                        CabinetShelf(selection: selection, event: event, focusedGame: $focusedGame, gameCount: $gameCount,
+                                     onSectionStep: stepSection(by:))
+                            // A new Query per section; the shelf picks its own first game.
+                            .id(selection)
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                }
 
                 if theme.showsHints {
-                    CabinetHintBar(onMenu: { send(.menu) })
+                    CabinetHintBar(level: level, backGoesToSystems: theme.systems.isEnabled, onMenu: { send(.menu) })
                         .padding(.bottom, 28)
                 }
             }
@@ -125,6 +140,10 @@ struct CabinetView: View {
             hasKeyboardFocus = true
             // Picks up themes added or edited since.
             themeStore.reload()
+            level = themeStore.current.theme.systems.isEnabled ? .systems : .games
+        }
+        .onChange(of: theme.systems.isEnabled) { _, isEnabled in
+            if !isEnabled { level = .games }
         }
         .onDisappear {
             gamepad.isCabinetActive = false
@@ -162,11 +181,23 @@ struct CabinetView: View {
             menuPath = menuPath.isEmpty ? [.main] : []
         case _ where !menuPath.isEmpty:
             menuEvent = newEvent
+        case _ where level == .systems:
+            switch command {
+            case .move(.left), .move(.up), .previousSection: stepSection(by: -1)
+            case .move(.right), .move(.down), .nextSection: stepSection(by: 1)
+            case .activate: setLevel(.games)
+            case .back: exit()
+            case .move, .toggleFavorite, .menu: break
+            }
         case .back:
-            exit()
+            if themeStore.current.theme.systems.isEnabled { setLevel(.systems) } else { exit() }
         default:
             event = newEvent
         }
+    }
+
+    private func setLevel(_ newLevel: Level) {
+        withAnimation(.snappy(duration: 0.3)) { level = newLevel }
     }
 
     private func stepSection(by offset: Int) {
@@ -190,6 +221,24 @@ struct CabinetSection: Identifiable, Hashable {
     /// Systems show their logo instead of their name.
     var logo: Image? = nil
     var id: LibrarySelection { selection }
+
+    /// For a section without a logo.
+    var symbol: String {
+        switch selection {
+        case .allGames: "square.grid.3x3.fill"
+        case .favorites: "star.fill"
+        case .recentlyPlayed: "clock.fill"
+        case .recentlyAdded: "sparkles"
+        case .collection: "rectangle.stack.fill"
+        case .system: "gamecontroller.fill"
+        }
+    }
+
+    /// "Nintendo · 1990 · Console" for a system.
+    var facts: String? {
+        if case .system(let id) = selection { return SystemFacts.summary(for: id) }
+        return nil
+    }
 
     static func == (lhs: Self, rhs: Self) -> Bool { lhs.selection == rhs.selection && lhs.title == rhs.title }
     func hash(into hasher: inout Hasher) { hasher.combine(selection) }
@@ -285,6 +334,8 @@ private struct CabinetHeader: View {
 }
 
 private struct CabinetHintBar: View {
+    let level: CabinetView.Level
+    let backGoesToSystems: Bool
     let onMenu: () -> Void
 
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -295,11 +346,22 @@ private struct CabinetHintBar: View {
     var body: some View {
         let _ = controllerSettings.settings.layout
         HStack(spacing: 36) {
-            hint(gamepad.confirmButtonSymbol, "Play")
-            hint(gamepad.favoriteButtonSymbol, "Favorite")
-            hint("dpad.fill", "Browse")
-            hint("lb.rectangle.roundedbottom.fill", "Sections")
-            hint(gamepad.backButtonSymbol, "Exit")
+            switch level {
+            case .systems:
+                hint(gamepad.confirmButtonSymbol, "Open")
+                hint("dpad.fill", "Browse")
+                hint(gamepad.backButtonSymbol, "Exit")
+            case .games:
+                hint(gamepad.confirmButtonSymbol, "Play")
+                hint(gamepad.favoriteButtonSymbol, "Favorite")
+                hint("dpad.fill", "Browse")
+                hint("lb.rectangle.roundedbottom.fill", "Sections")
+                if backGoesToSystems {
+                    hint(gamepad.backButtonSymbol, "Systems")
+                } else {
+                    hint(gamepad.backButtonSymbol, "Exit")
+                }
+            }
             Button(action: onMenu) {
                 hint(gamepad.menuButtonSymbol, "Menu")
             }

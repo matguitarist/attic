@@ -21,6 +21,7 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
     public var details: Details
     public var header: Header
     public var menu: Menu
+    public var systems: Systems
     public var showsHints: Bool
 
     public enum Layout: String, Codable, CaseIterable, Sendable {
@@ -124,6 +125,20 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var showsClock: Bool
         /// How many games the section has.
         public var showsGameCount: Bool
+    }
+
+    /// The level before the games: a strip of systems, collections and
+    /// shortcuts, the focused one's picture and facts above it.
+    public struct Systems: Codable, Hashable, Sendable {
+        /// Opens on the systems; else straight on the games, sections in
+        /// the header.
+        public var isEnabled: Bool
+        /// How many games, played, favorites and play time.
+        public var showsStats: Bool
+        /// A folder in the theme holding each system's picture, named
+        /// after it (snes.png, megadrive.jpg, arcade.png). Without one,
+        /// the system's covers fan out instead.
+        public var artFolder: String
     }
 
     /// The menu Start opens: theme, interface, controller, library.
@@ -249,6 +264,7 @@ extension CabinetTheme {
         details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 3),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: false),
         menu: Menu(position: .center, width: 640, cornerRadius: 28, dim: 0.55),
+        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
         showsHints: true
     )
 
@@ -274,6 +290,7 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: true, showsMetadata: true, showsDescription: true, descriptionLines: 6),
         header: Header(showsLogos: false, showsClock: true, showsGameCount: true),
         menu: Menu(position: .leading, width: 560, cornerRadius: 0, dim: 0.5),
+        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
         showsHints: true
     )
 
@@ -299,6 +316,7 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: false, descriptionLines: 2),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 12, dim: 0.7),
+        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
         showsHints: true
     )
 }
