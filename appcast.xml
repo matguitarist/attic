@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.6.2</title>
+            <pubDate>Thu, 22 Oct 2026 11:56:12 -0400</pubDate>
+            <sparkle:version>43</sparkle:version>
+            <sparkle:shortVersionString>2.6.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>In the Apple TV theme, systems show their fan art alone, with the logo, facts and numbers at the top left, instead of the console twice</li>
+<li>With system videos on, the system&#x27;s video plays full screen behind</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.6.2/Attic-2.6.2.zip" length="17029591" type="application/octet-stream" sparkle:edSignature="rTJ0mSSs3qjdi59ZO5Zmxo1zVYANL98AxYUP7RlqD0+XSM/DQZKCmrh+N7SG4aQEnus+Ms2u9TJ3CP1OOhunBA=="/>
+        </item>
+        <item>
             <title>2.6.1</title>
             <pubDate>Thu, 22 Oct 2026 11:21:12 -0400</pubDate>
             <sparkle:version>42</sparkle:version>
