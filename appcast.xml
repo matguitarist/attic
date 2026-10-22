@@ -3,6 +3,23 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.5.0</title>
+            <pubDate>Thu, 22 Oct 2026 07:28:40 -0400</pubDate>
+            <sparkle:version>38</sparkle:version>
+            <sparkle:shortVersionString>2.5.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Cabinet Mode opens a game&#x27;s page before playing: art, video, facts and description, with Play, Favorite, Collections and Manual (turn it off in Settings › Cabinet Mode)</li>
+<li>Search with X and an on-screen keyboard; jump A–Z with L2/R2</li>
+<li>Sort and Filter in the Start menu: by title, year, most or last played; favorites only, players and genre</li>
+<li>Select picks a random game; Surprise Me in the Start menu too</li>
+<li>Hold Start in a game to open RetroArch&#x27;s menu to resume, save, load or quit (change it in Settings › Controller)</li>
+<li>The wheel shows the favorite star beside the logo, lists wrap around at the ends, and collections without a logo get a title card</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.5.0/Attic-2.5.0.zip" length="16854979" type="application/octet-stream" sparkle:edSignature="3MX78QaVe4PwYAPYPULUgp8YoaU8S5/yb3cKoHsiGJHMvljDFp/oZcUDdpTYrpRGim0PDEupsoK9ADwlB2rYDQ=="/>
+        </item>
+        <item>
             <title>2.4.1</title>
             <pubDate>Wed, 21 Oct 2026 22:35:20 -0400</pubDate>
             <sparkle:version>37</sparkle:version>
