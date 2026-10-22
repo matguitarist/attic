@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.2.0</title>
+            <pubDate>Wed, 21 Oct 2026 20:11:53 -0400</pubDate>
+            <sparkle:version>34</sparkle:version>
+            <sparkle:shortVersionString>2.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Cabinet Mode opens on your systems, collections and shortcuts: each with its logo, facts, how many games you have and have played, and its covers fanned out</li>
+<li>Press A to open a system&#x27;s games, B to go back to the systems</li>
+<li>Themes can show a picture of each console from their systems folder</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.2.0/Attic-2.2.0.zip" length="16260583" type="application/octet-stream" sparkle:edSignature="bQzoKXe4KUUeedyNoawkn3ElqxNog1zYQG/kNnpomXHucQP1q/vslfquw5y3W7Xn/Gtu3feQFwF7ALztz7axAQ=="/>
+        </item>
+        <item>
             <title>2.1.0</title>
             <pubDate>Wed, 21 Oct 2026 19:10:37 -0400</pubDate>
             <sparkle:version>33</sparkle:version>
