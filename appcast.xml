@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.6.1</title>
+            <pubDate>Thu, 22 Oct 2026 11:21:12 -0400</pubDate>
+            <sparkle:version>42</sparkle:version>
+            <sparkle:shortVersionString>2.6.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>With Game Art set to Logo, the Apple TV theme&#x27;s cards show each logo over the game&#x27;s darkened art, so every card is a card</li>
+<li>New Game Art choice, Logo Card: the logo alone on a frosted card, in any theme</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.6.1/Attic-2.6.1.zip" length="17020903" type="application/octet-stream" sparkle:edSignature="gSk3+cmqWWllDD3CjiMeAO018Bu1BVA+tAEahAhyi9Z1DDDrJ5dyepaB32NGMTNpZSJmlu2+acbbQvA2qZJ4Bw=="/>
+        </item>
+        <item>
             <title>2.6.0</title>
             <pubDate>Thu, 22 Oct 2026 11:06:36 -0400</pubDate>
             <sparkle:version>41</sparkle:version>
