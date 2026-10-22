@@ -7,6 +7,8 @@ import AtticPersistence
 struct CabinetTile: View {
     let game: Game
     let isFocused: Bool
+    /// The star in the corner; the wheel draws its own beside the logo.
+    var showsFavoriteBadge = true
 
     @Environment(\.cabinetTheme) private var installed
     /// Looked up once: the logo and 3D box live by file alone.
@@ -29,7 +31,7 @@ struct CabinetTile: View {
                     }
                 }
                 .overlay(alignment: .topTrailing) {
-                    if game.favorite {
+                    if game.favorite && showsFavoriteBadge {
                         Image(systemName: "star.fill")
                             .font(theme.largeFont())
                             .foregroundStyle(theme.palette.favorite.color)
@@ -122,6 +124,8 @@ struct CabinetMedia: View {
 struct CabinetGameInfo: View {
     let game: Game?
     let alignment: HorizontalAlignment
+    /// The game page shows the description itself, scrollable.
+    var showsDescription = true
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(\.cabinetTheme) private var installed
@@ -159,7 +163,7 @@ struct CabinetGameInfo: View {
                     Text(message)
                         .font(theme.bodyFont())
                         .foregroundStyle(.red)
-                } else if theme.details.showsDescription, let description = game.gameDescription {
+                } else if showsDescription, theme.details.showsDescription, let description = game.gameDescription {
                     Text(description)
                         .font(theme.bodyFont())
                         .foregroundStyle(theme.palette.secondaryText.color)

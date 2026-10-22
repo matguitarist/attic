@@ -1806,6 +1806,32 @@
         }
       }
     },
+    "%lld+ players": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld joueurs et plus"
+          }
+        }
+      }
+    },
+    "%lld× · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld× · %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld× · %2$@"
+          }
+        }
+      }
+    },
     "(Demo), (Sample), (Kiosk)": {
       "localizations": {
         "fr": {
@@ -2180,6 +2206,16 @@
         }
       }
     },
+    "Action": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Action"
+          }
+        }
+      }
+    },
     "Actions": {
       "localizations": {
         "fr": {
@@ -2493,6 +2529,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajouter votre compte membre ScreenScraper augmente votre quota de requêtes et le nombre de requêtes simultanées."
+          }
+        }
+      }
+    },
+    "Adventure": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aventure"
           }
         }
       }
@@ -2829,6 +2875,16 @@
         }
       }
     },
+    "A–Z": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A–Z"
+          }
+        }
+      }
+    },
     "BIOS": {
       "localizations": {
         "fr": {
@@ -2989,6 +3045,16 @@
         }
       }
     },
+    "Beat 'em Up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat 'em up"
+          }
+        }
+      }
+    },
     "Blue": {
       "localizations": {
         "fr": {
@@ -3040,6 +3106,7 @@
       }
     },
     "Browse": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -3095,6 +3162,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Par"
+          }
+        }
+      }
+    },
+    "By Title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par titre"
+          }
+        }
+      }
+    },
+    "By Year": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par année"
           }
         }
       }
@@ -3549,6 +3636,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Effacer"
+          }
+        }
+      }
+    },
+    "Clear Search and Filters": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacer la recherche et les filtres"
           }
         }
       }
@@ -5402,6 +5499,16 @@
         }
       }
     },
+    "Fighting": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Combat"
+          }
+        }
+      }
+    },
     "File": {
       "localizations": {
         "fr": {
@@ -5755,12 +5862,32 @@
         }
       }
     },
+    "Game menu": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu de jeu"
+          }
+        }
+      }
+    },
     "Game names, descriptions and artwork already in a gamelist.xml (from ES-DE, Batocera or RetroBat) and in a Media folder (ES-DE's downloaded_media) or a system's images and videos folders are picked up automatically. Arcade games get their real titles from FinalBurn Neo's game list.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les noms, descriptions et illustrations déjà présents dans un gamelist.xml (d’ES-DE, Batocera ou RetroBat) et dans un dossier Media (downloaded_media d’ES-DE) ou les dossiers images et videos d’un système sont repris automatiquement. Les jeux d’arcade reçoivent leur vrai titre depuis la liste de jeux de FinalBurn Neo."
+          }
+        }
+      }
+    },
+    "Game page before playing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fiche du jeu avant de jouer"
           }
         }
       }
@@ -6102,6 +6229,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Une résolution plus élevée est plus nette et demande un Mac plus rapide."
+          }
+        }
+      }
+    },
+    "Hold Select": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenir Select"
+          }
+        }
+      }
+    },
+    "Hold Start": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintenir Start"
           }
         }
       }
@@ -6566,6 +6713,16 @@
         }
       }
     },
+    "Its video, facts, description and manual; A again plays": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sa vidéo, ses infos, sa description et son manuel ; A de nouveau pour jouer"
+          }
+        }
+      }
+    },
     "Keep each game zipped (.zip or .dosz); DOSBox Pure runs it straight from the archive and asks which program to start the first time.": {
       "localizations": {
         "fr": {
@@ -6888,6 +7045,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clair"
+          }
+        }
+      }
+    },
+    "Light Gun": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pistolet"
           }
         }
       }
@@ -7596,6 +7763,16 @@
         }
       }
     },
+    "No Games Match": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu ne correspond"
+          }
+        }
+      }
+    },
     "No Matching Messages": {
       "localizations": {
         "fr": {
@@ -7643,6 +7820,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucune collection pour l'instant : activez une série ci-dessous, ou créez-en une avec Fichier › Nouvelle collection."
+          }
+        }
+      }
+    },
+    "No collections yet: switch some on in Settings › Collections.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune collection pour l'instant : activez-en dans Réglages › Collections."
           }
         }
       }
@@ -8278,6 +8465,16 @@
         }
       }
     },
+    "Order": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ordre"
+          }
+        }
+      }
+    },
     "Other": {
       "localizations": {
         "fr": {
@@ -8334,6 +8531,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux et le firmware PS Vita ont besoin de Vita3K : installez-le dans Réglages › Émulateurs, puis ajoutez-les de nouveau."
+          }
+        }
+      }
+    },
+    "Page %lld of %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Page %1$lld of %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page %1$lld sur %2$lld"
           }
         }
       }
@@ -8414,6 +8627,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Variables : {romPath}, {romDir}, {romName}, {romNameNoExt}"
+          }
+        }
+      }
+    },
+    "Platform": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plateforme"
           }
         }
       }
@@ -8658,6 +8881,16 @@
         }
       }
     },
+    "Press B to clear the search and filters.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyez sur B pour effacer la recherche et les filtres."
+          }
+        }
+      }
+    },
     "Press a button…": {
       "localizations": {
         "fr": {
@@ -8674,6 +8907,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Appuyez encore pour confirmer"
+          }
+        }
+      }
+    },
+    "Press both sticks": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyer sur les deux sticks"
           }
         }
       }
@@ -8804,6 +9047,16 @@
         }
       }
     },
+    "Puzzle": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réflexion"
+          }
+        }
+      }
+    },
     "Quit Attic": {
       "localizations": {
         "fr": {
@@ -8850,6 +9103,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "RPCS3 utilise sa propre configuration de manette. Réglez-la une fois dans RPCS3 (Pads) — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "RPG": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RPG"
+          }
+        }
+      }
+    },
+    "Racing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Course"
+          }
+        }
+      }
+    },
+    "Random": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au hasard"
           }
         }
       }
@@ -10116,7 +10399,18 @@
         }
       }
     },
+    "Section's Order": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ordre de la section"
+          }
+        }
+      }
+    },
     "Sections": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -10326,6 +10620,26 @@
         }
       }
     },
+    "Shoot 'em Up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shoot 'em up"
+          }
+        }
+      }
+    },
+    "Shooter": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tir"
+          }
+        }
+      }
+    },
     "Show": {
       "localizations": {
         "fr": {
@@ -10402,6 +10716,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher le dossier Themes"
+          }
+        }
+      }
+    },
+    "Show a game's page before playing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher la fiche d'un jeu avant de jouer"
           }
         }
       }
@@ -10526,6 +10850,16 @@
         }
       }
     },
+    "Simulation": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simulation"
+          }
+        }
+      }
+    },
     "Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.": {
       "localizations": {
         "fr": {
@@ -10646,6 +10980,16 @@
         }
       }
     },
+    "Sort and Filter": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trier et filtrer"
+          }
+        }
+      }
+    },
     "Sort by": {
       "localizations": {
         "fr": {
@@ -10682,6 +11026,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Activer le son"
+          }
+        }
+      }
+    },
+    "Sports": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sports"
           }
         }
       }
@@ -10737,6 +11091,16 @@
         }
       }
     },
+    "Strategy": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stratégie"
+          }
+        }
+      }
+    },
     "SuFami Turbo cartridges are .st files. Snes9x plays them through the SuFami Turbo BIOS (STBIOS.bin), in the BIOS folder.": {
       "localizations": {
         "fr": {
@@ -10753,6 +11117,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Super Mario, Mario Bros"
+          }
+        }
+      }
+    },
+    "Surprise Me": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surprends-moi"
           }
         }
       }
@@ -11063,7 +11437,18 @@
         }
       }
     },
+    "The left stick and game menu apply to RetroArch games; the game menu resumes, saves and loads states, and quits. Select + Start also quits DuckStation. Games save normally on the way out.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le stick gauche et le menu de jeu s'appliquent aux jeux RetroArch ; le menu de jeu reprend, sauvegarde et charge des états, et quitte. Select + Start quitte aussi DuckStation. Les jeux sauvegardent normalement en quittant."
+          }
+        }
+      }
+    },
     "The left stick option applies to RetroArch games; Select + Start also quits DuckStation. Games save normally on the way out.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -11379,6 +11764,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retransforme le CHD en fichiers d’origine, pour un émulateur qui ne lit pas le CHD."
+          }
+        }
+      }
+    },
+    "Type": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taper"
           }
         }
       }

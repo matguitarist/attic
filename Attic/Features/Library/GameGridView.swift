@@ -193,6 +193,8 @@ struct GameGridView: View {
             }
         case .previousSection, .nextSection, .back, .toggleCabinet:
             break // Owned by LibraryBrowserView.
+        case .search, .random, .previousLetter, .nextLetter:
+            break // Cabinet Mode's.
         }
     }
 

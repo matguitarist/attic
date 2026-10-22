@@ -33,6 +33,7 @@ struct CabinetCarouselLayout: View {
         .onChange(of: shelf.focusedID, initial: true) { old, id in
             withAnimation(old == nil ? nil : .snappy(duration: 0.25)) { scrolledID = id }
         }
+        .onChange(of: shelf.games.count) { scrolledID = shelf.focusedID }
         .onChange(of: scrolledID) { _, id in
             // Trackpad/mouse scrolling moves focus too.
             if let id, id != shelf.focusedID, let game = shelf.games.first(where: { $0.persistentModelID == id }) {
@@ -105,6 +106,9 @@ struct CabinetGridLayout: View {
                     .onChange(of: shelf.focusedID) { _, id in
                         withAnimation(.snappy(duration: 0.25)) { proxy.scrollTo(id, anchor: .center) }
                     }
+                    // A search or filter changing the games keeps the
+                    // focused one in view.
+                    .onChange(of: shelf.games.count) { proxy.scrollTo(shelf.focusedID, anchor: .center) }
                 }
                 .frame(maxWidth: .infinity)
 
@@ -172,6 +176,7 @@ struct CabinetWheelLayout: View {
         .onChange(of: shelf.focusedID, initial: true) { old, id in
             withAnimation(old == nil ? nil : .snappy(duration: 0.2)) { scrolledID = id }
         }
+        .onChange(of: shelf.games.count) { scrolledID = shelf.focusedID }
         .onChange(of: scrolledID) { _, id in
             if let id, id != shelf.focusedID, let game = shelf.games.first(where: { $0.persistentModelID == id }) {
                 shelf.onFocus(game)
@@ -208,7 +213,15 @@ struct CabinetWheelLayout: View {
         ScrollView(.vertical) {
             LazyVStack(spacing: 0) {
                 ForEach(shelf.games) { game in
-                    CabinetTile(game: game, isFocused: shelf.isFocused(game))
+                    HStack(spacing: 12) {
+                        if game.favorite {
+                            Image(systemName: "star.fill")
+                                .font(installed.theme.largeFont())
+                                .foregroundStyle(installed.theme.palette.favorite.color)
+                                .shadow(radius: 4)
+                        }
+                        CabinetTile(game: game, isFocused: shelf.isFocused(game), showsFavoriteBadge: false)
+                    }
                         .frame(height: entryHeight * installed.theme.tiles.size)
                         .frame(maxWidth: .infinity)
                         .frame(height: entryHeight)
@@ -266,6 +279,7 @@ struct CabinetListLayout: View {
         .onChange(of: shelf.focusedID, initial: true) { old, id in
             withAnimation(old == nil ? nil : .snappy(duration: 0.15)) { scrolledID = id }
         }
+        .onChange(of: shelf.games.count) { scrolledID = shelf.focusedID }
         .onChange(of: scrolledID) { _, id in
             if let id, id != shelf.focusedID, let game = shelf.games.first(where: { $0.persistentModelID == id }) {
                 shelf.onFocus(game)

@@ -11,6 +11,26 @@ public enum ButtonLayout: String, Sendable, Codable, CaseIterable {
     case nintendo
 }
 
+/// What opens RetroArch's menu during a game: resume, save and load
+/// states, quit.
+public enum PauseMenuCombo: String, Sendable, Codable, CaseIterable {
+    case off
+    case holdStart
+    case holdSelect
+    /// Both sticks pressed in.
+    case sticks
+
+    /// RetroArch's `input_menu_toggle_gamepad_combo`.
+    public var retroArchValue: String {
+        switch self {
+        case .off: "0"
+        case .holdStart: "7"
+        case .holdSelect: "8"
+        case .sticks: "2"
+        }
+    }
+}
+
 /// How the controller behaves in Attic and in games Attic launches.
 /// One global setting, saved and restored as a whole through profiles.
 public struct ControllerSettings: Sendable, Codable, Hashable {
@@ -23,17 +43,21 @@ public struct ControllerSettings: Sendable, Codable, Hashable {
     /// The left stick also works as the D-pad in RetroArch games, for
     /// systems whose own pad had no stick.
     public var leftStickAsDPad: Bool
+    /// Opens RetroArch's menu during a game.
+    public var pauseMenu: PauseMenuCombo
 
     public init(
         layout: ButtonLayout = .classic,
         buttonMapping: ButtonMapping = .default,
         quitWithSelectStart: Bool = true,
-        leftStickAsDPad: Bool = false
+        leftStickAsDPad: Bool = false,
+        pauseMenu: PauseMenuCombo = .holdStart
     ) {
         self.layout = layout
         self.buttonMapping = buttonMapping
         self.quitWithSelectStart = quitWithSelectStart
         self.leftStickAsDPad = leftStickAsDPad
+        self.pauseMenu = pauseMenu
     }
 
     public static let `default` = ControllerSettings()
@@ -47,6 +71,7 @@ public struct ControllerSettings: Sendable, Codable, Hashable {
         buttonMapping = (try? container.decodeIfPresent(ButtonMapping.self, forKey: .buttonMapping)) ?? defaults.buttonMapping
         quitWithSelectStart = try container.decodeIfPresent(Bool.self, forKey: .quitWithSelectStart) ?? defaults.quitWithSelectStart
         leftStickAsDPad = try container.decodeIfPresent(Bool.self, forKey: .leftStickAsDPad) ?? defaults.leftStickAsDPad
+        pauseMenu = (try? container.decodeIfPresent(PauseMenuCombo.self, forKey: .pauseMenu)) ?? defaults.pauseMenu
     }
 }
 

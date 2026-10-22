@@ -433,6 +433,9 @@ public struct EmulationFolder: Sendable, Hashable {
         if controller.quitWithSelectStart {
             settings += [("input_quit_gamepad_combo", "4"), ("quit_press_twice", "false")]
         }
+        if controller.pauseMenu != .off {
+            settings.append(("input_menu_toggle_gamepad_combo", controller.pauseMenu.retroArchValue))
+        }
 
         // Binds use the `mfi` driver's button numbers, meaningless to other
         // joypad drivers — skipped for those. A bind in the config takes
@@ -465,7 +468,7 @@ public struct EmulationFolder: Sendable, Hashable {
     /// leaves the key as it is.
     static func retroArchResetValue(_ key: String) -> String? {
         if key.hasSuffix("_btn") || key.hasSuffix("_axis") { return "nul" }
-        if key.hasSuffix("_analog_dpad_mode") || key == "input_quit_gamepad_combo" { return "0" }
+        if key.hasSuffix("_analog_dpad_mode") || key == "input_quit_gamepad_combo" || key == "input_menu_toggle_gamepad_combo" { return "0" }
         return nil
     }
 

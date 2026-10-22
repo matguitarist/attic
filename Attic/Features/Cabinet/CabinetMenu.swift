@@ -4,11 +4,12 @@ import AtticModels
 
 /// The pages of the menu Start opens in Cabinet Mode.
 enum CabinetMenuPage: Hashable {
-    case main, theme, interface, controller, library
+    case main, view, theme, interface, controller, library
 
     var title: LocalizedStringKey {
         switch self {
         case .main: "Menu"
+        case .view: "Sort and Filter"
         case .theme: "Theme"
         case .interface: "Interface"
         case .controller: "Controller"
@@ -50,8 +51,13 @@ struct CabinetMenuView: View {
     @Binding var path: [CabinetMenuPage]
     let event: CabinetEvent?
     let onExit: () -> Void
+    /// Closes the menu and picks a random game, or opens the search.
+    let onSurprise: () -> Void
+    let onSearch: () -> Void
 
     @Environment(\.cabinetTheme) private var installed
+    @Environment(CabinetBrowse.self) private var browse
+    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
     @Environment(CabinetThemeStore.self) private var themeStore
     @Environment(ControllerSettingsStore.self) private var controllerSettings
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -248,7 +254,7 @@ struct CabinetMenuView: View {
         case .move(.right): adjust(items[index], by: 1)
         case .activate: activate(items[index])
         case .back: goBack()
-        case .toggleFavorite, .previousSection, .nextSection, .menu: break
+        default: break
         }
     }
 
@@ -312,6 +318,7 @@ struct CabinetMenuView: View {
     private func items(for page: CabinetMenuPage) -> [CabinetMenuItem] {
         switch page {
         case .main: mainItems
+        case .view: viewItems
         case .theme: themeItems
         case .interface: interfaceItems
         case .controller: controllerItems
@@ -321,6 +328,11 @@ struct CabinetMenuView: View {
 
     private var mainItems: [CabinetMenuItem] {
         [
+            CabinetMenuItem(id: "surprise", title: String(localized: "Surprise Me"), symbol: "dice",
+                            kind: .action(confirm: false, perform: onSurprise)),
+            CabinetMenuItem(id: "search", title: String(localized: "Search"), symbol: "magnifyingglass",
+                            kind: .action(confirm: false, perform: onSearch)),
+            CabinetMenuItem(id: "view", title: String(localized: "Sort and Filter"), symbol: "line.3.horizontal.decrease.circle", kind: .page(.view)),
             CabinetMenuItem(id: "theme", title: String(localized: "Theme"), symbol: "paintpalette", kind: .page(.theme)),
             CabinetMenuItem(id: "interface", title: String(localized: "Interface"), symbol: "rectangle.on.rectangle", kind: .page(.interface)),
             CabinetMenuItem(id: "controller", title: String(localized: "Controller"), symbol: "gamecontroller", kind: .page(.controller)),
@@ -375,8 +387,42 @@ struct CabinetMenuView: View {
         return items
     }
 
+    private var viewItems: [CabinetMenuItem] {
+        @Bindable var browse = browse
+        let sorts = CabinetSort.allCases
+        let players = [0, 2, 4]
+        let genres = [("", String(localized: "Any"))] + CabinetBrowse.genres.map { ($0.terms, $0.name) }
+        var items = [
+            CabinetMenuItem(id: "sort", title: String(localized: "Order"), symbol: "arrow.up.arrow.down",
+                            kind: .choice(options: sorts.map(\.title), selection: Binding(
+                                get: { sorts.firstIndex(of: browse.sort) ?? 0 },
+                                set: { browse.sort = sorts[$0] }
+                            ))),
+            CabinetMenuItem(id: "favorites", title: String(localized: "Favorites only"), symbol: "star",
+                            kind: .toggle($browse.favoritesOnly)),
+            CabinetMenuItem(id: "players", title: String(localized: "Players"), symbol: "person.2",
+                            kind: .choice(options: [String(localized: "Any"), String(localized: "2 or more"), String(localized: "4 or more")],
+                                          selection: Binding(
+                                            get: { players.firstIndex(of: browse.minPlayers) ?? 0 },
+                                            set: { browse.minPlayers = players[$0] }
+                                          ))),
+            CabinetMenuItem(id: "genre", title: String(localized: "Genre"), symbol: "tag",
+                            kind: .choice(options: genres.map(\.1), selection: Binding(
+                                get: { genres.firstIndex { $0.0 == browse.genre } ?? 0 },
+                                set: { browse.genre = genres[$0].0 }
+                            )))
+        ]
+        if browse.isFiltered {
+            items.append(CabinetMenuItem(id: "clear", title: String(localized: "Clear Search and Filters"), symbol: "xmark.circle",
+                                         kind: .action(confirm: false, perform: { browse.clearFilters() })))
+        }
+        return items
+    }
+
     private var interfaceItems: [CabinetMenuItem] {
         [
+            CabinetMenuItem(id: "gamePage", title: String(localized: "Game page before playing"), symbol: "doc.richtext",
+                            kind: .toggle($opensGamePage)),
             CabinetMenuItem(id: "videos", title: String(localized: "Play videos"), symbol: "play.rectangle",
                             kind: .toggle($playsVideoPreviews)),
             CabinetMenuItem(id: "systemVideos", title: String(localized: "System videos"), symbol: "film",
@@ -402,7 +448,12 @@ struct CabinetMenuView: View {
             CabinetMenuItem(id: "stick", title: String(localized: "Left stick also works as the D-pad"), symbol: "l.joystick",
                             kind: .toggle($controllerSettings.settings.leftStickAsDPad)),
             CabinetMenuItem(id: "quit", title: String(localized: "Quit games with Select + Start"), symbol: "xmark.circle",
-                            kind: .toggle($controllerSettings.settings.quitWithSelectStart))
+                            kind: .toggle($controllerSettings.settings.quitWithSelectStart)),
+            CabinetMenuItem(id: "pause", title: String(localized: "Game menu"), symbol: "pause.circle",
+                            kind: .choice(options: PauseMenuCombo.allCases.map(\.title), selection: Binding(
+                                get: { PauseMenuCombo.allCases.firstIndex(of: controllerSettings.settings.pauseMenu) ?? 0 },
+                                set: { controllerSettings.settings.pauseMenu = PauseMenuCombo.allCases[$0] }
+                            )))
         ]
         let profiles = controllerSettings.savedProfiles
         if !profiles.isEmpty {

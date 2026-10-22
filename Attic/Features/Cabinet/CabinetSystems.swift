@@ -83,6 +83,17 @@ private struct CabinetSectionTile: View {
                     .resizable()
                     .scaledToFit()
                     .padding(22)
+            } else if section.artSource != nil {
+                // A collection or system without a logo: its name, set
+                // like one.
+                Text(theme.cased(section.title))
+                    .font(theme.font(size: theme.typography.titleSize * 0.85, weight: .heavy))
+                    .foregroundStyle(isFocused ? theme.palette.text.color : theme.palette.secondaryText.color)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.4)
+                    .shadow(color: theme.palette.accent.color.opacity(isFocused ? 0.6 : 0), radius: 10)
+                    .padding(16)
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: section.symbol)

@@ -10,6 +10,7 @@ struct CabinetSettingsView: View {
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
+    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
     @State private var themeError: String?
 
     var body: some View {
@@ -19,6 +20,10 @@ struct CabinetSettingsView: View {
         Form {
             Section {
                 Toggle("Open Cabinet Mode at launch", isOn: $startsInCabinet)
+                Toggle(isOn: $opensGamePage) {
+                    Text("Show a game's page before playing")
+                    Text("Its video, facts, description and manual; A again plays")
+                }
                 Toggle("Play video sound", isOn: Binding(get: { !videoPreviewsMuted }, set: { videoPreviewsMuted = !$0 }))
                     .disabled(!playsVideoPreviews)
                 Toggle(isOn: $playsSystemVideos) {

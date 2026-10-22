@@ -17,6 +17,13 @@ enum GamepadCommand: Equatable {
     case back
     /// Menu / Start — open or close Cabinet Mode.
     case toggleCabinet
+    /// X / Square — search Cabinet Mode.
+    case search
+    /// Select / View — a random game.
+    case random
+    /// L2 / R2 — the previous or next letter.
+    case previousLetter
+    case nextLetter
 }
 
 /// Wraps each command with a sequence number so pressing the same button
@@ -218,6 +225,10 @@ final class GamepadInputMonitor {
         case (.l1, _): .previousSection
         case (.r1, _): .nextSection
         case (.start, _): .toggleCabinet
+        case (.left, _): .search
+        case (.select, _): .random
+        case (.l2, _): .previousLetter
+        case (.r2, _): .nextLetter
         default: nil
         }
     }

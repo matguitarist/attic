@@ -17,6 +17,16 @@ struct CabinetEvent: Equatable {
         case back
         /// Start: opens or closes the menu.
         case menu
+        /// X: the on-screen keyboard.
+        case search
+        /// Select: a random game.
+        case random
+        /// L2 / R2: the previous or next letter.
+        case previousLetter
+        case nextLetter
+        /// Typed on a Mac keyboard into the search.
+        case character(Character)
+        case deleteCharacter
     }
 
     let command: Command
@@ -32,6 +42,8 @@ struct CabinetEvent: Equatable {
 struct CabinetView: View {
     static let windowID = "cabinet"
     static let startInCabinetKey = "startInCabinet"
+    /// A opens a game's page rather than playing it straight away.
+    static let opensGamePageKey = "cabinetOpensGamePage"
 
     @Query(sort: \GameSystem.displayName) private var systems: [GameSystem]
     @Query(sort: \GameCollection.name) private var collections: [GameCollection]
@@ -39,6 +51,9 @@ struct CabinetView: View {
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(CabinetThemeStore.self) private var themeStore
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(LaunchCoordinator.self) private var launchCoordinator
+    @Environment(RetroArchSettingsStore.self) private var retroArchStore
+    @AppStorage(CabinetView.opensGamePageKey) private var opensGamePage = true
 
     @State private var selection: LibrarySelection = .allGames
     /// The systems, or a section's games (see `CabinetTheme.Systems`).
@@ -50,6 +65,16 @@ struct CabinetView: View {
     /// The menu's open pages; empty while it's closed.
     @State private var menuPath: [CabinetMenuPage] = []
     @State private var menuEvent: CabinetEvent?
+    @State private var browse = CabinetBrowse()
+    @State private var isSearching = false
+    @State private var searchEvent: CabinetEvent?
+    /// The game whose page is open.
+    @State private var pageGame: Game?
+    @State private var pageEvent: CabinetEvent?
+    /// Select on the systems: the section opens on a random game.
+    @State private var opensRandom = false
+    /// The letter an L2/R2 jump landed on, shown for a moment.
+    @State private var jumpLabel: String?
     @FocusState private var hasKeyboardFocus: Bool
 
     enum Level {
@@ -61,7 +86,7 @@ struct CabinetView: View {
         let theme = installed.theme
         ZStack {
             // On the systems, the system's own fan art.
-            CabinetBackdrop(game: level == .games ? focusedGame : nil,
+            CabinetBackdrop(game: level == .games ? (pageGame ?? focusedGame) : nil,
                             fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil)
 
             VStack(spacing: 0) {
@@ -71,29 +96,58 @@ struct CabinetView: View {
                         .transition(.opacity.combined(with: .scale(scale: 1.04)))
                 case .games:
                     VStack(spacing: 0) {
-                        CabinetHeader(sections: sections, selection: $selection, gameCount: gameCount)
+                        CabinetHeader(sections: sections, selection: $selection, gameCount: gameCount, chips: browse.chips)
                             .padding(.top, 36)
 
                         CabinetShelf(selection: selection, event: event, focusedGame: $focusedGame, gameCount: $gameCount,
-                                     onSectionStep: stepSection(by:))
+                                     startsRandom: opensRandom, onSectionStep: stepSection(by:),
+                                     onActivate: activate, onJump: showJump)
                             // A new Query per section; the shelf picks its own first game.
                             .id(selection)
+                            .onAppear { opensRandom = false }
                     }
+                    .opacity(pageGame == nil ? 1 : 0)
                     .transition(.opacity.combined(with: .scale(scale: 0.96)))
                 }
 
-                if theme.showsHints {
-                    CabinetHintBar(level: level, backGoesToSystems: theme.systems.isEnabled, onMenu: { send(.menu) })
+                if theme.showsHints && pageGame == nil {
+                    CabinetHintBar(level: level, backGoesToSystems: theme.systems.isEnabled, isFiltered: browse.isFiltered,
+                                   opensGamePage: opensGamePage, onMenu: { send(.menu) })
                         .padding(.bottom, 28)
                 }
             }
 
+            if let pageGame {
+                CabinetGamePage(game: pageGame, event: pageEvent, onPlay: play, onClose: { closePage() })
+                    .transition(.opacity.combined(with: .scale(scale: 1.03)))
+            }
+
+            if isSearching {
+                CabinetSearchView(browse: browse, event: searchEvent, resultCount: gameCount, onDone: { isSearching = false })
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            if let jumpLabel {
+                Text(verbatim: jumpLabel)
+                    .font(theme.font(size: 120, weight: .heavy))
+                    .frame(width: 200, height: 200)
+                    .background(theme.palette.surface.color, in: RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 32, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 3))
+                    .transition(.scale(scale: 0.8).combined(with: .opacity))
+                    .allowsHitTesting(false)
+            }
+
             if !menuPath.isEmpty {
-                CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit)
+                CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit,
+                                onSurprise: { menuPath = []; send(.random) },
+                                onSearch: { menuPath = []; send(.search) })
                     .transition(.opacity)
             }
         }
         .animation(.snappy(duration: 0.2), value: menuPath.isEmpty)
+        .animation(.snappy(duration: 0.25), value: isSearching)
+        .animation(.snappy(duration: 0.25), value: pageGame == nil)
+        .environment(browse)
         .foregroundStyle(theme.palette.text.color)
         .tint(theme.palette.accent.color)
         .environment(\.cabinetTheme, installed)
@@ -117,7 +171,28 @@ struct CabinetView: View {
         }
         .onKeyPress(.return) { send(.activate); return .handled }
         .onKeyPress(.tab) { send(.nextSection); return .handled }
-        .onKeyPress("m") { send(.menu); return .handled }
+        .onKeyPress(.delete) { send(.deleteCharacter); return .handled }
+        // Letter jumps on any keyboard layout.
+        .onKeyPress(.pageUp) { send(.previousLetter); return .handled }
+        .onKeyPress(.pageDown) { send(.nextLetter); return .handled }
+        // While searching, letters type; otherwise m opens the menu, /
+        // searches, r picks a random game, [ and ] jump letters.
+        .onKeyPress(characters: .alphanumerics.union(.punctuationCharacters).union(.whitespaces)) { press in
+            guard let character = press.characters.first else { return .ignored }
+            if isSearching {
+                press.characters.forEach { send(.character($0)) }
+                return .handled
+            }
+            switch character {
+            case "m": send(.menu)
+            case "/": send(.search)
+            case "r": send(.random)
+            case "[": send(.previousLetter)
+            case "]": send(.nextLetter)
+            default: return .ignored
+            }
+            return .handled
+        }
         .onExitCommand { send(.back) }
         .onChange(of: gamepad.lastEvent) { _, gamepadEvent in
             guard let gamepadEvent else { return }
@@ -129,6 +204,10 @@ struct CabinetView: View {
             case .toggleFavorite: send(.toggleFavorite)
             case .back: send(.back)
             case .toggleCabinet: send(.menu)
+            case .search: send(.search)
+            case .random: send(.random)
+            case .previousLetter: send(.previousLetter)
+            case .nextLetter: send(.nextLetter)
             }
         }
         .onChange(of: event) { _, newEvent in
@@ -185,19 +264,68 @@ struct CabinetView: View {
             menuPath = menuPath.isEmpty ? [.main] : []
         case _ where !menuPath.isEmpty:
             menuEvent = newEvent
+        case _ where isSearching:
+            searchEvent = newEvent
+        case _ where pageGame != nil:
+            pageEvent = newEvent
         case _ where level == .systems:
             switch command {
             case .move(.left), .move(.up), .previousSection: stepSection(by: -1)
             case .move(.right), .move(.down), .nextSection: stepSection(by: 1)
             case .activate: setLevel(.games)
+            case .random:
+                opensRandom = true
+                setLevel(.games)
+            case .search:
+                setLevel(.games)
+                isSearching = true
             case .back: exit()
-            case .move, .toggleFavorite, .menu: break
+            case .move, .toggleFavorite, .menu, .previousLetter, .nextLetter, .character, .deleteCharacter: break
             }
         case .back:
-            if themeStore.current.theme.systems.isEnabled { setLevel(.systems) } else { exit() }
+            // A search or filter clears first, then back to the systems.
+            if browse.isFiltered {
+                browse.clearFilters()
+            } else if themeStore.current.theme.systems.isEnabled {
+                setLevel(.systems)
+            } else {
+                exit()
+            }
+        case .search:
+            isSearching = true
+        case .character, .deleteCharacter:
+            break
         default:
             event = newEvent
         }
+    }
+
+    /// A on a game: its page, or straight into it.
+    private func activate(_ game: Game) {
+        focusedGame = game
+        if opensGamePage { pageGame = game } else { play(game) }
+    }
+
+    private func play(_ game: Game) {
+        launchCoordinator.play(game: game, retroArchStore: retroArchStore)
+    }
+
+    private func closePage() {
+        if let pageGame { focusedGame = pageGame }
+        pageGame = nil
+    }
+
+    private func showJump(_ label: String) {
+        withAnimation(.snappy(duration: 0.15)) { jumpLabel = label }
+        Task {
+            try? await Task.sleep(for: .seconds(0.7))
+            if jumpLabel == label { withAnimation(.easeOut(duration: 0.3)) { jumpLabel = nil } }
+        }
+    }
+
+    /// For the menu's Surprise Me.
+    func surprise() {
+        send(.random)
     }
 
     private func setLevel(_ newLevel: Level) {
@@ -281,6 +409,8 @@ private struct CabinetHeader: View {
     let sections: [CabinetSection]
     @Binding var selection: LibrarySelection
     let gameCount: Int
+    /// The search, filters and order narrowing the games.
+    var chips: [String] = []
 
     @Environment(\.cabinetTheme) private var installed
 
@@ -310,6 +440,21 @@ private struct CabinetHeader: View {
             Image(systemName: "rb.rectangle.roundedbottom.fill")
                 .font(theme.largeFont())
                 .foregroundStyle(theme.palette.secondaryText.color)
+
+            if !chips.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(chips, id: \.self) { chip in
+                        Text(verbatim: chip)
+                            .lineLimit(1)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 5)
+                            .background(theme.palette.accent.color.opacity(0.25), in: Capsule())
+                            .overlay(Capsule().strokeBorder(theme.palette.accent.color.opacity(0.6)))
+                    }
+                }
+                .font(theme.bodyFont(.medium))
+                .fixedSize()
+            }
 
             if theme.header.showsGameCount || theme.header.showsClock {
                 HStack(spacing: 20) {
@@ -367,6 +512,8 @@ private struct CabinetHeader: View {
 private struct CabinetHintBar: View {
     let level: CabinetView.Level
     let backGoesToSystems: Bool
+    let isFiltered: Bool
+    let opensGamePage: Bool
     let onMenu: () -> Void
 
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -380,14 +527,18 @@ private struct CabinetHintBar: View {
             switch level {
             case .systems:
                 hint(gamepad.confirmButtonSymbol, "Open")
-                hint("dpad.fill", "Browse")
+                hint(gamepad.symbol(for: .left), "Search")
+                hint(gamepad.symbol(for: .select), "Random")
                 hint(gamepad.backButtonSymbol, "Exit")
             case .games:
-                hint(gamepad.confirmButtonSymbol, "Play")
+                hint(gamepad.confirmButtonSymbol, opensGamePage ? "Open" : "Play")
                 hint(gamepad.favoriteButtonSymbol, "Favorite")
-                hint("dpad.fill", "Browse")
-                hint("lb.rectangle.roundedbottom.fill", "Sections")
-                if backGoesToSystems {
+                hint(gamepad.symbol(for: .left), "Search")
+                hint(gamepad.symbol(for: .select), "Random")
+                hint(gamepad.symbol(for: .l2), "A–Z")
+                if isFiltered {
+                    hint(gamepad.backButtonSymbol, "Clear")
+                } else if backGoesToSystems {
                     hint(gamepad.backButtonSymbol, "Systems")
                 } else {
                     hint(gamepad.backButtonSymbol, "Exit")

@@ -38,10 +38,13 @@ struct ControllerSettingsView: View {
             Section {
                 Toggle("Left stick also works as the D-pad", isOn: $store.settings.leftStickAsDPad)
                 Toggle("Quit games with Select + Start", isOn: $store.settings.quitWithSelectStart)
+                Picker("Game menu", selection: $store.settings.pauseMenu) {
+                    ForEach(PauseMenuCombo.allCases, id: \.self) { Text($0.title).tag($0) }
+                }
             } header: {
                 Text("In Games")
             } footer: {
-                Text("The left stick option applies to RetroArch games; Select + Start also quits DuckStation. Games save normally on the way out.")
+                Text("The left stick and game menu apply to RetroArch games; the game menu resumes, saves and loads states, and quits. Select + Start also quits DuckStation. Games save normally on the way out.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -239,6 +242,17 @@ extension PhysicalButton {
         case .dpadDown: String(localized: "D-pad Down")
         case .dpadLeft: String(localized: "D-pad Left")
         case .dpadRight: String(localized: "D-pad Right")
+        }
+    }
+}
+
+extension PauseMenuCombo {
+    var title: String {
+        switch self {
+        case .off: String(localized: "Off")
+        case .holdStart: String(localized: "Hold Start")
+        case .holdSelect: String(localized: "Hold Select")
+        case .sticks: String(localized: "Press both sticks")
         }
     }
 }

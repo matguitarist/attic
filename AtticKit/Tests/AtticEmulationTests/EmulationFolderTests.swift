@@ -129,6 +129,16 @@ struct EmulationFolderTests {
         #expect(undo.contains("input_quit_gamepad_combo = \"0\""))
     }
 
+    @Test func gameMenuComboOpensRetroArchsMenu() {
+        #expect(folder.retroArchPathsConfig(for: .snes, controller: .init()).contains("input_menu_toggle_gamepad_combo = \"7\""))
+        #expect(folder.retroArchPathsConfig(for: .snes, controller: .init(pauseMenu: .sticks)).contains("input_menu_toggle_gamepad_combo = \"2\""))
+        let undo = folder.retroArchPathsConfig(
+            for: .snes, controller: .init(pauseMenu: .off),
+            savedConfig: ["input_menu_toggle_gamepad_combo": "7"], previouslyWritten: ["input_menu_toggle_gamepad_combo": "7"]
+        )
+        #expect(undo.contains("input_menu_toggle_gamepad_combo = \"0\""))
+    }
+
     @Test func layoutPicksRetroArchMenuConfirmButton() {
         #expect(folder.retroArchPathsConfig(for: .snes, controller: .init(layout: .classic)).contains("menu_swap_ok_cancel_buttons = \"true\""))
         #expect(folder.retroArchPathsConfig(for: .snes, controller: .init(layout: .nintendo)).contains("menu_swap_ok_cancel_buttons = \"false\""))
