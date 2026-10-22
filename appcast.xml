@@ -3,6 +3,22 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.4.0</title>
+            <pubDate>Wed, 21 Oct 2026 21:22:13 -0400</pubDate>
+            <sparkle:version>36</sparkle:version>
+            <sparkle:shortVersionString>2.4.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Give each system its own logo, fan art, console picture and video; Cabinet Mode shows them on its systems, playing the video after a moment</li>
+<li>Collections can have fan art and a video too</li>
+<li>Settings › Collections: show or hide collections, and turn on ready-made ones for series and kinds of games (4 Players, Beat &#x27;em Up, Shoot &#x27;em Up, Racing, RPG, Light Gun)</li>
+<li>More series: Kingdom Hearts, LEGO, Monkey Island, R-Type, Raiden, Shenmue, The Simpsons, WipEout and Doom</li>
+<li>Neo Geo games always run in free play, and the logos folder setting is gone</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.4.0/Attic-2.4.0.zip" length="16485759" type="application/octet-stream" sparkle:edSignature="78MOYnalok8kOZA3CX90Xr2AmJIGF2KQSgUYtOLnwooYGIHJKdVTmr+gCuqyr74rQIGwN1SIsyrVaTSxMJsHDg=="/>
+        </item>
+        <item>
             <title>2.3.0</title>
             <pubDate>Wed, 21 Oct 2026 20:34:17 -0400</pubDate>
             <sparkle:version>35</sparkle:version>
