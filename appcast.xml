@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.5.1</title>
+            <pubDate>Thu, 22 Oct 2026 07:48:44 -0400</pubDate>
+            <sparkle:version>39</sparkle:version>
+            <sparkle:shortVersionString>2.5.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Cabinet Mode&#x27;s details show each fact on its own line, with an icon and a label, so long systems and genres no longer crowd one line</li>
+<li>Big Picture puts the game&#x27;s logo, bigger and centered, at the foot of its panel (themes choose with details.titlePosition)</li>
+<li>The game page lists developer, publisher, play time and last played with the other facts</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.5.1/Attic-2.5.1.zip" length="16874895" type="application/octet-stream" sparkle:edSignature="iSOiOa85dlb7CRoeSuMcAD7KPRRt567QnUXFO9kMDVyF1hBFvQjp9tBEs7a+AI0yRwFFOnf6OViyW2lwk/dfDA=="/>
+        </item>
+        <item>
             <title>2.5.0</title>
             <pubDate>Thu, 22 Oct 2026 07:28:40 -0400</pubDate>
             <sparkle:version>38</sparkle:version>
