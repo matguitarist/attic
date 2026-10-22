@@ -3,6 +3,25 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.5.2</title>
+            <pubDate>Thu, 22 Oct 2026 10:36:20 -0400</pubDate>
+            <sparkle:version>40</sparkle:version>
+            <sparkle:shortVersionString>2.5.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>The controller is as quick as the keyboard, in Cabinet Mode and the library; holding a direction speeds up</li>
+<li>New buttons in Cabinet Mode: A plays, X shows the game&#x27;s page, Y favorites, B goes back, Select searches, right stick picks a random game</li>
+<li>A cleaner game page: box art, logo and facts, the description, and the video centered beside them</li>
+<li>Choose which side the details sit on, in Settings › Cabinet Mode or the Start menu</li>
+<li>All Games is gone; search now looks through every game</li>
+<li>Cabinet Mode puts the library away while it&#x27;s open, and you come back to it after quitting a game</li>
+<li>Down no longer moves diagonally in the library, and L2/R2 work on USB controllers</li>
+<li>Games released on January 1st no longer show the year before</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.5.2/Attic-2.5.2.zip" length="16964557" type="application/octet-stream" sparkle:edSignature="8viihNgvN38Woj+IvOjSd22+COmMMckhy5PfLUejAEXAtjr/CzrWjmDNZsidHI1W+kKVV3x+6iA5CRS9dLwfDw=="/>
+        </item>
+        <item>
             <title>2.5.1</title>
             <pubDate>Thu, 22 Oct 2026 07:48:44 -0400</pubDate>
             <sparkle:version>39</sparkle:version>
