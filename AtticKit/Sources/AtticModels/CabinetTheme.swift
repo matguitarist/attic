@@ -176,6 +176,10 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// after it (snes.png, megadrive.jpg, arcade.png). Without one,
         /// the system's covers fan out instead.
         public var artFolder: String
+        /// The system's picture beside its details. Off, a system with fan
+        /// art lets that be the picture, its details at the top left — for
+        /// a sharp backdrop, where the fan art already shows the console.
+        public var showsPicture: Bool = true
     }
 
     /// The menu Start opens: theme, interface, controller, library.
@@ -417,7 +421,7 @@ extension CabinetTheme {
                          showsDescription: true, descriptionLines: 3),
         header: Header(showsLogos: false, showsClock: true, showsGameCount: false),
         menu: Menu(position: .center, width: 680, cornerRadius: 30, dim: 0.5),
-        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems", showsPicture: false),
         showsHints: true
     )
 }

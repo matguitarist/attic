@@ -138,9 +138,13 @@ private struct CabinetSectionInfo: View {
 
     var body: some View {
         let theme = installed.theme
+        // Without the picture, the fan art behind is it (when there's any).
+        let showsPicture = theme.systems.showsPicture || section.ownArt(.fanart) == nil
         HStack(spacing: 60) {
-            art
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if showsPicture {
+                art
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
 
             VStack(alignment: .leading, spacing: 18) {
                 if let logo = section.logo {
@@ -171,6 +175,8 @@ private struct CabinetSectionInfo: View {
                 }
             }
             .frame(maxWidth: 560, alignment: .leading)
+            .frame(maxWidth: showsPicture ? nil : .infinity, maxHeight: showsPicture ? nil : .infinity,
+                   alignment: .topLeading)
         }
         .task(id: section.selection) {
             // Browsing past a section doesn't count its games.

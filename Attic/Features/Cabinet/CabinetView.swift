@@ -51,6 +51,7 @@ struct CabinetView: View {
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(CabinetThemeStore.self) private var themeStore
+    @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(RetroArchSettingsStore.self) private var retroArchStore
@@ -89,6 +90,7 @@ struct CabinetView: View {
             // On the systems, the system's own fan art.
             CabinetBackdrop(game: level == .games ? (pageGame ?? focusedGame) : nil,
                             fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil,
+                            fallbackVideo: systemBackdropVideo,
                             // The game page plays its own.
                             allowsVideo: pageGame == nil && menuPath.isEmpty && !isSearching)
 
@@ -253,6 +255,16 @@ struct CabinetView: View {
         .onChange(of: launchCoordinator.state) { old, new in
             if case .running = old, new == .idle { CabinetWindows.bringCabinetForward() }
         }
+    }
+
+    /// On the systems, when the theme shows no picture (the fan art behind
+    /// is it), the system's video plays there instead.
+    private var systemBackdropVideo: URL? {
+        let theme = themeStore.current.theme
+        guard level == .systems, !theme.systems.showsPicture, playsSystemVideos, theme.systems.playsVideo,
+              let section = sections.first(where: { $0.selection == selection }), section.ownArt(.fanart) != nil,
+              let url = section.ownArt(.video), GameHeaderMedia.canPlay(url) else { return nil }
+        return url
     }
 
     /// Built when the systems or collections change, not on every redraw:
@@ -602,6 +614,8 @@ private struct CabinetBackdrop: View {
     let game: Game?
     /// Shown without a game.
     var fallback: URL? = nil
+    /// Played without a game, already checked against the settings.
+    var fallbackVideo: URL? = nil
     var allowsVideo = true
 
     @Environment(\.cabinetTheme) private var installed
@@ -666,9 +680,12 @@ private struct CabinetBackdrop: View {
             .animation(.easeInOut(duration: 0.6), value: videoURL)
             // After a moment on the game, so moving along the row doesn't
             // start a video for every card passed.
-            .task(id: [game?.persistentModelID.hashValue.description, String(backdrop.playsVideo), String(playsPreviews)]) {
+            .task(id: [game?.persistentModelID.hashValue.description, String(backdrop.playsVideo), String(playsPreviews), fallbackVideo?.path]) {
                 videoURL = nil
-                guard backdrop.playsVideo, playsPreviews, let url = game?.previewVideoURL, GameHeaderMedia.canPlay(url) else { return }
+                let gameVideo = game.flatMap { game in
+                    backdrop.playsVideo && playsPreviews ? game.previewVideoURL.flatMap { GameHeaderMedia.canPlay($0) ? $0 : nil } : nil
+                }
+                guard let url = gameVideo ?? (game == nil ? fallbackVideo : nil) else { return }
                 try? await Task.sleep(for: .seconds(1.2))
                 guard !Task.isCancelled else { return }
                 videoURL = url
