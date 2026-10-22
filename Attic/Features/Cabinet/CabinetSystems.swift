@@ -8,6 +8,10 @@ import AtticPersistence
 /// systems) in a strip along the bottom, the focused one's picture, logo,
 /// facts and numbers above. Confirm opens its games.
 struct CabinetSystemsView: View {
+    /// Whether systems and collections play their own video (off by
+    /// default: they're long, and loud with sound on).
+    static let playsVideosKey = "cabinetPlaysSystemVideos"
+
     let sections: [CabinetSection]
     @Binding var selection: LibrarySelection
     let onOpen: () -> Void
@@ -119,6 +123,7 @@ private struct CabinetSectionInfo: View {
     @State private var videoURL: URL?
     @AppStorage(GameHeaderMedia.previewsKey) private var playsPreviews = true
     @AppStorage("videoPreviewsMuted") private var isMuted = true
+    @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
 
     var body: some View {
         let theme = installed.theme
@@ -162,9 +167,9 @@ private struct CabinetSectionInfo: View {
             guard !Task.isCancelled else { return }
             stats = CabinetSectionStats(selection: section.selection, context: modelContext)
         }
-        .task(id: [section.id.hashValue, playsPreviews ? 1 : 0, installed.theme.systems.playsVideo ? 1 : 0]) {
+        .task(id: [section.id.hashValue, playsSystemVideos ? 1 : 0, installed.theme.systems.playsVideo ? 1 : 0]) {
             videoURL = nil
-            guard playsPreviews, installed.theme.systems.playsVideo,
+            guard playsSystemVideos, installed.theme.systems.playsVideo,
                   let url = section.ownArt(.video), GameHeaderMedia.canPlay(url) else { return }
             try? await Task.sleep(for: .seconds(0.8))
             guard !Task.isCancelled else { return }

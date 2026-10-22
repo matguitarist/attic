@@ -8138,6 +8138,16 @@
         }
       }
     },
+    "On the systems, after a moment, in place of the picture": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sur les systèmes, après un instant, à la place de l'image"
+          }
+        }
+      }
+    },
     "Only": {
       "localizations": {
         "fr": {
@@ -8494,6 +8504,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lancez un jeu : ce que fait Attic et ce que dit l’émulateur au démarrage et pendant la partie s’affichent ici."
+          }
+        }
+      }
+    },
+    "Play system and collection videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lire les vidéos des systèmes et collections"
           }
         }
       }
@@ -10803,6 +10823,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Réglages du système…"
+          }
+        }
+      }
+    },
+    "System videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéos des systèmes"
           }
         }
       }

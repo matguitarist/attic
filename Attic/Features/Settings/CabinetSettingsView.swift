@@ -9,6 +9,7 @@ struct CabinetSettingsView: View {
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
+    @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
     @State private var themeError: String?
 
     var body: some View {
@@ -20,6 +21,10 @@ struct CabinetSettingsView: View {
                 Toggle("Open Cabinet Mode at launch", isOn: $startsInCabinet)
                 Toggle("Play video sound", isOn: Binding(get: { !videoPreviewsMuted }, set: { videoPreviewsMuted = !$0 }))
                     .disabled(!playsVideoPreviews)
+                Toggle(isOn: $playsSystemVideos) {
+                    Text("Play system and collection videos")
+                    Text("On the systems, after a moment, in place of the picture")
+                }
             } footer: {
                 Text("Full-screen couch mode: ⌘⇧B, or Menu/Start on a controller. Start opens its menu, where all of this can be set from the couch too.")
                     .font(.caption)

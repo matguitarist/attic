@@ -60,6 +60,7 @@ struct CabinetMenuView: View {
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
+    @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
 
     @State private var focus: [CabinetMenuPage: Int] = [:]
     /// The confirming action waiting for its second press.
@@ -378,6 +379,8 @@ struct CabinetMenuView: View {
         [
             CabinetMenuItem(id: "videos", title: String(localized: "Play videos"), symbol: "play.rectangle",
                             kind: .toggle($playsVideoPreviews)),
+            CabinetMenuItem(id: "systemVideos", title: String(localized: "System videos"), symbol: "film",
+                            kind: .toggle($playsSystemVideos)),
             CabinetMenuItem(id: "sound", title: String(localized: "Video sound"), symbol: "speaker.wave.2",
                             kind: .toggle(Binding(get: { !videoPreviewsMuted }, set: { videoPreviewsMuted = !$0 }))),
             CabinetMenuItem(id: "start", title: String(localized: "Open Cabinet Mode at launch"), symbol: "play.tv",
