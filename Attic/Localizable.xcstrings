@@ -1816,6 +1816,16 @@
         }
       }
     },
+    "%lld×": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld×"
+          }
+        }
+      }
+    },
     "%lld× · %@": {
       "localizations": {
         "en": {
@@ -12391,6 +12401,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Écriture des playlists…"
+          }
+        }
+      }
+    },
+    "Year": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Année"
           }
         }
       }

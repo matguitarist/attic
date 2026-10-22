@@ -206,7 +206,8 @@ final class CabinetThemeStore {
           `cornerRadius`, `showsBackground`, `focusScale`, `unfocusedOpacity`
           (0 to 1), `focusRing`, `focusGlow`, `showsTitles`.
         - `details`: `media` (`none`, `cover`, `screenshot`, `fanart`),
-          `playsVideo`, `showsLogo` (in place of the title), `showsMetadata`,
+          `playsVideo`, `showsLogo` (in place of the title), `titlePosition`
+          (`top`, `bottom`: where the grid's panel puts it), `showsMetadata`,
           `showsDescription`, `descriptionLines`.
         - `header`: `showsLogos` (systems as logos), `showsClock`,
           `showsGameCount`.

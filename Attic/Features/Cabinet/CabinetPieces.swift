@@ -119,40 +119,78 @@ struct CabinetMedia: View {
     }
 }
 
+/// The game's logo when the theme shows logos and it has one, else its
+/// title. A logo gets room around it and sits centered in a panel.
+struct CabinetGameTitle: View {
+    let game: Game
+    let alignment: HorizontalAlignment
+    /// At a panel's foot, where there's room for a bigger logo.
+    var isLarge = false
+    /// A logo sits centered, even in a leading column, except on the
+    /// game page where it heads the facts.
+    var centersLogo = true
+
+    @Environment(\.cabinetTheme) private var installed
+    @State private var logoURL: URL?
+
+    var body: some View {
+        let theme = installed.theme
+        Group {
+            if theme.details.showsLogo, let logoURL {
+                GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
+                    .frame(maxWidth: isLarge ? 500 : 420, maxHeight: theme.typography.titleSize * (isLarge ? 3.4 : 2.4))
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity, alignment: centersLogo ? .center : .leading)
+            } else {
+                Text(theme.cased(game.title))
+                    .font(theme.titleFont)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.6)
+                    .multilineTextAlignment(alignment == .center ? .center : .leading)
+                    .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
+            }
+        }
+        .task(id: game.persistentModelID) {
+            logoURL = theme.details.showsLogo ? game.logoURL : nil
+        }
+    }
+}
+
 /// The focused game's title (or logo), facts, state and description, as
-/// much as the theme shows.
+/// much as the theme shows. Centered, the facts run on one line; along
+/// the side, each gets a line of its own.
 struct CabinetGameInfo: View {
     let game: Game?
     let alignment: HorizontalAlignment
     /// The game page shows the description itself, scrollable.
     var showsDescription = true
+    /// A panel can put the title elsewhere (`Details.titlePosition`).
+    var showsTitle = true
+    /// The game page's: developer, publisher, play time, last played,
+    /// under a logo kept to the left.
+    var showsMoreFacts = false
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(\.cabinetTheme) private var installed
-    @State private var logoURL: URL?
 
     var body: some View {
         if let game {
             let theme = installed.theme
             let textAlignment: TextAlignment = alignment == .center ? .center : .leading
-            VStack(alignment: alignment, spacing: 10) {
-                if theme.details.showsLogo, let logoURL {
-                    GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
-                        .frame(maxWidth: 420, maxHeight: theme.typography.titleSize * 2.4)
-                        .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
-                } else {
-                    Text(theme.cased(game.title))
-                        .font(theme.titleFont)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.6)
-                        .multilineTextAlignment(textAlignment)
+            VStack(alignment: alignment, spacing: alignment == .center ? 10 : 16) {
+                if showsTitle {
+                    CabinetGameTitle(game: game, alignment: alignment, centersLogo: !showsMoreFacts)
                 }
 
                 if theme.details.showsMetadata {
-                    Text(metadata(for: game))
-                        .font(theme.bodyFont())
-                        .foregroundStyle(theme.palette.secondaryText.color)
-                        .multilineTextAlignment(textAlignment)
+                    if alignment == .center {
+                        Text(facts(for: game).map(\.value).joined(separator: "  ·  "))
+                            .font(theme.bodyFont())
+                            .foregroundStyle(theme.palette.secondaryText.color)
+                            .multilineTextAlignment(textAlignment)
+                    } else {
+                        factRows(for: game, theme: theme)
+                    }
                 }
 
                 if launchCoordinator.state == .running(gameID: game.persistentModelID) {
@@ -174,21 +212,73 @@ struct CabinetGameInfo: View {
             }
             .id(game.persistentModelID)
             .transition(.opacity)
-            .task(id: game.persistentModelID) {
-                logoURL = theme.details.showsLogo ? game.logoURL : nil
-            }
         }
     }
 
-    private func metadata(for game: Game) -> String {
-        var parts: [String] = []
-        if let system = game.system?.displayName { parts.append(system) }
-        if let year = game.releaseDate.map({ Calendar.current.component(.year, from: $0) }) { parts.append(String(year)) }
-        if let genre = game.genre { parts.append(genre) }
+    private func factRows(for game: Game, theme: CabinetTheme) -> some View {
+        Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 14, verticalSpacing: 8) {
+            ForEach(facts(for: game), id: \.symbol) { fact in
+                GridRow {
+                    Image(systemName: fact.symbol)
+                        .foregroundStyle(theme.palette.accent.color)
+                        .frame(width: theme.typography.bodySize * 1.3)
+                    Text(fact.label)
+                        .foregroundStyle(theme.palette.secondaryText.color)
+                    Text(verbatim: fact.value)
+                        .foregroundStyle(theme.palette.text.color)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+        .font(theme.bodyFont())
+    }
+
+    private struct Fact {
+        let symbol: String
+        let label: String
+        let value: String
+    }
+
+    private func facts(for game: Game) -> [Fact] {
+        var facts: [Fact] = []
+        if let system = game.system?.displayName {
+            facts.append(Fact(symbol: "gamecontroller", label: String(localized: "System"), value: system))
+        }
+        if let year = game.releaseDate.map({ Calendar.current.component(.year, from: $0) }) {
+            facts.append(Fact(symbol: "calendar", label: String(localized: "Year"), value: String(year)))
+        }
+        if let genre = game.genre {
+            facts.append(Fact(symbol: "tag", label: String(localized: "Genre"), value: genre))
+        }
         // `players` is free text from scrapers ("1", "1-2", "1-4"), so it
         // can't drive a plural — label it instead.
-        if let players = game.players { parts.append(String(localized: "Players: \(players)")) }
-        if game.playCount > 0 { parts.append(String(localized: "Played \(game.playCount)×")) }
-        return parts.joined(separator: "  ·  ")
+        if let players = game.players {
+            facts.append(Fact(symbol: "person.2", label: String(localized: "Players"),
+                              value: alignment == .center ? String(localized: "Players: \(players)") : players))
+        }
+        if showsMoreFacts {
+            if let developer = game.developer {
+                facts.append(Fact(symbol: "hammer", label: String(localized: "Developer"), value: developer))
+            }
+            if let publisher = game.publisher, publisher != game.developer {
+                facts.append(Fact(symbol: "building.2", label: String(localized: "Publisher"), value: publisher))
+            }
+        }
+        if game.playCount > 0 {
+            let value = if alignment == .center {
+                String(localized: "Played \(game.playCount)×")
+            } else if showsMoreFacts {
+                String(localized: "\(game.playCount)× · \(SystemOverviewView.formattedPlaytime(game.totalPlaytimeSeconds))")
+            } else {
+                String(localized: "\(game.playCount)×")
+            }
+            facts.append(Fact(symbol: "clock.arrow.circlepath", label: String(localized: "Played"), value: value))
+        }
+        if showsMoreFacts, let last = game.lastPlayedDate {
+            facts.append(Fact(symbol: "clock", label: String(localized: "Last Played"),
+                              value: last.formatted(.relative(presentation: .named))))
+        }
+        return facts
     }
 }

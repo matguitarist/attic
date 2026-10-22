@@ -62,8 +62,7 @@ struct CabinetGamePage: View {
                 .frame(maxWidth: 520)
 
                 VStack(alignment: .leading, spacing: 20) {
-                    CabinetGameInfo(game: game, alignment: .leading, showsDescription: false)
-                    facts(theme)
+                    CabinetGameInfo(game: game, alignment: .leading, showsDescription: false, showsMoreFacts: true)
                     if let description = game.gameDescription, !description.isEmpty {
                         ScrollView(.vertical) {
                             Text(description)
@@ -111,28 +110,6 @@ struct CabinetGamePage: View {
     }
 
     // MARK: Pieces
-
-    private func facts(_ theme: CabinetTheme) -> some View {
-        Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 6) {
-            if let developer = game.developer { fact("Developer", developer, theme) }
-            if let publisher = game.publisher, publisher != game.developer { fact("Publisher", publisher, theme) }
-            if game.playCount > 0 {
-                fact("Played", String(localized: "\(game.playCount)× · \(SystemOverviewView.formattedPlaytime(game.totalPlaytimeSeconds))"), theme)
-            }
-            if let last = game.lastPlayedDate {
-                fact("Last Played", last.formatted(.relative(presentation: .named)), theme)
-            }
-        }
-        .font(theme.bodyFont())
-    }
-
-    private func fact(_ label: LocalizedStringKey, _ value: String, _ theme: CabinetTheme) -> some View {
-        GridRow {
-            Text(label)
-                .foregroundStyle(theme.palette.secondaryText.color)
-            Text(verbatim: value)
-        }
-    }
 
     private func actionRow(_ theme: CabinetTheme) -> some View {
         HStack(spacing: 14) {

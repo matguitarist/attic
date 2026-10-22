@@ -116,12 +116,18 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public enum Media: String, Codable, CaseIterable, Sendable {
             case none, cover, box3D, screenshot, fanart
         }
+        public enum TitlePosition: String, Codable, CaseIterable, Sendable {
+            case top, bottom
+        }
         /// The picture in the details: a video plays over it after a
         /// moment when `playsVideo` is on.
         public var media: Media
         public var playsVideo: Bool
         /// The game's logo in place of its title, when it has one.
         public var showsLogo: Bool
+        /// Where a side panel puts the title or logo: under the picture,
+        /// or at the panel's foot.
+        public var titlePosition: TitlePosition = .top
         public var showsMetadata: Bool
         public var showsDescription: Bool
         public var descriptionLines: Int
@@ -307,7 +313,8 @@ extension CabinetTheme {
         backdrop: Backdrop(source: .fanart, blur: 24, dim: 0.72),
         tiles: Tiles(art: .cover, size: 0.44, spacing: 22, cornerRadius: 8, showsBackground: true,
                      focusScale: 1.06, unfocusedOpacity: 0.85, focusRing: true, focusGlow: true, showsTitles: false),
-        details: Details(media: .screenshot, playsVideo: true, showsLogo: true, showsMetadata: true, showsDescription: true, descriptionLines: 6),
+        details: Details(media: .screenshot, playsVideo: true, showsLogo: true, titlePosition: .bottom, showsMetadata: true,
+                         showsDescription: true, descriptionLines: 6),
         header: Header(showsLogos: false, showsClock: true, showsGameCount: true),
         menu: Menu(position: .leading, width: 560, cornerRadius: 0, dim: 0.5),
         systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),

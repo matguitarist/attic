@@ -137,9 +137,17 @@ private struct CabinetDetailsPanel: View {
                         .aspectRatio(4 / 3, contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
                 }
-                CabinetGameInfo(game: game, alignment: .leading)
+                let titleAtBottom = theme.details.titlePosition == .bottom
+                CabinetGameInfo(game: game, alignment: .leading, showsTitle: !titleAtBottom)
+                Spacer(minLength: 0)
+                if titleAtBottom {
+                    CabinetGameTitle(game: game, alignment: .center, isLarge: true)
+                        .id(game.persistentModelID)
+                        .transition(.opacity)
+                }
+            } else {
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 0)
         }
         .padding(24)
         .frame(maxHeight: .infinity, alignment: .top)
