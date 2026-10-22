@@ -54,6 +54,45 @@ public enum MediaFolder {
             .appending(path: systemFolder.lastPathComponent, directoryHint: .isDirectory)
     }
 
+    /// The system's own pictures, beside the kind folders in its media,
+    /// named `system-<art>` with any image extension.
+    ///
+    ///     Media/snes/system-logo.png
+    ///     Media/snes/system-fanart.jpg
+    ///     Media/snes/system-picture.heic
+    ///     Media/snes/system-video.mp4
+    public enum SystemArt: String, CaseIterable, Sendable {
+        /// In place of Attic's logo.
+        case logo = "system-logo"
+        /// A wallpaper for behind the system.
+        case fanart = "system-fanart"
+        /// The console itself.
+        case picture = "system-picture"
+        /// A trailer, played where the picture is.
+        case video = "system-video"
+    }
+
+    /// The system's own `art`, if there's one.
+    public static func systemArt(_ art: SystemArt, forSystemFolder systemFolder: URL) -> URL? {
+        existingFiles(base: root(forSystemFolder: systemFolder).appending(path: art.rawValue)).first
+    }
+
+    /// Copies `picture` in as the system's `art`, replacing any earlier one
+    /// (which goes to the Trash); nil removes it.
+    @discardableResult
+    public static func setSystemArt(_ art: SystemArt, to picture: URL?, forSystemFolder systemFolder: URL) throws -> URL? {
+        let base = root(forSystemFolder: systemFolder).appending(path: art.rawValue)
+        for existing in existingFiles(base: base) where existing != picture {
+            try? FileManager.default.trashItem(at: existing, resultingItemURL: nil)
+        }
+        guard let picture else { return nil }
+        let destination = base.appendingPathExtension(picture.pathExtension.lowercased())
+        guard destination != picture else { return destination }
+        try FileManager.default.createDirectory(at: base.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try FileManager.default.copyItem(at: picture, to: destination)
+        return destination
+    }
+
     /// The file for one game, before its extension: subfolders in the ROM's
     /// path are kept, the way ES-DE does.
     public static func baseURL(forSystemFolder systemFolder: URL, romRelativePath: String, kind: MediaKind) -> URL {

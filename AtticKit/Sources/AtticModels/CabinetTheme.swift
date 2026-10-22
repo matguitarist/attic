@@ -143,6 +143,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var isEnabled: Bool
         /// How many games, played, favorites and play time.
         public var showsStats: Bool
+        /// A system's or collection's own video, after a moment, where its
+        /// picture is.
+        public var playsVideo: Bool
         /// A folder in the theme holding each system's picture, named
         /// after it (snes.png, megadrive.jpg, arcade.png). Without one,
         /// the system's covers fan out instead.
@@ -281,7 +284,7 @@ extension CabinetTheme {
         details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 3),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: false),
         menu: Menu(position: .center, width: 640, cornerRadius: 28, dim: 0.55),
-        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )
 
@@ -307,7 +310,7 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: true, showsMetadata: true, showsDescription: true, descriptionLines: 6),
         header: Header(showsLogos: false, showsClock: true, showsGameCount: true),
         menu: Menu(position: .leading, width: 560, cornerRadius: 0, dim: 0.5),
-        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )
 
@@ -333,7 +336,7 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: false, descriptionLines: 2),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 12, dim: 0.7),
-        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )
 
@@ -359,7 +362,7 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 8),
         header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 14, dim: 0.6),
-        systems: Systems(isEnabled: true, showsStats: true, artFolder: "systems"),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )
 }

@@ -13,11 +13,15 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
 
     public var id: String { name }
 
-    init(_ name: String, _ including: String, excluding: String = "", logo logoAliases: [String] = []) {
+    init(_ name: String, _ including: String, excluding: String = "", genres: String = "", minPlayers: Int = 0,
+         logo logoAliases: [String] = []) {
         self.name = name
-        self.search = CollectionSearch(including: including, excluding: excluding)
+        self.search = CollectionSearch(including: including, excluding: excluding, genres: genres, minPlayers: minPlayers)
         self.logoAliases = logoAliases
     }
+
+    /// A kind of game (racing, four players) rather than a series.
+    public var isGenre: Bool { search.includedTerms.isEmpty }
 
     /// The file names (without extension) a logo for a collection called
     /// `name` may have in a folder of theme logos, best first: a
@@ -120,5 +124,21 @@ public struct SeriesTemplate: Identifiable, Hashable, Sendable {
         SeriesTemplate("Adventure Island", "Adventure Island, Takahashi Meijin"),
         SeriesTemplate("Star Wars", "Star Wars"),
         SeriesTemplate("Tetris", "Tetris"),
+        SeriesTemplate("Kingdom Hearts", "Kingdom Hearts"),
+        SeriesTemplate("LEGO", "LEGO"),
+        SeriesTemplate("Monkey Island", "Monkey Island"),
+        SeriesTemplate("R-Type", "R-Type, R Type", logo: ["rtype"]),
+        SeriesTemplate("Raiden", "Raiden"),
+        SeriesTemplate("Shenmue", "Shenmue"),
+        SeriesTemplate("The Simpsons", "Simpsons", logo: ["simpsons"]),
+        SeriesTemplate("WipEout", "Wipeout, WipEout, Wip3out"),
+        SeriesTemplate("Doom", "Doom", excluding: "Doomsday, Doom Troopers"),
+        // Kinds of games, by the genres scrapers give and how many play
+        SeriesTemplate("4 Players", "", minPlayers: 4, logo: ["4players", "multiplayer"]),
+        SeriesTemplate("Beat 'em Up", "", genres: "Beat'em Up, Beat 'em Up, Brawler", logo: ["beatemup"]),
+        SeriesTemplate("Shoot 'em Up", "", genres: "Shoot'em Up, Shoot 'em Up, Shmup", logo: ["shmups", "shootemup"]),
+        SeriesTemplate("Racing", "", genres: "Race, Racing", logo: ["racing"]),
+        SeriesTemplate("RPG", "", genres: "Role Playing, Role-Playing, RPG", logo: ["rpg"]),
+        SeriesTemplate("Light Gun", "", genres: "Lightgun, Light Gun", logo: ["lightgun"]),
     ]
 }

@@ -33,6 +33,9 @@ public final class GameCollection {
     /// Games taken out of the collection or unticked from its search, as
     /// `Game.collectionKey`, so the search never adds them back.
     public var excludedGameKeys: [String] = []
+    /// Kept, but out of the library's sidebar and Cabinet Mode (Settings ›
+    /// Collections).
+    public var isHidden: Bool = false
 
     public init(name: String, games: [Game] = []) {
         self.collectionID = UUID()

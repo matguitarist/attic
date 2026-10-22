@@ -100,6 +100,35 @@ struct MediaTidierTests {
         #expect(plan.compress.isEmpty)
     }
 
+    @Test func aSystemsOwnPicturesStayAndReplaceTheirLast() throws {
+        try touch(roms.appending(path: "snes/Game (USA).sfc"))
+        let systemFolder = roms.appending(path: "snes")
+        #expect(MediaFolder.systemArt(.logo, forSystemFolder: systemFolder) == nil)
+
+        let picked = base.appending(path: "Downloads/SNES Logo.PNG")
+        try touch(picked)
+        let stored = try MediaFolder.setSystemArt(.logo, to: picked, forSystemFolder: systemFolder)
+        #expect(stored == media.appending(path: "snes/system-logo.png"))
+        #expect(MediaFolder.systemArt(.logo, forSystemFolder: systemFolder) == stored)
+        #expect(MediaFolder.systemArt(.fanart, forSystemFolder: systemFolder) == nil)
+
+        let wallpaper = base.appending(path: "Downloads/snes.jpg")
+        try touch(wallpaper)
+        try MediaFolder.setSystemArt(.fanart, to: wallpaper, forSystemFolder: systemFolder)
+        #expect(MediaFolder.systemArt(.fanart, forSystemFolder: systemFolder)?.lastPathComponent == "system-fanart.jpg")
+        #expect(MediaTidier.plan(romsRoots: [roms]).trash.isEmpty)
+
+        let other = base.appending(path: "Downloads/logo.webp")
+        try touch(other)
+        try MediaFolder.setSystemArt(.logo, to: other, forSystemFolder: systemFolder)
+        #expect(MediaFolder.systemArt(.logo, forSystemFolder: systemFolder)?.lastPathComponent == "system-logo.webp")
+        #expect(!exists(media.appending(path: "snes/system-logo.png")))
+
+        try MediaFolder.setSystemArt(.logo, to: nil, forSystemFolder: systemFolder)
+        #expect(MediaFolder.systemArt(.logo, forSystemFolder: systemFolder) == nil)
+        #expect(MediaFolder.systemArt(.fanart, forSystemFolder: systemFolder) != nil)
+    }
+
     @Test func threeDBoxesStay() throws {
         try touch(roms.appending(path: "snes/Game (USA).sfc"))
         try touch(media.appending(path: "snes/3dboxes/Game (USA).webp"))

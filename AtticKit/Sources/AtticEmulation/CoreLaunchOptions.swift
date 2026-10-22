@@ -7,8 +7,7 @@ public enum CoreLaunchOptions {
     public static func options(
         system: CanonicalSystemID,
         coreIdentifier: String,
-        romURL: URL,
-        neoGeoFreePlay: Bool
+        romURL: URL
     ) -> [String: String] {
         switch coreIdentifier {
         case "mednafen_vb_libretro":
@@ -24,7 +23,7 @@ public enum CoreLaunchOptions {
             // it; other arcade boards name and wire theirs differently per
             // game, so they're left alone.
             let romset = romURL.deletingPathExtension().lastPathComponent
-            return ["fbneo-dipswitch-\(romset)-Free_play": neoGeoFreePlay ? "On" : "Off"]
+            return ["fbneo-dipswitch-\(romset)-Free_play": "On"]
 
         default:
             return [:]

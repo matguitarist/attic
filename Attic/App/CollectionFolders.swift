@@ -123,6 +123,7 @@ enum CollectionFolders {
         collection.searchSystemID = file.system
         collection.addsMatchingGames = file.addsMatchingGames
         collection.excludedGameKeys = file.excluded
+        collection.isHidden = file.hidden ?? false
         try? context.save()
 
         save([collection], root: root)
@@ -130,7 +131,7 @@ enum CollectionFolders {
         // (mario.png beside the file) becomes the logo too.
         let destination = self.folder(for: collection, root: root, existing: foldersByID(in: root))
         let isElsewhere = destination.standardizedFileURL != folder.standardizedFileURL
-        for picture in [CollectionFile.logoName, CollectionFile.artworkName] {
+        for picture in [CollectionFile.logoName, CollectionFile.artworkName, CollectionFile.fanartName] {
             if let source = image(named: picture, in: folder) {
                 if isElsewhere { setImage(source, as: picture, for: collection, root: root) }
             } else if picture == CollectionFile.logoName, let source = looseLogo(in: folder, name: file.name) {
@@ -170,9 +171,6 @@ enum CollectionFolders {
         collection.games = found
         try? context.save()
         save([collection], root: root)
-        if let logo = CollectionLogos.logo(forCollectionNamed: file.name) {
-            setImage(logo, as: CollectionFile.logoName, for: collection, root: root)
-        }
         return ImportResult(collection: collection, found: found.count, missing: missing)
     }
 
@@ -213,6 +211,20 @@ enum CollectionFolders {
 
     // MARK: - Pictures
 
+    /// The collection's folder, where its file and pictures are.
+    static func folderURL(for collection: GameCollection, root: URL) -> URL {
+        folder(for: collection, root: root, existing: foldersByID(in: root))
+    }
+
+    /// A picture or video in a collection's folder, by name without its
+    /// extension.
+    nonisolated static func file(named name: String, inFolder folder: URL) -> URL? {
+        ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
+            .filter { (CollectionLogos.imageExtensions.union(MediaFolder.videoExtensions)).contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            .first { $0.deletingPathExtension().lastPathComponent.lowercased() == name }
+    }
+
     static func image(named name: String, for collection: GameCollection, root: URL) -> URL? {
         image(named: name, in: folder(for: collection, root: root, existing: foldersByID(in: root)))
     }
@@ -245,7 +257,7 @@ enum CollectionFolders {
     /// only picture there.
     private static func looseLogo(in folder: URL, name: String) -> URL? {
         let others = images(in: folder).filter {
-            ![CollectionFile.logoName, CollectionFile.artworkName].contains($0.deletingPathExtension().lastPathComponent.lowercased())
+            ![CollectionFile.logoName, CollectionFile.artworkName, CollectionFile.fanartName].contains($0.deletingPathExtension().lastPathComponent.lowercased())
         }
         let names = SeriesTemplate.logoNames(for: name)
         return names.lazy.compactMap { logoName in others.first { $0.deletingPathExtension().lastPathComponent.lowercased() == logoName } }.first
@@ -268,6 +280,7 @@ enum CollectionFolders {
             excluded: collection.excludedGameKeys.sorted()
         )
         file.setCriteria(from: collection.search)
+        file.hidden = collection.isHidden ? true : nil
         return file
     }
 
@@ -296,42 +309,7 @@ enum CollectionFolders {
     }
 }
 
-/// Logos for collections, from a folder of one's own: a theme's logo
-/// folder (`mario.png`, `zelda.png`…) or any folder of pictures named
-/// after series. Attic ships none: they're the series owners' marks.
+/// The pictures a collection's logo can be.
 enum CollectionLogos {
-    /// The folder's path, set in Settings.
-    static let folderKey = "collectionLogosFolder"
-
-    static var folder: URL? {
-        guard let path = UserDefaults.standard.string(forKey: folderKey), !path.isEmpty else { return nil }
-        return URL(fileURLWithPath: path, isDirectory: true)
-    }
-
     static let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "heic", "webp"]
-
-    /// The folder's logo for a collection called `name`, if it has one.
-    static func logo(forCollectionNamed name: String) -> URL? {
-        guard let folder else { return nil }
-        let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? []
-        var byName: [String: URL] = [:]
-        for file in files where imageExtensions.contains(file.pathExtension.lowercased()) {
-            let key = file.deletingPathExtension().lastPathComponent.lowercased()
-            if byName[key] == nil { byName[key] = file }
-        }
-        return SeriesTemplate.logoNames(for: name).lazy.compactMap { byName[$0] }.first
-    }
-
-    /// Gives each collection without a logo the folder's one for it.
-    /// Returns how many got one.
-    @MainActor @discardableResult
-    static func addMissing(to collections: [GameCollection], root: URL) -> Int {
-        var added = 0
-        for collection in collections where CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: root) == nil {
-            guard let logo = logo(forCollectionNamed: collection.name) else { continue }
-            CollectionFolders.setImage(logo, as: CollectionFile.logoName, for: collection, root: root)
-            added += 1
-        }
-        return added
-    }
 }

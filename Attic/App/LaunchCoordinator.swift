@@ -55,13 +55,6 @@ final class LaunchCoordinator {
         self.controllerSettingsStore = controllerSettingsStore
     }
 
-    /// "Neo Geo free play" (Settings › General) — see `CoreLaunchOptions`.
-    static let neoGeoFreePlayKey = "neoGeoFreePlay"
-
-    private var neoGeoFreePlay: Bool {
-        UserDefaults.standard.object(forKey: Self.neoGeoFreePlayKey) as? Bool ?? true
-    }
-
     /// `checkingBIOS: false` is "Play Anyway" from the missing-BIOS alert,
     /// for dumps named differently from what Attic looks for.
     func play(game: Game, retroArchStore: RetroArchSettingsStore, checkingBIOS: Bool = true) {
@@ -249,7 +242,7 @@ final class LaunchCoordinator {
             )
             try folder.setSystemCoreOptions(systemSettings, core: identifier)
             try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
-                system: systemID, coreIdentifier: identifier, romURL: game.romAbsoluteURL, neoGeoFreePlay: neoGeoFreePlay
+                system: systemID, coreIdentifier: identifier, romURL: game.romAbsoluteURL
             ))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL).launch(
                 coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL,

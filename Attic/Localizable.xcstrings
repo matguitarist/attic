@@ -358,6 +358,7 @@
       }
     },
     "%lld collections got a logo.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -1979,6 +1980,7 @@
       }
     },
     "A folder of series logos named like ES-DE and Batocera themes' (mario.png, zelda.png…). A collection made from a series, or named like one, takes its logo from here; it's copied into the collection's folder.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -2018,6 +2020,16 @@
         }
       }
     },
+    "A hidden collection keeps its games and settings, and is only left out of the sidebar and Cabinet Mode.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une collection masquée garde ses jeux et ses réglages : elle est seulement retirée de la barre latérale et du mode Cabinet."
+          }
+        }
+      }
+    },
     "A known good dump.": {
       "localizations": {
         "fr": {
@@ -2034,6 +2046,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Une liste de titres à côté de l'illustration et des détails du jeu"
+          }
+        }
+      }
+    },
+    "A logo with a transparent background looks best: PNG, HEIC or WebP.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un logo sur fond transparent rend mieux : PNG, HEIC ou WebP."
           }
         }
       }
@@ -2064,6 +2086,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un thème est un fichier theme.json dans le dossier Themes. Personnaliser en crée un à partir du thème choisi avec vos changements ci-dessous, et le mode Cabinet relit le dossier à chaque ouverture."
+          }
+        }
+      }
+    },
+    "A wallpaper behind the system in Cabinet Mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un fond d'écran derrière le système dans le mode Cabinet"
           }
         }
       }
@@ -2229,6 +2261,7 @@
       }
     },
     "Add Logos to Collections": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -3366,6 +3399,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisir une image…"
+          }
+        }
+      }
+    },
+    "Choose Logo…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir un logo…"
           }
         }
       }
@@ -5560,6 +5603,7 @@
       }
     },
     "Free play is on by default (Settings › General › Arcade), so Start begins a game without coins. Games first show the Neo Geo boot screen for about 10 seconds.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -5838,6 +5882,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux qui se jouent à la verticale peuvent être pivotés dans les options du cœur de RetroArch."
+          }
+        }
+      }
+    },
+    "Games run in free play, so Start begins a game without coins. They first show the Neo Geo boot screen for about 10 seconds.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux tournent en partie gratuite : Start lance une partie sans pièces. Ils affichent d'abord l'écran de démarrage Neo Geo pendant une dizaine de secondes."
           }
         }
       }
@@ -6602,6 +6656,26 @@
         }
       }
     },
+    "Kept in the system's Media folder, beside its games' media. Drop a picture on a row to use it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rangées dans le dossier Media du système, à côté des médias de ses jeux. Déposez une image sur une ligne pour l'utiliser."
+          }
+        }
+      }
+    },
+    "Kinds of Games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genres de jeux"
+          }
+        }
+      }
+    },
     "Known good dumps, as the DAT lists them.": {
       "localizations": {
         "fr": {
@@ -6889,6 +6963,7 @@
       }
     },
     "Logos folder": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -7351,6 +7426,7 @@
       }
     },
     "Neo Geo free play": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -7551,11 +7627,22 @@
       }
     },
     "No collection without a logo has one in this folder.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Aucune collection sans logo n’en a un dans ce dossier."
+          }
+        }
+      }
+    },
+    "No collections yet: switch on a series below, or make one with File › New Collection.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune collection pour l'instant : activez une série ci-dessous, ou créez-en une avec Fichier › Nouvelle collection."
           }
         }
       }
@@ -8291,6 +8378,16 @@
         }
       }
     },
+    "Pictures and Video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Images et vidéo"
+          }
+        }
+      }
+    },
     "Pink": {
       "localizations": {
         "fr": {
@@ -8507,6 +8604,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Playlists aux disques manquants"
+          }
+        }
+      }
+    },
+    "Plays in place of the picture after a moment": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se lit à la place de l'image après un instant"
           }
         }
       }
@@ -9517,6 +9624,16 @@
         }
       }
     },
+    "Right-click to use your own logo, or drop a picture on it": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clic droit pour utiliser votre propre logo, ou déposez-y une image"
+          }
+        }
+      }
+    },
     "Romset": {
       "localizations": {
         "fr": {
@@ -10069,6 +10186,16 @@
         }
       }
     },
+    "Series": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Séries"
+          }
+        }
+      }
+    },
     "Set Up All Systems": {
       "localizations": {
         "fr": {
@@ -10225,6 +10352,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher le fichier journal dans le Finder"
+          }
+        }
+      }
+    },
+    "Show Logo in Finder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le logo dans le Finder"
           }
         }
       }
@@ -10560,6 +10697,7 @@
       }
     },
     "Start games without inserting coins. Applies to Neo Geo games run with FinalBurn Neo.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -10615,6 +10753,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Changez de section avec LB / RB."
+          }
+        }
+      }
+    },
+    "Switching one on makes it a collection that adds new matching games after each scan.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En activer une en fait une collection qui ajoute les nouveaux jeux correspondants après chaque analyse."
+          }
+        }
+      }
+    },
+    "Switching one on makes it a collection that adds new matching games after each scan. %lld more have no games in your library.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En activer une en fait une collection qui ajoute les nouveaux jeux correspondants après chaque analyse. %lld autres n'ont aucun jeu dans votre bibliothèque."
           }
         }
       }
@@ -10785,6 +10943,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "La collection est enregistrée comme un dossier, avec sa liste de jeux et ses images. Importez-la avec Fichier › Importer une collection…."
+          }
+        }
+      }
+    },
+    "The console itself, on Cabinet Mode's systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console elle-même, sur les systèmes du mode Cabinet"
           }
         }
       }
@@ -11352,6 +11520,7 @@
       }
     },
     "Use %@": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -11397,6 +11566,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisez des fichiers .wua (format compressé de Cemu), ou des images disque .wud/.wux."
+          }
+        }
+      }
+    },
+    "Use Attic's Logo": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser le logo d'Attic"
           }
         }
       }
@@ -11587,6 +11766,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérification des jeux…"
+          }
+        }
+      }
+    },
+    "Video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo"
           }
         }
       }
@@ -11811,6 +12000,16 @@
         }
       }
     },
+    "Your Collections": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos collections"
+          }
+        }
+      }
+    },
     "Your Games": {
       "localizations": {
         "fr": {
@@ -11906,6 +12105,28 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld jeux"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "^[%lld game](inflect: true) in your library": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu dans votre bibliothèque"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux dans votre bibliothèque"
                 }
               }
             }

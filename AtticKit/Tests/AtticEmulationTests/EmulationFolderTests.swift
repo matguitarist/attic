@@ -47,18 +47,17 @@ struct EmulationFolderTests {
 
     @Test func neoGeoFreePlayTargetsTheRomsetWithFinalBurnNeoOnly() {
         let rom = URL(fileURLWithPath: "/ROMs/neogeo/mslug.zip")
-        func options(_ system: CanonicalSystemID, _ core: String, freePlay: Bool = true) -> [String: String] {
-            CoreLaunchOptions.options(system: system, coreIdentifier: core, romURL: rom, neoGeoFreePlay: freePlay)
+        func options(_ system: CanonicalSystemID, _ core: String) -> [String: String] {
+            CoreLaunchOptions.options(system: system, coreIdentifier: core, romURL: rom)
         }
         #expect(options(.neogeo, "fbneo_libretro") == ["fbneo-dipswitch-mslug-Free_play": "On"])
-        #expect(options(.neogeo, "fbneo_libretro", freePlay: false) == ["fbneo-dipswitch-mslug-Free_play": "Off"])
         #expect(options(.neogeo, "geolith_libretro").isEmpty)
         #expect(options(.snes, "fbneo_libretro").isEmpty)
     }
 
     @Test func virtualBoyAlwaysTurnsOffTheOpenGLOnlyVRMode() {
         let options = CoreLaunchOptions.options(
-            system: .virtualboy, coreIdentifier: "mednafen_vb_libretro", romURL: URL(fileURLWithPath: "/g.vb"), neoGeoFreePlay: true
+            system: .virtualboy, coreIdentifier: "mednafen_vb_libretro", romURL: URL(fileURLWithPath: "/g.vb")
         )
         #expect(options == ["vb_vr": "disabled"])
     }

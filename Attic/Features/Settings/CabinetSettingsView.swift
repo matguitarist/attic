@@ -71,16 +71,18 @@ struct CabinetSettingsView: View {
                     ForEach(CabinetTheme.Tiles.Art.allCases, id: \.self) { Text($0.title).tag($0) }
                 }
                 LabeledContent("Colors") {
-                    Grid(alignment: .trailing, horizontalSpacing: 18, verticalSpacing: 8) {
+                    // Names and wells in their own columns, so the wells
+                    // line up whatever the names' lengths.
+                    Grid(horizontalSpacing: 10, verticalSpacing: 8) {
                         GridRow {
-                            ColorPicker("Accent", selection: colorBinding(\.accent, key: "accent"))
-                            ColorPicker("Background", selection: colorBinding(\.background, key: "background"))
-                            ColorPicker("Panels", selection: colorBinding(\.surface, key: "surface"))
+                            colorCell("Accent", \.accent, key: "accent")
+                            colorCell("Background", \.background, key: "background")
+                            colorCell("Panels", \.surface, key: "surface")
                         }
                         GridRow {
-                            ColorPicker("Text", selection: colorBinding(\.text, key: "text"))
-                            ColorPicker("Dim Text", selection: colorBinding(\.secondaryText, key: "secondaryText"))
-                            ColorPicker("Favorites", selection: colorBinding(\.favorite, key: "favorite"))
+                            colorCell("Text", \.text, key: "text")
+                            colorCell("Dim Text", \.secondaryText, key: "secondaryText")
+                            colorCell("Favorites", \.favorite, key: "favorite")
                         }
                     }
                     .fixedSize()
@@ -115,6 +117,17 @@ struct CabinetSettingsView: View {
     private func themeSummary(_ installed: CabinetThemeStore.Installed) -> String {
         let layout = installed.theme.layout.summary
         return installed.isBuiltIn ? layout : String(localized: "\(layout), from the Themes folder")
+    }
+
+    /// A color's name, right-aligned in its column, then its well.
+    @ViewBuilder
+    private func colorCell(_ name: LocalizedStringKey, _ keyPath: WritableKeyPath<CabinetTheme.Palette, ThemeColor>, key: String) -> some View {
+        Text(name)
+            .gridColumnAlignment(.trailing)
+            .padding(.leading, 12)
+        ColorPicker(name, selection: colorBinding(keyPath, key: key))
+            .labelsHidden()
+            .gridColumnAlignment(.leading)
     }
 
     /// One of the theme's colors, adjusted when picked.

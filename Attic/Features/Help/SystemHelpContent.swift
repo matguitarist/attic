@@ -70,7 +70,7 @@ enum SystemHelpContent {
                        controls: [LocalizedStringResource("Neo Geo A, B, C and D are the bottom, right, left and top buttons."), coinControls],
                        notes: [romsetNote, fbneoVersionNote,
                                LocalizedStringResource("neogeo.zip (the Neo Geo BIOS set) goes in the BIOS folder, still zipped."),
-                               LocalizedStringResource("Free play is on by default (Settings › General › Arcade), so Start begins a game without coins. Games first show the Neo Geo boot screen for about 10 seconds.")]),
+                               LocalizedStringResource("Games run in free play, so Start begins a game without coins. They first show the Neo Geo boot screen for about 10 seconds.")]),
         .cps1: .init(manufacturer: "Capcom", year: 1988, wikipediaTitle: "CP_System",
                      controls: [coinControls, sixButtonControls], notes: [romsetNote, fbneoVersionNote]),
         .cps2: .init(manufacturer: "Capcom", year: 1993, wikipediaTitle: "CP_System_II",

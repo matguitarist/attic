@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticLibraryScanning
 import SwiftData
 import AtticModels
 import AtticPersistence
@@ -59,7 +60,9 @@ struct CabinetView: View {
         let installed = themeStore.current
         let theme = installed.theme
         ZStack {
-            CabinetBackdrop(game: level == .games ? focusedGame : nil)
+            // On the systems, the system's own fan art.
+            CabinetBackdrop(game: level == .games ? focusedGame : nil,
+                            fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil)
 
             VStack(spacing: 0) {
                 switch level {
@@ -159,17 +162,18 @@ struct CabinetView: View {
             CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played")),
             CabinetSection(selection: .recentlyAdded, title: String(localized: "Recently Added"))
         ] + collections
-            .filter { !$0.games.isEmpty }
+            .filter { !$0.games.isEmpty && !$0.isHidden }
             .map { collection in
-                let logo = CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: CollectionFolders.root(in: emulationFolderStore.folder.root))
-                    .flatMap(NSImage.init(contentsOf:))
+                let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
+                let logo = SystemLogoCache.image(at: CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: root))
                     .map { Image(nsImage: $0) }
-                return CabinetSection(selection: .collection(collection.collectionID), title: collection.name, logo: logo)
+                return CabinetSection(selection: .collection(collection.collectionID), title: collection.name, logo: logo,
+                                      artSource: .collection(CollectionFolders.folderURL(for: collection, root: root)))
             }
         + systems
             .filter { $0.gameCount > 0 }
             .orderedByCategory()
-            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.systemID.logo) }
+            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.logo, artSource: .system($0.romsRootURL)) }
     }
 
     /// While the menu is open, it gets every command but Start.
@@ -220,7 +224,34 @@ struct CabinetSection: Identifiable, Hashable {
     let title: String
     /// Systems show their logo instead of their name.
     var logo: Image? = nil
+    /// Where its own pictures and video are.
+    var artSource: ArtSource? = nil
     var id: LibrarySelection { selection }
+
+    enum ArtSource {
+        /// A system's ROMs folder (see `MediaFolder.SystemArt`).
+        case system(URL)
+        /// A collection's folder: its fanart, artwork and video files.
+        case collection(URL)
+    }
+
+    /// The section's own fan art, picture or video.
+    func ownArt(_ art: MediaFolder.SystemArt) -> URL? {
+        switch artSource {
+        case .system(let folder):
+            return MediaFolder.systemArt(art, forSystemFolder: folder)
+        case .collection(let folder):
+            let name = switch art {
+            case .logo: CollectionFile.logoName
+            case .fanart: CollectionFile.fanartName
+            case .picture: CollectionFile.artworkName
+            case .video: CollectionFile.videoName
+            }
+            return CollectionFolders.file(named: name, inFolder: folder)
+        case nil:
+            return nil
+        }
+    }
 
     /// For a section without a logo.
     var symbol: String {
@@ -381,6 +412,8 @@ private struct CabinetHintBar: View {
 /// blurred, darkened, cross-fading as focus moves.
 private struct CabinetBackdrop: View {
     let game: Game?
+    /// Shown without a game.
+    var fallback: URL? = nil
 
     @Environment(\.cabinetTheme) private var installed
     @State private var image: CGImage?
@@ -416,8 +449,8 @@ private struct CabinetBackdrop: View {
             .clipped()
             .ignoresSafeArea()
             .animation(.easeInOut(duration: 0.4), value: artURL)
-            .task(id: [game?.persistentModelID.hashValue.description, backdrop.source.rawValue, String(backdrop.blur)]) {
-                artURL = game.flatMap { CabinetArt.url(for: $0, backdrop.source) }
+            .task(id: [game?.persistentModelID.hashValue.description, fallback?.path, backdrop.source.rawValue, String(backdrop.blur)]) {
+                artURL = game.flatMap { CabinetArt.url(for: $0, backdrop.source) } ?? fallback
                 guard let artURL else {
                     image = nil
                     return

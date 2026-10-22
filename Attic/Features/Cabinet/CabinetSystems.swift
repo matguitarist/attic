@@ -1,4 +1,5 @@
 import SwiftUI
+import AtticLibraryScanning
 import SwiftData
 import AtticModels
 import AtticPersistence
@@ -115,6 +116,9 @@ private struct CabinetSectionInfo: View {
     @Environment(\.cabinetTheme) private var installed
     @Environment(\.modelContext) private var modelContext
     @State private var stats: CabinetSectionStats?
+    @State private var videoURL: URL?
+    @AppStorage(GameHeaderMedia.previewsKey) private var playsPreviews = true
+    @AppStorage("videoPreviewsMuted") private var isMuted = true
 
     var body: some View {
         let theme = installed.theme
@@ -158,11 +162,27 @@ private struct CabinetSectionInfo: View {
             guard !Task.isCancelled else { return }
             stats = CabinetSectionStats(selection: section.selection, context: modelContext)
         }
+        .task(id: [section.id.hashValue, playsPreviews ? 1 : 0, installed.theme.systems.playsVideo ? 1 : 0]) {
+            videoURL = nil
+            guard playsPreviews, installed.theme.systems.playsVideo,
+                  let url = section.ownArt(.video), GameHeaderMedia.canPlay(url) else { return }
+            try? await Task.sleep(for: .seconds(0.8))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeIn(duration: 0.4)) { videoURL = url }
+        }
     }
 
+    /// Its video after a moment, else the system's own picture, then the
+    /// theme's, then its covers.
     @ViewBuilder
     private var art: some View {
-        if let picture = installed.systemPicture(for: section).flatMap(NSImage.init(contentsOf:)) {
+        if let videoURL {
+            VideoPreviewView(url: videoURL, isMuted: isMuted)
+                .aspectRatio(16 / 9, contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: installed.theme.tiles.cornerRadius, style: .continuous))
+                .shadow(color: .black.opacity(0.5), radius: 30, y: 16)
+                .transition(.opacity)
+        } else if let picture = (section.ownArt(.picture) ?? installed.systemPicture(for: section)).flatMap(SystemLogoCache.image(at:)) {
             Image(nsImage: picture)
                 .resizable()
                 .scaledToFit()

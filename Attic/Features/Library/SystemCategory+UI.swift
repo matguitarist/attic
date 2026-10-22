@@ -1,6 +1,7 @@
 import SwiftUI
 import AtticModels
 import AtticPersistence
+import AtticLibraryScanning
 
 extension SystemCategory {
     var title: String {
@@ -135,5 +136,34 @@ extension CanonicalSystemID {
     var logo: Image? {
         let name = "SystemLogo/\(baseSystem.rawValue)"
         return NSImage(named: name) == nil ? nil : Image(name)
+    }
+}
+
+extension GameSystem {
+    /// The person's own logo for the system, in its media folder
+    /// (`Media/snes/system-logo.png`), else Attic's.
+    @MainActor var logo: Image? {
+        SystemLogoCache.image(at: ownArt(.logo)).map { Image(nsImage: $0) } ?? systemID.logo
+    }
+
+    /// The person's own logo, fan art or picture of the system.
+    func ownArt(_ art: MediaFolder.SystemArt) -> URL? {
+        MediaFolder.systemArt(art, forSystemFolder: romsRootURL)
+    }
+}
+
+/// Own system pictures, decoded once per file version: the library and
+/// Cabinet Mode ask for them on every redraw.
+@MainActor
+enum SystemLogoCache {
+    private static var images: [URL: (modified: Date?, image: NSImage)] = [:]
+
+    static func image(at url: URL?) -> NSImage? {
+        guard let url else { return nil }
+        let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+        if let cached = images[url], cached.modified == modified { return cached.image }
+        guard let image = NSImage(contentsOf: url) else { return nil }
+        images[url] = (modified, image)
+        return image
     }
 }

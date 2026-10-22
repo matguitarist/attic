@@ -45,7 +45,7 @@ struct LibraryBrowserView: View {
 
     var body: some View {
         NavigationSplitView {
-            LibrarySidebarView(systems: shownSystems, collections: collections, selection: $selection)
+            LibrarySidebarView(systems: shownSystems, collections: collections.filter { !$0.isHidden }, selection: $selection)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } detail: {
             GameGridView(

@@ -49,14 +49,8 @@ struct CollectionOverviewView: View {
                             .font(.title2.bold())
                             .multilineTextAlignment(.center)
                             .contextMenu { logoMenu(hasLogo: false) }
-                        HStack {
-                            if let found = CollectionLogos.logo(forCollectionNamed: collection.name) {
-                                Button("Use \(found.lastPathComponent)") { setLogo(found) }
-                                    .help(found.path)
-                            }
-                            Button("Add Logo…") { chooseLogo() }
-                        }
-                        .controlSize(.small)
+                        Button("Add Logo…") { chooseLogo() }
+                            .controlSize(.small)
                     }
                     Text(summary(games))
                         .foregroundStyle(.secondary)
@@ -168,19 +162,15 @@ struct CollectionOverviewView: View {
     @ViewBuilder
     private func logoMenu(hasLogo: Bool) -> some View {
         Button(hasLogo ? String(localized: "Choose Another Logo…") : String(localized: "Add Logo…")) { chooseLogo() }
-        if let found = CollectionLogos.logo(forCollectionNamed: collection.name) {
-            Button("Use \(found.lastPathComponent)") { setLogo(found) }
-        }
         if hasLogo {
             Button("Remove Logo") { setLogo(nil) }
         }
     }
 
-    /// Picks a logo, starting in the logos folder when there's one.
+    /// Picks a logo.
     private func chooseLogo() {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.image]
-        panel.directoryURL = CollectionLogos.folder
         panel.prompt = String(localized: "Choose")
         panel.begin { response in
             if response == .OK, let url = panel.url { setLogo(url) }

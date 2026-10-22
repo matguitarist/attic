@@ -1,8 +1,10 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticEmulation
+import AtticLibraryScanning
 
 /// The inspector while a system is shown and no game is selected: the
 /// system's logo, how it's played, and its play history.
@@ -25,6 +27,8 @@ struct SystemOverviewView: View {
     @State private var biosCheck = 0
     @State private var showsBIOS = false
     @State private var showsRemoval = false
+    /// Bumped when the logo changes.
+    @State private var logoCheck = 0
 
     private var canVerify: Bool { ToolsCoordinator.canVerify(system.systemID) && system.gameCount > 0 }
 
@@ -32,12 +36,18 @@ struct SystemOverviewView: View {
         Form {
             Section {
                 VStack(spacing: 10) {
-                    if let logo = system.systemID.logo {
+                    let _ = logoCheck
+                    if let logo = system.logo {
                         logo
                             .resizable()
                             .scaledToFit()
                             .frame(maxWidth: 220, maxHeight: 96)
                             .accessibilityLabel(system.displayName)
+                            .contextMenu { logoMenu }
+                            .help("Right-click to use your own logo, or drop a picture on it")
+                    } else {
+                        Button("Add Logo…") { chooseLogo() }
+                            .controlSize(.small)
                     }
                     VStack(spacing: 2) {
                         Text(system.displayName)
@@ -51,6 +61,27 @@ struct SystemOverviewView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
+                // A picture dropped here becomes the system's logo.
+                .dropDestination(for: URL.self) { urls, _ in
+                    guard let picture = urls.first(where: SystemArtRow.isPicture) else { return false }
+                    setLogo(picture)
+                    return true
+                }
+            }
+
+            Section {
+                SystemArtRow(system: system, art: .fanart, title: "Fan Art",
+                             help: "A wallpaper behind the system in Cabinet Mode")
+                SystemArtRow(system: system, art: .picture, title: "Picture",
+                             help: "The console itself, on Cabinet Mode's systems")
+                SystemArtRow(system: system, art: .video, title: "Video",
+                             help: "Plays in place of the picture after a moment")
+            } header: {
+                Text("Pictures and Video")
+            } footer: {
+                Text("Kept in the system's Media folder, beside its games' media. Drop a picture on a row to use it.")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondaryText)
             }
 
             // No working emulator yet: offer the recommended ones first.
@@ -93,6 +124,26 @@ struct SystemOverviewView: View {
                 biosCheck += 1
             }
         }
+    }
+
+    @ViewBuilder
+    private var logoMenu: some View {
+        Button("Choose Logo…") { chooseLogo() }
+        if let own = system.ownArt(.logo) {
+            Button("Show Logo in Finder") { NSWorkspace.shared.activateFileViewerSelecting([own]) }
+            Button("Use Attic's Logo") { setLogo(nil) }
+        }
+    }
+
+    private func chooseLogo() {
+        SystemArtRow.choose(message: String(localized: "A logo with a transparent background looks best: PNG, HEIC or WebP.")) { setLogo($0) }
+    }
+
+    /// Into the system's media folder, where Cabinet Mode and the library
+    /// both find it; nil goes back to Attic's.
+    private func setLogo(_ picture: URL?) {
+        SystemArtRow.set(.logo, to: picture, for: system)
+        logoCheck += 1
     }
 
     /// Everything else to do with the system, in one menu rather than a

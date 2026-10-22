@@ -13,38 +13,15 @@ struct GeneralSettingsView: View {
     @Environment(AppUpdater.self) private var appUpdater
     @State private var isChoosingFolder = false
     @State private var isChoosingEmulationFolder = false
-    @AppStorage(LaunchCoordinator.neoGeoFreePlayKey) private var neoGeoFreePlay = true
     @State private var language = AppLanguage.current
     @AppStorage(AppAppearance.key) private var appearance = AppAppearance.system
     @Environment(ToolsCoordinator.self) private var tools
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
     @AppStorage(LibrarySidebarView.hideEmptySystemsKey) private var hidesEmptySystems = false
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
-    @AppStorage(CollectionLogos.folderKey) private var logosFolder = ""
     @AppStorage(ToolsCoordinator.backupFolderKey) private var backupFolder = ""
     @AppStorage(ToolsCoordinator.backsUpWeeklyKey) private var backsUpWeekly = false
-    @State private var logosResult: String?
     @Query private var collections: [GameCollection]
-
-    private func chooseLogosFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.prompt = String(localized: "Choose")
-        panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            logosFolder = url.path
-            addLogos()
-        }
-    }
-
-    private func addLogos() {
-        let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
-        let added = CollectionLogos.addMissing(to: collections, root: root)
-        logosResult = added == 0
-            ? String(localized: "No collection without a logo has one in this folder.")
-            : String(localized: "\(added) collections got a logo.")
-    }
 
     var body: some View {
         Form {
@@ -117,41 +94,6 @@ struct GeneralSettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-
-            Section {
-                LabeledContent {
-                    HStack {
-                        if !logosFolder.isEmpty {
-                            Button("Add Logos to Collections") { addLogos() }
-                        }
-                        Button("Choose…") { chooseLogosFolder() }
-                    }
-                } label: {
-                    Text("Logos folder")
-                    Text(logosFolder.isEmpty ? String(localized: "None") : logosFolder)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-                if let logosResult {
-                    Text(logosResult).font(.caption).foregroundStyle(.secondary)
-                }
-            } header: {
-                Text("Collections")
-            } footer: {
-                Text("A folder of series logos named like ES-DE and Batocera themes' (mario.png, zelda.png…). A collection made from a series, or named like one, takes its logo from here; it's copied into the collection's folder.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section {
-                Toggle("Neo Geo free play", isOn: $neoGeoFreePlay)
-            } header: {
-                Text("Arcade")
-            } footer: {
-                Text("Start games without inserting coins. Applies to Neo Geo games run with FinalBurn Neo.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
 
             Section {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsTabView: View {
     enum Tab: String {
-        case general, cabinet, emulators, bios, controller, screenScraper, theGamesDB
+        case general, cabinet, collections, emulators, bios, controller, screenScraper, theGamesDB
     }
 
     /// The tab shown, which a menu item can set before opening Settings.
@@ -17,6 +17,9 @@ struct SettingsTabView: View {
             CabinetSettingsView()
                 .tabItem { Label("Cabinet Mode", systemImage: "play.tv") }
                 .tag(Tab.cabinet)
+            CollectionsSettingsView()
+                .tabItem { Label("Collections", systemImage: "rectangle.stack") }
+                .tag(Tab.collections)
             RetroArchSettingsView()
                 .tabItem { Label("Emulators", systemImage: "arcade.stick.console") }
                 .tag(Tab.emulators)
@@ -36,6 +39,6 @@ struct SettingsTabView: View {
         // One size for every tab: per-tab sizes made the window shrink on
         // the narrower tabs until the toolbar couldn't fit all six tabs,
         // and macOS hid the last one in an overflow menu.
-        .frame(width: 780, height: 580)
+        .frame(width: 860, height: 580)
     }
 }

@@ -98,8 +98,6 @@ struct CollectionEditorView: View {
     /// Pictures picked here, put in place on save: nil leaves the current
     /// one, `.some(nil)` removes it.
     @State private var pendingPictures: [String: URL?] = [:]
-    /// The pending logo came from the logos folder, for a template.
-    @State private var logoIsFromFolder = false
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     var onCreate: (GameCollection) -> Void = { _ in }
 
@@ -368,18 +366,6 @@ struct CollectionEditorView: View {
         searchFollowsName = false
         system = nil
         addsMatchingGames = true
-        // The series' logo from one's logos folder, unless one was picked
-        // by hand.
-        if pendingPictures[CollectionFile.logoName] == nil || logoIsFromFolder,
-           logoIsFromFolder || picture(CollectionFile.logoName) == nil {
-            if let logo = CollectionLogos.logo(forCollectionNamed: template.name) {
-                pendingPictures[CollectionFile.logoName] = .some(logo)
-                logoIsFromFolder = true
-            } else if logoIsFromFolder {
-                pendingPictures.removeValue(forKey: CollectionFile.logoName)
-                logoIsFromFolder = false
-            }
-        }
     }
 
     /// The picture as it'll be once saved: picked here, else the current one.
@@ -398,7 +384,6 @@ struct CollectionEditorView: View {
                         .frame(width: 60, height: 36)
                     Button("Remove") {
                         pendingPictures[name] = .some(nil)
-                        logoIsFromFolder = false
                     }
                 }
                 Button("Choose…") {
@@ -407,7 +392,6 @@ struct CollectionEditorView: View {
                     panel.begin { response in
                         if response == .OK, let url = panel.url {
                             pendingPictures[name] = .some(url)
-                            if name == CollectionFile.logoName { logoIsFromFolder = false }
                         }
                     }
                 }
@@ -419,7 +403,6 @@ struct CollectionEditorView: View {
         .dropDestination(for: URL.self) { urls, _ in
             guard let image = urls.first(where: { CollectionLogos.imageExtensions.contains($0.pathExtension.lowercased()) }) else { return false }
             pendingPictures[name] = .some(image)
-            if name == CollectionFile.logoName { logoIsFromFolder = false }
             return true
         }
     }
@@ -492,11 +475,6 @@ struct CollectionEditorView: View {
         collection.excludedGameKeys = excluded.sorted()
         try? modelContext.save()
         var pictures = pendingPictures
-        // A new collection with no logo picked takes its logos folder's one.
-        if editedCollection == nil, pictures[CollectionFile.logoName] == nil,
-           let logo = CollectionLogos.logo(forCollectionNamed: trimmedName) {
-            pictures[CollectionFile.logoName] = .some(logo)
-        }
         for (name, url) in pictures {
             CollectionFolders.setImage(url, as: name, for: collection, root: collectionsRoot)
         }

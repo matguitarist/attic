@@ -38,6 +38,8 @@ public struct CollectionFile: Codable, Equatable, Sendable {
     public var fromYear: Int?
     public var toYear: Int?
     public var favoritesOnly: Bool?
+    /// Out of the sidebar and Cabinet Mode; left out when shown.
+    public var hidden: Bool?
 
     /// The search the file describes.
     public var search: CollectionSearch {
@@ -70,6 +72,10 @@ public struct CollectionFile: Codable, Equatable, Sendable {
     /// The collection's own pictures, beside `collection.json`.
     public static let logoName = "logo"
     public static let artworkName = "artwork"
+    /// Wide art for behind the collection in Cabinet Mode.
+    public static let fanartName = "fanart"
+    /// A trailer for Cabinet Mode, in any video format.
+    public static let videoName = "video"
 
     public func encoded() throws -> Data {
         let encoder = JSONEncoder()

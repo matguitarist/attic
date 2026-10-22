@@ -118,7 +118,7 @@ struct GameDetailView: View {
     private func header(for game: Game) -> some View {
         VStack(spacing: 12) {
             // The system's logo first, as in the system overview.
-            if let logo = game.system?.systemID.logo {
+            if let logo = game.system?.logo {
                 logo
                     .resizable()
                     .scaledToFit()
