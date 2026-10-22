@@ -474,7 +474,7 @@ struct CollectionEditorView: View {
         }
         collection.excludedGameKeys = excluded.sorted()
         try? modelContext.save()
-        var pictures = pendingPictures
+        let pictures = pendingPictures
         for (name, url) in pictures {
             CollectionFolders.setImage(url, as: name, for: collection, root: collectionsRoot)
         }

@@ -6,6 +6,8 @@ import AVKit
 struct VideoPreviewView: NSViewRepresentable {
     let url: URL
     var isMuted: Bool
+    /// Fills the view, cropping, instead of fitting: a backdrop.
+    var fills = false
 
     /// What AVFoundation plays; MKV, AVI and WMV previews are skipped.
     static let playableExtensions: Set<String> = ["mp4", "m4v", "mov"]
@@ -20,7 +22,7 @@ struct VideoPreviewView: NSViewRepresentable {
     func makeNSView(context: Context) -> AVPlayerView {
         let view = AVPlayerView()
         view.controlsStyle = .none
-        view.videoGravity = .resizeAspect
+        view.videoGravity = fills ? .resizeAspectFill : .resizeAspect
         view.allowsPictureInPicturePlayback = false
         let player = context.coordinator.player
         context.coordinator.looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: url))

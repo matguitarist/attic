@@ -35,6 +35,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// A list of titles beside the focused game's art and details
         /// (EmulationStation's gamelist). The art is the tiles' `art`.
         case list
+        /// The focused game's art filling the screen, its details over it
+        /// at the top left, a row of wide cards along the bottom (Apple TV).
+        case hero
     }
 
     public struct Palette: Codable, Hashable, Sendable {
@@ -80,6 +83,13 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var dim: Double
         /// A picture in the theme's folder, drawn under the game's art.
         public var image: String?
+        /// The art fades into the background color toward the bottom and
+        /// the leading edge, so text over it stays readable with no blur.
+        public var fade: Bool = false
+        /// After a moment on a game, its video plays where its art is, as
+        /// trailers do on the Apple TV. Settings › Cabinet Mode's video
+        /// switch still decides.
+        public var playsVideo: Bool = false
     }
 
     public struct Tiles: Codable, Hashable, Sendable {
@@ -89,6 +99,8 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
             /// A rendered 3D box.
             case box3D
             case screenshot, logo
+            /// Wide art for wide cards, else the screenshot, else the cover.
+            case fanart
         }
         /// What each game's tile shows. A 3D box falls back to the cover,
         /// a logo to the title.
@@ -269,7 +281,7 @@ extension CabinetTheme {
 // MARK: - Built-in themes
 
 extension CabinetTheme {
-    public static let builtIns: [CabinetTheme] = [.showcase, .bigPicture, .arcade, .classic]
+    public static let builtIns: [CabinetTheme] = [.showcase, .appleTV, .bigPicture, .arcade, .classic]
 
     public static func builtIn(id: String) -> CabinetTheme? {
         builtIns.first { $0.id == id }
@@ -375,6 +387,34 @@ extension CabinetTheme {
         details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 8),
         header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 14, dim: 0.6),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// The focused game's fan art filling the screen, sharp and fading to
+    /// black, over a row of wide cards that lift when focused, like the
+    /// Apple TV's Home screen.
+    public static let appleTV = CabinetTheme(
+        id: "apple-tv",
+        name: "Apple TV",
+        author: "Attic",
+        layout: .hero,
+        palette: Palette(
+            background: ThemeColor(hex: "#000000")!,
+            surface: ThemeColor(hex: "#FFFFFF24")!,
+            accent: ThemeColor(hex: "#FFFFFF")!,
+            text: ThemeColor(hex: "#FFFFFF")!,
+            secondaryText: ThemeColor(hex: "#FFFFFFA6")!,
+            favorite: ThemeColor(hex: "#FFD60A")!
+        ),
+        typography: Typography(design: .standard, titleSize: 52, bodySize: 21, uppercase: false),
+        backdrop: Backdrop(source: .fanart, blur: 0, dim: 0.05, fade: true, playsVideo: true),
+        tiles: Tiles(art: .fanart, size: 0.24, spacing: 44, cornerRadius: 16, showsBackground: false,
+                     focusScale: 1.1, unfocusedOpacity: 0.85, focusRing: false, focusGlow: false, showsTitles: false),
+        details: Details(media: .none, playsVideo: false, showsLogo: true, showsMetadata: true,
+                         showsDescription: true, descriptionLines: 3),
+        header: Header(showsLogos: false, showsClock: true, showsGameCount: false),
+        menu: Menu(position: .center, width: 680, cornerRadius: 30, dim: 0.5),
         systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )

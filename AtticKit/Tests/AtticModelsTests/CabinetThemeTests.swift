@@ -31,6 +31,18 @@ struct CabinetThemeTests {
         #expect(theme.tiles.art == .logo)
     }
 
+    @Test func aThemeOnAppleTVKeepsItsHeroAndFade() throws {
+        let json = ##"{ "name": "Blue TV", "base": "apple-tv", "palette": { "accent": "#0A84FF" } }"##
+        let theme = try CabinetTheme.decode(Data(json.utf8), id: "blue-tv")
+        #expect(theme.layout == .hero)
+        #expect(theme.backdrop.fade)
+        #expect(theme.tiles.art == .fanart)
+        #expect(theme.palette.accent.hex == "#0A84FF")
+        #expect(CabinetTheme.showcase.backdrop.fade == false)
+        #expect(theme.backdrop.playsVideo)
+        #expect(CabinetTheme.showcase.backdrop.playsVideo == false)
+    }
+
     @Test func withoutABaseItStartsFromShowcase() throws {
         let theme = try CabinetTheme.decode(Data(#"{ "name": "Mine", "layout": "grid" }"#.utf8), id: "mine")
         #expect(theme.layout == .grid)

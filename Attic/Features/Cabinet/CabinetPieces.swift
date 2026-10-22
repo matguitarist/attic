@@ -9,6 +9,8 @@ struct CabinetTile: View {
     let isFocused: Bool
     /// The star in the corner; the wheel draws its own beside the logo.
     var showsFavoriteBadge = true
+    /// Wide cards fill with their art, cropping it, rather than letterbox.
+    var fillsArt = false
 
     @Environment(\.cabinetTheme) private var installed
     /// Looked up once: the logo and 3D box live by file alone.
@@ -64,7 +66,10 @@ struct CabinetTile: View {
         case .box3D:
             GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false)
         case .screenshot:
-            GameCoverArtView(url: game.titleScreenURL ?? game.coverArtURL, title: game.title, showBackground: false)
+            GameCoverArtView(url: game.titleScreenURL ?? game.coverArtURL, title: game.title, showBackground: false, fills: fillsArt)
+        case .fanart:
+            GameCoverArtView(url: CabinetArt.url(for: game, CabinetTheme.Backdrop.Source.fanart), title: game.title,
+                             showBackground: false, fills: fillsArt)
         case .logo:
             if let logoURL {
                 GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
@@ -129,6 +134,9 @@ struct CabinetGameTitle: View {
     /// A logo sits centered, even in a leading column, unless it's to
     /// follow `alignment`.
     var centersLogo = true
+    /// A fixed box for the logo, so every game's sits the same size
+    /// whatever its shape: the hero's, as big as a card.
+    var logoBox: CGSize?
 
     private var logoAlignment: Alignment {
         centersLogo ? .center : Alignment(horizontal: alignment, vertical: .center)
@@ -142,8 +150,10 @@ struct CabinetGameTitle: View {
         Group {
             if theme.details.showsLogo, let logoURL {
                 GameCoverArtView(url: logoURL, title: game.title, showBackground: false,
-                                 alignment: logoAlignment)
-                    .frame(maxWidth: isLarge ? 500 : 420, maxHeight: theme.typography.titleSize * (isLarge ? 3.4 : 2.4))
+                                 alignment: logoBox == nil ? logoAlignment : .bottomLeading)
+                    .frame(maxWidth: logoBox?.width ?? (isLarge ? 500 : 420),
+                           maxHeight: logoBox?.height ?? theme.typography.titleSize * (isLarge ? 3.4 : 2.4))
+                    .frame(width: logoBox?.width, height: logoBox?.height)
                     .padding(.vertical, 12)
                     .frame(maxWidth: .infinity, alignment: logoAlignment)
             } else {
@@ -175,6 +185,13 @@ struct CabinetGameInfo: View {
     var showsMoreFacts = false
     /// Side by side, when there's the width.
     var factColumns = 1
+    /// The facts on one line rather than labeled rows; centered, always.
+    var inlineFacts = false
+
+    /// A logo centered even in a leading column; the hero keeps it left.
+    var centersLogo = true
+
+    private var factsInline: Bool { inlineFacts || alignment == .center }
 
     @Environment(LaunchCoordinator.self) private var launchCoordinator
     @Environment(\.cabinetTheme) private var installed
@@ -183,13 +200,13 @@ struct CabinetGameInfo: View {
         if let game {
             let theme = installed.theme
             let textAlignment: TextAlignment = alignment == .center ? .center : .leading
-            VStack(alignment: alignment, spacing: alignment == .center ? 10 : 16) {
+            VStack(alignment: alignment, spacing: factsInline ? 10 : 16) {
                 if showsTitle {
-                    CabinetGameTitle(game: game, alignment: alignment)
+                    CabinetGameTitle(game: game, alignment: alignment, centersLogo: centersLogo)
                 }
 
                 if theme.details.showsMetadata {
-                    if alignment == .center {
+                    if factsInline {
                         Text(facts(for: game).map(\.value).joined(separator: "  ·  "))
                             .font(theme.bodyFont())
                             .foregroundStyle(theme.palette.secondaryText.color)
@@ -296,7 +313,7 @@ struct CabinetGameInfo: View {
         // can't drive a plural — label it instead.
         if let players = game.players {
             facts.append(Fact(symbol: "person.2", label: String(localized: "Players"),
-                              value: alignment == .center ? String(localized: "Players: \(players)") : players))
+                              value: factsInline ? String(localized: "Players: \(players)") : players))
         }
         if let rating = game.rating, rating > 0 {
             let stars = Int((rating * 5).rounded())
@@ -313,7 +330,7 @@ struct CabinetGameInfo: View {
             }
         }
         if game.playCount > 0 {
-            let value = if alignment == .center {
+            let value = if factsInline {
                 String(localized: "Played \(game.playCount)×")
             } else if showsMoreFacts {
                 String(localized: "\(game.playCount)× · \(SystemOverviewView.formattedPlaytime(game.totalPlaytimeSeconds))")

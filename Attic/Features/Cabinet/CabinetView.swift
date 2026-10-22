@@ -88,7 +88,9 @@ struct CabinetView: View {
         ZStack {
             // On the systems, the system's own fan art.
             CabinetBackdrop(game: level == .games ? (pageGame ?? focusedGame) : nil,
-                            fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil)
+                            fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil,
+                            // The game page plays its own.
+                            allowsVideo: pageGame == nil && menuPath.isEmpty && !isSearching)
 
             VStack(spacing: 0) {
                 switch level {
@@ -600,10 +602,14 @@ private struct CabinetBackdrop: View {
     let game: Game?
     /// Shown without a game.
     var fallback: URL? = nil
+    var allowsVideo = true
 
     @Environment(\.cabinetTheme) private var installed
     @State private var image: CGImage?
     @State private var artURL: URL?
+    @State private var videoURL: URL?
+    @AppStorage(GameHeaderMedia.previewsKey) private var playsPreviews = true
+    @AppStorage("videoPreviewsMuted") private var isMuted = true
 
     var body: some View {
         let backdrop = installed.theme.backdrop
@@ -630,11 +636,43 @@ private struct CabinetBackdrop: View {
                 }
             }
             .overlay {
-                LinearGradient(colors: [.black.opacity(0.1), .black.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                if let videoURL, allowsVideo {
+                    VideoPreviewView(url: videoURL, isMuted: isMuted, fills: true)
+                        .blur(radius: backdrop.blur)
+                        .opacity(1 - backdrop.dim)
+                        .transition(.opacity)
+                        .id(videoURL)
+                }
+            }
+            .overlay {
+                if backdrop.fade {
+                    // Into the background where the details and the row sit.
+                    let background = installed.theme.palette.background.color
+                    LinearGradient(stops: [.init(color: .clear, location: 0.35), .init(color: background, location: 0.92)],
+                                   startPoint: .top, endPoint: .bottom)
+                    LinearGradient(stops: [.init(color: background.opacity(0.9), location: 0), .init(color: background.opacity(0.6), location: 0.32),
+                                           .init(color: .clear, location: 0.65)],
+                                   startPoint: .leading, endPoint: .trailing)
+                    // Under the section names along the top.
+                    LinearGradient(stops: [.init(color: background.opacity(0.65), location: 0), .init(color: .clear, location: 0.2)],
+                                   startPoint: .top, endPoint: .bottom)
+                } else {
+                    LinearGradient(colors: [.black.opacity(0.1), .black.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                }
             }
             .clipped()
             .ignoresSafeArea()
             .animation(.easeInOut(duration: 0.4), value: artURL)
+            .animation(.easeInOut(duration: 0.6), value: videoURL)
+            // After a moment on the game, so moving along the row doesn't
+            // start a video for every card passed.
+            .task(id: [game?.persistentModelID.hashValue.description, String(backdrop.playsVideo), String(playsPreviews)]) {
+                videoURL = nil
+                guard backdrop.playsVideo, playsPreviews, let url = game?.previewVideoURL, GameHeaderMedia.canPlay(url) else { return }
+                try? await Task.sleep(for: .seconds(1.2))
+                guard !Task.isCancelled else { return }
+                videoURL = url
+            }
             .task(id: [game?.persistentModelID.hashValue.description, fallback?.path, backdrop.source.rawValue, String(backdrop.blur)]) {
                 artURL = game.flatMap { CabinetArt.url(for: $0, backdrop.source) } ?? fallback
                 guard let artURL else {

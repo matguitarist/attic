@@ -191,7 +191,9 @@ final class CabinetThemeStore {
         ## Settings
 
         - `layout`: `carousel` (a row of covers), `grid` (covers beside a
-          details panel) or `wheel` (a wheel of logos beside a screen).
+          details panel), `wheel` (a wheel of logos beside a screen), `list`
+          (titles beside the game's art) or `hero` (the game's art filling
+          the screen over a row of wide cards, like the Apple TV).
         - `palette`: `background`, `surface` (panels, cards), `accent` (focus),
           `text`, `secondaryText`, `favorite`. Colors are `#RRGGBB` or
           `#RRGGBBAA`.
@@ -200,8 +202,11 @@ final class CabinetThemeStore {
           `bodySize` (points), `uppercase`.
         - `backdrop`: `source` (`none`, `cover`, `screenshot`, `fanart`) for
           the focused game's art behind everything, `blur` (points), `dim`
-          (0 to 1), `image` (a picture in the theme's folder, under the art).
-        - `tiles`: `art` (`cover`, `screenshot`, `logo`), `size` (of the
+          (0 to 1), `image` (a picture in the theme's folder, under the art),
+          `fade` (the art fading into the background toward the bottom and
+          left).
+        - `tiles`: `art` (`cover`, `box3D`, `screenshot`, `logo`, `fanart`),
+          `size` (of the
           shelf's height; in the wheel, of an entry's), `spacing`,
           `cornerRadius`, `showsBackground`, `focusScale`, `unfocusedOpacity`
           (0 to 1), `focusRing`, `focusGlow`, `showsTitles`.
@@ -265,6 +270,7 @@ extension CabinetTheme.Layout {
         case .grid: String(localized: "Grid")
         case .wheel: String(localized: "Wheel")
         case .list: String(localized: "List")
+        case .hero: String(localized: "Hero")
         }
     }
 
@@ -274,6 +280,7 @@ extension CabinetTheme.Layout {
         case .grid: String(localized: "A grid of covers beside the game's details")
         case .wheel: String(localized: "A wheel of logos beside the game's video")
         case .list: String(localized: "A list of titles beside the game's art and details")
+        case .hero: String(localized: "The game's art filling the screen over a row of wide cards")
         }
     }
 }
@@ -294,6 +301,7 @@ extension CabinetTheme.Tiles.Art {
         case .box3D: String(localized: "3D Box")
         case .screenshot: String(localized: "Screenshot")
         case .logo: String(localized: "Logo")
+        case .fanart: String(localized: "Fan Art")
         }
     }
 }

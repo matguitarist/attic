@@ -345,7 +345,7 @@ private struct BIOSSetDrop: ViewModifier {
         if ToolsCoordinator.isArcade(system) {
             content
                 .dropDestination(for: URL.self) { urls, _ in
-                    add(urls, system: system)
+                    _ = add(urls, system: system)
                 }
                 .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {}
         } else {

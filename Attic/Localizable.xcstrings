@@ -6204,6 +6204,16 @@
         }
       }
     },
+    "Hero": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Héros"
+          }
+        }
+      }
+    },
     "Hide Empty Systems": {
       "localizations": {
         "fr": {
@@ -11456,6 +11466,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le jeu est un dossier nommé comme Quake.quake avec le dossier id1 de Quake dedans (id1/pak0.pak, et pak1.pak pour le jeu complet)."
+          }
+        }
+      }
+    },
+    "The game's art filling the screen over a row of wide cards": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’image du jeu en plein écran, au-dessus d’une rangée de cartes larges"
           }
         }
       }

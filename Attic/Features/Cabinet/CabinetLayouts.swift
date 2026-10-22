@@ -67,6 +67,72 @@ struct CabinetCarouselLayout: View {
     }
 }
 
+// MARK: - Hero
+
+/// The focused game's art filling the screen (the theme's backdrop, faded
+/// into the background), its logo, facts and description at the top left,
+/// and a row of wide cards along the bottom, like the Apple TV's.
+struct CabinetHeroLayout: View {
+    let shelf: CabinetShelfContent
+
+    @Environment(\.cabinetTheme) private var installed
+
+    var body: some View {
+        let theme = installed.theme
+        GeometryReader { geometry in
+            let cardHeight = max(120, geometry.size.height * theme.tiles.size)
+            let cardWidth = cardHeight * 16 / 9
+            // Room for the focused card to grow and cast its shadow.
+            let growth = cardHeight * max(0, theme.tiles.focusScale - 1)
+            VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 16) {
+                    if let game = shelf.focusedGame {
+                        CabinetGameTitle(game: game, alignment: .leading, centersLogo: false,
+                                         logoBox: CGSize(width: cardWidth, height: cardHeight * 0.6))
+                            .id(game.persistentModelID)
+                            .transition(.opacity)
+                    }
+                    CabinetGameInfo(game: shelf.focusedGame, alignment: .leading, showsTitle: false, inlineFacts: true)
+                }
+                .frame(maxWidth: max(480, geometry.size.width * 0.45), alignment: .leading)
+                .padding(.horizontal, Self.margin)
+                .padding(.top, 24)
+                Spacer(minLength: 24)
+                row(cardWidth: cardWidth, cardHeight: cardHeight)
+                    .frame(height: cardHeight + growth + 48)
+            }
+        }
+    }
+
+    /// Off the screen's edges, as on the Apple TV.
+    private static let margin: CGFloat = 80
+
+    private func row(cardWidth: CGFloat, cardHeight: CGFloat) -> some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: installed.theme.tiles.spacing) {
+                    ForEach(shelf.games) { game in
+                        CabinetTile(game: game, isFocused: shelf.isFocused(game), fillsArt: true)
+                            .frame(width: cardWidth, height: cardHeight)
+                            .id(game.persistentModelID)
+                            .onTapGesture(count: 2) { shelf.onPlay(game) }
+                            .onTapGesture { shelf.onFocus(game) }
+                    }
+                }
+                .frame(maxHeight: .infinity)
+            }
+            .contentMargins(.horizontal, Self.margin, for: .scrollContent)
+            .scrollIndicators(.never)
+            // Scrolls only as far as it takes to show the focused card, so
+            // focus walks along the row and the row moves at its ends.
+            .onChange(of: shelf.focusedID, initial: true) { old, id in
+                withAnimation(old == nil ? nil : .snappy(duration: 0.25)) { proxy.scrollTo(id) }
+            }
+            .onChange(of: shelf.games.count) { proxy.scrollTo(shelf.focusedID) }
+        }
+    }
+}
+
 // MARK: - Grid
 
 /// A grid of covers beside the focused game's picture and details, like

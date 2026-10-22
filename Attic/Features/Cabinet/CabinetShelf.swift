@@ -148,6 +148,7 @@ struct CabinetShelf: View {
                                                 onFocus: { focus($0) }, onPlay: onPlay)
                 switch installed.theme.layout {
                 case .carousel: CabinetCarouselLayout(shelf: shelf)
+                case .hero: CabinetHeroLayout(shelf: shelf)
                 case .grid: CabinetGridLayout(shelf: shelf, columns: $columns)
                 case .wheel: CabinetWheelLayout(shelf: shelf)
                 case .list: CabinetListLayout(shelf: shelf)
@@ -204,10 +205,10 @@ struct CabinetShelf: View {
         let index = focusedGame.flatMap { focused in games.firstIndex { $0.persistentModelID == focused.persistentModelID } }
         switch (installed.theme.layout, direction) {
         // Past either end, around to the other.
-        case (.carousel, .left), (.wheel, .up), (.list, .up): focus(games[safe: (index ?? 0) - 1] ?? games.last)
-        case (.carousel, .right), (.wheel, .down), (.list, .down): focus(games[safe: (index ?? -1) + 1] ?? games.first)
-        case (.carousel, .up), (.wheel, .left), (.list, .left): onSectionStep(-1)
-        case (.carousel, .down), (.wheel, .right), (.list, .right): onSectionStep(1)
+        case (.carousel, .left), (.hero, .left), (.wheel, .up), (.list, .up): focus(games[safe: (index ?? 0) - 1] ?? games.last)
+        case (.carousel, .right), (.hero, .right), (.wheel, .down), (.list, .down): focus(games[safe: (index ?? -1) + 1] ?? games.first)
+        case (.carousel, .up), (.hero, .up), (.wheel, .left), (.list, .left): onSectionStep(-1)
+        case (.carousel, .down), (.hero, .down), (.wheel, .right), (.list, .right): onSectionStep(1)
         case (.grid, _):
             let target = GridNavigation.index(movingFrom: index, direction: direction, itemCount: games.count, columns: columns)
             focus(target.map { games[$0] })
