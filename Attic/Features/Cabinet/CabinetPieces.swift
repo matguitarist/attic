@@ -41,7 +41,7 @@ struct CabinetTile: View {
                             .padding(10)
                     }
                 }
-            if tiles.showsTitles && tiles.art != .logo {
+            if tiles.showsTitles && tiles.art != .logo && tiles.art != .logoCard {
                 Text(theme.cased(game.title))
                     .font(theme.smallFont(isFocused ? .semibold : .regular))
                     .lineLimit(1)
@@ -53,7 +53,7 @@ struct CabinetTile: View {
         .shadow(color: glowColor(theme), radius: isFocused ? 24 : 0, y: tiles.focusGlow ? 0 : 16)
         .animation(.snappy(duration: 0.25), value: isFocused)
         .task(id: [game.persistentModelID.hashValue, tiles.art.hashValue]) {
-            logoURL = tiles.art == .logo ? game.logoURL : nil
+            logoURL = tiles.art == .logo || tiles.art == .logoCard ? game.logoURL : nil
             box3DURL = tiles.art == .box3D ? game.box3DURL : nil
         }
     }
@@ -71,18 +71,49 @@ struct CabinetTile: View {
             GameCoverArtView(url: CabinetArt.url(for: game, CabinetTheme.Backdrop.Source.fanart), title: game.title,
                              showBackground: false, fills: fillsArt)
         case .logo:
-            if let logoURL {
-                GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
+            if fillsArt {
+                // A wide card: the logo over the game's darkened art, so
+                // it's a card like the others rather than a bare logo.
+                ZStack {
+                    GameCoverArtView(url: CabinetArt.url(for: game, CabinetTheme.Backdrop.Source.fanart), title: game.title,
+                                     showBackground: false, fills: true)
+                        .blur(radius: 6)
+                        .overlay(Color.black.opacity(0.55))
+                    cardLogo(theme)
+                }
             } else {
-                // No logo: the title, set like one.
-                Text(theme.cased(game.title))
-                    .font(theme.font(size: theme.typography.titleSize * 0.9, weight: .heavy))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.4)
-                    .foregroundStyle(isFocused ? theme.palette.text.color : theme.palette.secondaryText.color)
-                    .shadow(color: .black.opacity(0.6), radius: 3)
+                logo(theme)
             }
+        case .logoCard:
+            ZStack {
+                theme.palette.surface.color
+                cardLogo(theme)
+            }
+        }
+    }
+
+    /// A logo on a card: room around it, and a shadow to lift it off
+    /// whatever's behind.
+    private func cardLogo(_ theme: CabinetTheme) -> some View {
+        logo(theme, onCard: true)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .shadow(color: .black.opacity(0.7), radius: 8, y: 3)
+    }
+
+    @ViewBuilder
+    private func logo(_ theme: CabinetTheme, onCard: Bool = false) -> some View {
+        if let logoURL {
+            GameCoverArtView(url: logoURL, title: game.title, showBackground: false)
+        } else {
+            // No logo: the title, set like one.
+            Text(theme.cased(game.title))
+                .font(theme.font(size: theme.typography.titleSize * 0.9, weight: .heavy))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.4)
+                .foregroundStyle(isFocused || onCard ? theme.palette.text.color : theme.palette.secondaryText.color)
+                .shadow(color: .black.opacity(0.6), radius: 3)
         }
     }
 

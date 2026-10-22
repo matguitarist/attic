@@ -7161,6 +7161,16 @@
         }
       }
     },
+    "Logo Card": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo sur carte"
+          }
+        }
+      }
+    },
     "Logos": {
       "localizations": {
         "fr": {

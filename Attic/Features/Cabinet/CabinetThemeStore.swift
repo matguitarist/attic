@@ -205,7 +205,8 @@ final class CabinetThemeStore {
           (0 to 1), `image` (a picture in the theme's folder, under the art),
           `fade` (the art fading into the background toward the bottom and
           left).
-        - `tiles`: `art` (`cover`, `box3D`, `screenshot`, `logo`, `fanart`),
+        - `tiles`: `art` (`cover`, `box3D`, `screenshot`, `logo`, `fanart`,
+          `logoCard`),
           `size` (of the
           shelf's height; in the wheel, of an entry's), `spacing`,
           `cornerRadius`, `showsBackground`, `focusScale`, `unfocusedOpacity`
@@ -302,6 +303,7 @@ extension CabinetTheme.Tiles.Art {
         case .screenshot: String(localized: "Screenshot")
         case .logo: String(localized: "Logo")
         case .fanart: String(localized: "Fan Art")
+        case .logoCard: String(localized: "Logo Card")
         }
     }
 }

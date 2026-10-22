@@ -101,6 +101,8 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
             case screenshot, logo
             /// Wide art for wide cards, else the screenshot, else the cover.
             case fanart
+            /// The logo alone on a card in the `surface` color.
+            case logoCard
         }
         /// What each game's tile shows. A 3D box falls back to the cover,
         /// a logo to the title.
