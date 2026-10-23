@@ -31,3 +31,33 @@ license (https://creativecommons.org/licenses/by-sa/4.0/), not Attic's MIT
 license; Attic changed it only by leaving out zipped sets and other columns.
 It holds checksums only: Attic never ships or downloads BIOS files.
 `scripts/import-known-bios.py` rebuilds it from the original.
+
+## Switch 2 controller start-up
+
+`AtticKit/Sources/AtticModels/Switch2Pad.swift` holds the USB start-up
+commands and input report layout for Nintendo's Switch 2 controllers, from
+the community's reverse engineering as used by **InputConfig**
+(https://github.com/ryleighnewman/InputConfig, MIT) and **procon2-mac**
+(https://github.com/caqlayan/procon2-mac), whose license reads:
+
+    MIT License
+
+    Copyright (c) 2026 Arda Caglayan Ercan
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.

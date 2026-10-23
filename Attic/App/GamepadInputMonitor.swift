@@ -48,6 +48,8 @@ struct GamepadEvent: Equatable {
 ///   Xbox/PlayStation/Switch pads, the Luna over Bluetooth, MFi…).
 /// - **`XInputUSBGamepadSource`**, for wired Xbox 360–protocol pads
 ///   (including the Luna over USB), which macOS has no driver for.
+/// - **`Switch2USBGamepadSource`**, for Nintendo's Switch 2 controllers
+///   over USB, which macOS doesn't support either.
 ///
 /// Both only deliver input while Attic is frontmost — GameController by
 /// default (`shouldMonitorBackgroundEvents == false`), the USB source
@@ -72,12 +74,13 @@ final class GamepadInputMonitor {
     }
 
     private var gameControllerName: String?
-    /// The GameController pad in use, for its button glyphs.
-    private var gamepad: GCExtendedGamepad?
+    /// What the GameController pad in use calls itself, for its buttons.
+    private var gameControllerCategory: String?
     private let controllerSettingsStore: ControllerSettingsStore
     private var usbPadNames: [UInt64: String] = [:]
     private var usbPadStates: [UInt64: XInputPadState] = [:]
     private var usbSource: XInputUSBGamepadSource?
+    private var switch2Source: Switch2USBGamepadSource?
 
     private var sequence = 0
 
@@ -133,6 +136,14 @@ final class GamepadInputMonitor {
             usbSource.stop()
         }
         if NSApp?.isActive == true { usbSource.start() }
+
+        // Switch 2 pads become the same kind of state as the XInput ones.
+        let switch2Source = Switch2USBGamepadSource(
+            onState: { [weak self] id, state in self?.handleUSBPad(id, state: state) },
+            onConnectionChange: { [weak self] id, name in self?.handleUSBPad(id, name: name) }
+        )
+        self.switch2Source = switch2Source
+        switch2Source.start()
     }
 
     // MARK: - USB (XInput) pads
@@ -263,61 +274,63 @@ final class GamepadInputMonitor {
         isCapturingButton = false
     }
 
-    /// The connected pad's own glyph for `physical`, else a generic one.
+    // MARK: - Button glyphs
+
+    /// Which controller's buttons on-screen hints show; `nil` follows the
+    /// one connected. Kept apart from `ControllerSettings`, which profiles
+    /// save: what the buttons look like isn't part of a setup.
+    var buttonIcons: ControllerFamily? = UserDefaults.standard.string(forKey: "buttonIcons").flatMap(ControllerFamily.init) {
+        didSet { UserDefaults.standard.set(buttonIcons?.rawValue, forKey: "buttonIcons") }
+    }
+
+    /// The connected controller's family, or the keyboard without one.
+    var glyphFamily: ControllerFamily {
+        if let buttonIcons { return buttonIcons }
+        guard let name = connectedControllerName else { return .keyboard }
+        return ControllerFamily.detect(name: name, category: gameControllerCategory)
+    }
+
+    /// The controller in use, as an icon.
+    var controllerSymbol: String { glyphFamily.symbol }
+
+    /// For places about the pad itself (button mapping, the controller
+    /// help), which mean a pad even when the keyboard is in use.
+    private var padFamily: ControllerFamily {
+        glyphFamily == .keyboard ? .xbox : glyphFamily
+    }
+
+    /// `physical` as drawn on the controller in use, or its key.
+    func glyph(for physical: PhysicalButton) -> ButtonGlyph {
+        glyphFamily.glyph(for: physical, layout: controllerSettingsStore.settings.layout)
+    }
+
+    var confirmGlyph: ButtonGlyph { glyph(for: confirmButton) }
+    var backGlyph: ButtonGlyph { glyph(for: backButton) }
+    var favoriteGlyph: ButtonGlyph { glyph(for: .top) }
+    var menuGlyph: ButtonGlyph { glyph(for: .start) }
+
+    /// The pad's SF Symbol for `physical`.
     func symbol(for physical: PhysicalButton) -> String {
-        let fallback = switch physical {
-        case .bottom: "a.circle"
-        case .right: "b.circle"
-        case .left: "x.circle"
-        case .top: "y.circle"
-        case .l1: "lb.rectangle.roundedbottom"
-        case .r1: "rb.rectangle.roundedbottom"
-        case .l2: "lt.rectangle.roundedtop"
-        case .r2: "rt.rectangle.roundedtop"
-        case .l3: "l.joystick.press.down"
-        case .r3: "r.joystick.press.down"
-        case .select: "rectangle.fill.on.rectangle.fill"
-        case .start: "line.3.horizontal.circle"
-        case .dpadUp: "dpad.up.filled"
-        case .dpadDown: "dpad.down.filled"
-        case .dpadLeft: "dpad.left.filled"
-        case .dpadRight: "dpad.right.filled"
-        }
-        let name = gamepad.flatMap { Self.element(physical, of: $0)?.sfSymbolsName } ?? fallback
-        return NSImage(systemSymbolName: name, accessibilityDescription: nil) != nil ? name : "circle"
+        guard case .symbol(let name) = padFamily.glyph(for: physical) else { return "circle" }
+        return name
     }
 
-    /// SF Symbols for the confirm, back and favorite buttons as labeled on
-    /// the connected pad (A/B/Y on Xbox-style pads, Cross/Circle/Triangle on
-    /// PlayStation ones…), for on-screen hints.
-    var confirmButtonSymbol: String {
-        glyph(controllerSettingsStore.settings.layout == .classic ? \.buttonA : \.buttonB,
-              fallback: controllerSettingsStore.settings.layout == .classic ? "a.circle" : "b.circle")
+    var confirmButtonSymbol: String { symbol(for: confirmButton) }
+    var backButtonSymbol: String { symbol(for: backButton) }
+    var favoriteButtonSymbol: String { symbol(for: .top) }
+
+    private var confirmButton: PhysicalButton {
+        controllerSettingsStore.settings.layout == .classic ? .bottom : .right
     }
 
-    var backButtonSymbol: String {
-        glyph(controllerSettingsStore.settings.layout == .classic ? \.buttonB : \.buttonA,
-              fallback: controllerSettingsStore.settings.layout == .classic ? "b.circle" : "a.circle")
-    }
-
-    var favoriteButtonSymbol: String {
-        glyph(\.buttonY, fallback: "y.circle")
-    }
-
-    var menuButtonSymbol: String {
-        glyph(\.buttonMenu, fallback: "line.3.horizontal.circle")
-    }
-
-    private func glyph(_ button: KeyPath<GCExtendedGamepad, GCControllerButtonInput>, fallback: String) -> String {
-        let name = gamepad?[keyPath: button].sfSymbolsName ?? fallback
-        let filled = name + ".fill"
-        return NSImage(systemSymbolName: filled, accessibilityDescription: nil) != nil ? filled : name
+    private var backButton: PhysicalButton {
+        controllerSettingsStore.settings.layout == .classic ? .right : .bottom
     }
 
     private func refreshConnectedController() {
         let controller = GCController.controllers().first { $0.extendedGamepad != nil }
-        gamepad = controller?.extendedGamepad
         gameControllerName = controller.map { $0.vendorName ?? "Game Controller" }
+        gameControllerCategory = controller?.productCategory
         if controller == nil {
             setHeldDirections([], from: .gameController)
         }
