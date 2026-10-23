@@ -229,9 +229,9 @@ struct CabinetMenuView: View {
 
     private func hints(_ theme: CabinetTheme) -> some View {
         HStack(spacing: 24) {
-            Label("Select", systemImage: gamepad.confirmButtonSymbol)
-            Label("Back", systemImage: gamepad.backButtonSymbol)
-            Label("Close", systemImage: gamepad.menuButtonSymbol)
+            Label("Select", glyph: gamepad.confirmGlyph)
+            Label("Back", glyph: gamepad.backGlyph)
+            Label("Close", glyph: gamepad.menuGlyph)
         }
         .font(theme.bodyFont())
         .foregroundStyle(theme.palette.secondaryText.color)
@@ -334,7 +334,7 @@ struct CabinetMenuView: View {
             CabinetMenuItem(id: "view", title: String(localized: "Sort and Filter"), symbol: "line.3.horizontal.decrease.circle", kind: .page(.view)),
             CabinetMenuItem(id: "theme", title: String(localized: "Theme"), symbol: "paintpalette", kind: .page(.theme)),
             CabinetMenuItem(id: "interface", title: String(localized: "Interface"), symbol: "rectangle.on.rectangle", kind: .page(.interface)),
-            CabinetMenuItem(id: "controller", title: String(localized: "Controller"), symbol: "gamecontroller", kind: .page(.controller)),
+            CabinetMenuItem(id: "controller", title: String(localized: "Controller"), symbol: gamepad.controllerSymbol, kind: .page(.controller)),
             CabinetMenuItem(id: "library", title: String(localized: "Library"), symbol: "books.vertical", kind: .page(.library)),
             CabinetMenuItem(id: "exit", title: String(localized: "Exit Cabinet Mode"), symbol: "rectangle.portrait.and.arrow.right",
                             kind: .action(confirm: false, perform: onExit)),
@@ -440,9 +440,15 @@ struct CabinetMenuView: View {
     private var controllerItems: [CabinetMenuItem] {
         @Bindable var controllerSettings = controllerSettings
         var items = [
-            CabinetMenuItem(id: "pad", title: String(localized: "Connected"), symbol: "gamecontroller",
+            CabinetMenuItem(id: "pad", title: String(localized: "Connected"), symbol: gamepad.controllerSymbol,
                             kind: .info(gamepad.connectedControllerName ?? String(localized: "None"))),
-            CabinetMenuItem(id: "layout", title: String(localized: "Confirm Button"), symbol: "a.circle",
+            CabinetMenuItem(id: "icons", title: String(localized: "Button Icons"), symbol: gamepad.favoriteButtonSymbol,
+                            kind: .choice(options: [String(localized: "Automatic")] + ControllerFamily.allCases.map(\.title),
+                                          selection: Binding(
+                                            get: { gamepad.buttonIcons.flatMap { ControllerFamily.allCases.firstIndex(of: $0).map { $0 + 1 } } ?? 0 },
+                                            set: { gamepad.buttonIcons = $0 == 0 ? nil : ControllerFamily.allCases[$0 - 1] }
+                                          ))),
+            CabinetMenuItem(id: "layout", title: String(localized: "Confirm Button"), symbol: gamepad.confirmButtonSymbol,
                             kind: .choice(options: [String(localized: "Bottom — Xbox, PlayStation"), String(localized: "Right — Nintendo, Switch")],
                                           selection: Binding(
                                             get: { controllerSettings.settings.layout == .classic ? 0 : 1 },

@@ -12,6 +12,7 @@ struct ControllerSettingsView: View {
 
     var body: some View {
         @Bindable var store = store
+        @Bindable var gamepad = gamepad
 
         Form {
             Section {
@@ -27,10 +28,16 @@ struct ControllerSettingsView: View {
                     }
                     .font(.title3)
                 }
+                Picker("Button Icons", selection: $gamepad.buttonIcons) {
+                    Text("Automatic").tag(ControllerFamily?.none)
+                    ForEach(ControllerFamily.allCases, id: \.self) { family in
+                        Label(family.title, systemImage: family.symbol).tag(Optional(family))
+                    }
+                }
             } header: {
                 Text("Layout")
             } footer: {
-                Text("Used in Attic, Cabinet Mode and RetroArch's menus.")
+                Text("Used in Attic, Cabinet Mode and RetroArch's menus. Button icons follow the controller connected, or show keyboard keys without one.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

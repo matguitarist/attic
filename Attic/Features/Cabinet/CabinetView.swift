@@ -184,8 +184,8 @@ struct CabinetView: View {
         .onKeyPress(.pageUp) { send(.previousLetter); return .handled }
         .onKeyPress(.pageDown) { send(.nextLetter); return .handled }
         // While searching, letters type; otherwise i (or space) opens
-        // the game's page, m the menu, / searches, r picks a random game,
-        // [ and ] jump letters.
+        // the game's page, f favorites, m the menu, / searches, r picks a
+        // random game, [ and ] jump letters.
         .onKeyPress(characters: .alphanumerics.union(.punctuationCharacters).union(.whitespaces)) { press in
             guard let character = press.characters.first else { return .ignored }
             if isSearching {
@@ -194,6 +194,7 @@ struct CabinetView: View {
             }
             switch character {
             case "i", " ": send(.details)
+            case "f": send(.toggleFavorite)
             case "m": send(.menu)
             case "/": send(.search)
             case "r": send(.random)
@@ -574,27 +575,27 @@ private struct CabinetHintBar: View {
         HStack(spacing: 36) {
             switch level {
             case .systems:
-                hint(gamepad.confirmButtonSymbol, "Open")
-                hint(gamepad.symbol(for: .select), "Search")
-                hint(gamepad.symbol(for: .r3), "Random")
-                hint(gamepad.backButtonSymbol, "Exit")
+                hint(gamepad.confirmGlyph, "Open")
+                hint(gamepad.glyph(for: .select), "Search")
+                hint(gamepad.glyph(for: .r3), "Random")
+                hint(gamepad.backGlyph, "Exit")
             case .games:
-                hint(gamepad.confirmButtonSymbol, "Play")
-                hint(gamepad.symbol(for: .left), "Details")
-                hint(gamepad.favoriteButtonSymbol, "Favorite")
-                hint(gamepad.symbol(for: .select), "Search")
-                hint(gamepad.symbol(for: .r3), "Random")
-                hint(gamepad.symbol(for: .l2), "A–Z")
+                hint(gamepad.confirmGlyph, "Play")
+                hint(gamepad.glyph(for: .left), "Details")
+                hint(gamepad.favoriteGlyph, "Favorite")
+                hint(gamepad.glyph(for: .select), "Search")
+                hint(gamepad.glyph(for: .r3), "Random")
+                hint(gamepad.glyph(for: .l2), "A–Z")
                 if isFiltered {
-                    hint(gamepad.backButtonSymbol, "Clear")
+                    hint(gamepad.backGlyph, "Clear")
                 } else if backGoesToSystems {
-                    hint(gamepad.backButtonSymbol, "Systems")
+                    hint(gamepad.backGlyph, "Systems")
                 } else {
-                    hint(gamepad.backButtonSymbol, "Exit")
+                    hint(gamepad.backGlyph, "Exit")
                 }
             }
             Button(action: onMenu) {
-                hint(gamepad.menuButtonSymbol, "Menu")
+                hint(gamepad.menuGlyph, "Menu")
             }
             .buttonStyle(.plain)
         }
@@ -602,8 +603,8 @@ private struct CabinetHintBar: View {
         .foregroundStyle(installed.theme.palette.secondaryText.color)
     }
 
-    private func hint(_ symbol: String, _ label: LocalizedStringKey) -> some View {
-        Label(label, systemImage: symbol)
+    private func hint(_ glyph: ButtonGlyph, _ label: LocalizedStringKey) -> some View {
+        Label(label, glyph: glyph)
             .labelStyle(.titleAndIcon)
     }
 }

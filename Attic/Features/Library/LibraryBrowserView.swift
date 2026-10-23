@@ -374,7 +374,7 @@ struct LibraryBrowserView: View {
                 Button {
                     showsControllerHelp.toggle()
                 } label: {
-                    Label("Controller", systemImage: "gamecontroller.fill")
+                    Label("Controller", systemImage: gamepad.controllerSymbol)
                 }
                 .help("\(controllerName) connected")
                 .popover(isPresented: $showsControllerHelp, arrowEdge: .bottom) {
@@ -439,15 +439,15 @@ private struct ControllerHelpView: View {
     var body: some View {
         let _ = controllerSettings.settings.layout
         VStack(alignment: .leading, spacing: 12) {
-            Label(controllerName, systemImage: "gamecontroller.fill")
+            Label(controllerName, systemImage: gamepad.controllerSymbol)
                 .font(.headline)
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
                 row(Text("D-pad / Left Stick"), "Browse games")
                 row(Text(Image(systemName: gamepad.confirmButtonSymbol)), "Play")
                 row(Text(Image(systemName: gamepad.backButtonSymbol)), "Exit Cabinet Mode")
                 row(Text(Image(systemName: gamepad.favoriteButtonSymbol)), "Add to / remove from Favorites")
-                row(Text("LB / RB"), "Previous / next system")
-                row(Text("Menu / Start"), "Cabinet Mode (full screen)")
+                row(Text("\(Image(systemName: gamepad.symbol(for: .l1))) / \(Image(systemName: gamepad.symbol(for: .r1)))"), "Previous / next system")
+                row(Text(Image(systemName: gamepad.symbol(for: .start))), "Cabinet Mode (full screen)")
             }
             .font(.callout)
         }

@@ -60,9 +60,15 @@ struct CabinetSearchView: View {
             }
 
             HStack(spacing: 28) {
-                Label("Type", systemImage: gamepad.confirmButtonSymbol)
-                Label("Delete", systemImage: gamepad.symbol(for: .left))
-                Label("Done", systemImage: gamepad.backButtonSymbol)
+                // On the keyboard, typing types and Delete deletes.
+                if gamepad.glyphFamily == .keyboard {
+                    Label("Delete", glyph: .symbol("delete.left"))
+                    Label("Done", glyph: gamepad.backGlyph)
+                } else {
+                    Label("Type", glyph: gamepad.confirmGlyph)
+                    Label("Delete", glyph: gamepad.glyph(for: .left))
+                    Label("Done", glyph: gamepad.backGlyph)
+                }
             }
             .font(theme.bodyFont())
             .foregroundStyle(theme.palette.secondaryText.color)
