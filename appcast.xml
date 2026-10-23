@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.7.1</title>
+            <pubDate>Thu, 22 Oct 2026 21:53:18 -0400</pubDate>
+            <sparkle:version>45</sparkle:version>
+            <sparkle:shortVersionString>2.7.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>On smaller screens, the library&#x27;s sidebar, games and inspector all fit again, instead of the sidebar and inspector running off the edges</li>
+<li>A slimmer toolbar, without the title the sidebar already shows</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.7.1/Attic-2.7.1.zip" length="17276701" type="application/octet-stream" sparkle:edSignature="/vc+9ayl+zipXvarTl41hz+wWztOWNlD3+2WBtcd8oBqwJ7xfPDm5yBfJ1vXG2K3hqZNf3MQ1b1/BN3sxN+8Cw=="/>
+        </item>
+        <item>
             <title>2.7.0</title>
             <pubDate>Thu, 22 Oct 2026 20:57:55 -0400</pubDate>
             <sparkle:version>44</sparkle:version>
