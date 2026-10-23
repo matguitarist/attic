@@ -69,6 +69,9 @@ public enum SystemROMExtensions {
         // Vita3K plays games installed in it; a .psvita file names one by
         // its title ID (ES-DE's convention).
         .psvita: ["psvita"],
+        // Mac games installed through Steam; a .steam file names one by its
+        // app ID (see SteamLibrary).
+        .steam: ["steam"],
         .scummvm: ["scummvm"],
         .doom: ["iwad", "pk3", "pwad", "wad"],
         .quake: ["quake"],

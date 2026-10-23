@@ -190,6 +190,12 @@ struct ToolsCommands: Commands {
             .disabled(roots.isEmpty || tools.isBusy)
             .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.")
 
+            Button("Import Steam Games…") {
+                Task { await SteamImport.run(romsRoots: roots, scanCoordinator: scanCoordinator) }
+            }
+            .disabled(roots.isEmpty || scanCoordinator.state == .scanning)
+            .help("Adds the Mac games installed through Steam, with their Steam artwork. They play through Steam.")
+
             Divider()
 
             gameItems

@@ -785,6 +785,14 @@ public enum SystemTaxonomy {
             category: .computer, otherShortNames: ["mac"]
         ),
         SystemDefinition(
+            canonicalID: .steam,
+            displayName: "Steam",
+            batoceraShortName: "steam",
+            esdeShortName: "steam",
+            retroArchSystemIDs: [],
+            category: .computer
+        ),
+        SystemDefinition(
             canonicalID: .mame,
             displayName: "MAME",
             batoceraShortName: "mame",

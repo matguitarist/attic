@@ -65,6 +65,8 @@ final class ScanCoordinator {
             // Vita games installed in Vita3K since the last scan, and
             // playlists for multi-disc games.
             Vita3KLibrary.addShortcuts(romsRoots: romsRootURLs)
+            // Steam games installed or uninstalled since, once imported.
+            SteamLibrary.syncShortcuts(romsRoots: romsRootURLs)
             DiscPlaylists.createMissing(romsRoots: romsRootURLs)
             return scanner.scan(romsRootURLs: romsRootURLs, only: only)
         }.value

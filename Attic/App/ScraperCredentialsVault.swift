@@ -12,8 +12,25 @@ struct ScraperCredentialsVault: Codable, Equatable {
     var screenScraperUserID: String = ""
     var screenScraperUserPassword: String = ""
     var theGamesDBApiKey: String = ""
+    var steamGridDBApiKey: String = ""
 
     var isEmpty: Bool { self == ScraperCredentialsVault() }
+
+    init() {}
+
+    // Each key may be missing: a vault saved before a field existed must
+    // still load, or `load()` would treat it as unreadable and save over
+    // every key in it.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        func value(_ key: CodingKeys) -> String { (try? container.decodeIfPresent(String.self, forKey: key)) ?? "" }
+        screenScraperDevID = value(.screenScraperDevID)
+        screenScraperDevPassword = value(.screenScraperDevPassword)
+        screenScraperUserID = value(.screenScraperUserID)
+        screenScraperUserPassword = value(.screenScraperUserPassword)
+        theGamesDBApiKey = value(.theGamesDBApiKey)
+        steamGridDBApiKey = value(.steamGridDBApiKey)
+    }
 }
 
 /// Reads/writes `ScraperCredentialsVault` as one JSON-encoded Keychain

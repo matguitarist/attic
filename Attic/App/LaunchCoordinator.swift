@@ -60,6 +60,11 @@ final class LaunchCoordinator {
     func play(game: Game, retroArchStore: RetroArchSettingsStore, checkingBIOS: Bool = true) {
         guard state == .idle || isFailed else { return }
 
+        if CanonicalSystemID(game.systemCanonicalID) == .steam {
+            playThroughSteam(game)
+            return
+        }
+
         guard let target = LaunchTargetResolution.resolve(
             gameOverride: game.launchOverride,
             systemDefault: game.system?.defaultLaunchTarget
@@ -115,6 +120,62 @@ final class LaunchCoordinator {
             recordSessionEnded(game: game, playSession: playSession)
         }
         Task { await handFocus(to: session) }
+    }
+
+    // MARK: - Steam
+
+    /// Steam games run through Steam, which keeps them updated and signed
+    /// in. Steam starts the game itself, so Attic finds it by its app
+    /// living in the game's install folder, and times it from there.
+    private func playThroughSteam(_ game: Game) {
+        guard let installed = SteamLibrary.installedGame(shortcut: game.romAbsoluteURL) else {
+            state = .failed(String(localized: "“\(game.title)” isn't installed in Steam anymore."))
+            AppLog.post(.error, "Couldn't launch “\(game.title)”: it isn't installed in Steam anymore.")
+            return
+        }
+        state = .launching
+        AppLog.post(.info, "Launching “\(game.title)” through Steam (app \(installed.appID)).")
+        NSWorkspace.shared.open(SteamLibrary.runURL(appID: installed.appID))
+        Task { await follow(game, installedIn: installed.folder) }
+    }
+
+    private func follow(_ game: Game, installedIn folder: URL) async {
+        let path = folder.standardizedFileURL.path
+        // Inside the folder, or the folder itself (Stardew Valley's is its app).
+        func gameApp() -> NSRunningApplication? {
+            NSWorkspace.shared.runningApplications.first {
+                guard let bundle = $0.bundleURL?.standardizedFileURL.path else { return false }
+                return bundle == path || bundle.hasPrefix(path + "/")
+            }
+        }
+        // Steam may update the game, or ask something, first.
+        var app: NSRunningApplication?
+        for _ in 0..<90 {
+            app = gameApp()
+            if app != nil { break }
+            try? await Task.sleep(for: .seconds(1))
+        }
+        guard let app else {
+            state = .idle
+            AppLog.post(.warning, "“\(game.title)” didn't start within 90 s. Steam may be updating it or waiting for an answer.")
+            return
+        }
+        state = .running(gameID: game.persistentModelID)
+        var playSession: PlaySession?
+        if let context = game.modelContext {
+            let session = PlaySession(game: game, launchMethodRaw: "steam")
+            context.insert(session)
+            try? context.save()
+            playSession = session
+        }
+        let startedAt = Date.now
+        while !app.isTerminated {
+            try? await Task.sleep(for: .seconds(2))
+        }
+        let duration = Duration.seconds(Date.now.timeIntervalSince(startedAt))
+            .formatted(.units(allowed: [.hours, .minutes, .seconds], width: .abbreviated))
+        AppLog.post(.info, "Steam: quit after \(duration) playing “\(game.title)”.")
+        recordSessionEnded(game: game, playSession: playSession)
     }
 
     /// Brings the emulator to the front once it's up. Emulators activate

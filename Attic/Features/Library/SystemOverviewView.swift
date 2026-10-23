@@ -267,7 +267,7 @@ extension GameSystem {
             let descriptor = FetchDescriptor<EmulatorProfile>(predicate: #Predicate { $0.id == id })
             return (try? modelContext.fetch(descriptor).first)?.name
         case nil:
-            return nil
+            return systemID == .steam ? "Steam" : nil
         }
     }
 }

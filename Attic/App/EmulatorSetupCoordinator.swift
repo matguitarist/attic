@@ -166,6 +166,9 @@ final class EmulatorSetupCoordinator {
     }
 
     func status(of system: GameSystem, retroArchStore: RetroArchSettingsStore, profiles: [EmulatorProfile]) -> SystemStatus {
+        if system.systemID == .steam {
+            return SteamImport.isSteamInstalled ? .ready("Steam") : .broken(String(localized: "Steam isn't installed."))
+        }
         switch system.defaultLaunchTarget {
         case .none:
             return .notSetUp

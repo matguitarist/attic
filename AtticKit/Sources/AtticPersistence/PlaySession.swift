@@ -23,4 +23,12 @@ public final class PlaySession {
             self.launchMethodRaw = "emulatorProfile"
         }
     }
+
+    /// A game run by something other than an emulator: "steam".
+    public init(game: Game?, launchMethodRaw: String, startedAt: Date = .now) {
+        self.game = game
+        self.startedAt = startedAt
+        self.endedAt = nil
+        self.launchMethodRaw = launchMethodRaw
+    }
 }

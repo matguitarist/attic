@@ -109,6 +109,8 @@ public extension CanonicalSystemID {
     static let c128 = CanonicalSystemID("c128")
     static let zx81 = CanonicalSystemID("zx81")
     static let macintosh = CanonicalSystemID("macintosh")
+    /// Mac games installed through Steam, played through it.
+    static let steam = CanonicalSystemID("steam")
     static let xbox = CanonicalSystemID("xbox")
     static let msx = CanonicalSystemID("msx")
     static let dos = CanonicalSystemID("dos")
