@@ -3,6 +3,23 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.7.0</title>
+            <pubDate>Thu, 22 Oct 2026 20:57:55 -0400</pubDate>
+            <sparkle:version>44</sparkle:version>
+            <sparkle:shortVersionString>2.7.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Button hints match the controller connected: PlayStation, Xbox, Switch, 8BitDo or Stadia, or keyboard keys without one; Settings › Controller › Button Icons picks one by hand</li>
+<li>The controller&#x27;s own icon in the toolbar and Cabinet Mode&#x27;s menu</li>
+<li>F favorites a game from the keyboard in Cabinet Mode</li>
+<li>The Switch 2 Pro Controller works over USB in Attic and Cabinet Mode</li>
+<li>Tools › Import Steam Games… adds the Mac games installed through Steam, with their Steam artwork and info; they play through Steam, with play time recorded, and come and go as you install or uninstall them</li>
+<li>SteamGridDB fills in Steam games&#x27; missing covers, hero pictures and logos, with a free API key in Settings › SteamGridDB</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.7.0/Attic-2.7.0.zip" length="17274961" type="application/octet-stream" sparkle:edSignature="Q5QpPehlTAeoaCLVq6sGYrYycilTke4yaIFczPuHnZoSuvoulOBHyYy5nIp/YMCPvslM5atGCbue+pwd2KoUAg=="/>
+        </item>
+        <item>
             <title>2.6.2</title>
             <pubDate>Thu, 22 Oct 2026 11:56:12 -0400</pubDate>
             <sparkle:version>43</sparkle:version>
