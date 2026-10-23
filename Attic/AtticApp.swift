@@ -73,11 +73,15 @@ struct AtticApp: App {
     var body: some Scene {
         WindowGroup {
             withAppEnvironment(ContentView())
-                // Room for the sidebar, the grid and the game panel. Any
-                // narrower and the columns' minimums can't all fit:
-                // AppKit kept resizing them until it gave up (a crash at
-                // launch for a window saved at 900 points wide).
-                .frame(minWidth: 1040, minHeight: 560)
+                // Room for the sidebar and inspector at their widest (280
+                // and 400) beside the grid at its narrowest, which is its
+                // toolbar's width (about 430: a column is never narrower
+                // than its toolbar while the sidebar shows). Any narrower
+                // and they can't all fit: AppKit kept resizing them until
+                // it gave up (a crash at launch for a window saved at 900
+                // points wide), or collapsed the sidebar while still
+                // drawing it, pushing everything off both edges.
+                .frame(minWidth: 1120, minHeight: 560)
                 .task { await scanCoordinator.refreshGameCounts() }
                 // The weekly save backup, a minute in so launch stays quick.
                 .task {

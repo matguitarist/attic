@@ -48,7 +48,7 @@ struct LibraryBrowserView: View {
     var body: some View {
         NavigationSplitView {
             LibrarySidebarView(systems: shownSystems, collections: collections.filter { !$0.isHidden }, selection: $selection)
-                .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
+                .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 280)
         } detail: {
             GameGridView(
                 // A search looks through every game, whatever's selected.
@@ -68,8 +68,13 @@ struct LibraryBrowserView: View {
                 }
                 .background(.bar)
             }
-            .navigationSplitViewColumnWidth(min: 460, ideal: 800)
+            .navigationSplitViewColumnWidth(min: 380, ideal: 600)
             .navigationTitle(selectionTitle)
+            // The sidebar already says what's shown, and the title took
+            // up to a third of the toolbar, whose width is the grid
+            // column's minimum: on a small screen the columns no longer
+            // fit (see the window's minimum width).
+            .toolbar(removing: .title)
             .toolbar { toolbarContent }
             // Games dropped here go to the system shown when it takes
             // them, else to the one their file type says.
@@ -93,7 +98,7 @@ struct LibraryBrowserView: View {
                     GameDetailView(game: selectedGame, system: selectedSystem, collection: shownCollection)
                 }
             }
-            .inspectorColumnWidth(min: 280, ideal: 320, max: 480)
+            .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
             .toolbar {
                 ToolbarSpacer(.flexible)
                 ToolbarItem { inspectorToggle }
@@ -298,15 +303,13 @@ struct LibraryBrowserView: View {
                 Image(systemName: "photo").imageScale(.large)
             }
             .labelsHidden()
-            .frame(width: 140)
+            .frame(width: 96)
             // A custom view gets no inset of its own inside the toolbar's
             // glass capsule (unlike buttons), so without this the small/
             // large picture labels sit flush against its rounded ends.
             .padding(.horizontal, 8)
             .help("Cover art size")
         }
-
-        ToolbarSpacer(.fixed)
 
         ToolbarItem {
             Menu {
@@ -363,8 +366,6 @@ struct LibraryBrowserView: View {
                 .help("Look for games added to or removed from your ROMs folder (⌘R)")
             }
         }
-
-        ToolbarSpacer(.fixed)
 
         // A real Button (not a bare Image) so it gets the same padding and
         // hit target as every other toolbar item — and clicking it explains
