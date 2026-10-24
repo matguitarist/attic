@@ -17,6 +17,7 @@ final class ToolsCoordinator {
         case mediaImport(MediaImportPlan)
         case rebuild(SetRebuildReport)
         case playlists(DiscPlaylistPlan)
+        case emuMovies(EmuMoviesPlan)
 
         var id: String {
             switch self {
@@ -26,6 +27,7 @@ final class ToolsCoordinator {
             case .mediaImport: "mediaImport"
             case .rebuild: "rebuild"
             case .playlists: "playlists"
+            case .emuMovies: "emuMovies"
             }
         }
     }
@@ -43,6 +45,8 @@ final class ToolsCoordinator {
     var reportHost: Host = .library
     var isAnalyzing = false
     var activity: Activity?
+    /// Stops the running activity, for those that can be stopped.
+    var cancelActivity: (() -> Void)?
     /// What the last run did, for an alert.
     struct Outcome: Equatable {
         let title: String

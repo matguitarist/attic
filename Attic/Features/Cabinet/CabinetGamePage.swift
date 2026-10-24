@@ -26,6 +26,8 @@ struct CabinetGamePage: View {
     @State private var manualURL: URL?
     /// Looked up once: the 3D box lives by file alone.
     @State private var box3DURL: URL?
+    /// Its cartridge or disc, likewise.
+    @State private var physicalMediaURL: URL?
     /// The box picture's width over its height: SNES boxes lie wide,
     /// most others stand tall.
     @State private var boxAspect: CGFloat?
@@ -82,6 +84,7 @@ struct CabinetGamePage: View {
         .task(id: game.persistentModelID) {
             manualURL = game.manualURL
             box3DURL = game.box3DURL
+            physicalMediaURL = installed.theme.details.showsPhysicalMedia ? game.physicalMediaURL : nil
             boxAspect = Self.aspectRatio(of: box3DURL ?? game.coverArtURL)
             videoURL = nil
             guard playsPreviews, let url = game.previewVideoURL, GameHeaderMedia.canPlay(url) else { return }
@@ -115,16 +118,27 @@ struct CabinetGamePage: View {
     /// The 3D box when there is one, else the 2D one, at its own shape
     /// within a square: as tall as the facts when it stands, as wide
     /// when it lies.
+    /// The cartridge or disc, when there's one, peeks out from its
+    /// bottom corner.
     private func box(_ theme: CabinetTheme) -> some View {
         GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false)
             .aspectRatio(boxAspect ?? 0.75, contentMode: .fit)
             .frame(maxWidth: 300, maxHeight: 300)
-            .frame(width: 300, alignment: .topLeading)
             .shadow(color: .black.opacity(0.5), radius: 20, y: 10)
+            .overlay(alignment: theme.details.side == .leading ? .bottomTrailing : .bottomLeading) {
+                if let physicalMediaURL {
+                    GameCoverArtView(url: physicalMediaURL, title: game.title, showBackground: false)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 130, maxHeight: 130)
+                        .shadow(color: .black.opacity(0.5), radius: 10, y: 5)
+                        .offset(x: theme.details.side == .leading ? 24 : -24, y: 24)
+                }
+            }
+            .frame(width: 300, alignment: .topLeading)
     }
 
     /// Read from the file's header, without decoding the picture.
-    private static func aspectRatio(of url: URL?) -> CGFloat? {
+    static func aspectRatio(of url: URL?) -> CGFloat? {
         guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,

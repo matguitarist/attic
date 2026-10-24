@@ -35,14 +35,14 @@ struct DiscPlaylistsTests {
         _ = try touch("ROMs/psx/Metal Gear Solid (USA) (Disc 1).chd")
         _ = try touch("ROMs/psx/Metal Gear Solid (USA) (Disc 2).chd")
         _ = try touch("ROMs/psx/Tekken 3 (USA).chd")
-        _ = try touch("Media/psx/covers/Final Fantasy VII (USA) (Disc 1).heic")
+        _ = try touch("Media/psx/2dboxes/Final Fantasy VII (USA) (Disc 1).heic")
         let psx = base.appending(path: "ROMs/psx")
 
         #expect(DiscPlaylists.createMissing(romsRoots: [base.appending(path: "ROMs")]) == 2)
         let ff7 = try String(contentsOf: psx.appending(path: "Final Fantasy VII (USA).m3u"), encoding: .utf8)
         #expect(ff7 == "Final Fantasy VII (USA) (Disc 1).cue\nFinal Fantasy VII (USA) (Disc 2).cue\nFinal Fantasy VII (USA) (Disc 3).cue\n")
         // The game takes disc 1's cover.
-        #expect(FileManager.default.fileExists(atPath: base.appending(path: "Media/psx/covers/Final Fantasy VII (USA).heic").path))
+        #expect(FileManager.default.fileExists(atPath: base.appending(path: "Media/psx/2dboxes/Final Fantasy VII (USA).heic").path))
         // Once there, it isn't made again.
         #expect(DiscPlaylists.missing(in: psx).isEmpty)
         #expect(DiscPlaylists.listedFiles(in: psx).contains("Metal Gear Solid (USA) (Disc 2).chd"))

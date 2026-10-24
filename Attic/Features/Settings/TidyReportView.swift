@@ -113,7 +113,7 @@ struct TidyReportView: View {
         let count = rows(for: step).count
         switch step {
         case .moveMedia:
-            return String(localized: "\(count) files, renamed ES-DE style (Game-boxart.png becomes covers/Game.png).")
+            return String(localized: "\(count) files, renamed after their games (Game-boxart.png becomes 2dboxes/Game.png).")
         case .gamelists:
             return String(localized: "\(count) gamelists: Batocera's move to Gamelists, and old media paths and missing games come out.")
         case .compressCovers:

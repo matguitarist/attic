@@ -38,6 +38,20 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// The focused game's art filling the screen, its details over it
         /// at the top left, a row of wide cards along the bottom (Apple TV).
         case hero
+        /// The focused game's 2D box facing the screen, the others turned
+        /// toward it to either side over their reflections (iTunes's Cover
+        /// Flow). With `box3D` tiles, games with a 3D box stand as it there.
+        case coverFlow
+        /// The games standing in rows on shelves, the focused one pulled
+        /// forward, its details below. With `box3D` tiles, as 3D boxes.
+        case shelf
+        /// The focused game's 2D box with its disc sliding out and
+        /// spinning, or its cartridge rising from it, over a row of the
+        /// others.
+        case unboxed
+        /// The wheel beside an arcade cabinet: the game's marquee lit
+        /// above its video, framed by its bezel.
+        case cabinet
     }
 
     public struct Palette: Codable, Hashable, Sendable {
@@ -151,6 +165,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var showsMetadata: Bool
         public var showsDescription: Bool
         public var descriptionLines: Int
+        /// The game's cartridge, disc or board at the corner of its box on
+        /// its page, when it has a picture of one.
+        public var showsPhysicalMedia = true
     }
 
     public struct Header: Codable, Hashable, Sendable {
@@ -287,7 +304,7 @@ extension CabinetTheme {
 // MARK: - Built-in themes
 
 extension CabinetTheme {
-    public static let builtIns: [CabinetTheme] = [.showcase, .appleTV, .bigPicture, .arcade, .classic]
+    public static let builtIns: [CabinetTheme] = [.showcase, .coverFlow, .shelf, .unboxed, .appleTV, .bigPicture, .arcade, .upright, .classic]
 
     public static func builtIn(id: String) -> CabinetTheme? {
         builtIns.first { $0.id == id }
@@ -314,6 +331,111 @@ extension CabinetTheme {
         details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 3),
         header: Header(showsLogos: true, showsClock: false, showsGameCount: false),
         menu: Menu(position: .center, width: 640, cornerRadius: 28, dim: 0.55),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// Covers turned toward the focused game's 2D box over a black glossy
+    /// floor, the others' 3D boxes standing where they have one, like
+    /// iTunes's Cover Flow.
+    public static let coverFlow = CabinetTheme(
+        id: "cover-flow",
+        name: "Cover Flow",
+        author: "Attic",
+        layout: .coverFlow,
+        palette: Palette(
+            background: ThemeColor(hex: "#000000")!,
+            surface: ThemeColor(hex: "#FFFFFF1A")!,
+            accent: ThemeColor(hex: "#FFFFFF")!,
+            text: ThemeColor(hex: "#FFFFFF")!,
+            secondaryText: ThemeColor(hex: "#FFFFFF8C")!,
+            favorite: ThemeColor(hex: "#FFD60A")!
+        ),
+        typography: Typography(design: .standard, titleSize: 36, bodySize: 18, uppercase: false),
+        backdrop: Backdrop(source: .none, blur: 0, dim: 0),
+        tiles: Tiles(art: .box3D, size: 0.62, spacing: 0, cornerRadius: 0, showsBackground: false,
+                     focusScale: 1.25, unfocusedOpacity: 0.5, focusRing: false, focusGlow: false, showsTitles: false),
+        details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 2),
+        header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
+        menu: Menu(position: .center, width: 640, cornerRadius: 28, dim: 0.6),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// The games standing on wooden shelves, their 3D boxes where they
+    /// have one, the focused one pulled forward.
+    public static let shelf = CabinetTheme(
+        id: "shelf",
+        name: "Shelf",
+        author: "Attic",
+        layout: .shelf,
+        palette: Palette(
+            background: ThemeColor(hex: "#17100B")!,
+            surface: ThemeColor(hex: "#7A5232")!,
+            accent: ThemeColor(hex: "#F2C46D")!,
+            text: ThemeColor(hex: "#FFF6EA")!,
+            secondaryText: ThemeColor(hex: "#D2BDA3")!,
+            favorite: ThemeColor(hex: "#FFD60A")!
+        ),
+        typography: Typography(design: .serif, titleSize: 32, bodySize: 18, uppercase: false),
+        backdrop: Backdrop(source: .fanart, blur: 50, dim: 0.85),
+        tiles: Tiles(art: .box3D, size: 0.3, spacing: 8, cornerRadius: 0, showsBackground: false,
+                     focusScale: 1.08, unfocusedOpacity: 0.7, focusRing: false, focusGlow: false, showsTitles: false),
+        details: Details(media: .none, playsVideo: false, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 2),
+        header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
+        menu: Menu(position: .center, width: 620, cornerRadius: 18, dim: 0.6),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// The focused game's box with its disc or cartridge coming out of
+    /// it, over its fan art, a row of 3D boxes along the bottom.
+    public static let unboxed = CabinetTheme(
+        id: "unboxed",
+        name: "Unboxed",
+        author: "Attic",
+        layout: .unboxed,
+        palette: Palette(
+            background: ThemeColor(hex: "#0B0D12")!,
+            surface: ThemeColor(hex: "#FFFFFF1F")!,
+            accent: ThemeColor(hex: "#7CC4FF")!,
+            text: ThemeColor(hex: "#FFFFFF")!,
+            secondaryText: ThemeColor(hex: "#FFFFFFA0")!,
+            favorite: ThemeColor(hex: "#FFD60A")!
+        ),
+        typography: Typography(design: .rounded, titleSize: 40, bodySize: 19, uppercase: false),
+        backdrop: Backdrop(source: .fanart, blur: 30, dim: 0.7),
+        tiles: Tiles(art: .box3D, size: 0.2, spacing: 26, cornerRadius: 0, showsBackground: false,
+                     focusScale: 1.18, unfocusedOpacity: 0.6, focusRing: false, focusGlow: true, showsTitles: false),
+        details: Details(media: .none, playsVideo: false, showsLogo: true, showsMetadata: true, showsDescription: true, descriptionLines: 5),
+        header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
+        menu: Menu(position: .center, width: 640, cornerRadius: 24, dim: 0.55),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// A wheel of logos beside an upright arcade cabinet, the game's
+    /// marquee lit above its video and bezel.
+    public static let upright = CabinetTheme(
+        id: "upright",
+        name: "Upright",
+        author: "Attic",
+        layout: .cabinet,
+        palette: Palette(
+            background: ThemeColor(hex: "#050508")!,
+            surface: ThemeColor(hex: "#1B1B26")!,
+            accent: ThemeColor(hex: "#00E5FF")!,
+            text: ThemeColor(hex: "#FFFFFF")!,
+            secondaryText: ThemeColor(hex: "#A6B8CC")!,
+            favorite: ThemeColor(hex: "#FF3D7F")!
+        ),
+        typography: Typography(design: .rounded, titleSize: 30, bodySize: 17, uppercase: true),
+        backdrop: Backdrop(source: .screenshot, blur: 50, dim: 0.8),
+        tiles: Tiles(art: .logo, size: 0.8, spacing: 6, cornerRadius: 12, showsBackground: false,
+                     focusScale: 1.35, unfocusedOpacity: 0.4, focusRing: false, focusGlow: true, showsTitles: true),
+        details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: false, descriptionLines: 2),
+        header: Header(showsLogos: true, showsClock: false, showsGameCount: true),
+        menu: Menu(position: .center, width: 600, cornerRadius: 12, dim: 0.7),
         systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
         showsHints: true
     )

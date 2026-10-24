@@ -11,18 +11,22 @@ public enum ImportedMedia {
     /// A `marquees` folder isn't taken for logos: MAME's hold the cabinets'
     /// real marquees.
     static let folderKinds: [String: MediaKind] = [
-        "covers": .covers, "boxart": .covers, "box2dfront": .covers, "box - front": .covers, "boxes": .covers,
+        "2dboxes": .covers, "covers": .covers, "boxart": .covers, "box2dfront": .covers, "box - front": .covers, "boxes": .covers,
         "screenshots": .screenshots, "snap": .screenshots, "snaps": .screenshots, "screenshot - gameplay": .screenshots,
         "videos": .videos, "video": .videos, "snap videos": .videos,
         "manuals": .manuals, "manual": .manuals,
         "logos": .logos, "logo": .logos, "wheel": .logos, "clear logo": .logos,
         "fanart": .fanart, "fan art": .fanart, "fanart - background": .fanart, "backgrounds": .fanart,
         "3dboxes": .boxes3D, "box3d": .boxes3D, "box - 3d": .boxes3D,
+        "physicalmedia": .physicalMedia, "support": .physicalMedia, "cartridges": .physicalMedia, "cartridge": .physicalMedia,
+        "carts": .physicalMedia, "cart": .physicalMedia, "discs": .physicalMedia, "disc": .physicalMedia,
+        "medium_front": .physicalMedia, "medium_disc": .physicalMedia,
+        "bezels": .bezels, "bezel": .bezels,
     ]
     /// Folders that hold media or other apps' files, never games.
     public static let nonGameFolderNames: Set<String> = Set(folderKinds.keys)
         .union(["images", "media", "downloaded_images", "downloaded_media", "gamelists", "collections", "html_arrm",
-                "marquees", "marquee", "backcovers", "physicalmedia", "support",
+                "marquees", "marquee", "backcovers",
                 "miximages", "mix", "mixrbv2", "titlescreens", "titles", "screenshot - game title",
                 // A whole Batocera or ES-DE folder's other parts.
                 "bios", "saves", "states", "themes", "music", "splash", "cheats", "decorations", "overlays", "shaders"])
@@ -61,8 +65,12 @@ public enum ImportedMedia {
             for media in subfolders where folderKinds[media.lastPathComponent.lowercased()] == kind {
                 offer(file(named: stem, in: media, extensions: extensions), as: kind)
             }
+            // ES-DE's names too, where they're Attic's old ones (covers).
+            let names = [kind.rawValue] + MediaKind.renamedKinds.filter { $0.value == kind }.map(\.key)
             for tree in mediaTrees {
-                offer(file(named: stem, in: tree.appending(path: kind.rawValue), extensions: extensions), as: kind)
+                for name in names {
+                    offer(file(named: stem, in: tree.appending(path: name), extensions: extensions), as: kind)
+                }
             }
         }
         // Batocera: images/Game-boxart.png, videos/Game-video.mp4…

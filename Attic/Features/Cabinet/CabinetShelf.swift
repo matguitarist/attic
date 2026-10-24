@@ -7,10 +7,11 @@ import AtticPersistence
 /// through them. Owns the section's query, so switching sections swaps
 /// the whole shelf.
 ///
-/// Each layout moves along its own axis — the carousel left and right,
-/// the wheel and list up and down, the grid both — and the other
-/// directions step through sections, so a pad without (or with awkward)
-/// shoulder buttons can still get everywhere.
+/// Each layout moves along its own axis — the carousel, Cover Flow, hero
+/// and Unboxed left and right, the wheel, cabinet and list up and down,
+/// the grid and shelf both —
+/// and the other directions step through sections, so a pad without (or
+/// with awkward) shoulder buttons can still get everywhere.
 struct CabinetShelf: View {
     @Query private var queriedGames: [Game]
     /// Collections follow the library window's collection order.
@@ -148,6 +149,10 @@ struct CabinetShelf: View {
                                                 onFocus: { focus($0) }, onPlay: onPlay)
                 switch installed.theme.layout {
                 case .carousel: CabinetCarouselLayout(shelf: shelf)
+                case .coverFlow: CabinetCoverFlowLayout(shelf: shelf)
+                case .shelf: CabinetShelfLayout(shelf: shelf, columns: $columns)
+                case .unboxed: CabinetUnboxedLayout(shelf: shelf)
+                case .cabinet: CabinetWheelLayout(shelf: shelf, drawsCabinet: true)
                 case .hero: CabinetHeroLayout(shelf: shelf)
                 case .grid: CabinetGridLayout(shelf: shelf, columns: $columns)
                 case .wheel: CabinetWheelLayout(shelf: shelf)
@@ -205,11 +210,11 @@ struct CabinetShelf: View {
         let index = focusedGame.flatMap { focused in games.firstIndex { $0.persistentModelID == focused.persistentModelID } }
         switch (installed.theme.layout, direction) {
         // Past either end, around to the other.
-        case (.carousel, .left), (.hero, .left), (.wheel, .up), (.list, .up): focus(games[safe: (index ?? 0) - 1] ?? games.last)
-        case (.carousel, .right), (.hero, .right), (.wheel, .down), (.list, .down): focus(games[safe: (index ?? -1) + 1] ?? games.first)
-        case (.carousel, .up), (.hero, .up), (.wheel, .left), (.list, .left): onSectionStep(-1)
-        case (.carousel, .down), (.hero, .down), (.wheel, .right), (.list, .right): onSectionStep(1)
-        case (.grid, _):
+        case (.carousel, .left), (.coverFlow, .left), (.hero, .left), (.unboxed, .left), (.wheel, .up), (.list, .up), (.cabinet, .up): focus(games[safe: (index ?? 0) - 1] ?? games.last)
+        case (.carousel, .right), (.coverFlow, .right), (.hero, .right), (.unboxed, .right), (.wheel, .down), (.list, .down), (.cabinet, .down): focus(games[safe: (index ?? -1) + 1] ?? games.first)
+        case (.carousel, .up), (.coverFlow, .up), (.hero, .up), (.unboxed, .up), (.wheel, .left), (.list, .left), (.cabinet, .left): onSectionStep(-1)
+        case (.carousel, .down), (.coverFlow, .down), (.hero, .down), (.unboxed, .down), (.wheel, .right), (.list, .right), (.cabinet, .right): onSectionStep(1)
+        case (.grid, _), (.shelf, _):
             let target = GridNavigation.index(movingFrom: index, direction: direction, itemCount: games.count, columns: columns)
             focus(target.map { games[$0] })
         }

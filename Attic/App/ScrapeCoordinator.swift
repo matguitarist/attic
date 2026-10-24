@@ -329,6 +329,11 @@ final class ScrapeCoordinator {
                 changed.append(String(localized: "3D box"))
             }
         }
+        if force || game.physicalMediaURL == nil, let remoteURL = info.physicalMediaURL {
+            if (try? await downloadMedia(from: remoteURL, for: game, kind: .physicalMedia)) != nil {
+                changed.append(PhysicalMedium.of(CanonicalSystemID(game.systemCanonicalID)).map(\.singularTitle) ?? String(localized: "cartridge"))
+            }
+        }
 
         if changedProtectedField {
             game.metadataManuallyEdited = true

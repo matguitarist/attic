@@ -137,7 +137,7 @@ public enum MediaTidier {
     /// no `boxart`.
     static let inFolderSuffixes: [String: MediaKind] = [
         "boxart": .covers, "image": .screenshots,
-        "video": .videos, "manual": .manuals, "marquee": .logos, "fanart": .fanart,
+        "video": .videos, "manual": .manuals, "marquee": .logos, "fanart": .fanart, "cartridge": .physicalMedia, "bezel": .bezels,
     ]
 
     public static func plan(romsRoots: [URL]) -> MediaTidyPlan {
@@ -318,7 +318,7 @@ public enum MediaTidier {
     /// ES-DE kinds Attic no longer keeps, and the kind each stands in
     /// for when a game has nothing else. ES-DE's scraper files the logo as
     /// a marquee.
-    static let retiredKinds: [String: MediaKind] = ["miximages": .covers, "titlescreens": .screenshots, "marquees": .logos]
+    static let retiredKinds: [String: MediaKind] = MediaKind.renamedKinds.merging(["miximages": .covers, "titlescreens": .screenshots]) { kind, _ in kind }
 
     private static func planDownloadedMedia(_ systemMedia: URL, games: Set<String>, into plan: inout MediaTidyPlan) {
         for kindFolder in subfolders(of: systemMedia) {

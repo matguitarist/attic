@@ -181,7 +181,7 @@ final class CabinetThemeStore {
 
         Each folder here is a theme: a `theme.json` and any pictures it uses.
         Attic reads them when Cabinet Mode opens; pick one in Settings › General.
-        A folder named like a built-in theme (showcase, big-picture, arcade)
+        A folder named like a built-in theme (showcase, cover-flow, shelf, unboxed, big-picture, arcade, upright)
         replaces it.
 
         A theme only needs what differs from its `base` (a built-in theme):
@@ -192,8 +192,14 @@ final class CabinetThemeStore {
 
         - `layout`: `carousel` (a row of covers), `grid` (covers beside a
           details panel), `wheel` (a wheel of logos beside a screen), `list`
-          (titles beside the game's art) or `hero` (the game's art filling
-          the screen over a row of wide cards, like the Apple TV).
+          (titles beside the game's art), `hero` (the game's art filling
+          the screen over a row of wide cards, like the Apple TV) or
+          `coverFlow` (the game's 2D box facing you between the others
+          turned toward it; with `box3D` tiles, their 3D boxes), `shelf`
+          (the games standing on shelves in the `surface` color),
+          `unboxed` (the game's box with its disc or cartridge coming out,
+          a row of the others below) or `cabinet` (a wheel beside an
+          arcade cabinet: the game's marquee, its video in its bezel).
         - `palette`: `background`, `surface` (panels, cards), `accent` (focus),
           `text`, `secondaryText`, `favorite`. Colors are `#RRGGBB` or
           `#RRGGBBAA`.
@@ -216,7 +222,8 @@ final class CabinetThemeStore {
           (`top`, `bottom`: where the grid's panel puts it), `side`
           (`leading`, `trailing`: the grid's panel and the game page's
           art and facts), `showsMetadata`,
-          `showsDescription`, `descriptionLines`.
+          `showsDescription`, `descriptionLines`, `showsPhysicalMedia` (the
+          cartridge or disc at the corner of the box on a game's page).
         - `header`: `showsLogos` (systems as logos), `showsClock`,
           `showsGameCount`.
         - `menu`: the menu Start opens. `position` (`center`, `leading`,
@@ -272,6 +279,10 @@ extension CabinetTheme.Layout {
         case .wheel: String(localized: "Wheel")
         case .list: String(localized: "List")
         case .hero: String(localized: "Hero")
+        case .coverFlow: String(localized: "Cover Flow")
+        case .shelf: String(localized: "Shelf")
+        case .unboxed: String(localized: "Unboxed")
+        case .cabinet: String(localized: "Arcade Cabinet")
         }
     }
 
@@ -282,6 +293,10 @@ extension CabinetTheme.Layout {
         case .wheel: String(localized: "A wheel of logos beside the game's video")
         case .list: String(localized: "A list of titles beside the game's art and details")
         case .hero: String(localized: "The game's art filling the screen over a row of wide cards")
+        case .coverFlow: String(localized: "The game's 2D box between the others' 3D boxes, turned toward it")
+        case .shelf: String(localized: "The games standing on shelves, the chosen one pulled forward")
+        case .unboxed: String(localized: "The game's box with its disc or cartridge coming out")
+        case .cabinet: String(localized: "A wheel of logos beside an arcade cabinet with the game's marquee and bezel")
         }
     }
 }

@@ -155,7 +155,9 @@ struct SteamStoreTests {
           "genres":[{"id":"1","description":"Action"},{"id":"23","description":"Indie"}],
           "release_date":{"coming_soon":false,"date":"16 Jul, 2026"},
           "header_image":"https://example.com/header.jpg",
-          "screenshots":[{"id":0,"path_full":"https://example.com/ss1.jpg"}]
+          "screenshots":[{"id":0,"path_full":"https://example.com/ss1.jpg"}],
+          "movies":[{"id":1,"hls_h264":"https://example.com/1/master.m3u8"},
+                    {"id":2,"hls_h264":"https://example.com/2/master.m3u8","highlight":true}]
         }}}
         """
         let info = try #require(SteamStore.details(from: Data(json.utf8), appID: "3808690"))
@@ -165,6 +167,8 @@ struct SteamStoreTests {
         #expect(info.genre == "Action, Indie")
         #expect(info.coverURL?.absoluteString == "https://example.com/header.jpg")
         #expect(info.screenshotURL?.absoluteString == "https://example.com/ss1.jpg")
+        // The highlighted trailer, not the first.
+        #expect(info.trailerURL?.absoluteString == "https://example.com/2/master.m3u8")
         let date = try #require(info.releaseDate)
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "UTC")!
@@ -187,6 +191,16 @@ struct SteamStoreTests {
         #expect(assets.cover?.absoluteString == "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3808690/bb/library_capsule_2x.jpg?t=1")
         #expect(assets.hero?.absoluteString == "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3808690/cc/library_hero.jpg?t=1")
         #expect(assets.logo == nil)
+    }
+
+    @Test func findsTheLibraryLogoInTheAppInfo() {
+        let json = """
+        {"data":{"3808690":{"common":{"library_assets_full":{"library_logo":{
+          "image":{"english":"992f/logo.png"},"image2x":{"english":"992f/logo_2x.png"}}}}}}}
+        """
+        #expect(SteamStore.libraryLogo(fromAppInfo: Data(json.utf8), appID: "3808690")?.absoluteString
+                == "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3808690/992f/logo_2x.png")
+        #expect(SteamStore.libraryLogo(fromAppInfo: Data(#"{"data":{"1":{"common":{}}}}"#.utf8), appID: "1") == nil)
     }
 
     @Test func readsBothDateOrders() {
@@ -213,5 +227,41 @@ struct SteamGridDBTests {
         #expect(url.hasPrefix("https://www.steamgriddb.com/api/v2/grids/steam/3808690?"))
         #expect(url.contains("dimensions=600x900"))
         #expect(!SteamGridDB.requestURL(.logo, appID: "1").absoluteString.contains("dimensions"))
+    }
+}
+
+struct SteamTrailerTests {
+    private let base = URL(string: "https://example.com/trailers/1/hls_264_master.m3u8")!
+
+    @Test func picksTheTallestStreamUpToTheLimitAndItsAudio() throws {
+        let master = """
+        #EXTM3U
+        #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Default",DEFAULT=YES,URI="hls_264_4_audio.m3u8"
+        #EXT-X-STREAM-INF:BANDWIDTH=5800000,CODECS="avc1.640029,mp4a.40.2",RESOLUTION=1920x1080,AUDIO="audio"
+        hls_264_0_video.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=2600000,RESOLUTION=1280x720,AUDIO="audio"
+        hls_264_1_video.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=640x360,AUDIO="audio"
+        hls_264_3_video.m3u8
+        """
+        let streams = try #require(SteamTrailer.streams(inMaster: master, base: base, maxHeight: 720))
+        #expect(streams.video.absoluteString == "https://example.com/trailers/1/hls_264_1_video.m3u8")
+        #expect(streams.audio?.absoluteString == "https://example.com/trailers/1/hls_264_4_audio.m3u8")
+        // Nothing short enough: the shortest there is.
+        #expect(SteamTrailer.streams(inMaster: master, base: base, maxHeight: 240)?.video.lastPathComponent == "hls_264_3_video.m3u8")
+    }
+
+    @Test func listsTheInitSegmentFirst() {
+        let playlist = """
+        #EXTM3U
+        #EXT-X-MAP:URI="dash_h264/init-stream0.m4s"
+        #EXTINF:3
+        dash_h264/chunk-stream0-00001.m4s
+        #EXTINF:3
+        dash_h264/chunk-stream0-00002.m4s
+        #EXT-X-ENDLIST
+        """
+        let segments = SteamTrailer.segments(inPlaylist: playlist, base: base).map(\.lastPathComponent)
+        #expect(segments == ["init-stream0.m4s", "chunk-stream0-00001.m4s", "chunk-stream0-00002.m4s"])
     }
 }

@@ -46,19 +46,29 @@ enum SteamImport {
         await fetchArtwork(in: folder, scanCoordinator: scanCoordinator)
     }
 
-    /// Store info and library artwork for each Steam game missing any,
-    /// from the Steam store, then SteamGridDB (with an API key) for the
-    /// pictures the store doesn't have. Running the import again fills in
-    /// what's still missing.
+    /// Store info, library artwork and a trailer for each Steam game
+    /// missing any, from the Steam store, then SteamGridDB (with an API
+    /// key) for the pictures the store doesn't have. Running the import
+    /// again fills in what's still missing, and replaces logos at the
+    /// store's small size.
     static func fetchArtwork(in folder: URL, scanCoordinator: ScanCoordinator) async {
-        let kinds: [MediaKind] = [.covers, .fanart, .logos, .screenshots]
+        let kinds: [MediaKind] = [.covers, .fanart, .logos, .screenshots, .videos]
+        let gridKey = SteamGridDBCredentialsStore().trimmedKey
         let shortcuts = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? [])
             .filter { $0.pathExtension.lowercased() == SteamLibrary.shortcutExtension }
         let wanted = shortcuts.map { shortcut in
-            (shortcut, kinds.filter { MediaFolder.existingFiles(base: base(shortcut, in: folder, kind: $0)).isEmpty })
+            (shortcut, kinds.filter { kind in
+                let existing = MediaFolder.existingFiles(base: base(shortcut, in: folder, kind: kind))
+                // A logo at the store's small size, 640 by 360: a sharper
+                // one, once there is one.
+                if kind == .logos, let logo = existing.first,
+                   let size = MediaQuality.size(ofImage: logo), max(size.width, size.height) <= Self.storeLogoWidth {
+                    return true
+                }
+                return existing.isEmpty
+            })
         }.filter { !$0.1.isEmpty }
         guard !wanted.isEmpty else { return }
-        let gridKey = SteamGridDBCredentialsStore().trimmedKey
 
         let imported = await Task.detached {
             var imported: [String: LibraryStore.ImportedInfo] = [:]
@@ -91,12 +101,21 @@ enum SteamImport {
                 if await store(.fanart, [info.heroURL]) == nil {
                     _ = await store(.fanart, [await grid(.hero, for: .fanart)])
                 }
-                if await store(.logos, [info.logoURL]) == nil {
-                    _ = await store(.logos, [await grid(.logo, for: .logos)])
+                // The library's own logo, else SteamGridDB's best-rated,
+                // else the small classic one.
+                _ = await store(.logos, [info.logoURL, await grid(.logo, for: .logos), SteamStore.classicLogoURL(appID: appID)])
+                var video: String?
+                if missing.contains(.videos), let trailer = info.trailerURL {
+                    let destination = base(shortcut, in: folder, kind: .videos).appendingPathExtension("mp4")
+                    try? FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    if (try? await SteamTrailer.save(master: trailer, to: destination, fetch: download)) != nil {
+                        video = destination.path
+                    }
                 }
                 imported[shortcut.path] = LibraryStore.ImportedInfo(
                     description: info.description, developer: info.developer, publisher: info.publisher,
-                    genre: info.genre, releaseDate: info.releaseDate, coverPath: cover, screenshotPath: screenshot
+                    genre: info.genre, releaseDate: info.releaseDate, coverPath: cover, screenshotPath: screenshot,
+                    videoPath: video
                 )
             }
             return imported
@@ -105,7 +124,10 @@ enum SteamImport {
         AppLog.post(.info, "Added Steam artwork and info for \(changed) games.")
     }
 
-    private static func base(_ shortcut: URL, in folder: URL, kind: MediaKind) -> URL {
+    /// The width of the store's library logos.
+    private nonisolated static let storeLogoWidth: CGFloat = 640
+
+    private nonisolated static func base(_ shortcut: URL, in folder: URL, kind: MediaKind) -> URL {
         MediaFolder.baseURL(forSystemFolder: folder, romRelativePath: shortcut.lastPathComponent, kind: kind)
     }
 

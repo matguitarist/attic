@@ -3,7 +3,7 @@ import ImageIO
 import Observation
 
 /// Bumped when a media file is replaced at the same path (a re-scrape
-/// writes `covers/<rom>.heic` again), so views showing it load it anew:
+/// writes `2dboxes/<rom>.heic` again), so views showing it load it anew:
 /// the path alone doesn't change.
 @MainActor
 @Observable

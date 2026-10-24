@@ -596,12 +596,32 @@
         }
       }
     },
+    "%lld files put in place.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers mis en place."
+          }
+        }
+      }
+    },
     "%lld files that aren't games for their system were left where they are.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "%lld fichiers qui ne sont pas des jeux pour leur système sont restés à leur place."
+          }
+        }
+      }
+    },
+    "%lld files were kept: EmuMovies' weren't sharper.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers ont été gardés : ceux d’EmuMovies n’étaient pas plus nets."
           }
         }
       }
@@ -623,11 +643,22 @@
       }
     },
     "%lld files, renamed ES-DE style (Game-boxart.png becomes covers/Game.png).": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "%lld fichiers, renommés à la manière d’ES-DE (Jeu-boxart.png devient covers/Jeu.png)."
+          }
+        }
+      }
+    },
+    "%lld files, renamed after their games (Game-boxart.png becomes 2dboxes/Game.png).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers, renommés d’après leur jeu (Jeu-boxart.png devient 2dboxes/Jeu.png)."
           }
         }
       }
@@ -686,6 +717,32 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld de fichiers isolés"
+          }
+        }
+      }
+    },
+    "%lld game videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld vidéos de jeux"
+          }
+        }
+      }
+    },
+    "%lld game videos + %lld to improve": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld game videos + %2$lld to improve"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld vidéos de jeux + %lld à améliorer"
           }
         }
       }
@@ -1700,6 +1757,16 @@
         }
       }
     },
+    "%lld to improve": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld à améliorer"
+          }
+        }
+      }
+    },
     "%lld tracks": {
       "localizations": {
         "fr": {
@@ -1951,6 +2018,16 @@
         }
       }
     },
+    "2D Boxes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîtes 2D"
+          }
+        }
+      }
+    },
     "3 or more": {
       "localizations": {
         "fr": {
@@ -1967,6 +2044,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Boîte 3D"
+          }
+        }
+      }
+    },
+    "3D Boxes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîtes 3D"
           }
         }
       }
@@ -2162,6 +2249,16 @@
         }
       }
     },
+    "A wheel of logos beside an arcade cabinet with the game's marquee and bezel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une roue de logos à côté d’une borne d’arcade avec le fronton et le cadre du jeu"
+          }
+        }
+      }
+    },
     "A wheel of logos beside the game's video": {
       "localizations": {
         "fr": {
@@ -2208,6 +2305,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "À propos"
+          }
+        }
+      }
+    },
+    "About %@ to download": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Environ %@ à télécharger"
           }
         }
       }
@@ -2493,6 +2600,16 @@
         }
       }
     },
+    "Add your login to get media from EmuMovies.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoutez votre identifiant pour obtenir des médias d’EmuMovies."
+          }
+        }
+      }
+    },
     "Added automatically": {
       "localizations": {
         "fr": {
@@ -2761,6 +2878,16 @@
         }
       }
     },
+    "Arcade Cabinet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Borne d’arcade"
+          }
+        }
+      }
+    },
     "Arcade DATs": {
       "localizations": {
         "fr": {
@@ -2811,6 +2938,16 @@
         }
       }
     },
+    "Artwork comes in one pack per system and kind: Attic downloads it, keeps the pictures of your games and deletes the rest.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les illustrations viennent en un pack par système et par type : Attic le télécharge, garde les images de vos jeux et supprime le reste."
+          }
+        }
+      }
+    },
     "Assigned Systems": {
       "localizations": {
         "fr": {
@@ -2827,6 +2964,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Attribuer…"
+          }
+        }
+      }
+    },
+    "At the corner of the box on a game's page": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au coin de la boîte sur la page d’un jeu"
           }
         }
       }
@@ -3111,12 +3258,65 @@
         }
       }
     },
+    "Beside ROMs in the Emulation folder. Each file is named after its game's ROM file: %@/%@/%@/Game (USA).png for ROMs/%@/Game (USA).zip.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Beside ROMs in the Emulation folder. Each file is named after its game's ROM file: %1$@/%2$@/%3$@/Game (USA).png for ROMs/%4$@/Game (USA).zip."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À côté de ROMs dans le dossier Emulation. Chaque fichier porte le nom du fichier ROM de son jeu : %1$@/%2$@/%3$@/Game (USA).png pour ROMs/%4$@/Game (USA).zip."
+          }
+        }
+      }
+    },
+    "Beside ROMs in the Emulation folder. Each file is named after its game's ROM file: %@/%@/covers/Game (USA).png for ROMs/%@/Game (USA).zip.": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Beside ROMs in the Emulation folder. Each file is named after its game's ROM file: %1$@/%2$@/covers/Game (USA).png for ROMs/%3$@/Game (USA).zip."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À côté de ROMs dans le dossier Emulation. Chaque fichier porte le nom du fichier ROM de son jeu : %1$@/%2$@/covers/Game (USA).png pour ROMs/%3$@/Game (USA).zip."
+          }
+        }
+      }
+    },
+    "Bezels": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contours d’écran"
+          }
+        }
+      }
+    },
     "Blue": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Bleu"
+          }
+        }
+      }
+    },
+    "Boards": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartes d’arcade"
           }
         }
       }
@@ -3342,6 +3542,16 @@
         }
       }
     },
+    "Cards": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartes"
+          }
+        }
+      }
+    },
     "Carousel": {
       "localizations": {
         "fr": {
@@ -3362,12 +3572,42 @@
         }
       }
     },
+    "Cartridges": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartouches"
+          }
+        }
+      }
+    },
+    "Cartridges & Discs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartouches et disques"
+          }
+        }
+      }
+    },
     "Carts are .p8 or .p8.png files, from the PICO-8 website (Splore) or itch.io. Retro8 runs most of them; the official PICO-8 app runs all.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les cartouches sont des fichiers .p8 ou .p8.png, du site de PICO-8 (Splore) ou d’itch.io. Retro8 en fait tourner la plupart ; l’app PICO-8 officielle les fait toutes tourner."
+          }
+        }
+      }
+    },
+    "Cassettes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cassettes"
           }
         }
       }
@@ -3398,6 +3638,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifier les fichiers BIOS…"
+          }
+        }
+      }
+    },
+    "Check Login": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier l’identifiant"
           }
         }
       }
@@ -3652,6 +3902,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez des jeux, ou des dossiers de jeux. Ils sont rangés dans votre dossier de ROMs avec leurs jaquettes et vidéos."
+          }
+        }
+      }
+    },
+    "Choose the systems to get media for.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez les systèmes pour lesquels obtenir des médias."
           }
         }
       }
@@ -3966,6 +4226,26 @@
         }
       }
     },
+    "Connected. Use Tools › Get Media from EmuMovies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté. Utilisez Outils › Obtenir des médias d’EmuMovies…"
+          }
+        }
+      }
+    },
+    "Connecting…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion…"
+          }
+        }
+      }
+    },
     "Consoles": {
       "localizations": {
         "fr": {
@@ -4233,6 +4513,26 @@
         }
       }
     },
+    "Couldn't reach EmuMovies' server.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de joindre le serveur d’EmuMovies."
+          }
+        }
+      }
+    },
+    "Couldn't reach EmuMovies' server: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de joindre le serveur d’EmuMovies : %@"
+          }
+        }
+      }
+    },
     "Couldn't rebuild %@: a chip couldn't be read, or the zip couldn't be written. Those sets were left as they were, and so were the loose files.": {
       "localizations": {
         "fr": {
@@ -4299,6 +4599,16 @@
         }
       }
     },
+    "Cover Flow": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cover Flow"
+          }
+        }
+      }
+    },
     "Cover Size": {
       "localizations": {
         "fr": {
@@ -4345,6 +4655,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Créer un compte"
+          }
+        }
+      }
+    },
+    "Create an account on emumovies.com": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer un compte sur emumovies.com"
           }
         }
       }
@@ -4849,6 +5169,26 @@
         }
       }
     },
+    "Discs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disques"
+          }
+        }
+      }
+    },
+    "Disks": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disquettes"
+          }
+        }
+      }
+    },
     "Dismiss": {
       "localizations": {
         "fr": {
@@ -4985,6 +5325,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Télécharge le DAT actuel de FinalBurn Neo, pour vérifier selon la dernière version du cœur."
+          }
+        }
+      }
+    },
+    "Downloads box art, logos, fan art, screenshots, manuals and system videos for your games from EmuMovies, with your EmuMovies login.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharge jaquettes, logos, fonds, captures d’écran, manuels et vidéos de système pour vos jeux depuis EmuMovies, avec votre identifiant EmuMovies."
           }
         }
       }
@@ -5229,6 +5579,46 @@
         }
       }
     },
+    "EmuMovies": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EmuMovies"
+          }
+        }
+      }
+    },
+    "EmuMovies has box art, logos, fan art, screenshots, manuals and system videos for most systems. Its file server takes your EmuMovies forum login; a free account gets the artwork.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EmuMovies a des jaquettes, logos, fonds, captures d’écran, manuels et vidéos de système pour la plupart des systèmes. Son serveur de fichiers prend votre identifiant du forum EmuMovies ; un compte gratuit donne accès aux illustrations."
+          }
+        }
+      }
+    },
+    "EmuMovies has nothing for the systems in your library.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EmuMovies n’a rien pour les systèmes de votre bibliothèque."
+          }
+        }
+      }
+    },
+    "EmuMovies refused this username or password.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EmuMovies a refusé ce nom d’utilisateur ou ce mot de passe."
+          }
+        }
+      }
+    },
     "Emulation Folder": {
       "localizations": {
         "fr": {
@@ -5305,6 +5695,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Erreurs"
+          }
+        }
+      }
+    },
+    "Europe": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Europe"
           }
         }
       }
@@ -5938,6 +6338,16 @@
         }
       }
     },
+    "Game Videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéos des jeux"
+          }
+        }
+      }
+    },
     "Game menu": {
       "localizations": {
         "fr": {
@@ -6050,6 +6460,38 @@
         }
       }
     },
+    "Games are matched by file name, then by title. 2D and 3D boxes, cartridges and logos are scaled to 1400 pixels at most, fan art to 1920, and saved as HEIC.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont associés par nom de fichier, puis par titre. Les boîtes 2D et 3D, cartouches et logos sont réduits à 1400 pixels au plus, le fan art à 1920, et enregistrés en HEIC."
+          }
+        }
+      }
+    },
+    "Games are matched by file name, then by title. Covers, 3D boxes and logos are scaled to 1400 pixels at most, fan art to 1920, and saved as HEIC.": {
+      "extractionState": "stale",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont associés par nom de fichier, puis par titre. Les jaquettes, boîtes 3D et logos sont réduits à 1400 pixels au plus, le fan art à 1920, et enregistrés en HEIC."
+          }
+        }
+      }
+    },
+    "Games are matched by file name, then by title. Covers, 3D boxes, logos and fan art are scaled to 1400 pixels at most and saved as HEIC.": {
+      "extractionState": "stale",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux sont associés par nom de fichier, puis par titre. Jaquettes, boîtes 3D, logos et fonds sont réduits à 1400 pixels au plus et enregistrés en HEIC."
+          }
+        }
+      }
+    },
     "Games are matched by file name. Covers come from each game's thumbnail (the box), screenshots from its image, logos from its marquee (where RetroBat and Batocera keep them); covers, logos and fan art are saved as HEIC when that's smaller.": {
       "localizations": {
         "fr": {
@@ -6150,6 +6592,36 @@
         }
       }
     },
+    "Get Media": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir les médias"
+          }
+        }
+      }
+    },
+    "Get Media from EmuMovies": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir des médias d’EmuMovies"
+          }
+        }
+      }
+    },
+    "Get Media from EmuMovies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir des médias d’EmuMovies…"
+          }
+        }
+      }
+    },
     "Get an API key on steamgriddb.com": {
       "localizations": {
         "fr": {
@@ -6176,6 +6648,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Premiers pas"
+          }
+        }
+      }
+    },
+    "Getting media from EmuMovies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtention des médias d’EmuMovies…"
           }
         }
       }
@@ -6931,6 +7413,16 @@
         }
       }
     },
+    "Keep it: only games missing something get it": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les garder : seuls les jeux à qui il manque quelque chose le reçoivent"
+          }
+        }
+      }
+    },
     "Keeps games in ROMs and their media in Media, and moves what other apps left behind to the Trash. You see a report of every change before anything happens.": {
       "localizations": {
         "fr": {
@@ -7258,6 +7750,16 @@
         }
       }
     },
+    "Login": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identifiant"
+          }
+        }
+      }
+    },
     "Logo": {
       "localizations": {
         "fr": {
@@ -7339,6 +7841,16 @@
         }
       }
     },
+    "Looking on EmuMovies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche sur EmuMovies…"
+          }
+        }
+      }
+    },
     "Looking through the ROMs folders…": {
       "localizations": {
         "fr": {
@@ -7410,6 +7922,16 @@
         }
       }
     },
+    "Manuals": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manuels"
+          }
+        }
+      }
+    },
     "Manufacturer": {
       "localizations": {
         "fr": {
@@ -7420,12 +7942,42 @@
         }
       }
     },
+    "Marquees": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frontons"
+          }
+        }
+      }
+    },
+    "Media": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias"
+          }
+        }
+      }
+    },
     "Media Attic doesn't show": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Médias qu’Attic n’affiche pas"
+          }
+        }
+      }
+    },
+    "Media Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier des médias"
           }
         }
       }
@@ -7446,6 +7998,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Médias de jeux absents"
+          }
+        }
+      }
+    },
+    "Media your games already have": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias que vos jeux ont déjà"
           }
         }
       }
@@ -8695,6 +9257,17 @@
         }
       }
     },
+    "Otherwise only the games missing something get it. The files replaced go to the Trash.": {
+      "extractionState": "stale",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sinon, seuls les jeux auxquels il manque quelque chose le reçoivent. Les fichiers remplacés vont à la corbeille."
+          }
+        }
+      }
+    },
     "PCSX2 needs a PS2 BIOS dump in the BIOS folder's pcsx2/bios folder (any region). Dumps work best as .chd or .iso.": {
       "localizations": {
         "fr": {
@@ -8711,6 +9284,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux et le firmware PS Vita ont besoin de Vita3K : installez-le dans Réglages › Émulateurs, puis ajoutez-les de nouveau."
+          }
+        }
+      }
+    },
+    "Packs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packs"
           }
         }
       }
@@ -8787,6 +9370,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Images et vidéo"
+          }
+        }
+      }
+    },
+    "Pictures under 1000 pixels and videos under 480 lines are small; each is compared with EmuMovies' once downloaded and kept unless that one is sharper. Files replaced go to the Trash.": {
+      "extractionState": "stale",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les images de moins de 1000 pixels et les vidéos de moins de 480 lignes sont petites ; chacune est comparée à celle d’EmuMovies une fois téléchargée, et gardée sauf si celle-ci est plus nette. Les fichiers remplacés vont à la Corbeille."
           }
         }
       }
@@ -9421,6 +10015,16 @@
         }
       }
     },
+    "Ready.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt."
+          }
+        }
+      }
+    },
     "Rebuild": {
       "localizations": {
         "fr": {
@@ -9853,6 +10457,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remplacer les infos existantes"
+          }
+        }
+      }
+    },
+    "Replace it all": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout remplacer"
+          }
+        }
+      }
+    },
+    "Replace small pictures and videos when EmuMovies' are sharper": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer les petites images et vidéos quand celles d’EmuMovies sont plus nettes"
           }
         }
       }
@@ -10720,6 +11344,16 @@
         }
       }
     },
+    "Server": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serveur"
+          }
+        }
+      }
+    },
     "Set Up All Systems": {
       "localizations": {
         "fr": {
@@ -10826,6 +11460,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pixels nets"
+          }
+        }
+      }
+    },
+    "Shelf": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Étagère"
           }
         }
       }
@@ -10991,6 +11635,16 @@
         }
       }
     },
+    "Show the cartridge or disc": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Montrer la cartouche ou le disque"
+          }
+        }
+      }
+    },
     "Show the controller's buttons": {
       "localizations": {
         "fr": {
@@ -11111,6 +11765,16 @@
         }
       }
     },
+    "Small means fan art below 1920 × 1080, covers and boxes under 1000 pixels, logos under 600 and videos under 480 lines. Each is compared with EmuMovies' once downloaded and kept unless that one is sharper. Files replaced go to the Trash.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petit veut dire : fan art sous 1920 × 1080, jaquettes et boîtes sous 1000 pixels, logos sous 600 et vidéos sous 480 lignes. Chacun est comparé à celui d’EmuMovies une fois téléchargé, et gardé sauf si celui-ci est plus net. Les fichiers remplacés vont à la Corbeille."
+          }
+        }
+      }
+    },
     "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.": {
       "localizations": {
         "fr": {
@@ -11137,6 +11801,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Certains de ses fichiers sont un mauvais dump ou viennent d’une autre version : %@."
+          }
+        }
+      }
+    },
+    "Some packs are split in parts, which need unar to open: install it with Homebrew (brew install unar), then look again to use them.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains packs sont découpés en plusieurs parties, qu’il faut unar pour ouvrir : installez-le avec Homebrew (brew install unar), puis relancez la recherche pour les utiliser."
           }
         }
       }
@@ -11237,6 +11911,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Activer le son"
+          }
+        }
+      }
+    },
+    "Split archives need unar: brew install unar": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les archives découpées demandent unar : brew install unar"
           }
         }
       }
@@ -11352,6 +12036,36 @@
         }
       }
     },
+    "Stop": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêter"
+          }
+        }
+      }
+    },
+    "Stopped.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêté."
+          }
+        }
+      }
+    },
+    "Stopped. %lld files were put in place before that.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêté. %lld fichiers avaient été mis en place avant."
+          }
+        }
+      }
+    },
     "Strategy": {
       "localizations": {
         "fr": {
@@ -11458,6 +12172,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Réglages du système…"
+          }
+        }
+      }
+    },
+    "System Video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo du système"
+          }
+        }
+      }
+    },
+    "System Videos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéos de système"
           }
         }
       }
@@ -11668,12 +12402,42 @@
         }
       }
     },
+    "The game's 2D box between the others' 3D boxes, turned toward it": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La boîte 2D du jeu entre les boîtes 3D des autres, tournées vers elle"
+          }
+        }
+      }
+    },
     "The game's art filling the screen over a row of wide cards": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "L’image du jeu en plein écran, au-dessus d’une rangée de cartes larges"
+          }
+        }
+      }
+    },
+    "The game's box with its disc or cartridge coming out": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La boîte du jeu, son disque ou sa cartouche en sortant"
+          }
+        }
+      }
+    },
+    "The games standing on shelves, the chosen one pulled forward": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux rangés sur des étagères, celui choisi tiré vers l’avant"
           }
         }
       }
@@ -11919,6 +12683,16 @@
         }
       }
     },
+    "Tick it to see what EmuMovies has.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cochez-le pour voir ce qu’EmuMovies a."
+          }
+        }
+      }
+    },
     "Tidy Up": {
       "localizations": {
         "fr": {
@@ -12065,6 +12839,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Taper"
+          }
+        }
+      }
+    },
+    "USA": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USA"
+          }
+        }
+      }
+    },
+    "Unboxed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déballé"
           }
         }
       }
@@ -12221,6 +13015,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mise à jour de %@…"
+          }
+        }
+      }
+    },
+    "Updating the library…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise à jour de la bibliothèque…"
           }
         }
       }
@@ -12563,6 +13367,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vita3K utilise sa propre configuration de manette. Configurez-la une fois dans Vita3K (Controls) — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "Waiting…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente…"
           }
         }
       }
@@ -12911,6 +13725,46 @@
         }
       }
     },
+    "board": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "carte d’arcade"
+          }
+        }
+      }
+    },
+    "card": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "carte"
+          }
+        }
+      }
+    },
+    "cartridge": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "cartouche"
+          }
+        }
+      }
+    },
+    "cassette": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "cassette"
+          }
+        }
+      }
+    },
     "chdman couldn't convert %@. Its files haven't changed.": {
       "localizations": {
         "fr": {
@@ -12947,6 +13801,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "développeur"
+          }
+        }
+      }
+    },
+    "disc": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "disque"
+          }
+        }
+      }
+    },
+    "disk": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "disquette"
           }
         }
       }
@@ -13037,6 +13911,16 @@
         }
       }
     },
+    "opening": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ouverture"
+          }
+        }
+      }
+    },
     "players": {
       "localizations": {
         "fr": {
@@ -13103,6 +13987,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "shadPS4 utilise sa propre configuration de manette — les réglages de manette d’Attic ne s’appliquent pas."
+          }
+        }
+      }
+    },
+    "sharper system video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "vidéo du système plus nette"
+          }
+        }
+      }
+    },
+    "system video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "vidéo du système"
           }
         }
       }

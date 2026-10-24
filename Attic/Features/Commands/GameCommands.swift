@@ -190,6 +190,17 @@ struct ToolsCommands: Commands {
             .disabled(roots.isEmpty || tools.isBusy)
             .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.")
 
+            Button("Get Media from EmuMovies…") {
+                guard let server = EmuMoviesCredentialsStore().server else {
+                    settingsTab = .emuMovies
+                    openSettings()
+                    return
+                }
+                Task { await tools.analyzeEmuMovies(server: server, scanCoordinator: scanCoordinator, host: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+            .help("Downloads box art, logos, fan art, screenshots, manuals and system videos for your games from EmuMovies, with your EmuMovies login.")
+
             Button("Import Steam Games…") {
                 Task { await SteamImport.run(romsRoots: roots, scanCoordinator: scanCoordinator) }
             }

@@ -2,6 +2,7 @@ import Foundation
 import AppKit
 import AtticModels
 import AtticEmulation
+import AtticLibraryScanning
 
 /// A folder per system in ROMs (see `createSystemFolders`), each with a
 /// short `_sysinfo.txt` saying what goes
@@ -38,12 +39,24 @@ enum ROMFolderNotes {
         defaults.set(created.sorted(), forKey: createdFoldersKey)
     }
 
+    /// Media folders already made ("<system>/<kind>"), likewise.
+    static let createdMediaFoldersKey = "createdMediaFolders"
+
+    /// Makes `Media/<system>/<kind>` for every system folder, so media
+    /// copied in by hand has a place to go (see `MediaFolder.createFolders`).
+    static func createMediaFolders(romsRoots: [URL], defaults: UserDefaults = .standard) {
+        let created = Set(defaults.stringArray(forKey: createdMediaFoldersKey) ?? [])
+        let made = MediaFolder.createFolders(romsRoots: romsRoots, created: created)
+        guard !made.isEmpty else { return }
+        defaults.set(created.union(made).sorted(), forKey: createdMediaFoldersKey)
+    }
+
     /// Writes the notes into every recognized system folder under the
     /// roots, leaving files whose text hasn't changed untouched.
     static func write(romsRoots: [URL], biosDirectory: URL) {
         for (folder, systemID) in systemFolders(in: romsRoots) {
             let url = folder.appending(path: fileName)
-            let text = Self.text(for: systemID, biosDirectory: biosDirectory)
+            let text = Self.text(for: systemID, biosDirectory: biosDirectory, folderName: folder.lastPathComponent)
             if (try? String(contentsOf: url, encoding: .utf8)) == text { continue }
             try? text.write(to: url, atomically: true, encoding: .utf8)
         }
@@ -62,6 +75,17 @@ enum ROMFolderNotes {
 
     // MARK: - Text
 
+    private static func englishName(_ medium: PhysicalMedium) -> String {
+        switch medium {
+        case .cartridge: "the cartridge"
+        case .disc: "the disc"
+        case .card: "the card"
+        case .disk: "the disk"
+        case .cassette: "the cassette"
+        case .board: "the arcade board"
+        }
+    }
+
     private static func english(_ resource: LocalizedStringResource) -> String {
         var resource = resource
         resource.locale = Locale(identifier: "en")
@@ -70,7 +94,9 @@ enum ROMFolderNotes {
 
     /// In English whatever the app's language: these files outlive the
     /// app's settings and get shared along with the ROMs folder.
-    static func text(for systemID: CanonicalSystemID, biosDirectory: URL) -> String {
+    /// `folderName` is the system's ROMs folder, which its media folder
+    /// is named after.
+    static func text(for systemID: CanonicalSystemID, biosDirectory: URL, folderName: String? = nil) -> String {
         var sections: [String] = []
 
         let name = SystemTaxonomy.definition(for: systemID)?.displayName ?? systemID.rawValue
@@ -108,6 +134,27 @@ enum ROMFolderNotes {
                 }
                 sections.append("BIOS, in \(biosPath):\n" + lines.joined(separator: "\n"))
             }
+        }
+
+        if let folder = folderName ?? SystemTaxonomy.definition(for: systemID)?.esdeShortName {
+            let kinds = MediaFolder.kinds(for: systemID).map { kind -> String in
+                let what = switch kind {
+                case .covers: "box art, the front of the box"
+                case .boxes3D: "the box in 3D"
+                case .physicalMedia: PhysicalMedium.of(systemID).map(englishName) ?? "the cartridge or disc"
+                case .logos: "the game's logo, on a transparent background"
+                case .marquees: "the cabinet's lit header"
+                case .bezels: "art framing the game's picture, as a PNG with a transparent window"
+                case .fanart: "wide art for behind the game"
+                case .screenshots: "a picture of the game playing"
+                case .videos: "a short video of the game playing"
+                case .manuals: "the manual, as a PDF"
+                }
+                return "- \(kind.rawValue): \(what)"
+            }
+            sections.append("Media for these games goes in \(EmulationLayout.media)/\(folder)/ beside the ROMs folder, one folder per kind,"
+                + " each file named after its game's ROM file (\(EmulationLayout.media)/\(folder)/\(MediaKind.covers.rawValue)/Game (USA).png):\n"
+                + kinds.joined(separator: "\n"))
         }
 
         if let notes = SystemHelpContent.info(for: systemID)?.notes, !notes.isEmpty {

@@ -15,6 +15,8 @@ struct LibraryBrowserView: View {
     /// A search looks through all of them instead (see `GameGridView`).
     @State private var selection: LibrarySelection? = .favorites
     @State private var searchText = ""
+    /// The grid column's, for how much room its toolbar has.
+    @State private var gridWidth: CGFloat = 0
     @State private var sortOrder: GameSortOrder = .title
     /// Collections keep their own order, by system then release date
     /// unless changed, so a series reads in order.
@@ -69,6 +71,7 @@ struct LibraryBrowserView: View {
                 .background(.bar)
             }
             .navigationSplitViewColumnWidth(min: 380, ideal: 600)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { gridWidth = $0 }
             .navigationTitle(selectionTitle)
             // The sidebar already says what's shown, and the title took
             // up to a third of the toolbar, whose width is the grid
@@ -294,6 +297,9 @@ struct LibraryBrowserView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
+        // The controls at the trailing end, where the title used to push
+        // them, rather than bunched against the sidebar.
+        ToolbarSpacer(.flexible)
         ToolbarItem {
             Slider(value: $cellScale, in: Self.cellScaleRange) {
                 Text("Cover Size")
@@ -303,7 +309,9 @@ struct LibraryBrowserView: View {
                 Image(systemName: "photo").imageScale(.large)
             }
             .labelsHidden()
-            .frame(width: 96)
+            // Narrow only when the grid is, so the columns still fit a
+            // small screen.
+            .frame(width: gridWidth >= 900 ? 170 : 96)
             // A custom view gets no inset of its own inside the toolbar's
             // glass capsule (unlike buttons), so without this the small/
             // large picture labels sit flush against its rounded ends.

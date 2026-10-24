@@ -26,9 +26,9 @@ struct GameRenamingTests {
 
     @Test func takesMediaGamelistAndSavesAlong() throws {
         let rom = try write("ROMs/snes/Wild Snake (USA).sfc")
-        _ = try write("Media/snes/covers/Wild Snake (USA).heic")
+        _ = try write("Media/snes/2dboxes/Wild Snake (USA).heic")
         _ = try write("Media/snes/manuals/Wild Snake (USA).pdf")
-        _ = try write("Media/snes/covers/Wild Snake (USA) (Beta).heic")
+        _ = try write("Media/snes/2dboxes/Wild Snake (USA) (Beta).heic")
         _ = try write("Gamelists/snes/gamelist.xml", "<gameList><game><path>./Wild Snake (USA).sfc</path><name>Wild Snake</name></game></gameList>")
         _ = try write("Saves/snes/Wild Snake (USA).srm")
         _ = try write("States/snes/Wild Snake (USA).state1")
@@ -38,12 +38,12 @@ struct GameRenamingTests {
 
         #expect(moved?.to.lastPathComponent == "WildSnake (USA).sfc")
         #expect(exists("ROMs/snes/WildSnake (USA).sfc") && !exists("ROMs/snes/Wild Snake (USA).sfc"))
-        #expect(exists("Media/snes/covers/WildSnake (USA).heic"))
+        #expect(exists("Media/snes/2dboxes/WildSnake (USA).heic"))
         #expect(exists("Media/snes/manuals/WildSnake (USA).pdf"))
         // Another game's media stays.
-        #expect(exists("Media/snes/covers/Wild Snake (USA) (Beta).heic"))
-        let cover = root.appending(path: "Media/snes/covers/Wild Snake (USA).heic").resolvingSymlinksInPath().path
-        #expect(moved?.media[cover] == root.appending(path: "Media/snes/covers/WildSnake (USA).heic").resolvingSymlinksInPath().path)
+        #expect(exists("Media/snes/2dboxes/Wild Snake (USA) (Beta).heic"))
+        let cover = root.appending(path: "Media/snes/2dboxes/Wild Snake (USA).heic").resolvingSymlinksInPath().path
+        #expect(moved?.media[cover] == root.appending(path: "Media/snes/2dboxes/WildSnake (USA).heic").resolvingSymlinksInPath().path)
         #expect(exists("Saves/snes/WildSnake (USA).srm"))
         #expect(exists("States/snes/WildSnake (USA).state1"))
         let gamelist = try String(contentsOf: root.appending(path: "Gamelists/snes/gamelist.xml"), encoding: .utf8)

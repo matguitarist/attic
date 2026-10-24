@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import AtticPersistence
+import AtticLibraryScanning
 
 @main
 struct AtticApp: App {
@@ -48,6 +49,8 @@ struct AtticApp: App {
         // cores or launches a game.
         emulationFolderStore.prepare(romsRoots: romsRootsStore.rootURLs)
         Self.followRenamedFolders(emulationFolderStore.renamedFolders, in: container)
+        // Box art's folder became 2dboxes in 2.8.
+        Self.followRenamedFolders(MediaFolder.adoptRenamedKinds(romsRoots: romsRootsStore.rootURLs), in: container)
         LegacyRomsBoxMigration.migrateFiles(emulationFolder: emulationFolderStore.folder, modelContainer: container)
         AppSupportMediaMigration.run(in: container)
         _romsRootsStore = State(initialValue: romsRootsStore)
@@ -109,6 +112,7 @@ struct AtticApp: App {
                 .task(id: romsRootsStore.rootURLs) {
                     emulationFolderStore.prepare(romsRoots: romsRootsStore.rootURLs)
                     ROMFolderNotes.createSystemFolders(romsRoots: romsRootsStore.rootURLs)
+                    ROMFolderNotes.createMediaFolders(romsRoots: romsRootsStore.rootURLs)
                     ROMFolderNotes.write(romsRoots: romsRootsStore.rootURLs, biosDirectory: emulationFolderStore.folder.bios)
                     retroArchSettingsStore.refresh()
                     controllerSettingsStore.loadProfiles()

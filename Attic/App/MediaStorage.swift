@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import AtticPersistence
+import AtticModels
 import AtticLibraryScanning
 
 extension Game {
@@ -36,6 +37,15 @@ extension Game {
 
     /// Its rendered 3D box, likewise.
     var box3DURL: URL? { mediaURL(.boxes3D) }
+
+    /// Its cartridge, disc or board, likewise.
+    var physicalMediaURL: URL? { mediaURL(.physicalMedia) }
+
+    /// Its arcade marquee, likewise.
+    var marqueeURL: URL? { mediaURL(.marquees) }
+
+    /// The frame around its picture, likewise.
+    var bezelURL: URL? { mediaURL(.bezels) }
 
     /// Media kept by file alone, with nothing in the library pointing to it.
     private func mediaURL(_ kind: MediaKind) -> URL? {
@@ -110,5 +120,54 @@ enum AppSupportMediaMigration {
     private static func moved(_ url: URL?, for game: Game, kind: MediaKind) -> URL? {
         guard let url, let data = try? Data(contentsOf: url) else { return nil }
         return try? game.storeMedia(data, fileExtension: url.pathExtension, kind: kind)
+    }
+}
+
+extension PhysicalMedium {
+    /// "Cartridges", "Discs"… for a system's folder of them.
+    var title: String {
+        switch self {
+        case .cartridge: String(localized: "Cartridges")
+        case .disc: String(localized: "Discs")
+        case .card: String(localized: "Cards")
+        case .disk: String(localized: "Disks")
+        case .cassette: String(localized: "Cassettes")
+        case .board: String(localized: "Boards")
+        }
+    }
+
+    /// "cartridge", "disc"… for one game's.
+    var singularTitle: String {
+        switch self {
+        case .cartridge: String(localized: "cartridge")
+        case .disc: String(localized: "disc")
+        case .card: String(localized: "card")
+        case .disk: String(localized: "disk")
+        case .cassette: String(localized: "cassette")
+        case .board: String(localized: "board")
+        }
+    }
+}
+
+extension MediaKind {
+    var title: String {
+        switch self {
+        case .covers: String(localized: "2D Boxes")
+        case .boxes3D: String(localized: "3D Boxes")
+        case .physicalMedia: String(localized: "Cartridges & Discs")
+        case .logos: String(localized: "Logos")
+        case .marquees: String(localized: "Marquees")
+        case .bezels: String(localized: "Bezels")
+        case .fanart: String(localized: "Fan Art")
+        case .screenshots: String(localized: "Screenshots")
+        case .videos: String(localized: "Videos")
+        case .manuals: String(localized: "Manuals")
+        }
+    }
+
+    /// The same, with a system's own medium: "Cartridges" for the NES.
+    func title(for system: CanonicalSystemID) -> String {
+        guard self == .physicalMedia, let medium = PhysicalMedium.of(system) else { return title }
+        return medium.title
     }
 }

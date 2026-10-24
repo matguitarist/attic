@@ -29,7 +29,7 @@ struct MediaTidierTests {
         try touch(roms.appending(path: "x68000/_sysinfo.txt"))
         try touch(roms.appending(path: "pc98/systeminfo.txt"))
         try FileManager.default.createDirectory(at: roms.appending(path: "themes"), withIntermediateDirectories: true)
-        try touch(media.appending(path: "steam/covers/Game.png"))
+        try touch(media.appending(path: "steam/2dboxes/Game.png"))
         try touch(gamelists.appending(path: "steam/gamelist.xml"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
@@ -57,7 +57,7 @@ struct MediaTidierTests {
         let plan = MediaTidier.plan(romsRoots: [roms])
         let moves = Dictionary(uniqueKeysWithValues: plan.moves.map { ($0.from.lastPathComponent, $0.to.path(percentEncoded: false)) })
         let target = media.appending(path: "neogeo").path(percentEncoded: false)
-        #expect(moves["2020bb-boxart.png"] == target + "/covers/2020bb.png")
+        #expect(moves["2020bb-boxart.png"] == target + "/2dboxes/2020bb.png")
         #expect(moves["2020bb-image.png"] == target + "/screenshots/2020bb.png")
         #expect(moves["2020bb-video.mp4"] == target + "/videos/2020bb.mp4")
         #expect(moves["2020bb-manual.pdf"] == target + "/manuals/2020bb.pdf")
@@ -81,15 +81,15 @@ struct MediaTidierTests {
         try touch(roms.appending(path: "cps1/images/1941-thumb.png"))
         let plan = MediaTidier.plan(romsRoots: [roms])
         #expect(plan.moves.map(\.to.lastPathComponent) == ["1941.png"])
-        #expect(plan.moves.first?.to.deletingLastPathComponent().lastPathComponent == "covers")
+        #expect(plan.moves.first?.to.deletingLastPathComponent().lastPathComponent == "2dboxes")
     }
 
     @Test func unusedKindsAndOrphansGo() throws {
         try touch(roms.appending(path: "snes/Game (USA).sfc"))
         try touch(roms.appending(path: "snes/Sub/Other (USA).sfc"))
-        try touch(media.appending(path: "snes/covers/Game (USA).webp"))
-        try touch(media.appending(path: "snes/covers/Sub/Other (USA).webp"))
-        try touch(media.appending(path: "snes/covers/Game (USA)_240.jpg"))
+        try touch(media.appending(path: "snes/2dboxes/Game (USA).webp"))
+        try touch(media.appending(path: "snes/2dboxes/Sub/Other (USA).webp"))
+        try touch(media.appending(path: "snes/2dboxes/Game (USA)_240.jpg"))
         try touch(media.appending(path: "snes/videos/Gone (USA).mp4"))
         try touch(media.appending(path: "snes/backcovers/Game (USA).png"))
 
@@ -139,17 +139,17 @@ struct MediaTidierTests {
     @Test func mixImagesAndTitleScreensOnlyStayAsStandIns() throws {
         try touch(roms.appending(path: "snes/Covered.sfc"))
         try touch(roms.appending(path: "snes/Bare.sfc"))
-        try touch(media.appending(path: "snes/covers/Covered.heic"))
+        try touch(media.appending(path: "snes/2dboxes/Covered.heic"))
         try touch(media.appending(path: "snes/miximages/Covered.webp"))
         try touch(media.appending(path: "snes/miximages/Bare.webp"))
         try touch(media.appending(path: "snes/titlescreens/Bare.png"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         let moves = plan.moves.map { "\($0.to.deletingLastPathComponent().lastPathComponent)/\($0.to.lastPathComponent)" }
-        #expect(Set(moves) == ["covers/Bare.webp", "screenshots/Bare.png"])
+        #expect(Set(moves) == ["2dboxes/Bare.webp", "screenshots/Bare.png"])
         #expect(Set(plan.trash.map(\.lastPathComponent)).isSuperset(of: ["miximages", "titlescreens"]))
         MediaTidier.apply(plan)
-        #expect(exists(media.appending(path: "snes/covers/Bare.webp")))
+        #expect(exists(media.appending(path: "snes/2dboxes/Bare.webp")))
         #expect(!exists(media.appending(path: "snes/miximages")))
     }
 
@@ -180,9 +180,9 @@ struct MediaTidierTests {
         try touch(roms.appending(path: "nes/Zelda (Europe).nes"))
         try touch(roms.appending(path: "nes/Runner (USA).nes"))
         try touch(roms.appending(path: "nes/Runner (USA).zip"))
-        try touch(media.appending(path: "nes/covers/Zelda (Europe).heic"))
-        try touch(media.appending(path: "nes/covers/Zelda (USA).heic"))
-        try touch(media.appending(path: "nes/covers/Runner (USA).heic"))
+        try touch(media.appending(path: "nes/2dboxes/Zelda (Europe).heic"))
+        try touch(media.appending(path: "nes/2dboxes/Zelda (USA).heic"))
+        try touch(media.appending(path: "nes/2dboxes/Runner (USA).heic"))
 
         let plan = MediaTidier.plan(romsRoots: [roms])
         let duplicates = plan.trashed.filter { $0.reason == .duplicates }.map(\.url.lastPathComponent)
@@ -243,7 +243,7 @@ struct MediaTidierTests {
     @Test func aTidyFolderHasNothingToDo() throws {
         try touch(roms.appending(path: "snes/Game.sfc"))
         try touch(roms.appending(path: "snes/_sysinfo.txt"))
-        try touch(media.appending(path: "snes/covers/Game.heic"))
+        try touch(media.appending(path: "snes/2dboxes/Game.heic"))
         try touch(gamelists.appending(path: "snes/gamelist.xml"))
         #expect(MediaTidier.plan(romsRoots: [roms]).isEmpty)
     }
@@ -285,20 +285,20 @@ struct MediaTidierTests {
             Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52,
                   0, 0, 0, 1, 0, 0, 0, 1, 8, colourType, 0, 0, 0])
         }
-        try FileManager.default.createDirectory(at: media.appending(path: "snes/covers"), withIntermediateDirectories: true)
-        try png(colourType: 3).write(to: media.appending(path: "snes/covers/Game.png"))
-        try png(colourType: 6).write(to: media.appending(path: "snes/covers/Other.png"))
+        try FileManager.default.createDirectory(at: media.appending(path: "snes/2dboxes"), withIntermediateDirectories: true)
+        try png(colourType: 3).write(to: media.appending(path: "snes/2dboxes/Game.png"))
+        try png(colourType: 6).write(to: media.appending(path: "snes/2dboxes/Other.png"))
         let plan = MediaTidier.plan(romsRoots: [roms])
         #expect(plan.compress.map(\.lastPathComponent).sorted() == ["Game.png", "Other.png"])
         #expect(MediaTidier.apply(plan) == 0)
-        #expect(exists(media.appending(path: "snes/covers/Game.png")))
+        #expect(exists(media.appending(path: "snes/2dboxes/Game.png")))
         #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
     }
 
     @Test func aCoverWithAHEICBesideItIsntOffered() throws {
         try touch(roms.appending(path: "snes/Game.sfc"))
-        try touch(media.appending(path: "snes/covers/Game.png"))
-        try touch(media.appending(path: "snes/covers/Game.heic"))
+        try touch(media.appending(path: "snes/2dboxes/Game.png"))
+        try touch(media.appending(path: "snes/2dboxes/Game.heic"))
         #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
     }
 

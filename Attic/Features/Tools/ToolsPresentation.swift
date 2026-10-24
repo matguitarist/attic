@@ -42,6 +42,11 @@ struct ToolsReports: ViewModifier {
                     DiscPlaylistReportView(plan: plan, root: root) { approved in
                         Task { await tools.applyPlaylists(approved, romsRoots: roots, scanCoordinator: scanCoordinator) }
                     }
+                case .emuMovies(let plan):
+                    EmuMoviesReportView(plan: plan) { choice in
+                        guard let server = EmuMoviesCredentialsStore().server else { return }
+                        tools.getEmuMovies(plan, choice: choice, server: server, romsRoots: roots, scanCoordinator: scanCoordinator)
+                    }
                 case .verify(let report):
                     let dats = emulationFolderStore.folder.dats
                     VerifyReportView(report: report, datsFolder: dats) {
@@ -90,6 +95,10 @@ struct ToolsStatusBar: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                 Spacer()
+                if let cancel = tools.cancelActivity {
+                    Button("Stop", action: cancel)
+                        .controlSize(.small)
+                }
             }
             .font(.callout)
             .foregroundStyle(.secondary)

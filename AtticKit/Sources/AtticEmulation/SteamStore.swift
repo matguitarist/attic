@@ -16,9 +16,12 @@ public struct SteamStoreInfo: Equatable, Sendable {
     public var heroURL: URL?
     public var logoURL: URL?
     public var screenshotURL: URL?
+    /// The HLS playlist of its highlighted trailer (see `SteamTrailer`).
+    public var trailerURL: URL?
 
     public init(description: String? = nil, developer: String? = nil, publisher: String? = nil, genre: String? = nil,
-                releaseDate: Date? = nil, coverURL: URL? = nil, heroURL: URL? = nil, logoURL: URL? = nil, screenshotURL: URL? = nil) {
+                releaseDate: Date? = nil, coverURL: URL? = nil, heroURL: URL? = nil, logoURL: URL? = nil, screenshotURL: URL? = nil,
+                trailerURL: URL? = nil) {
         self.description = description
         self.developer = developer
         self.publisher = publisher
@@ -28,6 +31,7 @@ public struct SteamStoreInfo: Equatable, Sendable {
         self.heroURL = heroURL
         self.logoURL = logoURL
         self.screenshotURL = screenshotURL
+        self.trailerURL = trailerURL
     }
 }
 
@@ -46,12 +50,34 @@ public enum SteamStore {
             info.heroURL = assets.hero
             info.logoURL = assets.logo
         }
-        // The store doesn't list every game's logo; older games have one
-        // at the classic address (a miss just downloads nothing).
-        if info.logoURL == nil {
-            info.logoURL = URL(string: "https://cdn.cloudflare.steamstatic.com/steam/apps/\(appID)/logo.png")
+        // The store doesn't list every game's library logo: the app info
+        // the Steam client reads does, under a hashed name.
+        if info.logoURL == nil, let data = try? await fetch(appInfoURL(appID: appID)) {
+            info.logoURL = libraryLogo(fromAppInfo: data, appID: appID)
         }
         return info
+    }
+
+    /// Older games' logo, at the classic address, for when nothing else
+    /// has one (a miss just downloads nothing).
+    public static func classicLogoURL(appID: String) -> URL {
+        URL(string: "https://cdn.cloudflare.steamstatic.com/steam/apps/\(appID)/logo.png")!
+    }
+
+    /// The Steam client's app info, as steamcmd.net serves it.
+    static func appInfoURL(appID: String) -> URL {
+        URL(string: "https://api.steamcmd.net/v1/info/\(appID)")!
+    }
+
+    /// The English library logo in the app info, twice the size when
+    /// there is one.
+    static func libraryLogo(fromAppInfo data: Data, appID: String) -> URL? {
+        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let app = (root["data"] as? [String: Any])?[appID] as? [String: Any],
+              let assets = (app["common"] as? [String: Any])?["library_assets_full"] as? [String: Any],
+              let logo = assets["library_logo"] as? [String: Any] else { return nil }
+        let file = ((logo["image2x"] as? [String: Any])?["english"] ?? (logo["image"] as? [String: Any])?["english"]) as? String
+        return file.flatMap { URL(string: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/\(appID)/\($0)") }
     }
 
     static func detailsURL(appID: String) -> URL {
@@ -80,6 +106,9 @@ public enum SteamStore {
         let genres = (game["genres"] as? [[String: Any]])?.compactMap { $0["description"] as? String } ?? []
         let screenshot = (game["screenshots"] as? [[String: Any]])?.first?["path_full"] as? String
         let description = (game["short_description"] as? String).map(plainText)
+        // The trailer the store page leads with, else the first.
+        let movies = game["movies"] as? [[String: Any]] ?? []
+        let trailer = (movies.first { $0["highlight"] as? Bool == true } ?? movies.first)?["hls_h264"] as? String
         return SteamStoreInfo(
             description: description?.isEmpty == false ? description : nil,
             developer: joined("developers"),
@@ -87,7 +116,8 @@ public enum SteamStore {
             genre: genres.isEmpty ? nil : genres.joined(separator: ", "),
             releaseDate: ((game["release_date"] as? [String: Any])?["date"] as? String).flatMap(releaseDate),
             coverURL: (game["header_image"] as? String).flatMap(URL.init(string:)),
-            screenshotURL: screenshot.flatMap(URL.init(string:))
+            screenshotURL: screenshot.flatMap(URL.init(string:)),
+            trailerURL: trailer.flatMap(URL.init(string:))
         )
     }
 

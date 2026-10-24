@@ -21,7 +21,8 @@ struct ESDEMediaResolver {
     /// The box art first. Mix images and title screens (which Attic no
     /// longer keeps, see `MediaKind`) only stand in for a library that
     /// hasn't been tidied up, after a screenshot.
-    private static let coverArtPreferenceOrder = ["covers", "screenshots", "miximages", "titlescreens"]
+    /// ES-DE's `covers` is Attic's `2dboxes` (see `MediaKind`).
+    private static let coverArtPreferenceOrder = [MediaKind.covers.rawValue, "covers", "screenshots", "miximages", "titlescreens"]
     /// Batocera's `-<suffix>` image names, box art first.
     private static let inFolderCoverSuffixes = ["boxart", "thumb", "image", "mix"]
 

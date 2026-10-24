@@ -3,6 +3,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticEmulation
+import AtticLibraryScanning
 
 enum HelpPage: Hashable {
     case topic(HelpTopic)
@@ -168,6 +169,28 @@ private struct SystemHelpView: View {
                     Text(romFolderNames(definition))
                         .textSelection(.enabled)
                         .monospaced()
+                }
+            }
+            if let definition {
+                VStack(alignment: .leading, spacing: 6) {
+                    LabeledContent("Media Folder") {
+                        Text(verbatim: "\(EmulationLayout.media)/\(definition.esdeShortName)")
+                            .textSelection(.enabled)
+                            .monospaced()
+                    }
+                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 3) {
+                        ForEach(MediaFolder.kinds(for: systemID), id: \.self) { kind in
+                            GridRow {
+                                Text(verbatim: kind.rawValue).monospaced()
+                                Text(kind.title(for: systemID)).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .font(.caption)
+                    Text("Beside ROMs in the Emulation folder. Each file is named after its game's ROM file: \(EmulationLayout.media)/\(definition.esdeShortName)/\(MediaKind.covers.rawValue)/Game (USA).png for ROMs/\(definition.esdeShortName)/Game (USA).zip.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             let extensions = fileExtensions

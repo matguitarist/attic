@@ -67,6 +67,149 @@ struct CabinetCarouselLayout: View {
     }
 }
 
+// MARK: - Cover Flow
+
+/// The focused game's 2D box facing the screen in the middle, the others
+/// to either side turned toward it, all standing over their reflections,
+/// like iTunes's Cover Flow. With 3D boxes for the tiles' art, a game that
+/// has one stands as its rendered box; the others turn their covers.
+struct CabinetCoverFlowLayout: View {
+    let shelf: CabinetShelfContent
+
+    @Environment(\.cabinetTheme) private var installed
+    /// Where a drag started, to move one game per step dragged.
+    @State private var dragStart: Int?
+
+    /// The reflection's height, of the cover's.
+    static let reflection = 0.3
+    /// The first cover beside the focused one, in cover widths from the
+    /// middle.
+    private static let firstStep = 0.78
+    /// Between the next ones, in cover widths: turned covers overlap
+    /// more than standing 3D boxes. The tiles' spacing adds points.
+    private static let step = 0.3
+    private static let boxStep = 0.55
+
+    var body: some View {
+        let theme = installed.theme
+        GeometryReader { geometry in
+            let infoHeight = theme.typography.titleSize + theme.typography.bodySize * Double(4 + (theme.details.showsDescription ? theme.details.descriptionLines : 0)) * 1.4
+            let room = max(180, geometry.size.height - infoHeight - 40)
+            let coverHeight = max(150, min(room / (1 + Self.reflection), geometry.size.height * theme.tiles.size))
+            VStack(spacing: 8) {
+                flow(coverHeight: coverHeight, width: geometry.size.width)
+                    .frame(width: geometry.size.width, height: coverHeight * (1 + Self.reflection))
+                CabinetGameInfo(game: shelf.focusedGame, alignment: .center)
+                    .padding(.horizontal, 60)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
+            .padding(.top, 16)
+        }
+    }
+
+    private func flow(coverHeight: CGFloat, width: CGFloat) -> some View {
+        let coverWidth = coverHeight * 0.75
+        let step = coverWidth * (installed.theme.tiles.art == .box3D ? Self.boxStep : Self.step) + installed.theme.tiles.spacing
+        let games = shelf.games
+        let focused = games.firstIndex { shelf.isFocused($0) } ?? 0
+        // Only the covers on screen, and one more each side to slide in.
+        let reach = Int(((width / 2 - coverWidth * Self.firstStep) / max(step, 1)).rounded(.up)) + 2
+        let shown = max(0, focused - reach)...min(games.count - 1, max(0, focused + reach))
+        let covers = shown.map { (offset: $0 - focused, game: games[$0]) }
+        return ZStack(alignment: .top) {
+            ForEach(covers, id: \.game.persistentModelID) { cover in
+                let distance = CGFloat(abs(cover.offset))
+                let x = cover.offset == 0 ? 0 : (coverWidth * Self.firstStep + (distance - 1) * step) * CGFloat(cover.offset.signum())
+                CabinetCoverFlowItem(game: cover.game, offset: cover.offset, size: CGSize(width: coverWidth, height: coverHeight))
+                    .offset(x: x)
+                    // The middle on top, the others under their neighbors
+                    // nearer it.
+                    .zIndex(-Double(distance))
+                    .onTapGesture(count: 2) { shelf.onPlay(cover.game) }
+                    .onTapGesture { shelf.onFocus(cover.game) }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .animation(.snappy(duration: 0.3), value: shelf.focusedID)
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 8)
+                .onChanged { value in
+                    let start = dragStart ?? focused
+                    dragStart = start
+                    let target = min(max(start - Int((value.translation.width / max(step, 1)).rounded()), 0), games.count - 1)
+                    if target != focused { shelf.onFocus(games[target]) }
+                }
+                .onEnded { _ in dragStart = nil }
+        )
+    }
+}
+
+/// One game in the Cover Flow: its 2D box when focused, else its 3D box
+/// standing or its cover turned toward the middle, over its reflection.
+private struct CabinetCoverFlowItem: View {
+    let game: Game
+    /// From the focused game: negative to its left.
+    let offset: Int
+    let size: CGSize
+
+    @Environment(\.cabinetTheme) private var installed
+    /// Looked up once: the 3D box lives by file alone.
+    @State private var box3DURL: URL?
+
+    var body: some View {
+        let theme = installed.theme
+        let isFocused = offset == 0
+        let standing = !isFocused && box3DURL != nil
+        let side = Double(offset.signum())
+        VStack(spacing: 2) {
+            art
+            art
+                .scaleEffect(x: 1, y: -1)
+                .frame(height: size.height * CabinetCoverFlowLayout.reflection, alignment: .top)
+                .clipped()
+                .mask(LinearGradient(colors: [.black.opacity(0.4), .clear], startPoint: .top, endPoint: .bottom))
+        }
+        .overlay(alignment: .topTrailing) {
+            if game.favorite && isFocused {
+                Image(systemName: "star.fill")
+                    .font(theme.largeFont())
+                    .foregroundStyle(theme.palette.favorite.color)
+                    .shadow(radius: 4)
+                    .padding(10)
+            }
+        }
+        // Further from the middle, darker: not see-through, as the covers
+        // overlap.
+        .brightness(isFocused ? 0 : -(1 - theme.tiles.unfocusedOpacity) * min(1, Double(abs(offset)) / 3))
+        // A 3D box is drawn turned already: a little more toward the
+        // middle is enough.
+        .rotation3DEffect(.degrees(isFocused ? 0 : -side * (standing ? 22 : 55)), axis: (0, 1, 0), perspective: 0.6)
+        // From the floor, so every cover stands on the same line.
+        .scaleEffect(isFocused ? 1 : 1 / max(theme.tiles.focusScale, 0.1),
+                     anchor: UnitPoint(x: 0.5, y: 1 / (1 + CabinetCoverFlowLayout.reflection)))
+        .shadow(color: isFocused && theme.tiles.focusGlow ? theme.palette.accent.color.opacity(0.6) : .clear, radius: 24)
+        .task(id: [game.persistentModelID.hashValue, theme.tiles.art.hashValue]) {
+            box3DURL = theme.tiles.art == .box3D ? game.box3DURL : nil
+        }
+    }
+
+    /// The cover and the 3D box both drawn, so moving in or out of the
+    /// middle fades from one to the other instead of loading it then.
+    private var art: some View {
+        let standing = offset != 0 && box3DURL != nil
+        return ZStack {
+            GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false, alignment: .bottom)
+                .opacity(standing ? 0 : 1)
+            if let box3DURL {
+                GameCoverArtView(url: box3DURL, title: game.title, showBackground: false, alignment: .bottom)
+                    .opacity(standing ? 1 : 0)
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+}
+
 // MARK: - Hero
 
 /// The focused game's art filling the screen (the theme's backdrop, faded
@@ -231,6 +374,8 @@ private struct CabinetDetailsPanel: View {
 /// beside a screen playing its video, like CoinOps and HyperSpin.
 struct CabinetWheelLayout: View {
     let shelf: CabinetShelfContent
+    /// The screen in an arcade cabinet, its marquee above it.
+    var drawsCabinet = false
 
     @Environment(\.cabinetTheme) private var installed
     @State private var scrolledID: PersistentIdentifier?
@@ -268,7 +413,13 @@ struct CabinetWheelLayout: View {
         let theme = installed.theme
         return VStack(spacing: 20) {
             Spacer(minLength: 0)
-            if let game = shelf.focusedGame {
+            if let game = shelf.focusedGame, drawsCabinet {
+                CabinetArcadeCabinet(game: game)
+                    .layoutPriority(-1)
+                // The marquee shows the title.
+                CabinetGameInfo(game: game, alignment: .center, showsDescription: false, showsTitle: false, inlineFacts: true)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if let game = shelf.focusedGame {
                 if theme.details.media != .none {
                     CabinetMedia(game: game)
                         .aspectRatio(4 / 3, contentMode: .fit)

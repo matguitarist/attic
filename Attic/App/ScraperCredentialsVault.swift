@@ -13,6 +13,8 @@ struct ScraperCredentialsVault: Codable, Equatable {
     var screenScraperUserPassword: String = ""
     var theGamesDBApiKey: String = ""
     var steamGridDBApiKey: String = ""
+    var emuMoviesUsername: String = ""
+    var emuMoviesPassword: String = ""
 
     var isEmpty: Bool { self == ScraperCredentialsVault() }
 
@@ -30,6 +32,8 @@ struct ScraperCredentialsVault: Codable, Equatable {
         screenScraperUserPassword = value(.screenScraperUserPassword)
         theGamesDBApiKey = value(.theGamesDBApiKey)
         steamGridDBApiKey = value(.steamGridDBApiKey)
+        emuMoviesUsername = value(.emuMoviesUsername)
+        emuMoviesPassword = value(.emuMoviesPassword)
     }
 }
 

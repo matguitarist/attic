@@ -101,6 +101,13 @@ struct CabinetSettingsView: View {
                     }
                     .fixedSize()
                 }
+                Toggle(isOn: Binding(
+                    get: { theme.details.showsPhysicalMedia },
+                    set: { cabinetThemes.adjust("details.showsPhysicalMedia", to: $0) }
+                )) {
+                    Text("Show the cartridge or disc")
+                    Text("At the corner of the box on a game's page")
+                }
                 Toggle("Open on the systems", isOn: Binding(
                     get: { theme.systems.isEnabled },
                     set: { cabinetThemes.adjust("systems.isEnabled", to: $0) }
