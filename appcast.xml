@@ -3,6 +3,22 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.8.0</title>
+            <pubDate>Fri, 23 Oct 2026 21:41:16 -0400</pubDate>
+            <sparkle:version>46</sparkle:version>
+            <sparkle:shortVersionString>2.8.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Four new Cabinet Mode looks: Cover Flow (the game&#x27;s 2D box between the others&#x27; 3D boxes), Shelf (your games on shelves), Unboxed (the disc slides out and spins, the cartridge rises) and an arcade cabinet with the game&#x27;s marquee and bezel</li>
+<li>New media for every system: 3D boxes, cartridges and discs, marquees and bezels, each in its own folder; box art&#x27;s folder is now 2dboxes, moved for you</li>
+<li>Get media from EmuMovies: artwork, game videos and manuals, with a choice to replace small pictures and videos by sharper ones</li>
+<li>Steam games get their trailer and their official logo</li>
+<li>Fixes: a grayscale logo with transparency could turn blank; the library toolbar&#x27;s cover size slider had shrunk</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.8.0/Attic-2.8.0.zip" length="18196473" type="application/octet-stream" sparkle:edSignature="/SEsTR9ECJ1takVk9INEpetGQBxilQzRPZQiZUD9o5QC8epxhfgsgVu8s1wo61Qz29K7kQgkpc065bgdSVqNBg=="/>
+        </item>
+        <item>
             <title>2.7.1</title>
             <pubDate>Thu, 22 Oct 2026 21:53:18 -0400</pubDate>
             <sparkle:version>45</sparkle:version>
