@@ -127,7 +127,8 @@ struct AtticApp: App {
             InspectorCommands()
             CabinetCommands()
             LibraryCommands(scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
-            GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore)
+            GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore,
+                         tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             ToolsCommands(tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore, emulationFolderStore: emulationFolderStore)
             HelpCommands(navigator: helpNavigator)
         }
@@ -145,6 +146,8 @@ struct AtticApp: App {
         .defaultSize(width: 1280, height: 800)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
+        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        .commandsRemoved()
         .modelContainer(modelContainer)
 
         Window("Library Statistics", id: LibraryStatsView.windowID) {
@@ -154,6 +157,19 @@ struct AtticApp: App {
         .defaultSize(width: 760, height: 720)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
+        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        .commandsRemoved()
+        .modelContainer(modelContainer)
+
+        Window("Library Health", id: LibraryHealthView.windowID) {
+            withAppEnvironment(LibraryHealthView())
+                .frame(minWidth: 900, minHeight: 560)
+        }
+        .defaultSize(width: 1180, height: 760)
+        .defaultLaunchBehavior(.suppressed)
+        .restorationBehavior(.disabled)
+        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        .commandsRemoved()
         .modelContainer(modelContainer)
 
         Window("Attic Help", id: HelpView.windowID) {
@@ -163,6 +179,8 @@ struct AtticApp: App {
         .defaultSize(width: 900, height: 640)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
+        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        .commandsRemoved()
         .modelContainer(modelContainer)
 
         Window("Log", id: LogView.windowID) {
@@ -172,6 +190,8 @@ struct AtticApp: App {
         .defaultSize(width: 1000, height: 600)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
+        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        .commandsRemoved()
 
         Settings {
             withAppEnvironment(SettingsTabView())

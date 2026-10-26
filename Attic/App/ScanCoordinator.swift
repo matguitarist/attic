@@ -19,6 +19,9 @@ final class ScanCoordinator {
 
     private(set) var state: State = .idle
     private(set) var lastScanSummary: String?
+    /// The scan under way, to stop it.
+    private var scanTask: Task<LibraryScanner.ScanResult, Never>?
+    private var isStopping = false
 
     private let libraryStore: LibraryStore
     private let scanner: LibraryScanner
@@ -57,11 +60,12 @@ final class ScanCoordinator {
 
     /// Scans the ROMs folders: every system's, or only those of `only`.
     func scan(romsRootURLs: [URL], only: Set<CanonicalSystemID>? = nil) async {
-        guard !romsRootURLs.isEmpty else { return }
+        guard !romsRootURLs.isEmpty, state != .scanning else { return }
         state = .scanning
+        isStopping = false
 
         let scanner = self.scanner
-        let result = await Task.detached(priority: .userInitiated) {
+        let task = Task.detached(priority: .userInitiated) {
             // Vita games installed in Vita3K since the last scan, and
             // playlists for multi-disc games.
             Vita3KLibrary.addShortcuts(romsRoots: romsRootURLs)
@@ -69,7 +73,10 @@ final class ScanCoordinator {
             SteamLibrary.syncShortcuts(romsRoots: romsRootURLs)
             DiscPlaylists.createMissing(romsRoots: romsRootURLs)
             return scanner.scan(romsRootURLs: romsRootURLs, only: only)
-        }.value
+        }
+        scanTask = task
+        let result = await task.value
+        scanTask = nil
         // Systems the user removed stay out until added back.
         let systems = await Self.withArcadeNames(result.systems.filter { !RemovedSystems.contains($0.canonicalID) })
 
@@ -79,6 +86,8 @@ final class ScanCoordinator {
         var gamesRemoved = 0
 
         for systemData in systems {
+            // Systems not saved yet keep what the library had.
+            if isStopping { break }
             let displayName = SystemTaxonomy.definition(for: systemData.canonicalID)?.displayName
                 ?? systemData.canonicalID.rawValue
             do {
@@ -100,11 +109,23 @@ final class ScanCoordinator {
         if gamesRemoved > 0 {
             summary += ", \(gamesRemoved) removed"
         }
+        if isStopping {
+            summary = String(localized: "Stopped. ") + summary
+        }
         if !result.issues.isEmpty {
             summary += " (\(result.issues.count) folder(s) skipped)"
         }
         lastScanSummary = summary
         state = .idle
+        isStopping = false
+    }
+
+    /// Stops the scan under way after the system it's on: those scanned
+    /// are saved, the others keep what the library had.
+    func stop() {
+        guard state == .scanning else { return }
+        isStopping = true
+        scanTask?.cancel()
     }
 
     /// Arcade games are files named after their romset (`mslug.zip`); this

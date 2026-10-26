@@ -84,5 +84,9 @@ struct ScrapeMenuItems: View {
             Task { await scrapeCoordinator.scrape(game, from: .theGamesDB(theGamesDBCredentialsStore.credentials), force: force) }
         }
         .disabled(!theGamesDBCredentialsStore.isConfigured)
+
+        Button("LaunchBox") {
+            Task { await scrapeCoordinator.scrape(game, from: .launchBox, force: force) }
+        }
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsTabView: View {
     enum Tab: String {
-        case general, cabinet, collections, emulators, bios, controller, screenScraper, theGamesDB, steamGridDB, emuMovies
+        case general, cabinet, collections, emulators, bios, controller, screenScraper, theGamesDB, launchBox, steamGridDB, emuMovies
     }
 
     /// The tab shown, which a menu item can set before opening Settings.
@@ -35,6 +35,9 @@ struct SettingsTabView: View {
             TheGamesDBSettingsView()
                 .tabItem { Label("TheGamesDB", systemImage: "text.book.closed") }
                 .tag(Tab.theGamesDB)
+            LaunchBoxSettingsView()
+                .tabItem { Label("LaunchBox", systemImage: "shippingbox") }
+                .tag(Tab.launchBox)
             SteamGridDBSettingsView()
                 .tabItem { Label("SteamGridDB", systemImage: "square.grid.3x3") }
                 .tag(Tab.steamGridDB)
@@ -45,6 +48,6 @@ struct SettingsTabView: View {
         // One size for every tab: per-tab sizes made the window shrink on
         // the narrower tabs until the toolbar couldn't fit all six tabs,
         // and macOS hid the last one in an overflow menu.
-        .frame(width: 860, height: 580)
+        .frame(width: 940, height: 580)
     }
 }

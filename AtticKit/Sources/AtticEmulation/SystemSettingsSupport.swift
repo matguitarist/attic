@@ -20,7 +20,7 @@ public enum SystemSettingsBackend: Hashable, Sendable {
 
 /// One row of the System Settings sheet.
 public enum SystemSetting: String, CaseIterable, Sendable {
-    case look, integerScaling, internalResolution, widescreen, geometryCorrection, unlimitedSprites, lcdColors, runAhead, rewind, resume
+    case look, integerScaling, bezels, internalResolution, widescreen, geometryCorrection, unlimitedSprites, lcdColors, runAhead, rewind, resume
 }
 
 /// Which `SystemSettings` apply to a system in a given emulator, and how
@@ -41,7 +41,7 @@ public enum SystemSettingsSupport {
     public static func settings(for system: CanonicalSystemID, backend: SystemSettingsBackend) -> [SystemSetting] {
         switch backend {
         case .retroArch(let core):
-            var settings: [SystemSetting] = [.look, .integerScaling]
+            var settings: [SystemSetting] = [.look, .integerScaling, .bezels]
             let options = coreOptions[core]
             if options?.resolution != nil { settings.append(.internalResolution) }
             if options?.widescreen != nil { settings.append(.widescreen) }
@@ -112,8 +112,17 @@ public enum SystemSettingsSupport {
 
     /// RetroArch settings for `--appendconfig`. Keys left out stay as the
     /// user set them in RetroArch (see `EmulationFolder.prepareRetroArchLaunch`).
-    public static func retroArchConfig(_ settings: SystemSettings, system: CanonicalSystemID) -> [(key: String, value: String)] {
+    /// `bezelOverlay` is the overlay file showing the game's bezel.
+    public static func retroArchConfig(_ settings: SystemSettings, system: CanonicalSystemID,
+                                       bezelOverlay: URL? = nil) -> [(key: String, value: String)] {
         var config: [(key: String, value: String)] = []
+        if let bezelOverlay, settings.bezels != false {
+            config += [("input_overlay_enable", "true"), ("input_overlay", bezelOverlay.path),
+                       ("input_overlay_opacity", "1.000000"), ("input_overlay_hide_in_menu", "true")]
+            // Whole multiples leave a gap inside the bezel's window, unless
+            // asked for on this system.
+            if settings.integerScaling == nil { config.append(("video_scale_integer", "false")) }
+        }
         let offered = Set(Self.settings(for: system, backend: .retroArch(coreIdentifier: "")))
         if settings.shaderPreset != nil || (settings.look.map { $0 != .none } ?? false) {
             config.append(("video_shader_enable", "true"))
@@ -142,8 +151,40 @@ public enum SystemSettingsSupport {
         "run_ahead_secondary_instance": "true",
         "rewind_enable": "false",
         "savestate_auto_save": "false",
-        "savestate_auto_load": "false"
+        "savestate_auto_load": "false",
+        "input_overlay_enable": "false",
+        "input_overlay": "",
+        "input_overlay_opacity": "0.700000",
+        "input_overlay_hide_in_menu": "true"
     ]
+
+    /// RetroArch's overlay file showing `bezel` over the whole screen.
+    public static func bezelOverlayConfig(_ bezel: URL) -> String {
+        """
+        # Written by Attic before every launch with a bezel — edits here are overwritten.
+        overlays = 1
+        overlay0_overlay = "\(bezel.path)"
+        overlay0_full_screen = true
+        overlay0_normalized = true
+        overlay0_descs = 0
+
+        """
+    }
+
+    /// Whether a bezel's clear window (as fractions of the picture) is where
+    /// RetroArch draws the game full screen on a display `screenAspect`
+    /// wide: centered, and the size of a full-height 4:3 game, or a 3:4
+    /// one for a vertical arcade game. A window a little smaller only hides
+    /// the edges old TVs hid too (the NES bezels'); one bigger shows a gap.
+    /// Others (a handheld's small screen) would need a custom viewport,
+    /// which differs between RetroArch versions, so they're left out.
+    public static func bezelFits(window: CGRect, screenAspect: Double) -> Bool {
+        guard window.height >= 0.9, abs(window.midX - 0.5) < 0.02, abs(window.midY - 0.5) < 0.04 else { return false }
+        return [4.0 / 3, 3.0 / 4].contains { ratio in
+            let game = min(1, ratio / screenAspect)
+            return window.width > game - 0.06 && window.width < game + 0.03
+        }
+    }
 
     /// Core options for `core`, set in RetroArch's core options file.
     public static func coreOptions(_ settings: SystemSettings, core: String) -> [String: String] {

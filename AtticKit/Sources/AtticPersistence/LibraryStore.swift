@@ -245,6 +245,9 @@ public actor LibraryStore {
         public let hasScreenshot: Bool
         public let hasVideo: Bool
         public let hasDescription: Bool
+        public let title: String
+        /// The picture shown as its cover.
+        public let coverPath: String?
     }
 
     public func gameMedia() throws -> [GameMedia] {
@@ -256,7 +259,8 @@ public actor LibraryStore {
                 path: game.romAbsolutePath, relativePath: game.romRelativePath,
                 system: CanonicalSystemID(game.systemCanonicalID), systemFolder: game.system?.romsRootURL ?? folder,
                 hasCover: exists(game.coverArtPath), hasScreenshot: exists(game.titleScreenPath),
-                hasVideo: exists(game.videoPath), hasDescription: !(game.gameDescription ?? "").isEmpty
+                hasVideo: exists(game.videoPath), hasDescription: !(game.gameDescription ?? "").isEmpty,
+                title: game.title, coverPath: game.coverArtPath
             )
         }
     }

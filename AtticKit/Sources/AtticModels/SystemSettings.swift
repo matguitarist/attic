@@ -41,6 +41,9 @@ public struct SystemSettings: Codable, Hashable, Sendable {
     public var rewind: Bool?
     /// Saves a state on quit and loads it at the next launch.
     public var resume: Bool?
+    /// The game's bezel around it, when it has one that fits. On unless
+    /// turned off.
+    public var bezels: Bool?
 
     public init() {}
 

@@ -32,6 +32,16 @@
         }
       }
     },
+    "%@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ %2$@"
+          }
+        }
+      }
+    },
     "%@ (Recommended)": {
       "localizations": {
         "fr": {
@@ -192,6 +202,22 @@
         }
       }
     },
+    "%@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ · %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
+        }
+      }
+    },
     "%@ · %lld cores": {
       "localizations": {
         "en": {
@@ -283,6 +309,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@. %@"
+          }
+        }
+      }
+    },
+    "%@: %lld files to look at": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@: %2$lld files to look at"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ : %2$lld fichiers à vérifier"
           }
         }
       }
@@ -616,6 +658,16 @@
         }
       }
     },
+    "%lld files to look at": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld fichiers à vérifier"
+          }
+        }
+      }
+    },
     "%lld files were kept: EmuMovies' weren't sharper.": {
       "localizations": {
         "fr": {
@@ -793,6 +845,32 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld games available": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jeux disponibles"
+          }
+        }
+      }
+    },
+    "%lld games available, %lld favorites": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games available, %2$lld favorites"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux disponibles, %2$lld favoris"
           }
         }
       }
@@ -994,6 +1072,16 @@
         }
       }
     },
+    "%lld games whose description is likely another game’s": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jeux dont la description est sans doute celle d’un autre jeu"
+          }
+        }
+      }
+    },
     "%lld games, %@": {
       "localizations": {
         "en": {
@@ -1038,6 +1126,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld jeux, %2$@ actuellement. Chaque disque devient un seul .chd, en général 30 à 60 %% plus léger ; disques PSP et PS2 compris. Compte quelques minutes par jeu."
+          }
+        }
+      }
+    },
+    "%lld games, %@, updated %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld games, %2$@, updated %3$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld jeux, %2$@, mise à jour %3$@"
           }
         }
       }
@@ -1394,7 +1498,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld sur %2$lld jeux"
+            "value": "%1$lld jeux sur %2$lld"
           }
         }
       }
@@ -1653,6 +1757,22 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld scraped, %lld already had it, %lld not found": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld scraped, %2$lld already had it, %3$lld not found"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld récupérés, %2$lld déjà complets, %3$lld introuvables"
           }
         }
       }
@@ -2135,6 +2255,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un dossier de logos de séries nommés comme dans les thèmes ES-DE et Batocera (mario.png, zelda.png…). Une collection créée depuis une série, ou portant son nom, y prend son logo, copié dans le dossier de la collection."
+          }
+        }
+      }
+    },
+    "A game that runs better in another emulator can have its own: pick it in the game’s info.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un jeu qui tourne mieux dans un autre émulateur peut avoir le sien : choisissez-le dans les infos du jeu."
+          }
+        }
+      }
+    },
+    "A game unzips again when it next starts.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un jeu est décompressé à nouveau au prochain lancement."
           }
         }
       }
@@ -2736,6 +2876,16 @@
         }
       }
     },
+    "All Games in %@, Replacing Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les jeux de %@, en remplaçant les infos"
+          }
+        }
+      }
+    },
     "All Games, Replacing Existing Info": {
       "localizations": {
         "fr": {
@@ -3048,6 +3198,16 @@
         }
       }
     },
+    "Attic downloads it (about 110 MB) the first time you scrape from LaunchBox, keeps only your systems' games, and gets it again each month.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attic la télécharge (environ 110 Mo) la première fois que vous récupérez des infos depuis LaunchBox, ne garde que les jeux de vos systèmes et la récupère à nouveau chaque mois."
+          }
+        }
+      }
+    },
     "Attic installs blueMSX's machine and database files into the BIOS folder with the core.": {
       "localizations": {
         "fr": {
@@ -3291,12 +3451,42 @@
         }
       }
     },
+    "Bezel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bezel"
+          }
+        }
+      }
+    },
     "Bezels": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Contours d’écran"
+          }
+        }
+      }
+    },
+    "Blank and unreadable files, so the game can get a good one": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les fichiers vides et illisibles, pour que le jeu en reçoive un bon"
+          }
+        }
+      }
+    },
+    "Blank: nothing shows": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vide : rien ne s’affiche"
           }
         }
       }
@@ -3347,6 +3537,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En bas — Xbox, PlayStation"
+          }
+        }
+      }
+    },
+    "Box": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîte"
           }
         }
       }
@@ -3522,6 +3722,16 @@
         }
       }
     },
+    "Can't be opened": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible à ouvrir"
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "fr": {
@@ -3558,6 +3768,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Carrousel"
+          }
+        }
+      }
+    },
+    "Cartridge": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartouche"
           }
         }
       }
@@ -3632,6 +3852,16 @@
         }
       }
     },
+    "Check Again": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier à nouveau"
+          }
+        }
+      }
+    },
     "Check BIOS Files…": {
       "localizations": {
         "fr": {
@@ -3658,6 +3888,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifier maintenant"
+          }
+        }
+      }
+    },
+    "Check every system's media again": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifier à nouveau les médias de chaque système"
           }
         }
       }
@@ -3699,6 +3939,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifié avec %@."
+          }
+        }
+      }
+    },
+    "Checking your media…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification de vos médias…"
           }
         }
       }
@@ -3856,6 +4106,16 @@
         }
       }
     },
+    "Choose a System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un système"
+          }
+        }
+      }
+    },
     "Choose a folder with BIOS sets in it, such as another front-end's bios folder.": {
       "localizations": {
         "fr": {
@@ -3902,6 +4162,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez des jeux, ou des dossiers de jeux. Ils sont rangés dans votre dossier de ROMs avec leurs jaquettes et vidéos."
+          }
+        }
+      }
+    },
+    "Choose the game's %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez le fichier « %@ » du jeu"
           }
         }
       }
@@ -3962,6 +4232,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Effacer"
+          }
+        }
+      }
+    },
+    "Clear Description": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacer la description"
           }
         }
       }
@@ -4107,6 +4387,7 @@
       }
     },
     "Compress Selected Game": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -4212,6 +4493,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bouton de validation"
+          }
+        }
+      }
+    },
+    "Connect an AirPlay Display…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecter un écran AirPlay…"
           }
         }
       }
@@ -4483,6 +4774,16 @@
         }
       }
     },
+    "Couldn't get LaunchBox's database: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’obtenir la base de LaunchBox : %@"
+          }
+        }
+      }
+    },
     "Couldn't install %@": {
       "localizations": {
         "fr": {
@@ -4589,6 +4890,22 @@
         }
       }
     },
+    "Couldn't use %@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Couldn't use %1$@: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’utiliser %1$@ : %2$@"
+          }
+        }
+      }
+    },
     "Cover Art": {
       "localizations": {
         "fr": {
@@ -4630,6 +4947,7 @@
       }
     },
     "Covers": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -5199,6 +5517,16 @@
         }
       }
     },
+    "Display": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écran"
+          }
+        }
+      }
+    },
     "Dolphin uses its own controller setup. Configure it once in Dolphin (Controllers › Triforce) — Attic's controller settings don't apply.": {
       "localizations": {
         "fr": {
@@ -5279,6 +5607,16 @@
         }
       }
     },
+    "Download Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Télécharger maintenant"
+          }
+        }
+      }
+    },
     "Download libretro’s slang shaders to choose from them.": {
       "localizations": {
         "fr": {
@@ -5305,6 +5643,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Téléchargement du DAT de FinalBurn Neo…"
+          }
+        }
+      }
+    },
+    "Downloading LaunchBox's database…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargement de la base de LaunchBox…"
           }
         }
       }
@@ -6035,6 +6383,26 @@
         }
       }
     },
+    "Find Better for %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En chercher de meilleurs pour %lld"
+          }
+        }
+      }
+    },
+    "Find a Better One": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En chercher un meilleur"
+          }
+        }
+      }
+    },
     "Fix gamelists": {
       "localizations": {
         "fr": {
@@ -6226,6 +6594,36 @@
         }
       }
     },
+    "From LaunchBox": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis LaunchBox"
+          }
+        }
+      }
+    },
+    "From ScreenScraper": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis ScreenScraper"
+          }
+        }
+      }
+    },
+    "From TheGamesDB": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis TheGamesDB"
+          }
+        }
+      }
+    },
     "From another version (%lld)": {
       "localizations": {
         "fr": {
@@ -6328,6 +6726,16 @@
         }
       }
     },
+    "Game Info": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infos des jeux"
+          }
+        }
+      }
+    },
     "Game Info & Art": {
       "localizations": {
         "fr": {
@@ -6415,6 +6823,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeux sans infos"
+          }
+        }
+      }
+    },
+    "Games Missing Info in %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux sans infos dans %@"
+          }
+        }
+      }
+    },
+    "Games Missing Info in the Library": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux sans infos dans la bibliothèque"
           }
         }
       }
@@ -7243,11 +7671,22 @@
       }
     },
     "Integer scaling sizes the picture by whole multiples, so every pixel is the same size, with black bars around it.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "La mise à l’échelle entière agrandit l’image par multiples entiers : tous les pixels ont la même taille, avec des bandes noires autour."
+          }
+        }
+      }
+    },
+    "Integer scaling sizes the picture by whole multiples, so every pixel is the same size, with black bars around it. Bezels frame the game with its picture from the bezels media folder, full screen, when its window fits where the game is drawn.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mise à l’échelle entière agrandit l’image par multiples entiers, pour que chaque pixel ait la même taille, avec des bandes noires autour. Les cadres entourent le jeu de son image du dossier de médias bezels, en plein écran, quand sa fenêtre correspond à l’endroit où le jeu est affiché."
           }
         }
       }
@@ -7282,12 +7721,32 @@
         }
       }
     },
+    "It's this game under another name: don't list it again": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’est ce jeu sous un autre nom : ne plus le lister"
+          }
+        }
+      }
+    },
     "Its %lld games leave Attic, along with their play history, favorites and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ses %lld jeux quittent Attic, avec leur historique, leurs favoris et les infos modifiées. Les fichiers ROM restent où ils sont, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+          }
+        }
+      }
+    },
+    "Its 2D box isn't its cover yet: rescan the system": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sa boîte 2D n’est pas encore sa jaquette : réanalysez le système"
           }
         }
       }
@@ -7318,6 +7777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Son émulateur personnalisé a été supprimé."
+          }
+        }
+      }
+    },
+    "Its description is about “%@”": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sa description parle de « %@ »"
           }
         }
       }
@@ -7419,6 +7888,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les garder : seuls les jeux à qui il manque quelque chose le reçoivent"
+          }
+        }
+      }
+    },
+    "Keeping your systems’ games…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conservation des jeux de vos systèmes…"
           }
         }
       }
@@ -7590,6 +8069,46 @@
         }
       }
     },
+    "LaunchBox": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LaunchBox"
+          }
+        }
+      }
+    },
+    "LaunchBox Games Database": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base de jeux LaunchBox"
+          }
+        }
+      }
+    },
+    "LaunchBox's community database of games: descriptions, facts, box art, 3D boxes, logos, screenshots, fan art, cartridges and discs. It needs no account, and finds games by their file's name, so No-Intro names and MAME sets match well.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La base de jeux communautaire de LaunchBox : descriptions, infos, jaquettes, boîtes 3D, logos, captures, fonds, cartouches et disques. Elle ne demande aucun compte et trouve les jeux par le nom de leur fichier : les noms No-Intro et les sets MAME sont bien reconnus."
+          }
+        }
+      }
+    },
+    "LaunchBox's database doesn't have this system.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La base de LaunchBox n’a pas ce système."
+          }
+        }
+      }
+    },
     "Layout": {
       "localizations": {
         "fr": {
@@ -7656,6 +8175,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bibliothèque"
+          }
+        }
+      }
+    },
+    "Library Health": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Santé de la bibliothèque"
           }
         }
       }
@@ -7861,6 +8390,52 @@
         }
       }
     },
+    "Looking: %lld of %lld, %lld replaced": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Looking: %1$lld of %2$lld, %3$lld replaced"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche : %1$lld sur %2$lld, %3$lld remplacés"
+          }
+        }
+      }
+    },
+    "Looks Right": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C’est correct"
+          }
+        }
+      }
+    },
+    "Looks on ScreenScraper, then TheGamesDB, keeping each file unless a sharper one is found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cherche sur ScreenScraper, puis TheGamesDB, et garde chaque fichier sauf si un plus net est trouvé"
+          }
+        }
+      }
+    },
+    "Looks on ScreenScraper, then TheGamesDB, keeping this file unless a sharper one is found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cherche sur ScreenScraper, puis TheGamesDB, et garde ce fichier sauf si un plus net est trouvé"
+          }
+        }
+      }
+    },
     "Loose Files": {
       "localizations": {
         "fr": {
@@ -7897,6 +8472,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Crée une playlist pour chaque jeu multi-disques, pour qu’il ne compte qu’une fois et que l’émulateur puisse changer de disque, et corrige les playlists faites sous Windows."
+          }
+        }
+      }
+    },
+    "Makes each game's 2D box its cover": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait de la boîte 2D de chaque jeu sa jaquette"
           }
         }
       }
@@ -7938,6 +8523,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fabricant"
+          }
+        }
+      }
+    },
+    "Marquee": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marquee"
           }
         }
       }
@@ -8053,6 +8648,26 @@
         }
       }
     },
+    "Missing Emulator": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Émulateur introuvable"
+          }
+        }
+      }
+    },
+    "Missing or poor media, and game info that's likely another game’s": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias manquants ou de mauvaise qualité, et infos qui sont sans doute celles d’un autre jeu"
+          }
+        }
+      }
+    },
     "Model 2 is demanding to emulate: the heaviest games may run slowly.": {
       "localizations": {
         "fr": {
@@ -8109,6 +8724,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les plus joués"
+          }
+        }
+      }
+    },
+    "Move %lld Broken Files to the Trash": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placer %lld fichiers abîmés dans la corbeille"
           }
         }
       }
@@ -8415,6 +9040,16 @@
         }
       }
     },
+    "No %@: click to choose one, or drop a file here": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas de « %@ » : cliquez pour en choisir un, ou déposez un fichier ici"
+          }
+        }
+      }
+    },
     "No BIOS Needed": {
       "localizations": {
         "fr": {
@@ -8535,12 +9170,32 @@
         }
       }
     },
+    "No Unzipped Copies": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune copie décompressée"
+          }
+        }
+      }
+    },
     "No backup folder": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Aucun dossier de sauvegarde"
+          }
+        }
+      }
+    },
+    "No blank, unreadable or small files, and every 2D box is its game's cover. The table shows what each game is missing.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun fichier vide, illisible ou trop petit, et chaque boîte 2D est la jaquette de son jeu. Le tableau montre ce qui manque à chaque jeu."
           }
         }
       }
@@ -8572,6 +9227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucune collection pour l'instant : activez-en dans Réglages › Collections."
+          }
+        }
+      }
+    },
+    "No description opens by naming another game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune description ne commence en nommant un autre jeu."
           }
         }
       }
@@ -8646,6 +9311,16 @@
         }
       }
     },
+    "No match found in LaunchBox's database for this game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce jeu est introuvable dans la base de LaunchBox."
+          }
+        }
+      }
+    },
     "No match found on ScreenScraper for this ROM.": {
       "localizations": {
         "fr": {
@@ -8682,6 +9357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sans sauvegardes d’état, retour arrière, triches ni ralenti, pour tous les points et les classements."
+          }
+        }
+      }
+    },
+    "No zipped game has been unzipped to be played.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu compressé n’a été décompressé pour être joué."
           }
         }
       }
@@ -8756,6 +9441,16 @@
         }
       }
     },
+    "Not a kind of media this system has": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce système n’a pas ce type de média"
+          }
+        }
+      }
+    },
     "Not a known dump": {
       "localizations": {
         "fr": {
@@ -8792,6 +9487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Non compatible"
+          }
+        }
+      }
+    },
+    "Not downloaded yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore téléchargée."
           }
         }
       }
@@ -8927,12 +9632,32 @@
         }
       }
     },
+    "Nothing Better Found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien de mieux trouvé"
+          }
+        }
+      }
+    },
     "Nothing Logged Yet": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Journal vide pour l’instant"
+          }
+        }
+      }
+    },
+    "Nothing Looks Wrong": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien ne semble faux"
           }
         }
       }
@@ -8983,6 +9708,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rien de nouveau pour « %@ » : il a déjà tout ce qui a été trouvé. Utilisez Récupérer les infos › Remplacer les infos existantes pour les écraser."
+          }
+        }
+      }
+    },
+    "Nothing new found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien de nouveau trouvé"
+          }
+        }
+      }
+    },
+    "Nothing to Fix": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à corriger"
           }
         }
       }
@@ -9340,6 +10085,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisit un jeu au hasard parmi ceux affichés (⌥⌘R)"
+          }
+        }
+      }
+    },
+    "Pick another emulator for this game only; the system's other games keep theirs": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un autre émulateur pour ce jeu seulement ; les autres jeux du système gardent le leur"
           }
         }
       }
@@ -9961,6 +10716,16 @@
         }
       }
     },
+    "Reading your games’ info…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture des infos de vos jeux…"
+          }
+        }
+      }
+    },
     "Reads this system's folder again: games added or removed in the Finder show up.": {
       "extractionState": "stale",
       "localizations": {
@@ -10175,6 +10940,16 @@
         }
       }
     },
+    "Refreshing the library… Click to stop (⌘.)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualisation de la bibliothèque… Cliquez pour arrêter (⌘.)"
+          }
+        }
+      }
+    },
     "Reinstall Latest Version": {
       "localizations": {
         "fr": {
@@ -10245,6 +11020,16 @@
         }
       }
     },
+    "Remove %@ of Unzipped Copies?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer %@ de copies décompressées ?"
+          }
+        }
+      }
+    },
     "Remove Games": {
       "localizations": {
         "fr": {
@@ -10286,6 +11071,7 @@
       }
     },
     "Remove Unzipped Copies": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -10296,11 +11082,22 @@
       }
     },
     "Remove Unzipped Copies (%@)": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Supprimer les copies décompressées (%@)"
+          }
+        }
+      }
+    },
+    "Remove Unzipped Copies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer les copies décompressées…"
           }
         }
       }
@@ -10461,6 +11258,26 @@
         }
       }
     },
+    "Replace Info of %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer les infos de %lld"
+          }
+        }
+      }
+    },
+    "Replace Info of All": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer les infos de tous"
+          }
+        }
+      }
+    },
     "Replace it all": {
       "localizations": {
         "fr": {
@@ -10501,6 +11318,16 @@
         }
       }
     },
+    "Replace…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer…"
+          }
+        }
+      }
+    },
     "Request API access on screenscraper.fr": {
       "localizations": {
         "fr": {
@@ -10517,6 +11344,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Obligatoire"
+          }
+        }
+      }
+    },
+    "Rescan %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réanalyser %@"
           }
         }
       }
@@ -10961,6 +11798,16 @@
         }
       }
     },
+    "Scrape %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupérer %@"
+          }
+        }
+      }
+    },
     "Scrape %lld Missing From": {
       "localizations": {
         "fr": {
@@ -11051,12 +11898,32 @@
         }
       }
     },
+    "Scrapes these games again, replacing the info they have": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupère à nouveau les infos de ces jeux, en remplaçant celles qu’ils ont"
+          }
+        }
+      }
+    },
     "Scraping": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Récupération des infos"
+          }
+        }
+      }
+    },
+    "Scraping %@…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupération de %@…"
           }
         }
       }
@@ -11370,6 +12237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisissez un émulateur par défaut pour ce système dans les Réglages, ou choisissez-en un dans « Lancer avec »."
+          }
+        }
+      }
+    },
+    "Set up ScreenScraper or TheGamesDB in Settings first": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configurez d’abord ScreenScraper ou TheGamesDB dans les réglages"
           }
         }
       }
@@ -11775,6 +12652,22 @@
         }
       }
     },
+    "Small: %lld × %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Small: %1$lld × %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petit : %1$lld × %2$lld"
+          }
+        }
+      }
+    },
     "Some chips aren't the ones this emulator's version expects: the set comes from another version of MAME or FinalBurn Neo.": {
       "localizations": {
         "fr": {
@@ -11915,6 +12808,16 @@
         }
       }
     },
+    "Source": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source"
+          }
+        }
+      }
+    },
     "Split archives need unar: brew install unar": {
       "localizations": {
         "fr": {
@@ -11986,6 +12889,16 @@
         }
       }
     },
+    "Status": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "État"
+          }
+        }
+      }
+    },
     "Steam games get their artwork from the Steam store. When it has no portrait cover, hero picture or logo for a game, Attic looks on SteamGridDB, which needs a free API key: sign in with Steam on steamgriddb.com, then generate one under Preferences › API.": {
       "localizations": {
         "fr": {
@@ -12046,12 +12959,52 @@
         }
       }
     },
+    "Stop Refreshing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêter l’actualisation"
+          }
+        }
+      }
+    },
+    "Stop Scanning": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêter l’analyse"
+          }
+        }
+      }
+    },
+    "Stop Scraping": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêter la récupération"
+          }
+        }
+      }
+    },
     "Stopped.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Arrêté."
+          }
+        }
+      }
+    },
+    "Stopped. ": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrêté. "
           }
         }
       }
@@ -12166,6 +13119,26 @@
         }
       }
     },
+    "System Default (%@)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par défaut du système (%@)"
+          }
+        }
+      }
+    },
+    "System Default (None)": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par défaut du système (aucun)"
+          }
+        }
+      }
+    },
     "System Settings…": {
       "localizations": {
         "fr": {
@@ -12276,6 +13249,16 @@
         }
       }
     },
+    "That isn't a kind of file a %@ can be.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce type de fichier ne convient pas pour « %@ »."
+          }
+        }
+      }
+    },
     "The %@ core isn't installed.": {
       "localizations": {
         "fr": {
@@ -12372,6 +13355,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur"
+          }
+        }
+      }
+    },
+    "The first check opens every picture and takes a minute or so; later ones only look at what changed.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La première vérification ouvre chaque image et prend une minute environ ; les suivantes ne regardent que ce qui a changé."
           }
         }
       }
@@ -12963,6 +13956,16 @@
         }
       }
     },
+    "Update Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettre à jour"
+          }
+        }
+      }
+    },
     "Update available. Installed version built %@.": {
       "localizations": {
         "fr": {
@@ -13411,6 +14414,16 @@
         }
       }
     },
+    "What your library holds and what you play": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que contient votre bibliothèque et ce à quoi vous jouez"
+          }
+        }
+      }
+    },
     "What's left in Batocera's media folders": {
       "localizations": {
         "fr": {
@@ -13427,6 +14440,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Roue"
+          }
+        }
+      }
+    },
+    "Where Attic Is": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celui d’Attic"
           }
         }
       }
@@ -13841,6 +14864,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "fan art"
+          }
+        }
+      }
+    },
+    "gamesdb.launchbox-app.com": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gamesdb.launchbox-app.com"
           }
         }
       }

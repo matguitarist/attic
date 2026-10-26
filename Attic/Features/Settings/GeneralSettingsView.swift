@@ -197,6 +197,7 @@ struct GeneralSettingsView: View {
 
                     if scanCoordinator.state == .scanning {
                         ProgressView().controlSize(.small)
+                        Button("Stop") { scanCoordinator.stop() }
                     }
                 }
                 switch scanCoordinator.state {

@@ -33,10 +33,17 @@ final class CabinetThemeStore {
 
     /// As they came, without adjustments.
     private(set) var themes: [Installed] = []
+    /// Choosing a theme brings it as it came: adjustments made to it the
+    /// last time it was chosen don't follow it back.
     var selectedID: String {
         didSet {
             UserDefaults.standard.set(selectedID, forKey: Self.selectedKey)
-            refresh()
+            if selectedID != oldValue, adjustments[selectedID] != nil {
+                adjustments[selectedID] = nil
+                saveAdjustments()
+            } else {
+                refresh()
+            }
         }
     }
 
@@ -54,11 +61,11 @@ final class CabinetThemeStore {
     static let fileName = "theme.json"
 
     init() {
-        selectedID = UserDefaults.standard.string(forKey: Self.selectedKey) ?? CabinetTheme.showcase.id
         if let data = UserDefaults.standard.data(forKey: Self.adjustmentsKey),
            let stored = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]] {
             adjustments = stored
         }
+        selectedID = UserDefaults.standard.string(forKey: Self.selectedKey) ?? CabinetTheme.showcase.id
         reload()
     }
 
@@ -220,10 +227,11 @@ final class CabinetThemeStore {
         - `details`: `media` (`none`, `cover`, `screenshot`, `fanart`),
           `playsVideo`, `showsLogo` (in place of the title), `titlePosition`
           (`top`, `bottom`: where the grid's panel puts it), `side`
-          (`leading`, `trailing`: the grid's panel and the game page's
-          art and facts), `showsMetadata`,
+          (`leading`, `trailing`: the grid's panel, the list's details and
+          the game page's art and facts), `showsMetadata`,
           `showsDescription`, `descriptionLines`, `showsPhysicalMedia` (the
-          cartridge or disc at the corner of the box on a game's page).
+          cartridge or disc at the corner of the box on a game's page),
+          `showsArt` (the list's tile art beside its picture).
         - `header`: `showsLogos` (systems as logos), `showsClock`,
           `showsGameCount`.
         - `menu`: the menu Start opens. `position` (`center`, `leading`,
@@ -233,7 +241,12 @@ final class CabinetThemeStore {
           systems, B going back to them), `showsStats`, `playsVideo` (a
           system's own video where its picture is), `artFolder` (a
           folder in the theme with a picture per system, named after its
-          ROMs folder: `systems/snes.png`; without one, its covers fan out).
+          ROMs folder: `systems/snes.png`; without one, its covers fan out),
+          `style` (`showcase`: the focused one's picture and numbers over a
+          strip of cards; `carousel`: the logos across a band, as in
+          Batocera and RetroBat, the system's picture or fan art above it
+          while `showsPicture`), `band` (the carousel band's color; unset,
+          `surface`).
         - `showsHints`: the controller buttons along the bottom.
 
         """
@@ -243,6 +256,14 @@ final class CabinetThemeStore {
 
 extension ThemeColor {
     var color: Color { Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha) }
+
+    /// Light enough that dark things read on it.
+    var isLight: Bool { alpha > 0.5 && 0.2126 * red + 0.7152 * green + 0.0722 * blue > 0.6 }
+}
+
+extension CabinetTheme {
+    /// The systems carousel's band.
+    var carouselBand: ThemeColor { systems.band ?? palette.surface }
 }
 
 extension CabinetTheme {

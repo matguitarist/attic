@@ -6,10 +6,10 @@ import Testing
 struct SystemSettingsSupportTests {
     @Test func offersWhatTheEmulatorCanDo() {
         let snes = SystemSettingsSupport.settings(for: .snes, backend: .retroArch(coreIdentifier: "snes9x_libretro"))
-        #expect(snes == [.look, .integerScaling, .runAhead, .rewind, .resume])
+        #expect(snes == [.look, .integerScaling, .bezels, .runAhead, .rewind, .resume])
 
         let psxCore = SystemSettingsSupport.settings(for: .psx, backend: .retroArch(coreIdentifier: "swanstation_libretro"))
-        #expect(psxCore == [.look, .integerScaling, .internalResolution, .widescreen, .geometryCorrection, .resume])
+        #expect(psxCore == [.look, .integerScaling, .bezels, .internalResolution, .widescreen, .geometryCorrection, .resume])
 
         #expect(SystemSettingsSupport.settings(for: .psx, backend: .duckStation) == [.internalResolution, .widescreen, .geometryCorrection, .rewind])
         #expect(SystemSettingsSupport.settings(for: .gamecube, backend: .dolphin) == [.internalResolution, .widescreen])
@@ -190,6 +190,53 @@ struct SystemSettingsLaunchTests {
         #expect(appended["video_scale_integer"] == "true")
     }
 
+    /// The game's bezel for its launch only: the next game without one
+    /// gets the user's own overlay settings back.
+    @Test func aBezelIsShownForItsGameOnly() throws {
+        try folder.createStructure()
+        try "video_fullscreen = \"true\"\nvideo_scale_integer = \"true\"\n".write(to: folder.retroArchConfigFile, atomically: true, encoding: .utf8)
+        let bezel = folder.root.appending(path: "Media/snes/bezels/Game.png")
+        _ = try folder.prepareRetroArchLaunch(for: .snes, bezel: bezel)
+        var appended = EmulationFolder.parseRetroArchConfig(try String(contentsOf: folder.retroArchPathsConfigFile, encoding: .utf8))
+        #expect(appended["input_overlay_enable"] == "true")
+        let overlay = try #require(appended["input_overlay"])
+        #expect(try String(contentsOfFile: overlay, encoding: .utf8).contains("overlay0_overlay = \"\(bezel.path)\""))
+        #expect(appended["video_scale_integer"] == "false")
+        try simulateRetroArchSavingOnExit()
+
+        _ = try folder.prepareRetroArchLaunch(for: .snes)
+        appended = EmulationFolder.parseRetroArchConfig(try String(contentsOf: folder.retroArchPathsConfigFile, encoding: .utf8))
+        #expect(appended["input_overlay_enable"] == "false")
+        #expect(appended["video_scale_integer"] == "true")
+
+        // Turned off for the system: no bezel even when there's one.
+        var off = SystemSettings()
+        off.bezels = false
+        _ = try folder.prepareRetroArchLaunch(for: .snes, systemSettings: off, bezel: bezel)
+        appended = EmulationFolder.parseRetroArchConfig(try String(contentsOf: folder.retroArchPathsConfigFile, encoding: .utf8))
+        #expect(appended["input_overlay_enable"] != "true")
+
+        // In a window, the bezel wouldn't line up.
+        try "video_fullscreen = \"false\"\n".write(to: folder.retroArchConfigFile, atomically: true, encoding: .utf8)
+        _ = try folder.prepareRetroArchLaunch(for: .snes, bezel: bezel)
+        appended = EmulationFolder.parseRetroArchConfig(try String(contentsOf: folder.retroArchPathsConfigFile, encoding: .utf8))
+        #expect(appended["input_overlay_enable"] != "true")
+    }
+
+    @Test func aBezelFitsWhenItsWindowIsWhereTheGameIsDrawn() {
+        let sixteenByNine = 16.0 / 9
+        // The Bezel Project's: a 4:3 window, full height, in the middle.
+        #expect(SystemSettingsSupport.bezelFits(window: CGRect(x: 0.125, y: 0, width: 0.75, height: 1), screenAspect: sixteenByNine))
+        // The NES's, a little inside the picture: it hides the overscan.
+        #expect(SystemSettingsSupport.bezelFits(window: CGRect(x: 0.141, y: 0.017, width: 0.719, height: 0.967), screenAspect: sixteenByNine))
+        // A vertical arcade game's.
+        #expect(SystemSettingsSupport.bezelFits(window: CGRect(x: 0.289, y: 0, width: 0.422, height: 1), screenAspect: sixteenByNine))
+        // A handheld's small screen.
+        #expect(!SystemSettingsSupport.bezelFits(window: CGRect(x: 0.3, y: 0.25, width: 0.4, height: 0.5), screenAspect: sixteenByNine))
+        // A 4:3 window on a 16:10 display, where the game is drawn wider.
+        #expect(!SystemSettingsSupport.bezelFits(window: CGRect(x: 0.125, y: 0, width: 0.75, height: 1), screenAspect: 16.0 / 10))
+    }
+
     @Test func aValueTheUserChangedInRetroArchIsLeftAlone() {
         let owned = ["rewind_enable": EmulationFolder.OwnedValue(written: "true", original: "false")]
         let result = EmulationFolder.reconcileKeepingOriginals(
@@ -197,6 +244,18 @@ struct SystemSettingsLaunchTests {
         )
         #expect(result.write.isEmpty)
         #expect(result.owned.isEmpty)
+    }
+
+    /// RetroArch saves the overlay Attic set as "~/…": still Attic's, so the
+    /// user's own overlay comes back.
+    @Test func aPathRetroArchSavedUnderTheHomeFolderIsStillAttics() {
+        let written = FileManager.default.homeDirectoryForCurrentUser.appending(path: "Emulation/attic-bezel.cfg").path
+        let owned = ["input_overlay": EmulationFolder.OwnedValue(written: written, original: "")]
+        let current = ["input_overlay": "~/Emulation/attic-bezel.cfg"]
+        let restored = EmulationFolder.reconcileKeepingOriginals(desired: [], owned: owned, current: current, fallback: { _ in nil })
+        #expect(restored.write.map(\.value) == [""])
+        let again = EmulationFolder.reconcileKeepingOriginals(desired: [("input_overlay", written)], owned: owned, current: current, fallback: { _ in nil })
+        #expect(again.owned["input_overlay"]?.original == "")
     }
 
     @Test func coreOptionsAreSetAndPutBack() throws {

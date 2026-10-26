@@ -1,10 +1,12 @@
 import AppKit
 import SwiftUI
 import AtticModels
+import AtticPersistence
+import SwiftData
 
 /// The pages of the menu Start opens in Cabinet Mode.
 enum CabinetMenuPage: Hashable {
-    case main, view, theme, interface, controller, library
+    case main, view, theme, interface, controller, library, scrape
 
     var title: LocalizedStringKey {
         switch self {
@@ -14,6 +16,7 @@ enum CabinetMenuPage: Hashable {
         case .interface: "Interface"
         case .controller: "Controller"
         case .library: "Library"
+        case .scrape: "Scrape Info"
         }
     }
 }
@@ -54,6 +57,9 @@ struct CabinetMenuView: View {
     /// Closes the menu and picks a random game, or opens the search.
     let onSurprise: () -> Void
     let onSearch: () -> Void
+    /// The game in front and the section being browsed, for Scrape Info.
+    var game: Game? = nil
+    var section: CabinetSection? = nil
 
     @Environment(\.cabinetTheme) private var installed
     @Environment(CabinetBrowse.self) private var browse
@@ -62,6 +68,14 @@ struct CabinetMenuView: View {
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(ScanCoordinator.self) private var scanCoordinator
     @Environment(RomsRootsStore.self) private var romsRootsStore
+    @Environment(ScrapeCoordinator.self) private var scrapeCoordinator
+    @Environment(ScreenScraperCredentialsStore.self) private var screenScraperCredentialsStore
+    @Environment(TheGamesDBCredentialsStore.self) private var theGamesDBCredentialsStore
+    @Environment(\.modelContext) private var modelContext
+    @AppStorage("cabinetScrapeSource") private var scrapeSourceName = "LaunchBox"
+    @AppStorage(CabinetDisplay.key) private var displayName = ""
+    /// Bumped as screens come and go, for the Display choices.
+    @State private var screensRevision = 0
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetView.startInCabinetKey) private var startsInCabinet = false
@@ -137,6 +151,7 @@ struct CabinetMenuView: View {
             if let newEvent { handle(newEvent.command) }
         }
         .onChange(of: page) { armedID = nil }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in screensRevision += 1 }
     }
 
     private func alignment(_ position: CabinetTheme.Menu.Position) -> Alignment {
@@ -322,6 +337,7 @@ struct CabinetMenuView: View {
         case .interface: interfaceItems
         case .controller: controllerItems
         case .library: libraryItems
+        case .scrape: scrapeItems
         }
     }
 
@@ -336,6 +352,7 @@ struct CabinetMenuView: View {
             CabinetMenuItem(id: "interface", title: String(localized: "Interface"), symbol: "rectangle.on.rectangle", kind: .page(.interface)),
             CabinetMenuItem(id: "controller", title: String(localized: "Controller"), symbol: gamepad.controllerSymbol, kind: .page(.controller)),
             CabinetMenuItem(id: "library", title: String(localized: "Library"), symbol: "books.vertical", kind: .page(.library)),
+            CabinetMenuItem(id: "scrape", title: String(localized: "Scrape Info"), symbol: "photo.badge.arrow.down", kind: .page(.scrape)),
             CabinetMenuItem(id: "exit", title: String(localized: "Exit Cabinet Mode"), symbol: "rectangle.portrait.and.arrow.right",
                             kind: .action(confirm: false, perform: onExit)),
             CabinetMenuItem(id: "quit", title: String(localized: "Quit Attic"), symbol: "power",
@@ -434,6 +451,27 @@ struct CabinetMenuView: View {
                             kind: .toggle(Binding(get: { !videoPreviewsMuted }, set: { videoPreviewsMuted = !$0 }))),
             CabinetMenuItem(id: "start", title: String(localized: "Open Cabinet Mode at launch"), symbol: "play.tv",
                             kind: .toggle($startsInCabinet))
+        ] + displayItems
+    }
+
+    /// Which screen it plays on: an AirPlay one once connected.
+    private var displayItems: [CabinetMenuItem] {
+        _ = screensRevision
+        let names = NSScreen.screens.map(\.localizedName)
+        // A chosen screen not connected now stays listed, so it's kept.
+        let chosen = displayName
+        let options = [""] + names + (chosen.isEmpty || names.contains(chosen) ? [] : [chosen])
+        return [
+            CabinetMenuItem(id: "display", title: String(localized: "Display"), symbol: "tv.and.mediabox",
+                            kind: .choice(options: options.map { $0.isEmpty ? String(localized: "Where Attic Is") : $0 }, selection: Binding(
+                                get: { options.firstIndex(of: displayName) ?? 0 },
+                                set: { index in
+                                    displayName = options[index]
+                                    if let window = CabinetWindows.cabinet { CabinetDisplay.move(window) }
+                                }
+                            ))),
+            CabinetMenuItem(id: "airplay", title: String(localized: "Connect an AirPlay Display…"), symbol: "airplayvideo",
+                            kind: .action(confirm: false, perform: { CabinetDisplay.openDisplaySettings() }))
         ]
     }
 
@@ -479,14 +517,93 @@ struct CabinetMenuView: View {
     private var libraryItems: [CabinetMenuItem] {
         let isScanning = scanCoordinator.state == .scanning
         return [
-            CabinetMenuItem(id: "rescan", title: isScanning ? String(localized: "Scanning…") : String(localized: "Rescan Library"),
-                            symbol: "arrow.triangle.2.circlepath",
+            CabinetMenuItem(id: "rescan", title: isScanning ? String(localized: "Stop Scanning") : String(localized: "Rescan Library"),
+                            symbol: isScanning ? "stop.circle" : "arrow.triangle.2.circlepath",
                             kind: .action(confirm: false, perform: {
-                                guard !isScanning else { return }
-                                Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+                                if isScanning {
+                                    scanCoordinator.stop()
+                                } else {
+                                    Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
+                                }
                             })),
             CabinetMenuItem(id: "summary", title: String(localized: "Last scan"), symbol: "info.circle",
                             kind: .info(scanCoordinator.lastScanSummary ?? "—"))
         ]
+    }
+
+    // MARK: - Scrape Info
+
+    /// The sources there's an account for; LaunchBox needs none.
+    private var scrapeSources: [ScrapeCoordinator.ScraperSource] {
+        var sources: [ScrapeCoordinator.ScraperSource] = []
+        if screenScraperCredentialsStore.isConfigured { sources.append(.screenScraper(screenScraperCredentialsStore.credentials)) }
+        if theGamesDBCredentialsStore.isConfigured { sources.append(.theGamesDB(theGamesDBCredentialsStore.credentials)) }
+        sources.append(.launchBox)
+        return sources
+    }
+
+    private var scrapeItems: [CabinetMenuItem] {
+        let sources = scrapeSources
+        let index = sources.firstIndex { $0.name == scrapeSourceName } ?? sources.count - 1
+        let source = sources[index]
+        let isBusy = scrapeCoordinator.isBatchRunning || scrapeCoordinator.state == .scraping
+        var items = [
+            CabinetMenuItem(id: "source", title: String(localized: "Source"), symbol: "server.rack",
+                            kind: .choice(options: sources.map(\.name), selection: Binding(
+                                get: { index },
+                                set: { scrapeSourceName = sources[$0].name }
+                            )))
+        ]
+        if let game, !isBusy {
+            items.append(CabinetMenuItem(id: "game", title: String(localized: "Scrape \(game.title)"), symbol: "gamecontroller",
+                                         kind: .action(confirm: false, perform: {
+                                             Task { await scrapeCoordinator.scrape(game, from: source, force: true) }
+                                         })))
+        }
+        if let section, !isBusy {
+            items += [
+                CabinetMenuItem(id: "missing", title: String(localized: "Games Missing Info in \(section.title)"), symbol: "photo.badge.arrow.down",
+                                kind: .action(confirm: false, perform: {
+                                    scrapeCoordinator.scrape(section.selection, from: source, force: false, in: modelContext)
+                                })),
+                CabinetMenuItem(id: "all", title: String(localized: "All Games in \(section.title), Replacing Info"), symbol: "arrow.triangle.2.circlepath",
+                                kind: .action(confirm: true, perform: {
+                                    scrapeCoordinator.scrape(section.selection, from: source, force: true, in: modelContext)
+                                }))
+            ]
+        }
+        if !isBusy {
+            items.append(CabinetMenuItem(id: "library", title: String(localized: "Games Missing Info in the Library"), symbol: "books.vertical",
+                                         kind: .action(confirm: false, perform: {
+                                             scrapeCoordinator.scrape(.allGames, from: source, force: false, in: modelContext)
+                                         })))
+        }
+        if scrapeCoordinator.isBatchRunning {
+            items.append(CabinetMenuItem(id: "stop", title: String(localized: "Stop Scraping"), symbol: "stop.circle",
+                                         kind: .action(confirm: false, perform: { scrapeCoordinator.cancelBatch() })))
+        }
+        if let status = scrapeStatus {
+            items.append(CabinetMenuItem(id: "status", title: String(localized: "Status"), symbol: "info.circle", kind: .info(status)))
+        }
+        return items
+    }
+
+    /// What the last or current scrape is doing.
+    private var scrapeStatus: String? {
+        switch scrapeCoordinator.batchState {
+        case .running(let completed, let total):
+            return String(localized: "\(completed) of \(total) games")
+        case .finished(let scraped, let alreadyPresent, let failed):
+            return String(localized: "\(scraped) scraped, \(alreadyPresent) already had it, \(failed) not found")
+        case .idle:
+            break
+        }
+        switch scrapeCoordinator.activity {
+        case .scraping(let title, _)?: return String(localized: "Scraping \(title)…")
+        case .updated(_, let fields)?: return fields.isEmpty ? String(localized: "Done") : fields.joined(separator: ", ")
+        case .nothingNew?: return String(localized: "Nothing new found")
+        case .failed(_, let message)?: return message
+        case nil: return nil
+        }
     }
 }

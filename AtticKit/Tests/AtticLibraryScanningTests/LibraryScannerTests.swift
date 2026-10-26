@@ -100,6 +100,17 @@ import Testing
         #expect(result.issues.isEmpty)
     }
 
+    /// Stopping a refresh: a cancelled scan goes no further.
+    @Test func aCancelledScanStops() async throws {
+        let (esdeRoot, _) = try makeMixedRoot()
+        let scanner = try isolatedScanner()
+        let systems = await Task.detached {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return scanner.scan(romsRootURL: esdeRoot).systems.count
+        }.value
+        #expect(systems == 0)
+    }
+
     @Test func scanningMultipleRootsMergesResults() throws {
         let (esdeRoot, batoceraRoot) = try makeMixedRoot()
         let result = try isolatedScanner().scan(romsRootURLs: [esdeRoot, batoceraRoot])

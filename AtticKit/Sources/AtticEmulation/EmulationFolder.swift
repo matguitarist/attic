@@ -119,11 +119,12 @@ public struct EmulationFolder: Sendable, Hashable {
         systemSettings: SystemSettings = SystemSettings(),
         savedConfig: [String: String] = [:],
         previouslyWritten: [String: String] = [:],
-        systemSettingsOwned: [String: OwnedValue] = [:]
+        systemSettingsOwned: [String: OwnedValue] = [:],
+        bezelOverlay: URL? = nil
     ) -> String {
         retroArchLaunchConfig(
             for: system, controller: controller, systemSettings: systemSettings, savedConfig: savedConfig,
-            previouslyWritten: previouslyWritten, systemSettingsOwned: systemSettingsOwned
+            previouslyWritten: previouslyWritten, systemSettingsOwned: systemSettingsOwned, bezelOverlay: bezelOverlay
         ).text
     }
 
@@ -133,7 +134,9 @@ public struct EmulationFolder: Sendable, Hashable {
         systemSettings: SystemSettings = SystemSettings(),
         savedConfig: [String: String],
         previouslyWritten: [String: String],
-        systemSettingsOwned: [String: OwnedValue] = [:]
+        systemSettingsOwned: [String: OwnedValue] = [:],
+        bezelOverlay: URL? = nil,
+        monitor: Int? = nil
     ) -> (text: String, controllerSettingsWritten: [String: String], systemSettingsOwned: [String: OwnedValue]) {
         var settings: [(key: String, value: String)] = [
             ("system_directory", bios.path),
@@ -150,7 +153,11 @@ public struct EmulationFolder: Sendable, Hashable {
             ("rgui_config_directory", retroArchConfigDirectory.appending(path: "overrides").path),
             ("input_remapping_directory", retroArchConfigDirectory.appending(path: "remaps").path),
             ("global_core_options", "true"),
-            ("core_options_path", retroArchCoreOptionsFile.path)
+            ("core_options_path", retroArchCoreOptionsFile.path),
+            // RetroArch starts behind Attic and comes forward a moment
+            // later; with "pause when not focused" it sometimes misses that
+            // and stays paused in front, on a black screen.
+            ("pause_nonactive", "false")
         ]
         let controllerSettings = OwnedSettings.reconcile(
             desired: Self.retroArchControllerSettings(controller, savedConfig: savedConfig),
@@ -162,11 +169,13 @@ public struct EmulationFolder: Sendable, Hashable {
         // System Settings. RetroArch saves these into retroarch.cfg on
         // exit like anything else, so each one is put back to the user's
         // own value once the launched system no longer sets it.
+        // The screen Cabinet Mode is on, given back after like these.
+        let screen = monitor.map { [(key: "video_monitor_index", value: String($0))] } ?? []
         let systemResult = Self.reconcileKeepingOriginals(
-            desired: SystemSettingsSupport.retroArchConfig(systemSettings, system: system),
+            desired: SystemSettingsSupport.retroArchConfig(systemSettings, system: system, bezelOverlay: bezelOverlay) + screen,
             owned: systemSettingsOwned,
             current: savedConfig,
-            fallback: { SystemSettingsSupport.retroArchDefaults[$0] }
+            fallback: { SystemSettingsSupport.retroArchDefaults[$0] ?? ($0 == "video_monitor_index" ? "0" : nil) }
         )
         settings += systemResult.write
         let text = "# Written by Attic before every launch — edits here are overwritten.\n"
@@ -180,7 +189,9 @@ public struct EmulationFolder: Sendable, Hashable {
         for system: CanonicalSystemID,
         controller: ControllerSettings = .default,
         systemSettings: SystemSettings = SystemSettings(),
-        achievements: AchievementsAccount? = nil
+        achievements: AchievementsAccount? = nil,
+        bezel: URL? = nil,
+        monitor: Int? = nil
     ) throws -> (config: URL, appendConfig: URL) {
         try createStructure()
         for directory in [saves(for: system), states(for: system)] {
@@ -189,9 +200,17 @@ public struct EmulationFolder: Sendable, Hashable {
         let saved = Self.parseRetroArchConfig((try? String(contentsOf: retroArchConfigFile, encoding: .utf8)) ?? "")
         // Before this record existed, Attic only ever set the quit combo.
         let previous = readOwnedSettings("retroarch") ?? ["input_quit_gamepad_combo": "4"]
+        // The game's bezel, as the overlay file RetroArch reads; only full
+        // screen, where it lines up with the game.
+        let bezel = saved["video_fullscreen"] == "true" ? bezel : nil
+        let overlay = bezel.map { _ in retroArchConfigDirectory.appending(path: "attic-bezel.cfg") }
+        if let bezel, let overlay {
+            try SystemSettingsSupport.bezelOverlayConfig(bezel).write(to: overlay, atomically: true, encoding: .utf8)
+        }
         let config = retroArchLaunchConfig(
             for: system, controller: controller, systemSettings: systemSettings, savedConfig: saved,
-            previouslyWritten: previous, systemSettingsOwned: readOwned("retroarch-system") ?? [:]
+            previouslyWritten: previous, systemSettingsOwned: readOwned("retroarch-system") ?? [:], bezelOverlay: overlay,
+            monitor: monitor
         )
         let text = config.text.hasSuffix("\n") || config.text.isEmpty ? config.text : config.text + "\n"
         try (text + Self.retroArchAchievementSettings(achievements) + Self.retroArchLogSettings)
@@ -402,13 +421,18 @@ public struct EmulationFolder: Sendable, Hashable {
     ) -> (write: [(key: String, value: String)], owned: [String: OwnedValue]) {
         var write = desired
         var newOwned: [String: OwnedValue] = [:]
+        // RetroArch saves a path under the home folder as "~/…".
+        func isWritten(_ record: OwnedValue, _ key: String) -> Bool {
+            guard let value = current[key] else { return false }
+            return value == record.written || (value as NSString).expandingTildeInPath == (record.written as NSString).expandingTildeInPath
+        }
         for (key, value) in desired {
             // The user's own value is what was there before Attic set it —
             // unless they've changed it since, in the emulator.
-            let original = owned[key].map { current[key] == $0.written ? $0.original : current[key] } ?? current[key]
+            let original = owned[key].map { isWritten($0, key) ? $0.original : current[key] } ?? current[key]
             newOwned[key] = OwnedValue(written: value, original: original)
         }
-        for (key, record) in owned.sorted(by: { $0.key < $1.key }) where newOwned[key] == nil && current[key] == record.written {
+        for (key, record) in owned.sorted(by: { $0.key < $1.key }) where newOwned[key] == nil && isWritten(record, key) {
             if let reset = record.original ?? fallback(key) { write.append((key, reset)) }
         }
         return (write, newOwned)

@@ -28,6 +28,16 @@ public enum ControllerFamily: String, Sendable, Codable, CaseIterable, Hashable 
         return .xbox
     }
 
+    /// The SF Symbol for the pad called `name`. Pads with Xbox's buttons
+    /// but not Microsoft's (Amazon's Luna, most unbranded ones) get the
+    /// generic controller rather than Xbox's logo.
+    public static func symbol(name: String?, category: String? = nil) -> String {
+        let family = detect(name: name, category: category)
+        let text = [name, category].compactMap { $0?.lowercased() }.joined(separator: " ")
+        if family == .xbox, !text.contains("xbox"), !text.contains("microsoft") { return "gamecontroller.fill" }
+        return family.symbol
+    }
+
     /// An SF Symbol for the controller itself. Only PlayStation and Xbox
     /// have their own; everything else is a generic controller.
     public var symbol: String {

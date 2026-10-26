@@ -38,4 +38,12 @@ struct ControllerFamilyTests {
         #expect(ControllerFamily.keyboard.glyph(for: .right, layout: .nintendo) == .symbol("return"))
         #expect(ControllerFamily.keyboard.glyph(for: .bottom, layout: .nintendo) == .symbol("escape"))
     }
+
+    @Test func onlyAnXboxPadShowsXboxsLogo() {
+        #expect(ControllerFamily.symbol(name: "Xbox Wireless Controller") == "xbox.logo")
+        #expect(ControllerFamily.symbol(name: "Controller", category: "Xbox One") == "xbox.logo")
+        #expect(ControllerFamily.symbol(name: "Luna Gamepad") == "gamecontroller.fill")
+        #expect(ControllerFamily.symbol(name: "Stadia Controller") == "gamecontroller.fill")
+        #expect(ControllerFamily.symbol(name: "DualSense Wireless Controller") == "playstation.logo")
+    }
 }

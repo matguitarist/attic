@@ -2,12 +2,13 @@ import Foundation
 import AtticEmulation
 import AtticLibraryScanning
 import Observation
+import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticScraping
 
-/// Fetches missing metadata/art for a single game from either ScreenScraper
-/// or TheGamesDB and merges it in. Lives in the app layer (like
+/// Fetches missing metadata/art for a single game from ScreenScraper,
+/// TheGamesDB or LaunchBox's database and merges it in. Lives in the app layer (like
 /// `ScanCoordinator`) since it touches the SwiftData `Game` model directly,
 /// keeping `AtticScraping` itself persistence-ignorant and independently
 /// testable.
@@ -29,11 +30,14 @@ final class ScrapeCoordinator {
     enum ScraperSource {
         case screenScraper(ScreenScraperCredentials)
         case theGamesDB(TheGamesDBCredentials)
+        /// LaunchBox's games database, offline: no account.
+        case launchBox
 
         var name: String {
             switch self {
             case .screenScraper: "ScreenScraper"
             case .theGamesDB: "TheGamesDB"
+            case .launchBox: "LaunchBox"
             }
         }
     }
@@ -49,19 +53,25 @@ final class ScrapeCoordinator {
 
     private(set) var state: State = .idle
     private(set) var batchState: BatchState = .idle
+    var isBatchRunning: Bool {
+        if case .running = batchState { true } else { false }
+    }
     private(set) var activity: Activity?
     private var activityClearTask: Task<Void, Never>?
     private var batchTask: Task<Void, Never>?
 
     private let screenScraperClient: ScreenScraperClientProtocol
     private let theGamesDBClient: TheGamesDBClientProtocol
+    let launchBox: LaunchBoxStore
 
     init(
         screenScraperClient: ScreenScraperClientProtocol = ScreenScraperClient(),
-        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(namesCacheURL: ScrapeCoordinator.theGamesDBNamesCacheURL)
+        theGamesDBClient: TheGamesDBClientProtocol = TheGamesDBClient(namesCacheURL: ScrapeCoordinator.theGamesDBNamesCacheURL),
+        launchBox: LaunchBoxStore = LaunchBoxStore()
     ) {
         self.screenScraperClient = screenScraperClient
         self.theGamesDBClient = theGamesDBClient
+        self.launchBox = launchBox
     }
 
     static var theGamesDBNamesCacheURL: URL {
@@ -82,6 +92,8 @@ final class ScrapeCoordinator {
             fields = await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
         case .theGamesDB(let credentials):
             fields = await scrapeUsingTheGamesDB(game: game, credentials: credentials, force: force)
+        case .launchBox:
+            fields = await scrapeUsingLaunchBox(game: game, force: force)
         }
         if let fields {
             activity = fields.isEmpty ? .nothingNew(title: title) : .updated(title: title, fields: fields)
@@ -116,6 +128,21 @@ final class ScrapeCoordinator {
         }
 
         state = .scraping
+        do {
+            let info = try await screenScraperInfo(for: game, systemeID: systemeID, credentials: credentials)
+            let fields = try await apply(info, to: game, force: force)
+            state = .idle
+            return fields
+        } catch let error as ScreenScraperError {
+            state = .failed(Self.message(for: error))
+        } catch {
+            state = .failed(error.localizedDescription)
+        }
+        return nil
+    }
+
+    /// What ScreenScraper has for `game`, matched by its file.
+    private func screenScraperInfo(for game: Game, systemeID: Int, credentials: ScreenScraperCredentials) async throws -> ScrapedGameInfo {
         let romURL = game.romAbsoluteURL
         var romFilename = romURL.lastPathComponent
         var romSizeBytes = (try? FileManager.default.attributesOfItem(atPath: romURL.path))?[.size] as? Int
@@ -130,23 +157,12 @@ final class ScrapeCoordinator {
             romFilename = (entry.name as NSString).lastPathComponent
             romSizeBytes = entry.size
         }
-
-        do {
-            let info = try await screenScraperClient.fetchGameInfo(
-                romFilename: romFilename,
-                romSizeBytes: romSizeBytes,
-                systemeID: systemeID,
-                credentials: credentials
-            )
-            let fields = try await apply(info, to: game, force: force)
-            state = .idle
-            return fields
-        } catch let error as ScreenScraperError {
-            state = .failed(Self.message(for: error))
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
-        return nil
+        return try await screenScraperClient.fetchGameInfo(
+            romFilename: romFilename,
+            romSizeBytes: romSizeBytes,
+            systemeID: systemeID,
+            credentials: credentials
+        )
     }
 
     @discardableResult
@@ -157,20 +173,9 @@ final class ScrapeCoordinator {
         }
 
         state = .scraping
-        // TheGamesDB searches by title: an arcade game still named after
-        // its set ("vf4") is looked up, and named, by its real title.
-        if SystemTaxonomy.definition(for: CanonicalSystemID(game.systemCanonicalID))?.category == .arcade,
-           game.title == ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: game.romRelativePath),
-           let entry = ArcadeNameIndex.cached(at: ScanCoordinator.arcadeNameCaches)?[game.romAbsoluteURL.deletingPathExtension().lastPathComponent] {
-            game.title = entry.title
-            game.sortTitle = entry.title
-        }
-
         do {
-            let info = try await theGamesDBClient.fetchGameInfo(
-                title: game.title,
-                platformID: platformID,
-                credentials: credentials,
+            let info = try await theGamesDBInfo(
+                for: game, platformID: platformID, credentials: credentials,
                 wantsScreenshot: force || game.titleScreenPath == nil,
                 wantsLogo: force || game.logoURL == nil,
                 wantsFanart: force || game.fanartURL == nil
@@ -186,8 +191,115 @@ final class ScrapeCoordinator {
         return nil
     }
 
-    /// Scrapes every game in `games` missing its description, cover,
-    /// screenshot, logo, fan art or video (see `lacksInfo`), skipping complete ones so a
+    /// What TheGamesDB has for `game`, found by its title.
+    private func theGamesDBInfo(for game: Game, platformID: Int, credentials: TheGamesDBCredentials,
+                                wantsScreenshot: Bool, wantsLogo: Bool, wantsFanart: Bool) async throws -> ScrapedGameInfo {
+        // TheGamesDB searches by title: an arcade game still named after
+        // its set ("vf4") is looked up, and named, by its real title.
+        if SystemTaxonomy.definition(for: CanonicalSystemID(game.systemCanonicalID))?.category == .arcade,
+           game.title == ROMFilenameTitleCleaner.cleanTitle(fromROMFilename: game.romRelativePath),
+           let entry = ArcadeNameIndex.cached(at: ScanCoordinator.arcadeNameCaches)?[game.romAbsoluteURL.deletingPathExtension().lastPathComponent] {
+            game.title = entry.title
+            game.sortTitle = entry.title
+        }
+        return try await theGamesDBClient.fetchGameInfo(
+            title: game.title,
+            platformID: platformID,
+            credentials: credentials,
+            wantsScreenshot: wantsScreenshot,
+            wantsLogo: wantsLogo,
+            wantsFanart: wantsFanart
+        )
+    }
+
+    @discardableResult
+    func scrapeUsingLaunchBox(game: Game, force: Bool = false) async -> [String]? {
+        guard !LaunchBoxPlatforms.names(for: CanonicalSystemID(game.systemCanonicalID)).isEmpty else {
+            state = .failed(String(localized: "LaunchBox's database doesn't have this system."))
+            return nil
+        }
+        state = .scraping
+        do {
+            guard let info = try await launchBoxInfo(for: game) else {
+                state = .failed(String(localized: "No match found in LaunchBox's database for this game."))
+                return nil
+            }
+            let fields = try await apply(info, to: game, force: force)
+            state = .idle
+            return fields
+        } catch {
+            state = .failed(String(localized: "Couldn't get LaunchBox's database: \(error.localizedDescription)"))
+        }
+        return nil
+    }
+
+    /// What LaunchBox's database has for `game`, by its file's name (No-Intro's,
+    /// or an arcade set's) and its title. The database is downloaded first
+    /// if need be, for every system in the library at once.
+    private func launchBoxInfo(for game: Game) async throws -> ScrapedGameInfo? {
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        let systems = ((try? game.modelContext?.fetch(FetchDescriptor<GameSystem>())) ?? [])
+            .filter { $0.gameCount > 0 }.map(\.systemID)
+        let index = try await launchBox.index(covering: systems + [system])
+        let query = LaunchBoxIndex.Query(fileName: game.romAbsoluteURL.deletingPathExtension().lastPathComponent,
+                                         title: game.title, platforms: LaunchBoxPlatforms.names(for: system))
+        return await Task.detached { index.info(for: query) }.value
+    }
+
+    /// The kinds a scrape can bring, so can look for a better one of.
+    static let scrapedKinds: Set<MediaKind> = [.covers, .boxes3D, .physicalMedia, .logos, .fanart, .screenshots]
+
+    /// A better `kind` for `game` than `file` (small, blank or broken),
+    /// from the first of `sources` that has one. `file` stays unless the
+    /// one found is better (see `MediaHealth.isBetter`); it goes to the
+    /// Trash when replaced. Returns whether it was.
+    func findBetter(_ kind: MediaKind, than file: URL, for game: Game, sources: [ScraperSource]) async -> Bool {
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        for source in sources {
+            var info: ScrapedGameInfo?
+            switch source {
+            case .screenScraper(let credentials):
+                guard let systemeID = ScreenScraperSystemID.systemeID(for: system) else { continue }
+                info = try? await screenScraperInfo(for: game, systemeID: systemeID, credentials: credentials)
+            case .theGamesDB(let credentials):
+                guard let platformID = TheGamesDBSystemID.platformID(for: system) else { continue }
+                info = try? await theGamesDBInfo(for: game, platformID: platformID, credentials: credentials,
+                                                 wantsScreenshot: kind == .screenshots, wantsLogo: kind == .logos,
+                                                 wantsFanart: kind == .fanart)
+            case .launchBox:
+                guard !LaunchBoxPlatforms.names(for: system).isEmpty else { continue }
+                info = try? await launchBoxInfo(for: game)
+            }
+            guard let remoteURL = info.flatMap({ Self.url(of: kind, in: $0) }),
+                  let (data, response) = try? await URLSession.shared.data(from: remoteURL),
+                  (response as? HTTPURLResponse)?.statusCode ?? 200 == 200,
+                  MediaHealth.isBetter(data, than: file, kind: kind),
+                  let stored = try? game.storeMedia(data, fileExtension: Self.fileExtension(of: remoteURL, response: response), kind: kind)
+            else { continue }
+            // Its new file may have another extension.
+            if game.coverArtPath == file.path { game.coverArtPath = stored.path }
+            if game.titleScreenPath == file.path { game.titleScreenPath = stored.path }
+            try? game.modelContext?.save()
+            return true
+        }
+        return false
+    }
+
+    private static func url(of kind: MediaKind, in info: ScrapedGameInfo) -> URL? {
+        switch kind {
+        case .covers: info.coverArtURL
+        case .boxes3D: info.box3DURL
+        case .physicalMedia: info.physicalMediaURL
+        case .logos: info.logoURL
+        case .fanart: info.fanartURL
+        case .screenshots: info.screenshotURL
+        case .videos: info.videoURL
+        case .manuals, .marquees, .bezels: nil
+        }
+    }
+
+    /// Scrapes every game in `games` missing its description or some of
+    /// its media (see `lacksInfo`), skipping complete ones so a
     /// huge library doesn't re-request data it already has. Runs sequentially with a small pause between
     /// requests — free-tier accounts on both sources have tight rate/thread
     /// limits, and hundreds of games hammered concurrently would just get
@@ -222,11 +334,16 @@ final class ScrapeCoordinator {
     }
 
     /// What "missing" means for a batch: no description, cover, screenshot,
-    /// logo or fan art, or no video from ScreenScraper (TheGamesDB has none).
+    /// logo or fan art; no 3D box, or cartridge or disc where the system
+    /// had one, unless from TheGamesDB, which has neither; and no video
+    /// from ScreenScraper (TheGamesDB and LaunchBox have none).
     static func lacksInfo(_ game: Game, from source: ScraperSource?, media: MediaIndex = MediaIndex()) -> Bool {
         if game.gameDescription == nil || game.coverArtPath == nil || game.titleScreenPath == nil
             || !media.has(.logos, game) || !media.has(.fanart, game) { return true }
         if case .theGamesDB? = source { return false }
+        if !media.has(.boxes3D, game) { return true }
+        if PhysicalMedium.of(CanonicalSystemID(game.systemCanonicalID)) != nil, !media.has(.physicalMedia, game) { return true }
+        if case .launchBox? = source { return false }
         return game.videoPath == nil
     }
 
@@ -249,6 +366,8 @@ final class ScrapeCoordinator {
                 await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
             case .theGamesDB(let credentials):
                 await scrapeUsingTheGamesDB(game: game, credentials: credentials, force: force)
+            case .launchBox:
+                await scrapeUsingLaunchBox(game: game, force: force)
             }
             if case .failed = state { failed += 1 } else { scraped += 1 }
 

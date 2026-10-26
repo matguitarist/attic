@@ -291,7 +291,10 @@ final class GamepadInputMonitor {
     }
 
     /// The controller in use, as an icon.
-    var controllerSymbol: String { glyphFamily.symbol }
+    var controllerSymbol: String {
+        guard let name = connectedControllerName else { return ControllerFamily.keyboard.symbol }
+        return ControllerFamily.symbol(name: name, category: gameControllerCategory)
+    }
 
     /// For places about the pad itself (button mapping, the controller
     /// help), which mean a pad even when the keyboard is in use.

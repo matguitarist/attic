@@ -51,6 +51,8 @@ public struct LibraryScanner: Sendable {
         var issues: [ScanIssue] = []
 
         for folderURL in entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            // Stopped: the systems scanned so far, each whole.
+            if Task.isCancelled { break }
             let name = folderURL.lastPathComponent
             guard !name.hasPrefix("."), isDirectory(folderURL) else { continue }
 

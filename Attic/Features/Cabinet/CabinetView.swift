@@ -87,9 +87,12 @@ struct CabinetView: View {
         let installed = themeStore.current
         let theme = installed.theme
         ZStack {
-            // On the systems, the system's own fan art.
+            // On the systems, the system's own fan art — unless the theme's
+            // a carousel asking for no backdrop, plain behind its band.
+            let theme = themeStore.current.theme
+            let showsSystemFanart = level == .systems && (theme.systems.style != .carousel || theme.backdrop.source != .none)
             CabinetBackdrop(game: level == .games ? (pageGame ?? focusedGame) : nil,
-                            fallback: level == .systems ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil,
+                            fallback: showsSystemFanart ? sections.first { $0.selection == selection }?.ownArt(.fanart) : nil,
                             fallbackVideo: systemBackdropVideo,
                             // The game page plays its own.
                             allowsVideo: pageGame == nil && menuPath.isEmpty && !isSearching)
@@ -148,7 +151,9 @@ struct CabinetView: View {
             if !menuPath.isEmpty {
                 CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit,
                                 onSurprise: { menuPath = []; send(.random) },
-                                onSearch: { menuPath = []; send(.search) })
+                                onSearch: { menuPath = []; send(.search) },
+                                game: level == .games ? (pageGame ?? focusedGame) : nil,
+                                section: sections.first { $0.selection == selection })
                     .transition(.opacity)
             }
         }
@@ -733,7 +738,7 @@ enum CabinetArt {
 @MainActor
 enum CabinetWindows {
     private static var hidden: [NSWindow] = []
-    fileprivate static weak var cabinet: NSWindow?
+    fileprivate(set) static weak var cabinet: NSWindow?
 
     static func hideOthers() {
         hidden = NSApp.windows.filter { window in
@@ -784,8 +789,26 @@ private struct FullScreenWindowConfigurator: NSViewRepresentable {
         }
 
         private func enterFullScreen(_ window: NSWindow) {
+            watchScreens(window)
             guard !window.styleMask.contains(.fullScreen) else { return }
-            DispatchQueue.main.async { window.toggleFullScreen(nil) }
+            // On the screen chosen for it, when that isn't this one.
+            if let screen = CabinetDisplay.screen, screen != window.screen {
+                CabinetDisplay.place(window, on: screen)
+            } else {
+                DispatchQueue.main.async { window.toggleFullScreen(nil) }
+            }
+        }
+
+        /// A chosen screen connected later (an Apple TV over AirPlay
+        /// joining) gets the window.
+        private var screensObserver: NSObjectProtocol?
+        private func watchScreens(_ window: NSWindow) {
+            guard screensObserver == nil else { return }
+            screensObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak window] _ in
+                MainActor.assumeIsolated {
+                    if let window, window.isVisible { CabinetDisplay.move(window) }
+                }
+            }
         }
     }
 }

@@ -86,6 +86,10 @@ struct MultipleGamesScrapeItems: View {
             scrapeCoordinator.scrape(games: games, from: .theGamesDB(theGamesDBCredentialsStore.credentials), force: force)
         }
         .disabled(!theGamesDBCredentialsStore.isConfigured)
+
+        Button("LaunchBox") {
+            scrapeCoordinator.scrape(games: games, from: .launchBox, force: force)
+        }
     }
 }
 

@@ -207,10 +207,12 @@ struct RemoveGamesSheet: ViewModifier {
 /// A system's games at a glance: how many, their size, how much they've
 /// been played, and how many have each kind of media.
 struct SystemGamesSection: View {
+    let systemID: CanonicalSystemID
     @Query private var games: [Game]
     @State private var bytes: Int64?
 
     init(systemID: CanonicalSystemID) {
+        self.systemID = systemID
         let id = systemID.rawValue
         _games = Query(filter: #Predicate<Game> { $0.systemCanonicalID == id })
     }
@@ -227,18 +229,23 @@ struct SystemGamesSection: View {
             .padding(.vertical, 2)
             // How many have each kind of media, orange while some lack it.
             let media = MediaIndex()
-            let counts = [games.count { $0.coverArtPath != nil }, games.count { $0.titleScreenPath != nil },
-                          games.count { $0.videoPath != nil }, games.count { media.has(.logos, $0) },
-                          games.count { media.has(.fanart, $0) }, games.count { !($0.gameDescription ?? "").isEmpty }]
+            let kinds = MediaFolder.kinds(for: systemID)
+            let counts = kinds.map { kind in
+                switch kind {
+                case .covers: games.count { $0.coverArtPath != nil }
+                case .screenshots: games.count { $0.titleScreenPath != nil }
+                case .videos: games.count { $0.videoPath != nil || media.has(.videos, $0) }
+                default: games.count { media.has(kind, $0) }
+                }
+            }
+            let descriptions = games.count { !($0.gameDescription ?? "").isEmpty }
             // Two columns while every count is whole; "719/721" needs the width.
-            let columns = counts.allSatisfy { $0 == games.count } ? 2 : 1
+            let columns = (counts + [descriptions]).allSatisfy { $0 == games.count } ? 2 : 1
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns), alignment: .leading, spacing: 6) {
-                coverage("photo", "Covers", counts[0])
-                coverage("tv", "Screenshots", counts[1])
-                coverage("film", "Videos", counts[2])
-                coverage("textformat", "Logos", counts[3])
-                coverage("photo.artframe", "Fan Art", counts[4])
-                coverage("text.alignleft", "Descriptions", counts[5])
+                ForEach(Array(zip(kinds, counts)), id: \.0) { kind, count in
+                    coverage(GameMediaSection.symbol(kind), kind.title(for: systemID), count)
+                }
+                coverage("text.alignleft", String(localized: "Descriptions"), descriptions)
             }
             .padding(.vertical, 2)
             if let last = games.filter({ $0.lastPlayedDate != nil }).max(by: { $0.lastPlayedDate! < $1.lastPlayedDate! }) {
@@ -262,7 +269,7 @@ struct SystemGamesSection: View {
         }
     }
 
-    private func coverage(_ image: String, _ label: LocalizedStringKey, _ count: Int) -> some View {
+    private func coverage(_ image: String, _ label: String, _ count: Int) -> some View {
         let complete = count == games.count
         return HStack(spacing: 6) {
             Image(systemName: image)

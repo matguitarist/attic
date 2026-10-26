@@ -60,6 +60,21 @@ struct SystemSettingsView: View {
                         EmulatorSuggestionView(system: system, showsBackground: false)
                     }
                 }
+                if system.defaultLaunchTarget != nil {
+                    Section {
+                        Picker("Emulator", selection: Binding(
+                            get: { system.defaultLaunchTarget },
+                            set: { newValue in
+                                system.defaultLaunchTarget = newValue
+                                try? modelContext.save()
+                            }
+                        )) {
+                            LaunchTargetChoices(systemID: system.systemID)
+                        }
+                    } footer: {
+                        Text("A game that runs better in another emulator can have its own: pick it in the game’s info.")
+                    }
+                }
                 if offered.contains(.look) || offered.contains(.integerScaling) {
                     pictureSection
                 }
@@ -135,10 +150,13 @@ struct SystemSettingsView: View {
             if offered.contains(.integerScaling) {
                 defaultablePicker("Integer scaling", selection: $settings.integerScaling, default: emulatorDefaults.integerScaling)
             }
+            if offered.contains(.bezels) {
+                defaultablePicker("Bezels", selection: $settings.bezels, default: true)
+            }
         } header: {
             Text("Picture")
         } footer: {
-            Text("Integer scaling sizes the picture by whole multiples, so every pixel is the same size, with black bars around it.")
+            Text("Integer scaling sizes the picture by whole multiples, so every pixel is the same size, with black bars around it. Bezels frame the game with its picture from the bezels media folder, full screen, when its window fits where the game is drawn.")
                 .settingsFooter()
         }
     }

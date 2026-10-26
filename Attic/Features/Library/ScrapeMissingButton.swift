@@ -39,11 +39,15 @@ struct ScrapeMissingButton: View {
                     scrapeCoordinator.scrapeAllMissing(games: games, source: .theGamesDB(theGamesDBCredentialsStore.credentials))
                 }
                 .disabled(!theGamesDBCredentialsStore.isConfigured)
+
+                Button("LaunchBox") {
+                    scrapeCoordinator.scrapeAllMissing(games: games, source: .launchBox)
+                }
             }
         } label: {
             Label("Scrape Missing", systemImage: "photo.badge.arrow.down")
         }
-        .disabled(missingCount == 0 || isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+        .disabled(missingCount == 0 || isRunning)
         .help(missingCount == 0 ? String(localized: "Every game in this list already has info") : String(localized: "Scrape info for the \(missingCount) games in this list missing it"))
     }
 }
@@ -70,7 +74,7 @@ struct ScrapeSelectionMenu: View {
                 sourceButtons(force: true)
             }
         }
-        .disabled(isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+        .disabled(isRunning)
     }
 
     private var isRunning: Bool {
@@ -89,6 +93,10 @@ struct ScrapeSelectionMenu: View {
             start(.theGamesDB(theGamesDBCredentialsStore.credentials), force: force)
         }
         .disabled(!theGamesDBCredentialsStore.isConfigured)
+
+        Button("LaunchBox") {
+            start(.launchBox, force: force)
+        }
     }
 
     private func start(_ source: ScrapeCoordinator.ScraperSource, force: Bool) {
@@ -110,7 +118,7 @@ struct ScrapeSelectionButton: View {
 
     var body: some View {
         Button(title) { showMenu() }
-            .disabled(isRunning || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+            .disabled(isRunning)
     }
 
     private var isRunning: Bool {
@@ -137,6 +145,9 @@ struct ScrapeSelectionButton: View {
         })
         menu.addItem(ClosureMenuItem("TheGamesDB", enabled: theGamesDB.isConfigured) {
             start(.theGamesDB(theGamesDB.credentials), force: force)
+        })
+        menu.addItem(ClosureMenuItem("LaunchBox", enabled: true) {
+            start(.launchBox, force: force)
         })
     }
 

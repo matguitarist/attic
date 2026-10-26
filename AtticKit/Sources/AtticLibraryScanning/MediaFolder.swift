@@ -172,9 +172,22 @@ public enum MediaFolder {
             try? FileManager.default.trashItem(at: existing, resultingItemURL: nil)
         }
         guard let picture else { return nil }
-        let destination = base.appendingPathExtension(picture.pathExtension.lowercased())
-        guard destination != picture else { return destination }
+        guard base.appendingPathExtension(picture.pathExtension.lowercased()) != picture else { return picture }
         try FileManager.default.createDirectory(at: base.deletingLastPathComponent(), withIntermediateDirectories: true)
+        return try copyPicture(picture, toBase: base)
+    }
+
+    /// Copies `picture` to `base` plus an extension: a PNG or JPEG as HEIC
+    /// when that's smaller (a 6 MB artwork PNG comes in at a tenth of it,
+    /// transparency kept), anything else — a video, a WebP — as it is.
+    public static func copyPicture(_ picture: URL, toBase base: URL) throws -> URL {
+        let ext = picture.pathExtension.lowercased()
+        if ["png", "jpg", "jpeg"].contains(ext), let data = try? Data(contentsOf: picture), let heic = heicData(from: data) {
+            let destination = base.appendingPathExtension("heic")
+            try heic.write(to: destination, options: .atomic)
+            return destination
+        }
+        let destination = base.appendingPathExtension(ext.isEmpty ? "png" : ext)
         try FileManager.default.copyItem(at: picture, to: destination)
         return destination
     }

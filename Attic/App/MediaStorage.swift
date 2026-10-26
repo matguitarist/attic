@@ -73,7 +73,12 @@ final class MediaIndex {
         let folder = base.deletingLastPathComponent()
         if names[folder] == nil {
             let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
-            names[folder] = Set(files.filter { MediaFolder.imageExtensions.contains(($0 as NSString).pathExtension.lowercased()) }
+            let extensions = switch kind {
+            case .manuals: ["pdf"]
+            case .videos: MediaFolder.videoExtensions
+            default: MediaFolder.imageExtensions
+            }
+            names[folder] = Set(files.filter { extensions.contains(($0 as NSString).pathExtension.lowercased()) }
                 .map { ($0 as NSString).deletingPathExtension })
         }
         return names[folder]?.contains(base.lastPathComponent) == true

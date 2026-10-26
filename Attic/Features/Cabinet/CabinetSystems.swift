@@ -6,7 +6,8 @@ import AtticPersistence
 
 /// Cabinet Mode's first level: every section (shortcuts, collections,
 /// systems) in a strip along the bottom, the focused one's picture, logo,
-/// facts and numbers above. Confirm opens its games.
+/// facts and numbers above — or, in the `carousel` style, their logos
+/// across a band. Confirm opens its games.
 struct CabinetSystemsView: View {
     /// Whether systems and collections play their own video (off by
     /// default: they're long, and loud with sound on).
@@ -22,20 +23,11 @@ struct CabinetSystemsView: View {
     var body: some View {
         let focused = sections.first { $0.selection == selection } ?? sections.first
         GeometryReader { geometry in
-            let stripHeight = min(150, max(90, geometry.size.height * 0.16))
-            VStack(spacing: 32) {
-                if let focused {
-                    CabinetSectionInfo(section: focused)
-                        .id(focused.id)
-                        .transition(.opacity)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(.horizontal, 60)
-                }
-                strip(height: stripHeight, width: geometry.size.width)
-                    .frame(height: stripHeight * 1.3)
+            if installed.theme.systems.style == .carousel {
+                carousel(focused: focused, size: geometry.size)
+            } else {
+                showcase(focused: focused, size: geometry.size)
             }
-            .padding(.top, 36)
-            .animation(.easeInOut(duration: 0.25), value: selection)
         }
         .onChange(of: selection, initial: true) { old, new in
             withAnimation(old == new ? nil : .snappy(duration: 0.25)) { scrolledID = new }
@@ -43,6 +35,74 @@ struct CabinetSystemsView: View {
         .onChange(of: scrolledID) { _, id in
             if let id, id != selection { selection = id }
         }
+    }
+
+    private func showcase(focused: CabinetSection?, size: CGSize) -> some View {
+            let stripHeight = min(150, max(90, size.height * 0.16))
+            return VStack(spacing: 32) {
+                if let focused {
+                    CabinetSectionInfo(section: focused)
+                        .id(focused.id)
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.horizontal, 60)
+                }
+                strip(height: stripHeight, width: size.width)
+                    .frame(height: stripHeight * 1.3)
+            }
+            .padding(.top, 36)
+            .animation(.easeInOut(duration: 0.25), value: selection)
+    }
+
+    /// EmulationStation's systems view: the logos across a full-width band,
+    /// the focused one in the middle at full size, its game count below.
+    private func carousel(focused: CabinetSection?, size: CGSize) -> some View {
+        let theme = installed.theme
+        let bandHeight = min(280, max(150, size.height * 0.27))
+        let logoWidth = bandHeight * 1.55
+        let showsArt = theme.systems.showsPicture
+        return VStack(spacing: 22) {
+            if showsArt, let focused {
+                // Batocera and RetroBat's Carbon: the system's artwork above.
+                CabinetCarouselArt(section: focused)
+                    .id(focused.id)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Spacer(minLength: 0)
+            }
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: theme.tiles.spacing) {
+                    ForEach(sections) { section in
+                        CabinetCarouselLogo(section: section, isFocused: section.selection == selection)
+                            .frame(width: logoWidth, height: bandHeight)
+                            .id(section.id)
+                            .onTapGesture {
+                                if section.selection == selection { onOpen() } else { selection = section.selection }
+                            }
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .contentMargins(.horizontal, max(0, (size.width - logoWidth) / 2), for: .scrollContent)
+            .scrollPosition(id: $scrolledID, anchor: .center)
+            .scrollTargetBehavior(.viewAligned)
+            .scrollIndicators(.never)
+            .frame(height: bandHeight)
+            .background(theme.carouselBand.color)
+            // Attic's logos come for light and dark: the ones for the band.
+            .environment(\.colorScheme, theme.carouselBand.isLight ? .light : .dark)
+            .shadow(color: .black.opacity(0.35), radius: 16, y: 6)
+
+            if let focused {
+                CabinetCarouselCount(section: focused)
+                    .id(focused.id)
+                    .transition(.opacity)
+            }
+            Spacer(minLength: 0)
+                .frame(maxHeight: showsArt ? size.height * 0.08 : .infinity)
+        }
+        .animation(.easeInOut(duration: 0.2), value: selection)
     }
 
     private func strip(height: CGFloat, width: CGFloat) -> some View {
@@ -64,6 +124,129 @@ struct CabinetSystemsView: View {
         .scrollPosition(id: $scrolledID, anchor: .center)
         .scrollTargetBehavior(.viewAligned)
         .scrollIndicators(.never)
+    }
+}
+
+/// The focused section's artwork above the carousel's band: its own
+/// picture, else the theme's, standing in the space; else its fan art
+/// across it, fading into the background toward the band.
+private struct CabinetCarouselArt: View {
+    let section: CabinetSection
+
+    @Environment(\.cabinetTheme) private var installed
+
+    var body: some View {
+        let background = installed.theme.palette.background.color
+        if let picture = (section.ownArt(.picture) ?? installed.systemPicture(for: section)).flatMap(SystemLogoCache.image(at:)) {
+            Image(nsImage: picture)
+                .resizable()
+                .scaledToFit()
+                .shadow(color: .black.opacity(0.5), radius: 30, y: 16)
+                .padding(.top, 40)
+                .padding(.horizontal, 80)
+        } else if let fanart = section.ownArt(.fanart).flatMap(SystemLogoCache.image(at:)) {
+            Color.clear
+                .overlay {
+                    Image(nsImage: fanart)
+                        .resizable()
+                        .scaledToFill()
+                }
+                .clipped()
+                .overlay {
+                    LinearGradient(colors: [background.opacity(0), background.opacity(0.2), background],
+                                   startPoint: .top, endPoint: .bottom)
+                }
+                .padding(.bottom, -22)
+        } else {
+            Color.clear
+        }
+    }
+}
+
+/// One section on the carousel's band: its logo, else its name, the focused
+/// one full size and the others smaller and faded.
+private struct CabinetCarouselLogo: View {
+    let section: CabinetSection
+    let isFocused: Bool
+
+    @Environment(\.cabinetTheme) private var installed
+
+    var body: some View {
+        let theme = installed.theme
+        // Text on the band in the color that reads on it.
+        let ink = theme.carouselBand.isLight ? theme.palette.background.color : theme.palette.text.color
+        Group {
+            if let logo = section.logo {
+                logo
+                    .resizable()
+                    .scaledToFit()
+            } else if section.artSource != nil {
+                Text(theme.cased(section.title))
+                    .font(theme.font(size: theme.typography.titleSize * 1.1, weight: .heavy))
+                    .foregroundStyle(ink)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.4)
+            } else {
+                VStack(spacing: 10) {
+                    Image(systemName: section.symbol)
+                        .font(theme.font(size: theme.typography.titleSize * 1.4))
+                    Text(theme.cased(section.title))
+                        .font(theme.font(size: theme.typography.titleSize * 0.75, weight: .bold))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.6)
+                }
+                .foregroundStyle(ink)
+            }
+        }
+        .padding(.vertical, 34)
+        .padding(.horizontal, 26)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scaleEffect(isFocused ? 1 : 0.62)
+        .opacity(isFocused ? 1 : theme.tiles.unfocusedOpacity)
+        .animation(.snappy(duration: 0.2), value: isFocused)
+        .accessibilityLabel(section.title)
+    }
+}
+
+/// Under the carousel: how many games the section has, and how many of
+/// them are favorites, as Carbon says it.
+private struct CabinetCarouselCount: View {
+    let section: CabinetSection
+
+    @Environment(\.cabinetTheme) private var installed
+    @Environment(\.modelContext) private var modelContext
+    @State private var stats: CabinetSectionStats?
+
+    var body: some View {
+        let theme = installed.theme
+        VStack(spacing: 8) {
+            if let stats {
+                Group {
+                    if stats.favorites > 0 {
+                        Text("\(stats.games) games available, \(stats.favorites) favorites")
+                    } else {
+                        Text("\(stats.games) games available")
+                    }
+                }
+                .font(theme.largeFont(.semibold))
+                .foregroundStyle(theme.palette.text.color)
+                .textCase(.uppercase)
+            }
+            if theme.systems.showsStats, let facts = section.facts {
+                Text(verbatim: facts)
+                    .font(theme.bodyFont())
+                    .foregroundStyle(theme.palette.secondaryText.color)
+            }
+        }
+        // Keeps the band still as the count comes and goes.
+        .frame(height: theme.typography.bodySize * 4, alignment: .top)
+        .task(id: section.selection) {
+            try? await Task.sleep(for: .milliseconds(120))
+            guard !Task.isCancelled else { return }
+            stats = CabinetSectionStats(selection: section.selection, context: modelContext)
+        }
     }
 }
 

@@ -238,8 +238,7 @@ enum CollectionFolders {
         guard let source else { return }
         let accessing = source.startAccessingSecurityScopedResource()
         defer { if accessing { source.stopAccessingSecurityScopedResource() } }
-        let ext = source.pathExtension.isEmpty ? "png" : source.pathExtension.lowercased()
-        try? FileManager.default.copyItem(at: source, to: folder.appending(path: "\(name).\(ext)"))
+        _ = try? MediaFolder.copyPicture(source, toBase: folder.appending(path: name))
     }
 
     private static func image(named name: String, in folder: URL) -> URL? {

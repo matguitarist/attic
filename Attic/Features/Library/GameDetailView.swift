@@ -52,6 +52,7 @@ struct GameDetailView: View {
                         }
                     }
                     LabeledContent("System", value: game.system?.displayName ?? game.systemCanonicalID)
+                    GameEmulatorRow(game: game)
                     DATVerdictRow(game: game)
                     MissingBIOSRow(game: game)
                 }
@@ -67,6 +68,8 @@ struct GameDetailView: View {
                         }
                     }
                 }
+
+                GameMediaSection(game: game)
 
                 DiscImageSection(game: game)
 
@@ -245,7 +248,7 @@ struct GameDetailView: View {
                 Menu("Scrape Info") {
                     ScrapeMenuItems(game: game)
                 }
-                .disabled(isScraping || (!screenScraperCredentialsStore.isConfigured && !theGamesDBCredentialsStore.isConfigured))
+                .disabled(isScraping)
                 AddToCollectionMenu(game: game)
                 Button("Edit Info…") {
                     infoEditor.game = game

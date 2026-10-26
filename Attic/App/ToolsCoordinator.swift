@@ -44,7 +44,10 @@ final class ToolsCoordinator {
     var report: Report?
     var reportHost: Host = .library
     var isAnalyzing = false
-    var activity: Activity?
+    var activity: Activity? {
+        // A run that's over may have changed what games can become.
+        didSet { if activity == nil { conversions = [:] } }
+    }
     /// Stops the running activity, for those that can be stopped.
     var cancelActivity: (() -> Void)?
     /// What the last run did, for an alert.
@@ -501,17 +504,31 @@ final class ToolsCoordinator {
         }
     }
 
+    /// Each game's answers below, by its file. The menu bar asks again on
+    /// every change of selection, and finding out reads the game's folder
+    /// (its playlists, a CHD's header), so it's looked at once — until a
+    /// run changes files.
+    @ObservationIgnored private var conversions: [URL: (compression: GameConversion?, back: GameConversion?)] = [:]
+
     func compression(for game: Game) -> GameConversion? {
-        let url = game.romAbsoluteURL
-        let system = CanonicalSystemID(game.systemCanonicalID)
-        let discs = CHDConversion.candidates(forGame: url, system: system)
-        if !discs.isEmpty { return .discs(discs) }
-        return ROMZipping.canZip(url, system: system) ? .cartridge(url) : nil
+        conversions(for: game).compression
     }
 
     func conversionBack(for game: Game) -> GameConversion? {
-        let chds = CHDConversion.chds(forGame: game.romAbsoluteURL)
-        return chds.isEmpty ? nil : .back(chds)
+        conversions(for: game).back
+    }
+
+    private func conversions(for game: Game) -> (compression: GameConversion?, back: GameConversion?) {
+        let url = game.romAbsoluteURL
+        if let known = conversions[url] { return known }
+        let system = CanonicalSystemID(game.systemCanonicalID)
+        let discs = CHDConversion.candidates(forGame: url, system: system)
+        let compression: GameConversion? = !discs.isEmpty ? .discs(discs)
+            : ROMZipping.canZip(url, system: system) ? .cartridge(url) : nil
+        let chds = CHDConversion.chds(forGame: url)
+        let found = (compression: compression, back: chds.isEmpty ? nil : GameConversion.back(chds))
+        conversions[url] = found
+        return found
     }
 
     func run(_ conversion: GameConversion, title: String, romsRoots: [URL], scanCoordinator: ScanCoordinator) async {

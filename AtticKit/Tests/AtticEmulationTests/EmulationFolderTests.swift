@@ -115,6 +115,16 @@ struct EmulationFolderTests {
         #expect(ini.value(section: "BIOS", key: "SearchDirectory") == folder.bios.path)
     }
 
+    @Test func aGameFromCabinetModeOpensOnItsScreenThenTheUsersComesBack() {
+        let cabinet = folder.retroArchLaunchConfig(for: .snes, controller: .default, savedConfig: ["video_monitor_index": "2"],
+                                                   previouslyWritten: [:], monitor: 3)
+        #expect(cabinet.text.contains("video_monitor_index = \"3\""))
+        // RetroArch saved it on quit; the next launch, from the library, puts back the user's.
+        let library = folder.retroArchLaunchConfig(for: .snes, controller: .default, savedConfig: ["video_monitor_index": "3"],
+                                                   previouslyWritten: [:], systemSettingsOwned: cabinet.systemSettingsOwned)
+        #expect(library.text.contains("video_monitor_index = \"2\""))
+    }
+
     @Test func retroArchQuitComboIsStartSelectWithoutConfirmation() {
         let on = folder.retroArchPathsConfig(for: .snes, controller: .init(quitWithSelectStart: true))
         #expect(on.contains("input_quit_gamepad_combo = \"4\""))

@@ -360,10 +360,20 @@ struct LibraryBrowserView: View {
 
         ToolbarItem {
             if scanCoordinator.state == .scanning {
-                ProgressView()
-                    .controlSize(.small)
-                    .padding(.horizontal, 8)
-                    .help("Refreshing the library…")
+                // The spinner with a stop square in it, as a download's.
+                Button {
+                    scanCoordinator.stop()
+                } label: {
+                    Label {
+                        Text("Stop Refreshing")
+                    } icon: {
+                        ZStack {
+                            ProgressView().controlSize(.small)
+                            Image(systemName: "stop.fill").font(.system(size: 6))
+                        }
+                    }
+                }
+                .help("Refreshing the library… Click to stop (⌘.)")
             } else {
                 Button {
                     Task { await scanCoordinator.scan(romsRootURLs: romsRootsStore.rootURLs) }
@@ -393,6 +403,20 @@ struct LibraryBrowserView: View {
         }
 
         ToolbarItemGroup {
+            Button {
+                openWindow(id: LibraryHealthView.windowID)
+            } label: {
+                Label("Library Health", systemImage: "stethoscope")
+            }
+            .help("Missing or poor media, and game info that's likely another game’s")
+
+            Button {
+                openWindow(id: LibraryStatsView.windowID)
+            } label: {
+                Label("Library Statistics", systemImage: "chart.bar.xaxis")
+            }
+            .help("What your library holds and what you play")
+
             Button {
                 openWindow(id: LogView.windowID)
             } label: {

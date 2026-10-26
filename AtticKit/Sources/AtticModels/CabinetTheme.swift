@@ -168,6 +168,9 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// The game's cartridge, disc or board at the corner of its box on
         /// its page, when it has a picture of one.
         public var showsPhysicalMedia = true
+        /// The list's tile art beside its picture. Off, the picture (and
+        /// its video) has the room alone, as in EmulationStation's Carbon.
+        public var showsArt = true
     }
 
     public struct Header: Codable, Hashable, Sendable {
@@ -181,6 +184,16 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
     /// The level before the games: a strip of systems, collections and
     /// shortcuts, the focused one's picture and facts above it.
     public struct Systems: Codable, Hashable, Sendable {
+        public enum Style: String, Codable, CaseIterable, Sendable {
+            /// The focused one's picture, logo and numbers above a strip of
+            /// cards.
+            case showcase
+            /// Their logos in a carousel across a band of the `band`
+            /// color, the focused one large, its game count under it — the
+            /// systems view of EmulationStation's Carbon theme, Batocera's
+            /// and RetroBat's.
+            case carousel
+        }
         /// Opens on the systems; else straight on the games, sections in
         /// the header.
         public var isEnabled: Bool
@@ -196,7 +209,11 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         /// The system's picture beside its details. Off, a system with fan
         /// art lets that be the picture, its details at the top left — for
         /// a sharp backdrop, where the fan art already shows the console.
+        /// In the carousel, its picture (else its fan art) above the band.
         public var showsPicture: Bool = true
+        public var style: Style = .showcase
+        /// The carousel's band; unset, the `surface` color.
+        public var band: ThemeColor?
     }
 
     /// The menu Start opens: theme, interface, controller, library.
@@ -304,7 +321,8 @@ extension CabinetTheme {
 // MARK: - Built-in themes
 
 extension CabinetTheme {
-    public static let builtIns: [CabinetTheme] = [.showcase, .coverFlow, .shelf, .unboxed, .appleTV, .bigPicture, .arcade, .upright, .classic]
+    public static let builtIns: [CabinetTheme] = [.showcase, .coverFlow, .shelf, .unboxed, .appleTV, .bigPicture, .arcade, .upright, .classic,
+                                                  .carbon]
 
     public static func builtIn(id: String) -> CabinetTheme? {
         builtIns.first { $0.id == id }
@@ -512,10 +530,41 @@ extension CabinetTheme {
         backdrop: Backdrop(source: .fanart, blur: 30, dim: 0.82),
         tiles: Tiles(art: .box3D, size: 1, spacing: 2, cornerRadius: 8, showsBackground: false,
                      focusScale: 1.2, unfocusedOpacity: 0.6, focusRing: false, focusGlow: false, showsTitles: false),
-        details: Details(media: .screenshot, playsVideo: true, showsLogo: false, showsMetadata: true, showsDescription: true, descriptionLines: 8),
+        details: Details(media: .screenshot, playsVideo: true, showsLogo: false, side: .trailing, showsMetadata: true,
+                         showsDescription: true, descriptionLines: 8),
         header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
         menu: Menu(position: .center, width: 600, cornerRadius: 14, dim: 0.6),
         systems: Systems(isEnabled: true, showsStats: true, playsVideo: true, artFolder: "systems"),
+        showsHints: true
+    )
+
+    /// Batocera's and RetroBat's look, EmulationStation's Carbon theme: the
+    /// systems' logos in a carousel across a light band, then a list of
+    /// titles beside the game's video, its facts and description, on
+    /// plain charcoal.
+    public static let carbon = CabinetTheme(
+        id: "carbon",
+        name: "Carbon",
+        author: "Attic",
+        layout: .list,
+        palette: Palette(
+            background: ThemeColor(hex: "#1E1F22")!,
+            surface: ThemeColor(hex: "#2B2D31E6")!,
+            accent: ThemeColor(hex: "#E6E6E6")!,
+            text: ThemeColor(hex: "#F2F2F2")!,
+            secondaryText: ThemeColor(hex: "#9A9DA3")!,
+            favorite: ThemeColor(hex: "#F5C518")!
+        ),
+        typography: Typography(design: .standard, titleSize: 30, bodySize: 19, uppercase: false),
+        backdrop: Backdrop(source: .none, blur: 0, dim: 0),
+        tiles: Tiles(art: .cover, size: 1, spacing: 0, cornerRadius: 2, showsBackground: false,
+                     focusScale: 1, unfocusedOpacity: 0.55, focusRing: false, focusGlow: false, showsTitles: false),
+        details: Details(media: .screenshot, playsVideo: true, showsLogo: true, side: .leading, showsMetadata: true,
+                         showsDescription: true, descriptionLines: 7, showsArt: false),
+        header: Header(showsLogos: true, showsClock: true, showsGameCount: true),
+        menu: Menu(position: .center, width: 600, cornerRadius: 6, dim: 0.65),
+        systems: Systems(isEnabled: true, showsStats: true, playsVideo: false, artFolder: "systems", showsPicture: true,
+                         style: .carousel, band: ThemeColor(hex: "#ECECEC")!),
         showsHints: true
     )
 

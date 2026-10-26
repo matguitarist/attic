@@ -491,16 +491,20 @@ struct CabinetListLayout: View {
         let theme = installed.theme
         GeometryReader { geometry in
             let rowHeight = theme.typography.bodySize * 2.3
+            // The details take `side`; the list, the other.
+            let list = list(rowHeight: rowHeight, height: geometry.size.height)
+                .frame(width: min(640, geometry.size.width * 0.42))
+                .background(theme.palette.surface.color.opacity(0.5),
+                            in: RoundedRectangle(cornerRadius: theme.tiles.cornerRadius + 6, style: .continuous))
             HStack(alignment: .top, spacing: 40) {
-                list(rowHeight: rowHeight, height: geometry.size.height)
-                    .frame(width: min(640, geometry.size.width * 0.42))
-                    .background(theme.palette.surface.color.opacity(0.5),
-                                in: RoundedRectangle(cornerRadius: theme.tiles.cornerRadius + 6, style: .continuous))
-
+                if theme.details.side == .trailing { list }
                 if let game = shelf.focusedGame {
                     CabinetListDetails(game: game)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                } else {
+                    Spacer()
                 }
+                if theme.details.side == .leading { list }
             }
             .padding(.horizontal, 40)
             .padding(.vertical, 20)
@@ -550,7 +554,8 @@ struct CabinetListLayout: View {
             .scrollTargetLayout()
             .padding(8)
         }
-        .contentMargins(.vertical, max(0, (height - rowHeight) / 2 - 20), for: .scrollContent)
+        // Centered on the focused title, but stopping at either end rather
+        // than leaving half the list empty there.
         .scrollPosition(id: $scrolledID, anchor: .center)
         .scrollIndicators(.never)
     }
@@ -567,14 +572,18 @@ private struct CabinetListDetails: View {
         let theme = installed.theme
         VStack(alignment: .leading, spacing: 24) {
             HStack(alignment: .top, spacing: 24) {
-                CabinetTile(game: game, isFocused: true)
-                    .aspectRatio(0.75, contentMode: .fit)
-                    .frame(maxWidth: 300, maxHeight: 400)
+                if theme.details.showsArt || theme.details.media == .none {
+                    CabinetTile(game: game, isFocused: true)
+                        .aspectRatio(0.75, contentMode: .fit)
+                        .frame(maxWidth: 300, maxHeight: 400)
+                }
                 if theme.details.media != .none {
+                    // Alone, the picture gets the art's room too.
                     CabinetMedia(game: game)
                         .aspectRatio(4 / 3, contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: theme.tiles.cornerRadius, style: .continuous))
-                        .frame(maxHeight: 400)
+                        .frame(maxHeight: theme.details.showsArt ? 400 : 480)
+                        .shadow(color: .black.opacity(theme.details.showsArt ? 0 : 0.45), radius: 18, y: 8)
                 }
             }
             CabinetGameInfo(game: game, alignment: .leading)

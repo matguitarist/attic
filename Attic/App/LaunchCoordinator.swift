@@ -299,7 +299,9 @@ final class LaunchCoordinator {
             )
             let (configURL, appendConfigURL) = try folder.prepareRetroArchLaunch(
                 for: systemID, controller: controllerSettingsStore.settings, systemSettings: systemSettings,
-                achievements: RetroAchievementsStore.currentAccount
+                achievements: RetroAchievementsStore.currentAccount,
+                bezel: systemSettings.bezels == false ? nil : Self.fittingBezel(for: game),
+                monitor: CabinetDisplay.retroArchMonitorIndex
             )
             try folder.setSystemCoreOptions(systemSettings, core: identifier)
             try folder.setRetroArchCoreOptions(CoreLaunchOptions.options(
@@ -417,5 +419,14 @@ final class LaunchCoordinator {
         // Back to the library (or Cabinet Mode) instead of leaving the user on
         // whatever app happens to be behind the emulator.
         NSApp.activate()
+    }
+
+    /// The game's bezel, when it's a picture RetroArch reads (PNG or
+    /// JPEG) and its window is where the game is drawn on this display.
+    private static func fittingBezel(for game: Game) -> URL? {
+        guard let bezel = game.bezelURL, ["png", "jpg", "jpeg"].contains(bezel.pathExtension.lowercased()),
+              let window = BezelWindow.measure(bezel),
+              let screen = NSScreen.main?.frame, screen.height > 0 else { return nil }
+        return SystemSettingsSupport.bezelFits(window: window.rect, screenAspect: screen.width / screen.height) ? bezel : nil
     }
 }

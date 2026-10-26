@@ -35,13 +35,18 @@ struct LibraryCommands: Commands {
     @FocusedValue(\.importCollection) private var importCollection
     @FocusedValue(\.collectionCoordinator) private var collectionCoordinator
     @AppStorage(RemovedSystems.key) private var removedSystems = ""
-    @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button("Add Games…") { addGames?() }
                 .keyboardShortcut("o")
                 .disabled(addGames == nil || romsRootsStore.rootURLs.isEmpty)
+            Button("Show ROMs Folder") {
+                if let root = romsRootsStore.rootURLs.first { NSWorkspace.shared.open(root) }
+            }
+            .disabled(romsRootsStore.rootURLs.isEmpty)
+
+            Divider()
 
             Button("New Collection…") {
                 collectionCoordinator?.newCollection()
@@ -58,16 +63,15 @@ struct LibraryCommands: Commands {
 
             Divider()
 
-            Button("Refresh Library") { refresh() }
-                .keyboardShortcut("r")
-                .disabled(romsRootsStore.rootURLs.isEmpty || scanCoordinator.state == .scanning)
-
-            Button("Library Statistics") { openWindow(id: LibraryStatsView.windowID) }
-
-            Button("Show ROMs Folder") {
-                if let root = romsRootsStore.rootURLs.first { NSWorkspace.shared.open(root) }
+            // One item that becomes its own stop while it runs.
+            if scanCoordinator.state == .scanning {
+                Button("Stop Refreshing") { scanCoordinator.stop() }
+                    .keyboardShortcut(".")
+            } else {
+                Button("Refresh Library") { refresh() }
+                    .keyboardShortcut("r")
+                    .disabled(romsRootsStore.rootURLs.isEmpty)
             }
-            .disabled(romsRootsStore.rootURLs.isEmpty)
 
             // Reads `removedSystems` so it updates when one is removed.
             if !removedSystems.isEmpty {
@@ -94,6 +98,9 @@ struct LibraryCommands: Commands {
 struct GameCommands: Commands {
     let launchCoordinator: LaunchCoordinator
     let retroArchStore: RetroArchSettingsStore
+    let tools: ToolsCoordinator
+    let scanCoordinator: ScanCoordinator
+    let romsRootsStore: RomsRootsStore
 
     @FocusedValue(\.selectedGame) private var game
     @FocusedValue(\.gameInfoEditor) private var infoEditor
@@ -107,6 +114,8 @@ struct GameCommands: Commands {
             .keyboardShortcut(.return, modifiers: .command)
             .disabled(game == nil)
 
+            Divider()
+
             Button(game?.favorite == true ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")) {
                 guard let game else { return }
                 game.favorite.toggle()
@@ -115,15 +124,17 @@ struct GameCommands: Commands {
             .keyboardShortcut("d")
             .disabled(game == nil)
 
-            Button("Edit Info…") {
-                infoEditor?.game = game
-            }
-            .keyboardShortcut("i")
-
             Button("Add to New Collection…") {
                 if let game { collectionCoordinator?.newCollection(with: [game]) }
             }
             .disabled(game == nil || collectionCoordinator == nil)
+
+            Divider()
+
+            Button("Edit Info…") {
+                infoEditor?.game = game
+            }
+            .keyboardShortcut("i")
             .disabled(game == nil || infoEditor == nil)
 
             Button("Open Manual") {
@@ -138,24 +149,56 @@ struct GameCommands: Commands {
             }
             .keyboardShortcut("r", modifiers: [.command, .shift])
             .disabled(game == nil)
+
+            conversionItems
         }
+    }
+
+    /// Compressing the game, or turning a CHD back, when its files can be;
+    /// nothing otherwise.
+    @ViewBuilder
+    private var conversionItems: some View {
+        let title = game?.title ?? ""
+        let compression = game.flatMap { tools.compression(for: $0) }
+        let back = game.flatMap { tools.conversionBack(for: $0) }
+        if compression != nil || back != nil {
+            Divider()
+        }
+        switch compression {
+        case .discs(let discs)?:
+            Button(String(localized: "Compress “\(title)” to CHD")) { run(.discs(discs), title) }
+                .disabled(tools.isBusy || tools.chdman == nil)
+        case .cartridge(let rom)?:
+            Button(String(localized: "Compress “\(title)” to ZIP")) { run(.cartridge(rom), title) }
+                .disabled(tools.isBusy)
+        default:
+            EmptyView()
+        }
+        if let back {
+            Button(String(localized: "Convert “\(title)” Back from CHD")) { run(back, title) }
+                .disabled(tools.isBusy || tools.chdman == nil)
+        }
+    }
+
+    private func run(_ conversion: ToolsCoordinator.GameConversion, _ title: String) {
+        Task { await tools.run(conversion, title: title, romsRoots: romsRootsStore.rootURLs, scanCoordinator: scanCoordinator) }
     }
 }
 
 /// The Tools menu: looking after the ROMs folders (tidying, compressing),
-/// the selected game's files, and what Attic keeps on the side.
+/// bringing in media and games, and what Attic keeps on the side.
 struct ToolsCommands: Commands {
     let tools: ToolsCoordinator
     let scanCoordinator: ScanCoordinator
     let romsRootsStore: RomsRootsStore
     let emulationFolderStore: EmulationFolderStore
 
-    @FocusedValue(\.selectedGame) private var game
     @Environment(\.openSettings) private var openSettings
     @AppStorage(SettingsTabView.selectionKey) private var settingsTab = SettingsTabView.Tab.general
 
     var body: some Commands {
         CommandMenu("Tools") {
+            // Looking after the games themselves…
             Button("Tidy Up…") {
                 Task { await tools.analyzeTidy(romsRoots: roots, from: .library) }
             }
@@ -178,6 +221,20 @@ struct ToolsCommands: Commands {
             .disabled(roots.isEmpty || tools.isBusy)
             .help("Checks your games against No-Intro's lists of known good dumps.")
 
+            Divider()
+
+            // …bringing things in…
+            Button("Get Media from EmuMovies…") {
+                guard let server = EmuMoviesCredentialsStore().server else {
+                    settingsTab = .emuMovies
+                    openSettings()
+                    return
+                }
+                Task { await tools.analyzeEmuMovies(server: server, scanCoordinator: scanCoordinator, host: .library) }
+            }
+            .disabled(roots.isEmpty || tools.isBusy)
+            .help("Downloads box art, logos, fan art, screenshots, manuals and system videos for your games from EmuMovies, with your EmuMovies login.")
+
             Button("Import from Another Front-End…") {
                 let panel = NSOpenPanel()
                 panel.canChooseDirectories = true
@@ -190,17 +247,6 @@ struct ToolsCommands: Commands {
             .disabled(roots.isEmpty || tools.isBusy)
             .help("Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.")
 
-            Button("Get Media from EmuMovies…") {
-                guard let server = EmuMoviesCredentialsStore().server else {
-                    settingsTab = .emuMovies
-                    openSettings()
-                    return
-                }
-                Task { await tools.analyzeEmuMovies(server: server, scanCoordinator: scanCoordinator, host: .library) }
-            }
-            .disabled(roots.isEmpty || tools.isBusy)
-            .help("Downloads box art, logos, fan art, screenshots, manuals and system videos for your games from EmuMovies, with your EmuMovies login.")
-
             Button("Import Steam Games…") {
                 Task { await SteamImport.run(romsRoots: roots, scanCoordinator: scanCoordinator) }
             }
@@ -209,18 +255,11 @@ struct ToolsCommands: Commands {
 
             Divider()
 
-            gameItems
-
-            Divider()
-
-            let unzipped = tools.unzippedGamesBytes
-            Button(unzipped > 0
-                   ? String(localized: "Remove Unzipped Copies (\(ByteCountFormatter.string(fromByteCount: unzipped, countStyle: .file)))")
-                   : String(localized: "Remove Unzipped Copies")) {
-                tools.emptyUnzippedGames()
+            // …and what Attic keeps on the side.
+            Button("Check BIOS Files…") {
+                settingsTab = .bios
+                openSettings()
             }
-            .disabled(unzipped == 0)
-            .help("Zipped games are unzipped to be played. The copies can go: a game unzips again when it next starts.")
 
             Button("Back Up Saves") {
                 Task { await tools.backUp(emulationRoot: emulationFolderStore.folder.root) }
@@ -228,39 +267,29 @@ struct ToolsCommands: Commands {
             .disabled(tools.isBusy)
             .help("Zips your saves, save states, collections and gamelists into your backup folder.")
 
-            Button("Check BIOS Files…") {
-                settingsTab = .bios
-                openSettings()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var gameItems: some View {
-        let title = game?.title ?? ""
-        let compression = game.flatMap { tools.compression(for: $0) }
-        let back = game.flatMap { tools.conversionBack(for: $0) }
-        switch compression {
-        case .discs(let discs)?:
-            Button(String(localized: "Compress “\(title)” to CHD")) { run(.discs(discs), title) }
-                .disabled(tools.isBusy || tools.chdman == nil)
-        case .cartridge(let rom)?:
-            Button(String(localized: "Compress “\(title)” to ZIP")) { run(.cartridge(rom), title) }
-                .disabled(tools.isBusy)
-        default:
-            Button("Compress Selected Game") {}
-                .disabled(true)
-        }
-        if let back {
-            Button(String(localized: "Convert “\(title)” Back from CHD")) { run(back, title) }
-                .disabled(tools.isBusy || tools.chdman == nil)
+            Button("Remove Unzipped Copies…") { removeUnzippedCopies() }
+                .help("Zipped games are unzipped to be played. The copies can go: a game unzips again when it next starts.")
         }
     }
 
     private var roots: [URL] { romsRootsStore.rootURLs }
 
-    private func run(_ conversion: ToolsCoordinator.GameConversion, _ title: String) {
-        Task { await tools.run(conversion, title: title, romsRoots: roots, scanCoordinator: scanCoordinator) }
+    /// Sizes the copies when asked rather than each time the menu is drawn,
+    /// and says how much goes before it does.
+    private func removeUnzippedCopies() {
+        let bytes = tools.unzippedGamesBytes
+        let alert = NSAlert()
+        guard bytes > 0 else {
+            alert.messageText = String(localized: "No Unzipped Copies")
+            alert.informativeText = String(localized: "No zipped game has been unzipped to be played.")
+            alert.runModal()
+            return
+        }
+        alert.messageText = String(localized: "Remove \(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)) of Unzipped Copies?")
+        alert.informativeText = String(localized: "A game unzips again when it next starts.")
+        alert.addButton(withTitle: String(localized: "Remove"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        if alert.runModal() == .alertFirstButtonReturn { tools.emptyUnzippedGames() }
     }
 }
 
@@ -292,8 +321,15 @@ struct HelpCommands: Commands {
             .keyboardShortcut("?", modifiers: .command)
         }
 
-        // What emulators said, for when a game won't start.
+        // Attic's other windows: the library's state, and what emulators
+        // said, for when a game won't start.
         CommandGroup(before: .windowList) {
+            Button("Library Health") {
+                openWindow(id: LibraryHealthView.windowID)
+            }
+            Button("Library Statistics") {
+                openWindow(id: LibraryStatsView.windowID)
+            }
             Button("Log") {
                 openWindow(id: LogView.windowID)
             }
