@@ -128,6 +128,7 @@ struct LibrarySidebarView: View {
     private func systemRow(_ system: GameSystem, category: SystemCategory) -> some View {
         Label(system.displayName, systemImage: category.symbolName)
             .lineLimit(1)
+            .help(system.displayName)  // long names don't fit the sidebar
             .badge(system.gameCount)
             .tag(LibrarySelection.system(system.systemID))
             // Games dropped on a system go to its folder, whatever their type.

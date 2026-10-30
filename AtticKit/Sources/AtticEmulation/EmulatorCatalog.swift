@@ -477,7 +477,7 @@ public enum EmulatorCatalog {
         .init(systemID: .gba, cores: [
             RecommendedCore("mgba_libretro", "mGBA", String(localized: "Accurate and fast — the standard GBA core.", bundle: .module))
         ], standalone: [], bios: [
-            BIOSRequirement("gba_bios.bin", required: false, note: "Optional; improves accuracy")
+            BIOSRequirement("gba_bios.bin", required: false, note: "Improves accuracy")
         ], prefersStandalone: false),
 
         .init(systemID: .saturn, cores: [
@@ -491,7 +491,7 @@ public enum EmulatorCatalog {
         .init(systemID: .dreamcast, cores: [
             RecommendedCore("flycast_libretro", "Flycast", String(localized: "The Dreamcast core.", bundle: .module))
         ], standalone: [], bios: [
-            BIOSRequirement("dc/dc_boot.bin", required: false, note: "Optional; Flycast can boot most games without it")
+            BIOSRequirement("dc/dc_boot.bin", required: false, note: "Flycast can boot most games without it")
         ], prefersStandalone: false),
 
         .init(systemID: .atari2600, cores: [
@@ -504,7 +504,7 @@ public enum EmulatorCatalog {
         .init(systemID: .atari7800, cores: [
             RecommendedCore("prosystem_libretro", "ProSystem", String(localized: "The Atari 7800 core.", bundle: .module))
         ], standalone: [], bios: [
-            BIOSRequirement("7800 BIOS (U).rom", required: false, note: "Optional")
+            BIOSRequirement("7800 BIOS (U).rom", required: false)
         ], prefersStandalone: false),
         .init(systemID: .atarilynx, cores: [
             RecommendedCore("handy_libretro", "Handy", String(localized: "The reference Lynx emulator.", bundle: .module)),
@@ -549,8 +549,8 @@ public enum EmulatorCatalog {
         .init(systemID: .cps1, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .cps2, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .cps3, cores: [fbneo, mameCurrent], standalone: [], bios: [], prefersStandalone: false),
-        .init(systemID: .gb, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gb_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
-        .init(systemID: .gbc, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gbc_bios.bin", required: false, note: "Optional; shows the boot logo")], prefersStandalone: false),
+        .init(systemID: .gb, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gb_bios.bin", required: false, note: "Shows the boot logo")], prefersStandalone: false),
+        .init(systemID: .gbc, cores: [gambatte, sameBoy, gearboy], standalone: [], bios: [BIOSRequirement("gbc_bios.bin", required: false, note: "Shows the boot logo")], prefersStandalone: false),
         .init(systemID: .n64, cores: [RecommendedCore("mupen64plus_next_libretro", "Mupen64Plus-Next", String(localized: "Best compatibility, with upscaling.", bundle: .module)), RecommendedCore("parallel_n64_libretro", "ParaLLEl N64", String(localized: "Alternative N64 core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .n64dd, cores: [
             RecommendedCore("mupen64plus_next_libretro", "Mupen64Plus-Next", String(localized: "Reads 64DD disks with the 64DD IPL.", bundle: .module)),
@@ -559,13 +559,13 @@ public enum EmulatorCatalog {
             BIOSRequirement("Mupen64plus/IPL.n64", note: "64DD IPL, for Mupen64Plus-Next", notNeededBy: ["parallel_n64_libretro"]),
             BIOSRequirement("64DD_IPL.bin", note: "The same IPL, for ParaLLEl N64", notNeededBy: ["mupen64plus_next_libretro"])
         ], prefersStandalone: false),
-        .init(systemID: .nds, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Accurate DS and DSi, no BIOS needed.", bundle: .module)), RecommendedCore("desmume_libretro", "DeSmuME", String(localized: "Older, widely compatible DS core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios7.bin", required: false, note: "Optional; melonDS DS has a built-in replacement"), BIOSRequirement("bios9.bin", required: false, note: "Optional"), BIOSRequirement("firmware.bin", required: false, note: "Optional")], prefersStandalone: false),
+        .init(systemID: .nds, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Accurate DS and DSi, no BIOS needed.", bundle: .module)), RecommendedCore("desmume_libretro", "DeSmuME", String(localized: "Older, widely compatible DS core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios7.bin", required: false, note: "Optional; melonDS DS has a built-in replacement"), BIOSRequirement("bios9.bin", required: false), BIOSRequirement("firmware.bin", required: false)], prefersStandalone: false),
         .init(systemID: .n3ds, cores: [RecommendedCore("azahar_libretro", "Azahar", String(localized: "Citra's actively developed successor.", bundle: .module)), RecommendedCore("panda3ds_libretro", "Panda3DS", String(localized: "Newer, lighter 3DS core.", bundle: .module)), RecommendedCore("citra_libretro", "Citra", String(localized: "The original 3DS core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .gamecube, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
         .init(systemID: .wii, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
         .init(systemID: .wiiu, cores: [RecommendedCore("cemu_libretro", "Cemu", String(localized: "The Wii U emulator, as a RetroArch core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .fds, cores: [RecommendedCore("fceumm_libretro", "FCEUmm", String(localized: "Famicom Disk System support built in.", bundle: .module)), RecommendedCore("mesen_libretro", "Mesen", String(localized: "Most accurate NES core, with disk support.", bundle: .module))], standalone: [], bios: [BIOSRequirement("disksys.rom", note: "Famicom Disk System BIOS")], prefersStandalone: false),
-        .init(systemID: .pokemini, cores: [RecommendedCore("pokemini_libretro", "PokeMini", String(localized: "The Pokémon Mini core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios.min", required: false, note: "Optional; a free replacement is built in")], prefersStandalone: false),
+        .init(systemID: .pokemini, cores: [RecommendedCore("pokemini_libretro", "PokeMini", String(localized: "The Pokémon Mini core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios.min", required: false, note: "A free replacement is built in")], prefersStandalone: false),
         .init(systemID: .gameandwatch, cores: [RecommendedCore("gw_libretro", "Game & Watch", String(localized: "Plays Game & Watch .mgw files.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .sg1000, cores: [genesisPlusGX, RecommendedCore("gearsystem_libretro", "Gearsystem", String(localized: "Accurate Sega 8-bit core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         // A few NAOMI games came in cabinets with a BIOS of their own.
@@ -619,7 +619,7 @@ public enum EmulatorCatalog {
         .init(systemID: .ngpc, cores: [beetleNGP, race], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .neogeocd, cores: [RecommendedCore("neocd_libretro", "NeoCD", String(localized: "The Neo Geo CD core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("neocd/neocd.bin", note: "Neo Geo CD BIOS (front or top loader)")], prefersStandalone: false),
         .init(systemID: .atarist, cores: [RecommendedCore("hatari_libretro", "Hatari", String(localized: "The Atari ST, STE, TT and Falcon emulator.", bundle: .module))], standalone: [], bios: [BIOSRequirement("tos.img", note: "Atari TOS ROM")], prefersStandalone: false),
-        .init(systemID: .atari800, cores: [RecommendedCore("atari800_libretro", "Atari800", String(localized: "Atari 400/800, XL and XE.", bundle: .module))], standalone: [], bios: [BIOSRequirement("ATARIXL.ROM", required: false, note: "Optional; needed by some XL/XE games"), BIOSRequirement("ATARIBAS.ROM", required: false, note: "Optional; Atari BASIC")], prefersStandalone: false),
+        .init(systemID: .atari800, cores: [RecommendedCore("atari800_libretro", "Atari800", String(localized: "Atari 400/800, XL and XE.", bundle: .module))], standalone: [], bios: [BIOSRequirement("ATARIXL.ROM", required: false, note: "Optional; needed by some XL/XE games"), BIOSRequirement("ATARIBAS.ROM", required: false, note: "Atari BASIC")], prefersStandalone: false),
         .init(systemID: .colecovision, cores: [RecommendedCore("gearcoleco_libretro", "Gearcoleco", String(localized: "Accurate ColecoVision core.", bundle: .module)), RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Also runs ColecoVision.", bundle: .module))], standalone: [], bios: [BIOSRequirement("colecovision.rom")], prefersStandalone: false),
         .init(systemID: .intellivision, cores: [RecommendedCore("freeintv_libretro", "FreeIntv", String(localized: "The Intellivision core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("exec.bin", note: "Executive ROM"), BIOSRequirement("grom.bin", note: "Graphics ROM")], prefersStandalone: false),
         .init(systemID: .vectrex, cores: [RecommendedCore("vecx_libretro", "vecx", String(localized: "The Vectrex core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),

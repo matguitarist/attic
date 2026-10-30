@@ -5,9 +5,39 @@
     " (and %lld tracks)": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " (et %lld pistes)"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (et %lld piste)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (et %lld pistes)"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (and %lld track)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (and %lld tracks)"
+                }
+              }
+            }
           }
         }
       }
@@ -25,9 +55,39 @@
     " (or %lld other known dumps)": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " (ou %lld autres dumps connus)"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (ou %lld autre dump connu)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (ou %lld autres dumps connus)"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (or %lld other known dump)"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": " (or %lld other known dumps)"
+                }
+              }
+            }
           }
         }
       }
@@ -221,15 +281,39 @@
     "%@ · %lld cores": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@ · %2$lld cores"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ · %2$lld core"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ · %2$lld cores"
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ · %lld cœurs"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%@ · %lld cœur"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%@ · %lld cœurs"
+                }
+              }
+            }
           }
         }
       }
@@ -316,15 +400,39 @@
     "%@: %lld files to look at": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@: %2$lld files to look at"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@: %2$lld file to look at"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@: %2$lld files to look at"
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ : %2$lld fichiers à vérifier"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ : %2$lld fichier à vérifier"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ : %2$lld fichiers à vérifier"
+                }
+              }
+            }
           }
         }
       }
@@ -402,15 +510,39 @@
     "%lld chips: %@": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld chips: %2$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld chip: %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld chips: %2$@"
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld puces : %2$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld puce : %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld puces : %2$@"
+                }
+              }
+            }
           }
         }
       }
@@ -419,9 +551,39 @@
       "extractionState": "stale",
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld collections ont reçu un logo."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld collection a reçu un logo."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld collections ont reçu un logo."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld collection got a logo."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld collections got a logo."
+                }
+              }
+            }
           }
         }
       }
@@ -469,9 +631,39 @@
     "%lld covers, videos and manuals came along.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jaquettes, vidéos et manuels ont suivi."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jaquette, vidéo ou manuel a suivi."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jaquettes, vidéos et manuels ont suivi."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld cover, video or manual came along."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld covers, videos and manuals came along."
+                }
+              }
+            }
           }
         }
       }
@@ -559,9 +751,39 @@
     "%lld discs": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld disques"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld disque"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld disques"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld disc"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld discs"
+                }
+              }
+            }
           }
         }
       }
@@ -569,9 +791,39 @@
     "%lld duplicates moved to the Trash: a file with the right name already held the same dump.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld doublons placés dans la corbeille : un fichier au bon nom contenait déjà le même dump."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld doublon placé dans la corbeille : un fichier au bon nom contenait déjà le même dump."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld doublons placés dans la corbeille : un fichier au bon nom contenait déjà le même dump."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld duplicate moved to the Trash: a file with the right name already held the same dump."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld duplicates moved to the Trash: a file with the right name already held the same dump."
+                }
+              }
+            }
           }
         }
       }
@@ -641,9 +893,39 @@
     "%lld files put in place.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld fichiers mis en place."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier mis en place."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers mis en place."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld file put in place."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld files put in place."
+                }
+              }
+            }
           }
         }
       }
@@ -651,9 +933,39 @@
     "%lld files that aren't games for their system were left where they are.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld fichiers qui ne sont pas des jeux pour leur système sont restés à leur place."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier qui n’est pas un jeu pour son système est resté à sa place."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers qui ne sont pas des jeux pour leur système sont restés à leur place."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld file that isn't a game for its system was left where it is."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld files that aren't games for their system were left where they are."
+                }
+              }
+            }
           }
         }
       }
@@ -661,9 +973,39 @@
     "%lld files to look at": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld fichiers à vérifier"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier à vérifier"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers à vérifier"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld file to look at"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld files to look at"
+                }
+              }
+            }
           }
         }
       }
@@ -671,9 +1013,39 @@
     "%lld files were kept: EmuMovies' weren't sharper.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld fichiers ont été gardés : ceux d’EmuMovies n’étaient pas plus nets."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier a été gardé : celui d’EmuMovies n’était pas plus net."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers ont été gardés : ceux d’EmuMovies n’étaient pas plus nets."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld file was kept: EmuMovies' wasn't sharper."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld files were kept: EmuMovies' weren't sharper."
+                }
+              }
+            }
           }
         }
       }
@@ -711,6 +1083,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld fichiers, renommés d’après leur jeu (Jeu-boxart.png devient 2dboxes/Jeu.png)."
+          }
+        }
+      }
+    },
+    "%lld folders skipped": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld dossier ignoré"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld dossiers ignorés"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld folder skipped"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld folders skipped"
+                }
+              }
+            }
           }
         }
       }
@@ -776,9 +1188,39 @@
     "%lld game videos": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld vidéos de jeux"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vidéo de jeu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld vidéos de jeux"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game video"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game videos"
+                }
+              }
+            }
           }
         }
       }
@@ -852,9 +1294,39 @@
     "%lld games available": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jeux disponibles"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu disponible"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux disponibles"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game available"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games available"
+                }
+              }
+            }
           }
         }
       }
@@ -878,15 +1350,39 @@
     "%lld games compressed, %@ saved.": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld games compressed, %2$@ saved."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld game compressed, %2$@ saved."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld games compressed, %2$@ saved."
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld jeux compressés, %2$@ gagnés."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeu compressé, %2$@ gagnés."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeux compressés, %2$@ gagnés."
+                }
+              }
+            }
           }
         }
       }
@@ -966,9 +1462,39 @@
     "%lld games in your library": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jeux dans votre bibliothèque"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu dans votre bibliothèque"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux dans votre bibliothèque"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game in your library"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games in your library"
+                }
+              }
+            }
           }
         }
       }
@@ -976,15 +1502,39 @@
     "%lld games moved to the Trash, %@. To bring one back, use Put Back in the Trash, then File › Refresh Library.": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld games moved to the Trash, %2$@. To bring one back, use Put Back in the Trash, then File › Refresh Library."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld game moved to the Trash, %2$@. To bring it back, use Put Back in the Trash, then File › Refresh Library."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld games moved to the Trash, %2$@. To bring one back, use Put Back in the Trash, then File › Refresh Library."
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld jeux placés dans la corbeille, %2$@. Pour en récupérer un, utilisez Remettre à sa place dans la corbeille, puis Fichier › Actualiser la bibliothèque."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeu placé dans la corbeille, %2$@. Pour le récupérer, utilisez Remettre à sa place dans la corbeille, puis Fichier › Actualiser la bibliothèque."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeux placés dans la corbeille, %2$@. Pour en récupérer un, utilisez Remettre à sa place dans la corbeille, puis Fichier › Actualiser la bibliothèque."
+                }
+              }
+            }
           }
         }
       }
@@ -1008,9 +1558,39 @@
     "%lld games renamed, with their media, gamelist entries and saves.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jeux renommés, avec leurs médias, leurs entrées de gamelist et leurs sauvegardes."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu renommé, avec ses médias, ses entrées de gamelist et ses sauvegardes."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux renommés, avec leurs médias, leurs entrées de gamelist et leurs sauvegardes."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game renamed, with its media, gamelist entries and saves."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games renamed, with their media, gamelist entries and saves."
+                }
+              }
+            }
           }
         }
       }
@@ -1075,9 +1655,39 @@
     "%lld games whose description is likely another game’s": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld jeux dont la description est sans doute celle d’un autre jeu"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeu dont la description est sans doute celle d’un autre jeu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld jeux dont la description est sans doute celle d’un autre jeu"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld game whose description is likely another game’s"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld games whose description is likely another game’s"
+                }
+              }
+            }
           }
         }
       }
@@ -1085,15 +1695,39 @@
     "%lld games, %@": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld games, %2$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld game, %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld games, %2$@"
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld jeux, %2$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeu, %2$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeux, %2$@"
+                }
+              }
+            }
           }
         }
       }
@@ -1133,15 +1767,39 @@
     "%lld games, %@, updated %@": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld games, %2$@, updated %3$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld game, %2$@, updated %3$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld games, %2$@, updated %3$@"
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld jeux, %2$@, mise à jour %3$@"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeu, %2$@, mise à jour %3$@"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld jeux, %2$@, mise à jour %3$@"
+                }
+              }
+            }
           }
         }
       }
@@ -1181,15 +1839,39 @@
     "%lld items, %@.": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld items, %2$@."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld item, %2$@."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld items, %2$@."
+                }
+              }
+            }
           }
         },
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld éléments, %2$@."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld élément, %2$@."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld éléments, %2$@."
+                }
+              }
+            }
           }
         }
       }
@@ -1277,9 +1959,39 @@
     "%lld kept their names: another file already has the new one, with other data.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld ont gardé leur nom : un autre fichier porte déjà le nouveau, avec d'autres données."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld a gardé son nom : un autre fichier porte déjà le nouveau, avec d'autres données."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld ont gardé leur nom : un autre fichier porte déjà le nouveau, avec d'autres données."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld kept its name: another file already has the new one, with other data."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld kept their names: another file already has the new one, with other data."
+                }
+              }
+            }
           }
         }
       }
@@ -1359,9 +2071,21 @@
     "%lld missing": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld manquantes"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manquante"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld manquantes"
+                }
+              }
+            }
           }
         }
       }
@@ -1397,6 +2121,28 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld jeux multi-disques n’en ont pas. Chacun en reçoit une à son nom, listant ses disques dans l’ordre."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld new": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld nouveau"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld nouveaux"
                 }
               }
             }
@@ -1610,9 +2356,39 @@
     "%lld other chips were found.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld autres puces ont été trouvées."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autre puce a été trouvée."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autres puces ont été trouvées."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld other chip was found."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld other chips were found."
+                }
+              }
+            }
           }
         }
       }
@@ -1721,6 +2497,28 @@
         }
       }
     },
+    "%lld removed": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld supprimé"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld supprimés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld scraped": {
       "localizations": {
         "en": {
@@ -1820,9 +2618,39 @@
     "%lld sessions": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld sessions"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld session"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld sessions"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld session"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld sessions"
+                }
+              }
+            }
           }
         }
       }
@@ -1830,9 +2658,39 @@
     "%lld stars": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld étoiles"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld étoile"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld étoiles"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld star"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld stars"
+                }
+              }
+            }
           }
         }
       }
@@ -1877,6 +2735,46 @@
         }
       }
     },
+    "%lld systems scanned": {
+      "localizations": {
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld système analysé"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld systèmes analysés"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld system scanned"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld systems scanned"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld to improve": {
       "localizations": {
         "fr": {
@@ -1890,9 +2788,49 @@
     "%lld tracks": {
       "localizations": {
         "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld piste"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld pistes"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld track"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld tracks"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld updated": {
+      "localizations": {
+        "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld pistes"
+            "value": "%lld mis à jour"
           }
         }
       }
@@ -2002,9 +2940,39 @@
     "%lld were already in your ROMs folder.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld étaient déjà dans votre dossier de ROMs."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld était déjà dans votre dossier de ROMs."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld étaient déjà dans votre dossier de ROMs."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld was already in your ROMs folder."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld were already in your ROMs folder."
+                }
+              }
+            }
           }
         }
       }
@@ -4600,9 +5568,39 @@
     "Copied %lld BIOS files from %@.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fichiers BIOS copiés depuis %2$@ : %1$lld"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Fichier BIOS copié depuis %2$@ : %1$lld"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Fichiers BIOS copiés depuis %2$@ : %1$lld"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Copied %1$lld BIOS file from %2$@."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Copied %1$lld BIOS files from %2$@."
+                }
+              }
+            }
           }
         }
       }
@@ -5713,6 +6711,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux Dreamcast fonctionnent le mieux en .chd ou .gdi. Les fichiers BIOS vont dans un dossier dc à l’intérieur du dossier BIOS."
+          }
+        }
+      }
+    },
+    "Drop game files here to add them to this system.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déposez des fichiers de jeux ici pour les ajouter à ce système."
           }
         }
       }
@@ -6990,6 +7998,26 @@
         }
       }
     },
+    "Games you mark with a star show up here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux marqués d’une étoile apparaissent ici."
+          }
+        }
+      }
+    },
+    "Games you play show up here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux auxquels vous jouez apparaissent ici."
+          }
+        }
+      }
+    },
     "General": {
       "localizations": {
         "fr": {
@@ -7313,9 +8341,39 @@
     "Import %lld Steam games?": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importer %lld jeux Steam ?"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Importer %lld jeu Steam ?"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Importer %lld jeux Steam ?"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Import %lld Steam game?"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Import %lld Steam games?"
+                }
+              }
+            }
           }
         }
       }
@@ -7734,9 +8792,39 @@
     "Its %lld games leave Attic, along with their play history, favorites and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ses %lld jeux quittent Attic, avec leur historique, leurs favoris et les infos modifiées. Les fichiers ROM restent où ils sont, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Son %lld jeu quitte Attic, avec son historique, son statut de favori et ses infos modifiées. Les fichiers ROM restent où ils sont, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Ses %lld jeux quittent Attic, avec leur historique, leurs favoris et les infos modifiées. Les fichiers ROM restent où ils sont, et les nouvelles analyses ignorent le système jusqu’à ce que vous le rajoutiez dans Réglages › Général."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Its %lld game leaves Attic, along with its play history, favorite status and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Its %lld games leave Attic, along with their play history, favorites and edited info. The ROM files stay where they are, and rescans skip the system until you add it back in Settings › General."
+                }
+              }
+            }
           }
         }
       }
@@ -8731,9 +9819,39 @@
     "Move %lld Broken Files to the Trash": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placer %lld fichiers abîmés dans la corbeille"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Placer %lld fichier abîmé dans la corbeille"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Placer %lld fichiers abîmés dans la corbeille"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld Broken File to the Trash"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld Broken Files to the Trash"
+                }
+              }
+            }
           }
         }
       }
@@ -8741,9 +9859,39 @@
     "Move %lld games to the Trash?": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Placer %lld jeux dans la corbeille ?"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Placer %lld jeu dans la corbeille ?"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Placer %lld jeux dans la corbeille ?"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld game to the Trash?"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld games to the Trash?"
+                }
+              }
+            }
           }
         }
       }
@@ -9100,6 +10248,16 @@
         }
       }
     },
+    "No Favorites Yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore de favoris"
+          }
+        }
+      }
+    },
     "No Game Selected": {
       "localizations": {
         "fr": {
@@ -9120,6 +10278,16 @@
         }
       }
     },
+    "No Games Found": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu trouvé"
+          }
+        }
+      }
+    },
     "No Games Here": {
       "localizations": {
         "fr": {
@@ -9136,6 +10304,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun jeu ne correspond"
+          }
+        }
+      }
+    },
+    "No Games in This Collection": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu dans cette collection"
           }
         }
       }
@@ -9261,6 +10439,16 @@
         }
       }
     },
+    "No emulator set up for %@ yet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun émulateur configuré pour %@ pour l’instant."
+          }
+        }
+      }
+    },
     "No file here has these chips. They're left as they are, and so are the loose files they use.": {
       "localizations": {
         "fr": {
@@ -9281,6 +10469,16 @@
         }
       }
     },
+    "No game matches “%@”.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu ne correspond à « %@ »."
+          }
+        }
+      }
+    },
     "No gamelist found there. Choose the folder that holds each system's folder (RetroBat's or Batocera's roms folder), or one system's folder.": {
       "localizations": {
         "fr": {
@@ -9292,6 +10490,7 @@
       }
     },
     "No games match this selection.": {
+      "extractionState": "stale",
       "localizations": {
         "fr": {
           "stringUnit": {
@@ -9658,6 +10857,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rien ne semble faux"
+          }
+        }
+      }
+    },
+    "Nothing Played Yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu lancé pour l’instant"
           }
         }
       }
@@ -11185,9 +12394,39 @@
     "Rename %lld Games": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renommer %lld jeux"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Renommer %lld jeu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Renommer %lld jeux"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Rename %lld Game"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Rename %lld Games"
+                }
+              }
+            }
           }
         }
       }
@@ -11244,6 +12483,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Répété %lld fois de suite"
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repeated %lld time in a row"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repeated %lld times in a row"
+                }
+              }
+            }
           }
         }
       }
@@ -11584,6 +12841,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "À droite — Nintendo, Switch"
+          }
+        }
+      }
+    },
+    "Right-click a game to add it to this collection.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faites un clic droit sur un jeu pour l’ajouter à cette collection."
           }
         }
       }
@@ -13012,9 +14279,39 @@
     "Stopped. %lld files were put in place before that.": {
       "localizations": {
         "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arrêté. %lld fichiers avaient été mis en place avant."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Arrêté. %lld fichier avait été mis en place avant."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Arrêté. %lld fichiers avaient été mis en place avant."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Stopped. %lld file was put in place before that."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Stopped. %lld files were put in place before that."
+                }
+              }
+            }
           }
         }
       }

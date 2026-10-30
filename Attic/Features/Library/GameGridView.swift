@@ -51,9 +51,13 @@ struct GameGridView: View {
 
     /// Each change picks a game at random.
     private let randomPicks: Int
+    private let selection: LibrarySelection
+    private let searchText: String
 
     init(selection: LibrarySelection, searchText: String, sortOrder: GameSortOrder, cellScale: CGFloat, selectedGame: Binding<Game?>, multiSelection: Binding<[Game]>, randomPicks: Int = 0) {
         _multiSelection = multiSelection
+        self.selection = selection
+        self.searchText = searchText
         self.randomPicks = randomPicks
         self.cellScale = cellScale
         // Recently Played always shows most-recent-first, regardless of the
@@ -150,15 +154,36 @@ struct GameGridView: View {
         }
     }
 
+    /// Says why this page is empty, and how to fill it.
+    @ViewBuilder
+    private var emptyState: some View {
+        let search = searchText.trimmingCharacters(in: .whitespaces)
+        if !search.isEmpty {
+            ContentUnavailableView("No Games Found", systemImage: "magnifyingglass", description: Text("No game matches “\(search)”."))
+        } else {
+            switch selection {
+            case .favorites:
+                ContentUnavailableView("No Favorites Yet", systemImage: "star", description: Text("Games you mark with a star show up here."))
+            case .recentlyPlayed:
+                ContentUnavailableView("Nothing Played Yet", systemImage: "clock", description: Text("Games you play show up here."))
+            case .collection:
+                ContentUnavailableView("No Games in This Collection", systemImage: "rectangle.stack", description: Text("Right-click a game to add it to this collection."))
+            case .system:
+                ContentUnavailableView("No Games", systemImage: "gamecontroller", description: Text("Drop game files here to add them to this system."))
+            case .allGames, .recentlyAdded:
+                ContentUnavailableView("No Games", systemImage: "gamecontroller")
+            }
+        }
+    }
+
     private var grid: some View {
         ScrollView {
             if games.isEmpty {
-                ContentUnavailableView(
-                    "No Games",
-                    systemImage: "gamecontroller",
-                    description: Text("No games match this selection.")
-                )
-                .padding(.top, 80)
+                emptyState
+                    // The scroll view hugs narrower content, leaving the
+                    // column's bare background on both sides of it.
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 80)
             } else {
                 LazyVGrid(columns: columns, spacing: Self.spacing) {
                     ForEach(displayedGames) { game in

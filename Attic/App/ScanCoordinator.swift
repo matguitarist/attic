@@ -105,15 +105,16 @@ final class ScanCoordinator {
         // Collections that keep themselves up to date pick up new games.
         _ = try? await libraryStore.addMatchingGamesToCollections()
 
-        var summary = "\(systemsSaved) system(s) scanned — \(gamesInserted) new, \(gamesUpdated) updated"
+        var counts = [String(localized: "\(gamesInserted) new"), String(localized: "\(gamesUpdated) updated")]
         if gamesRemoved > 0 {
-            summary += ", \(gamesRemoved) removed"
+            counts.append(String(localized: "\(gamesRemoved) removed"))
         }
+        var summary = String(localized: "\(systemsSaved) systems scanned") + " — " + counts.joined(separator: ", ")
         if isStopping {
             summary = String(localized: "Stopped. ") + summary
         }
         if !result.issues.isEmpty {
-            summary += " (\(result.issues.count) folder(s) skipped)"
+            summary += " (" + String(localized: "\(result.issues.count) folders skipped") + ")"
         }
         lastScanSummary = summary
         state = .idle

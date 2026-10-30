@@ -25,6 +25,7 @@ struct EmulatorSuggestionView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Label(headline(for: status), systemImage: "gamecontroller")
                     .font(.callout.weight(.semibold))
+                    .fixedSize(horizontal: false, vertical: true)
 
                 ForEach(Array(setup.installOptions(for: system.systemID).prefix(Self.maxOptions).enumerated()), id: \.element) { index, option in
                     optionRow(option, isRecommended: index == 0)
@@ -88,7 +89,7 @@ struct EmulatorSuggestionView: View {
     private func headline(for status: EmulatorSetupCoordinator.SystemStatus) -> String {
         switch status {
         case .broken(let reason): reason
-        case .notSetUp, .ready: "No emulator set up for \(system.displayName) yet."
+        case .notSetUp, .ready: String(localized: "No emulator set up for \(system.displayName) yet.")
         }
     }
 }

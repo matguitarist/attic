@@ -87,7 +87,9 @@ struct RetroArchSettingsView: View {
                     .disabled(count == 0 || setup.isBusy)
                 }
             } label: {
-                Text(count == 0 ? String(localized: "Everything is up to date") : String(localized: "\(count) updates available"))
+                Text(count > 0 ? String(localized: "\(count) updates available")
+                     : setup.lastCoreUpdateCheck == nil ? String(localized: "Not checked yet")
+                     : String(localized: "Everything is up to date"))
                 Group {
                     if count > 0 {
                         Text((cores.map(\.displayName) + standalone.map(\.name)).formatted(.list(type: .and)))
