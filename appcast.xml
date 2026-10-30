@@ -3,6 +3,32 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.9.1</title>
+            <pubDate>Fri, 30 Oct 2026 11:11:29 -0400</pubDate>
+            <sparkle:version>48</sparkle:version>
+            <sparkle:shortVersionString>2.9.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Scrape from LaunchBox&#x27;s games database, with no account: downloaded once and kept small by indexing only your systems, it finds games by their file name and brings boxes, 3D boxes, cartridges, logos, fan art and more</li>
+<li>Library Health: how complete each system&#x27;s media is, the files that are blank, small or broken, and game info that&#x27;s likely another game&#x27;s, each with a way to fix it</li>
+<li>Carbon, a new Cabinet Mode theme like Batocera and RetroBat&#x27;s: the system&#x27;s artwork above a band of logos</li>
+<li>Cabinet Mode can scrape games from the couch, and can play on another screen, such as an Apple TV connected over AirPlay as a separate display</li>
+<li>The game panel shows every kind of media the game can have, with what&#x27;s missing; drop a file on one to add it. The system panel counts them all too</li>
+<li>Pick a different emulator for a single game</li>
+<li>A tidier menu bar, and toolbar buttons for Library Health and Statistics</li>
+<li>Pictures picked for systems and collections are stored as HEIC</li>
+<li>Choosing a Cabinet Mode theme brings it as it came, without changes made to it before</li>
+<li>Empty pages say why they&#x27;re empty and what to do about it, and no longer show bare bands beside the grid</li>
+<li>Emulator updates say &quot;Not checked yet&quot; instead of &quot;Everything is up to date&quot; until a check has finished</li>
+<li>Counts read correctly for a single item (&quot;1 session&quot;, &quot;1 file to look at&quot;), in English and French</li>
+<li>The &quot;No emulator set up&quot; notice wraps instead of being cut off, and is translated into French</li>
+<li>Long system names show in full when you hover over them in the sidebar</li>
+<li>Fixes: SNES games could stay paused on a black screen; the Window menu listed windows twice; Amazon Luna controllers showed the Xbox icon</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.9.1/Attic-2.9.1.zip" length="18984635" type="application/octet-stream" sparkle:edSignature="A5ToE0kXDvpK4/OaRwxCjWHwQ1M8gVaIUaViaJ9Tp4fo6scz7bOk8tQWrWE+WFhjhVP/D7vuKRASWVztIAZ7Cw=="/>
+        </item>
+        <item>
             <title>2.8.0</title>
             <pubDate>Fri, 23 Oct 2026 21:41:16 -0400</pubDate>
             <sparkle:version>46</sparkle:version>
