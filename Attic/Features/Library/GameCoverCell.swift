@@ -16,9 +16,9 @@ struct GameCoverCell: View {
         VStack(spacing: 6) {
             GameCoverArtView(url: game.coverArtURL, title: game.title)
                 .frame(width: width, height: width / Self.artAspectRatio)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.cover, style: .continuous))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.cover, style: .continuous)
                         .strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 3)
                 }
 

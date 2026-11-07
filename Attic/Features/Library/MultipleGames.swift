@@ -104,7 +104,7 @@ struct MultipleGamesSummaryView: View {
                 ForEach(Array(games.prefix(3).enumerated().reversed()), id: \.offset) { index, game in
                     GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false)
                         .frame(width: 120, height: 160)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.cover, style: .continuous))
                         .shadow(radius: 4)
                         .rotationEffect(.degrees(Double(index) * 6 - 6))
                         .offset(x: CGFloat(index) * 18 - 18)

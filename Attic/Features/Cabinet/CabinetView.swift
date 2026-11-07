@@ -142,8 +142,8 @@ struct CabinetView: View {
                 Text(verbatim: jumpLabel)
                     .font(theme.font(size: 120, weight: .heavy))
                     .frame(width: 200, height: 200)
-                    .background(theme.palette.surface.color, in: RoundedRectangle(cornerRadius: 32, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 32, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 3))
+                    .background(theme.palette.surface.color, in: RoundedRectangle(cornerRadius: CabinetRadius.jump, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: CabinetRadius.jump, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 3))
                     .transition(.scale(scale: 0.8).combined(with: .opacity))
                     .allowsHitTesting(false)
             }

@@ -114,7 +114,7 @@ struct CabinetShelfLayout: View {
                 .frame(height: 1.5)
         }
         .frame(height: Self.plank)
-        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: CabinetRadius.plank, style: .continuous))
         .shadow(color: .black.opacity(0.6), radius: 10, y: 8)
     }
 }
@@ -378,7 +378,7 @@ struct CabinetArcadeCabinet: View {
             LinearGradient(colors: [.white.opacity(0.22), .clear, .white.opacity(0.08)], startPoint: .top, endPoint: .bottom)
                 .blendMode(.screen)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: CabinetRadius.tube, style: .continuous))
         .shadow(color: theme.palette.accent.color.opacity(0.45), radius: 16)
     }
 
@@ -397,19 +397,19 @@ struct CabinetArcadeCabinet: View {
                     GameCoverArtView(url: bezel.url, title: game.title, showBackground: false)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: CabinetRadius.bezel, style: .continuous))
         } else {
             ZStack {
                 Color.black
                 CabinetMedia(game: game)
                     .aspectRatio(4 / 3, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: CabinetRadius.screen, style: .continuous))
                     .padding(10)
                 // Glare on the glass.
                 LinearGradient(colors: [.white.opacity(0.1), .clear], startPoint: .topLeading, endPoint: .center)
                     .allowsHitTesting(false)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: CabinetRadius.monitor, style: .continuous))
         }
     }
 }

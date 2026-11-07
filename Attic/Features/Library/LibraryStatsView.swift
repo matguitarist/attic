@@ -78,7 +78,7 @@ struct LibraryStatsView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 10))
+        .background(Color.card, in: RoundedRectangle(cornerRadius: Radius.card))
     }
 
     // MARK: - Play time

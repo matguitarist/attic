@@ -51,7 +51,7 @@ struct GameCoverArtView: View {
 
             ZStack {
                 if showBackground {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.cover, style: .continuous)
                         .fill(Color.card)
                 }
 
@@ -79,7 +79,7 @@ struct GameCoverArtView: View {
                 }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Radius.cover, style: .continuous))
     }
 
     /// Prefers whatever's already in the shared cache (so cells scrolling

@@ -26,7 +26,7 @@ struct CollectionOverviewView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(maxHeight: 200)
-                            .clipShape(.rect(cornerRadius: 8))
+                            .clipShape(.rect(cornerRadius: Radius.control))
                             .dropDestination(for: URL.self) { urls, _ in
                                 guard let image = urls.first(where: Self.isImage) else { return false }
                                 setPicture(image, as: CollectionFile.artworkName)
@@ -66,7 +66,7 @@ struct CollectionOverviewView: View {
                 } isTargeted: { isDropTarget = $0 }
                 .overlay {
                     if isDropTarget {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: Radius.control)
                             .strokeBorder(Color.accentColor, lineWidth: 2)
                     }
                 }

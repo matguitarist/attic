@@ -42,7 +42,7 @@ struct CabinetSearchView: View {
             .font(theme.largeFont())
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
-            .background(theme.palette.surface.color, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .background(theme.palette.surface.color, in: RoundedRectangle(cornerRadius: CabinetRadius.field, style: .continuous))
 
             Grid(horizontalSpacing: 8, verticalSpacing: 8) {
                 ForEach(0..<(Self.keys.count / Self.columns), id: \.self) { row in
@@ -75,9 +75,9 @@ struct CabinetSearchView: View {
         }
         .padding(28)
         .frame(maxWidth: 900)
-        .background(theme.palette.background.color.opacity(0.94), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .background(theme.palette.background.color.opacity(0.94), in: RoundedRectangle(cornerRadius: CabinetRadius.sheet, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(cornerRadius: CabinetRadius.sheet, style: .continuous)
                 .strokeBorder(theme.palette.accent.color.opacity(0.35))
         }
         .shadow(color: .black.opacity(0.5), radius: 40)
@@ -102,7 +102,7 @@ struct CabinetSearchView: View {
         .frame(width: 64, height: 54)
         .foregroundStyle(isFocused ? theme.palette.background.color : theme.palette.text.color)
         .background(isFocused ? theme.palette.accent.color : theme.palette.surface.color,
-                    in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    in: RoundedRectangle(cornerRadius: CabinetRadius.button, style: .continuous))
         .scaleEffect(isFocused ? 1.08 : 1)
         .animation(.snappy(duration: 0.12), value: isFocused)
     }

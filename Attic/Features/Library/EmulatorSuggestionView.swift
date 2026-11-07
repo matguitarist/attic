@@ -50,7 +50,7 @@ struct EmulatorSuggestionView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(showsBackground ? 12 : 0)
-            .background(.quaternary.opacity(showsBackground ? 0.5 : 0), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(.quaternary.opacity(showsBackground ? 0.5 : 0), in: RoundedRectangle(cornerRadius: Radius.banner, style: .continuous))
         }
     }
 
