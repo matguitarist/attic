@@ -1,36 +1,17 @@
 import Foundation
-import Observation
+import LogKit
 import os
 import Synchronization
 import AtticEmulation
 
 /// Attic's log: what it did (launches, quits, failures) and what emulators
-/// printed while they ran, shown in Window › Log. Kept in memory for this
-/// session and written to ~/Library/Logs/Attic/Attic.log, which survives a
-/// crash and can be sent along with a bug report.
-@Observable
-@MainActor
-final class AppLog {
-    nonisolated static let shared = AppLog()
-
-    struct Entry: Identifiable, Sendable {
-        let id: Int
-        let date: Date
-        let level: LogLevel
-        /// "Attic", or the emulator that printed it: "RetroArch", "Dolphin".
-        let source: String
-        let message: String
-        /// The same line again right after: shown once, "×12".
-        var repeats = 1
-
-        var isProblem: Bool { level >= .warning }
-    }
-
-    private(set) var entries: [Entry] = []
-    private var nextID = 0
-
-    /// Older entries are dropped from the window (the file keeps them).
-    private static let limit = 20_000
+/// printed while they ran, shown in Window › Log by LogKit's viewer. Written
+/// to ~/Library/Logs/Attic/Attic.log in Attic's own line format, which
+/// survives a crash and can be sent along with a bug report; the viewer keeps
+/// this session's newest lines in memory.
+enum AppLog {
+    /// What the viewer shows: memory only, the newest 20,000 lines. The file keeps everything.
+    nonisolated static let store = LogStore(fileURL: nil, limit: 20_000)
 
     nonisolated static let folder = URL.libraryDirectory.appending(path: "Logs/Attic", directoryHint: .isDirectory)
     nonisolated static let fileURL = folder.appending(path: "Attic.log")
@@ -39,79 +20,41 @@ final class AppLog {
     private nonisolated static let maxFileSize = 5_000_000
 
     /// The last line each source wrote, so repeats stay out of the file.
-    private nonisolated let lastLines = Mutex<[String: String]>([:])
-
-    /// Lines posted from any thread wait here, then reach `entries` in one
-    /// batch: RetroArch prints hundreds of lines as a game starts.
-    private nonisolated let pending = Mutex<[(Date, LogLevel, String, String)]>([])
-    private nonisolated let flushScheduled = Atomic<Bool>(false)
-    private nonisolated let file = LogFile(url: AppLog.fileURL, previous: AppLog.previousFileURL, maxSize: AppLog.maxFileSize)
+    private nonisolated static let lastLines = Mutex<[String: String]>([:])
+    private nonisolated static let file = LogFile(url: fileURL, previous: previousFileURL, maxSize: maxFileSize)
     private nonisolated static let systemLog = Logger(subsystem: "com.attic.app", category: "Log")
 
-    private nonisolated init() {}
-
     /// Logs from anywhere: Attic's own code or an emulator's output handler.
-    nonisolated static func post(_ level: LogLevel, _ message: String, source: String = "Attic") {
-        shared.post(level, message, source: source)
-    }
-
-    nonisolated private func post(_ level: LogLevel, _ message: String, source: String) {
-        let date = Date.now
+    nonisolated static func post(_ level: AtticEmulation.LogLevel, _ message: String, source: String = "Attic") {
         let isRepeat = lastLines.withLock { lines in
             defer { lines[source] = message }
             return lines[source] == message
         }
-        if !isRepeat { writeOut(date: date, level: level, source: source, message: message) }
-        pending.withLock { $0.append((date, level, source, message)) }
-        if !flushScheduled.exchange(true, ordering: .acquiringAndReleasing) {
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(150))
-                self.flush()
-            }
-        }
+        if !isRepeat { writeOut(date: .now, level: level, source: source, message: message) }
+        store.post(level.logKitLevel, message, source: source)
     }
 
     /// To Attic.log and the system log (Console.app).
-    nonisolated private func writeOut(date: Date, level: LogLevel, source: String, message: String) {
+    nonisolated private static func writeOut(date: Date, level: AtticEmulation.LogLevel, source: String, message: String) {
         file.append(date: date, level: level, source: source, message: message)
         switch level {
-        case .debug: Self.systemLog.debug("[\(source, privacy: .public)] \(message, privacy: .public)")
-        case .info: Self.systemLog.info("[\(source, privacy: .public)] \(message, privacy: .public)")
-        case .warning: Self.systemLog.warning("[\(source, privacy: .public)] \(message, privacy: .public)")
-        case .error: Self.systemLog.error("[\(source, privacy: .public)] \(message, privacy: .public)")
+        case .debug: systemLog.debug("[\(source, privacy: .public)] \(message, privacy: .public)")
+        case .info: systemLog.info("[\(source, privacy: .public)] \(message, privacy: .public)")
+        case .warning: systemLog.warning("[\(source, privacy: .public)] \(message, privacy: .public)")
+        case .error: systemLog.error("[\(source, privacy: .public)] \(message, privacy: .public)")
         }
     }
+}
 
-    private func flush() {
-        flushScheduled.store(false, ordering: .releasing)
-        let batch = pending.withLock { lines in
-            defer { lines.removeAll() }
-            return lines
+extension AtticEmulation.LogLevel {
+    /// The same level in LogKit, for the viewer.
+    nonisolated var logKitLevel: LogKit.LogLevel {
+        switch self {
+        case .debug: .debug
+        case .info: .info
+        case .warning: .warning
+        case .error: .error
         }
-        guard !batch.isEmpty else { return }
-        for (date, level, source, message) in batch {
-            if let last = entries.last, last.source == source, last.level == level, last.message == message {
-                entries[entries.count - 1].repeats += 1
-                continue
-            }
-            entries.append(Entry(id: nextID, date: date, level: level, source: source, message: message))
-            nextID += 1
-        }
-        if entries.count > Self.limit { entries.removeFirst(entries.count - Self.limit) }
-    }
-
-    /// Empties the window; the file keeps everything.
-    func clear() {
-        entries.removeAll()
-    }
-
-    /// Everything shown, as text to paste into a bug report.
-    func text(of entries: [Entry]) -> String {
-        entries.map {
-            LogFile.line(date: $0.date, level: $0.level, source: $0.source, message: $0.message)
-                + ($0.repeats > 1 ? " (×\($0.repeats))" : "")
-        }
-        .joined(separator: "\n")
     }
 }
 
@@ -138,11 +81,11 @@ private final class LogFile: Sendable {
     }()
 
     /// "2026-10-20 14:03:22.123-04:00 ERROR [RetroArch] …"
-    static func line(date: Date, level: LogLevel, source: String, message: String) -> String {
+    static func line(date: Date, level: AtticEmulation.LogLevel, source: String, message: String) -> String {
         "\(formatter.string(from: date)) \(level.code.padding(toLength: 5, withPad: " ", startingAt: 0)) [\(source)] \(message)"
     }
 
-    func append(date: Date, level: LogLevel, source: String, message: String) {
+    func append(date: Date, level: AtticEmulation.LogLevel, source: String, message: String) {
         let text = Self.line(date: date, level: level, source: source, message: message) + "\n"
         queue.async { [self] in
             handle.withLock { handle in
