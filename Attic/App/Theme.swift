@@ -49,7 +49,7 @@ struct StatTile: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Color.card, in: RoundedRectangle(cornerRadius: Radius.control, style: .continuous))
     }
 }
 

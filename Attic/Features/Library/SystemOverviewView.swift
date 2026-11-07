@@ -297,7 +297,7 @@ struct Tag: View {
             .foregroundStyle(.primary)
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
-            .background(.quaternary, in: .rect(cornerRadius: 4))
+            .background(.quaternary, in: .rect(cornerRadius: Radius.chip))
             .textSelection(.enabled)
     }
 }

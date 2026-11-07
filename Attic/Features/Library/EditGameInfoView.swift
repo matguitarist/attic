@@ -127,10 +127,10 @@ struct EditGameInfoView: View {
             HStack(alignment: .center, spacing: 16) {
                 GameCoverArtView(url: displayedCoverURL, title: trimmedTitle, showBackground: false)
                     .frame(width: 110, height: 110 / (3.0 / 4.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.cover, style: .continuous))
                     .overlay {
                         if isDropTargeted {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            RoundedRectangle(cornerRadius: Radius.cover, style: .continuous)
                                 .strokeBorder(.tint, lineWidth: 3)
                         }
                     }

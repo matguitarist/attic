@@ -138,7 +138,7 @@ struct GameDetailView: View {
             GameHeaderMedia(imageURL: Self.headerImageURL(for: game), videoURL: game.previewVideoURL, title: game.title)
                 .aspectRatio(4.0 / 3.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: Radius.cover, style: .continuous))
 
             // A centered multi-line TextField only draws its first line, so
             // the title shows as wrapping Text and turns into a field when

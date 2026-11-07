@@ -19,7 +19,7 @@ struct ButtonGlyphView: View {
                 .padding(.horizontal, 6)
                 .frame(minWidth: 24, minHeight: 22)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.keycap, style: .continuous)
                         .strokeBorder(lineWidth: 1.5)
                 }
         }

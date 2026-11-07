@@ -298,9 +298,9 @@ private struct CabinetCollectionPicker: View {
                             .font(theme.largeFont(isFocused ? .semibold : .regular))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
-                            .background(isFocused ? theme.palette.surface.color : .clear, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .background(isFocused ? theme.palette.surface.color : .clear, in: RoundedRectangle(cornerRadius: CabinetRadius.button, style: .continuous))
                             .overlay {
-                                if isFocused { RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 2) }
+                                if isFocused { RoundedRectangle(cornerRadius: CabinetRadius.button, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 2) }
                             }
                             .id(index)
                             .onTapGesture { focused = index; toggle(collection) }
@@ -314,7 +314,7 @@ private struct CabinetCollectionPicker: View {
         .padding(28)
         .frame(width: 560)
         .frame(maxHeight: 620)
-        .background(theme.palette.background.color.opacity(0.95), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(theme.palette.background.color.opacity(0.95), in: RoundedRectangle(cornerRadius: CabinetRadius.panel, style: .continuous))
         .shadow(color: .black.opacity(0.5), radius: 40)
         .onChange(of: event) { _, newEvent in
             guard let command = newEvent?.command else { return }

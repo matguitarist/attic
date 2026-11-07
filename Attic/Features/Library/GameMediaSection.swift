@@ -46,7 +46,7 @@ struct GameMediaSection: View {
         let title = kind == .physicalMedia ? PhysicalMedium.of(system).map { $0.singularTitle.capitalized } ?? kind.singularTitle : kind.singularTitle
         return VStack(spacing: 4) {
             ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.control, style: .continuous)
                     .fill(.quaternary.opacity(url == nil ? 0 : 0.5))
                 if let url {
                     if kind == .videos || kind == .manuals {
@@ -58,7 +58,7 @@ struct GameMediaSection: View {
                             .padding(4)
                     }
                 } else {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: Radius.control, style: .continuous)
                         .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
                         .foregroundStyle(.tertiary)
                     Image(systemName: Self.symbol(kind))

@@ -625,7 +625,7 @@ struct DATGamesButton: View {
                     .padding(.vertical, 6)
                 }
             }
-            .background(Color.card, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(Color.card, in: RoundedRectangle(cornerRadius: Radius.control, style: .continuous))
         }
     }
 
@@ -822,7 +822,7 @@ struct SetProblemsView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 2)
-        .background(Color.card, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(Color.card, in: RoundedRectangle(cornerRadius: Radius.control, style: .continuous))
     }
 }
 
