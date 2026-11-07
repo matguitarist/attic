@@ -29,6 +29,6 @@ dist/
 Config/Signing.local.xcconfig
 .build-xcode-strings/
 
-# Sparkle tools and release builds (scripts/release.sh)
+# Sparkle tools and release builds (from the old scripts/release.sh; tools/release.sh builds in ~/Library/Developer)
 .sparkle/
 .build-release/
