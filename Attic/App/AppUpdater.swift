@@ -3,7 +3,7 @@ import Sparkle
 
 /// Sparkle, for updating Attic itself. The feed (`SUFeedURL`) and the key
 /// updates are signed with (`SUPublicEDKey`) are in Info.plist; releases
-/// and the appcast are made by `scripts/release.sh`.
+/// and the appcast are made by `tools/release.sh`.
 @MainActor
 @Observable
 final class AppUpdater {

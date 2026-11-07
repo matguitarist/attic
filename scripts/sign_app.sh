@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Signs a built Attic.app with your Developer ID (see signing_identity.sh)
-# and Apple's secure timestamp, ready for notarize.sh:
+# and Apple's secure timestamp, ready for notarization:
 #
 #   scripts/sign_app.sh <Attic.app>      (SIGNING_IDENTITY overrides)
 #

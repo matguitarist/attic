@@ -48,8 +48,12 @@ The Xcode project is generated from `project.yml` and isn't committed. For
 signed builds, put your team in `Config/Signing.local.xcconfig` (see
 `Config/Signing.xcconfig`).
 
-`scripts/release.sh` publishes the version in `project.yml` as a GitHub
-release and adds it to the Sparkle appcast; its header lists what it needs.
+`tools/release.sh <version>` sets the version in `project.yml`, builds,
+notarizes, publishes a GitHub release and adds it to the Sparkle appcast
+(`--local` builds without publishing, `--check` only checks). Notes come from
+`release-notes/<version>.md`, or are drafted from the commits since the last
+tag. The script is the same in every app; `release.conf` holds what's
+specific to Attic, and the script's header lists what it needs.
 
 ## License
 
