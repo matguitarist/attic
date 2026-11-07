@@ -9,6 +9,10 @@ options:
 packages:
   AtticKit:
     path: AtticKit
+  # The log viewer the apps share (Window › Log).
+  LogKit:
+    url: https://github.com/matguitarist/LogKit
+    from: 0.4.0
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: 2.10.0
@@ -54,6 +58,10 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     dependencies:
+      - package: LogKit
+        product: LogKit
+      - package: LogKit
+        product: LogKitUI
       - package: AtticKit
         product: AtticModels
       - package: AtticKit
