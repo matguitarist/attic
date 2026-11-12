@@ -8438,6 +8438,16 @@
         }
       }
     },
+    "In Odin, Guide + Start or Ctrl+Q quits, and Guide or Escape opens its menu.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans Odin, Guide + Start ou Ctrl+Q pour quitter, Guide ou Échap pour ouvrir son menu."
+          }
+        }
+      }
+    },
     "In Use": {
       "localizations": {
         "fr": {
@@ -10991,6 +11001,26 @@
         }
       }
     },
+    "Odin runs ATV Track, Gaelco Football and Smashing Drive. For the other Gaelco games, choose MAME in the game's emulator menu: its romsets must come from the same MAME version.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odin fait tourner ATV Track, Gaelco Football et Smashing Drive. Pour les autres jeux Gaelco, choisissez MAME dans le menu d'émulateur du jeu : ses romsets doivent venir de la même version de MAME."
+          }
+        }
+      }
+    },
+    "Odin runs Air Trix, Brave Firefighters, Planet Harriers, NASCAR Arcade, Star Wars Racer Arcade and Cyber Troopers Virtual-On Force. The first time you play a game, calibrate its controls in its test menu (key 0, or Guide held with R3).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odin fait tourner Air Trix, Brave Firefighters, Planet Harriers, NASCAR Arcade, Star Wars Racer Arcade et Cyber Troopers Virtual-On Force. La première fois que vous jouez à un jeu, calibrez ses commandes dans son menu de test (touche 0, ou Guide maintenu avec R3)."
+          }
+        }
+      }
+    },
     "Off": {
       "localizations": {
         "fr": {
@@ -11781,6 +11811,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mettez ici les fichiers .wad du jeu : doom.wad, doom2.wad, ou le gratuit freedoom1.wad. Attic installe le prboom.wad dont PrBoom a besoin."
+          }
+        }
+      }
+    },
+    "Put the shared sets hikaru.zip and mie.zip in the hikaru folder with the games: Odin looks for them there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettez les sets partagés hikaru.zip et mie.zip dans le dossier hikaru avec les jeux : Odin les cherche là."
           }
         }
       }
@@ -14566,6 +14606,26 @@
         }
       }
     },
+    "The CD32 Kickstart (kick40060.CD32) and its extended ROM (kick40060.CD32.ext) go in the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Kickstart CD32 (kick40060.CD32) et sa ROM étendue (kick40060.CD32.ext) vont dans le dossier BIOS."
+          }
+        }
+      }
+    },
+    "The CDTV needs Kickstart 1.3 (kick34005.A500) and its extended ROM (kick34005.CDTV) in the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le CDTV a besoin du Kickstart 1.3 (kick34005.A500) et de sa ROM étendue (kick34005.CDTV) dans le dossier BIOS."
+          }
+        }
+      }
+    },
     "The DAT couldn't be downloaded. Check the connection and try again.": {
       "localizations": {
         "fr": {
@@ -14582,6 +14642,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le dossier Emulation"
+          }
+        }
+      }
+    },
+    "The IPL and font ROMs (IPLROM.X1 and IPLROM.X1T) go in an xmil folder inside the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les ROM IPL et de police (IPLROM.X1 et IPLROM.X1T) vont dans un dossier xmil, dans le dossier BIOS."
           }
         }
       }
@@ -15069,6 +15139,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pour toujours démarrer en mode Cabinet, activez Ouvrir le mode Cabinet au démarrage dans Réglages › Général."
+          }
+        }
+      }
+    },
+    "To start a cassette, type CLOAD and then RUN, or BLOAD \"CAS:\",R, depending on the game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour lancer une cassette, tapez CLOAD puis RUN, ou BLOAD \"CAS:\",R, selon le jeu."
           }
         }
       }
@@ -16327,6 +16407,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "vidéo du système plus nette"
+          }
+        }
+      }
+    },
+    "sm2-emu recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sm2-emu reconnaît les jeux par leur contenu : les romsets de n'importe quelle version de MAME fonctionnent, et un clone trouve les fichiers qu'il partage dans le zip de son parent, à côté. En jeu, Guide + Start ou Échap pour quitter."
+          }
+        }
+      }
+    },
+    "sm2-emu runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sm2-emu fait tourner Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade et Wing War."
           }
         }
       }

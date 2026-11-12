@@ -432,11 +432,29 @@ public enum SystemTaxonomy {
             category: .arcade
         ),
         SystemDefinition(
+            canonicalID: .model1,
+            displayName: "Sega Model 1",
+            batoceraShortName: "model1",
+            // ES-DE has no Model 1 system; the same name, should it get one.
+            esdeShortName: "model1",
+            retroArchSystemIDs: ["model1"],
+            category: .arcade
+        ),
+        SystemDefinition(
             canonicalID: .model2,
             displayName: "Sega Model 2",
             batoceraShortName: "model2",
             esdeShortName: "model2",
             retroArchSystemIDs: ["model2"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .hikaru,
+            displayName: "Sega Hikaru",
+            batoceraShortName: "hikaru",
+            // ES-DE has no Hikaru system; the same name, should it get one.
+            esdeShortName: "hikaru",
+            retroArchSystemIDs: ["hikaru"],
             category: .arcade
         ),
         SystemDefinition(
@@ -654,6 +672,87 @@ public enum SystemTaxonomy {
             batoceraShortName: "amstradcpc",
             esdeShortName: "amstradcpc",
             retroArchSystemIDs: ["cpc", "amstrad_cpc"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .amigacd32,
+            displayName: "Commodore Amiga CD32",
+            batoceraShortName: "amigacd32",
+            esdeShortName: "amigacd32",
+            retroArchSystemIDs: ["amiga_cd32"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .cdtv,
+            displayName: "Commodore CDTV",
+            batoceraShortName: "amigacdtv",
+            esdeShortName: "cdtv",
+            retroArchSystemIDs: ["commodore_cdtv"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .gx4000,
+            displayName: "Amstrad GX4000",
+            batoceraShortName: "gx4000",
+            esdeShortName: "gx4000",
+            retroArchSystemIDs: ["amstrad_gx4000"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .megaduck,
+            displayName: "Mega Duck",
+            batoceraShortName: "megaduck",
+            esdeShortName: "megaduck",
+            retroArchSystemIDs: ["mega_duck"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .moto,
+            displayName: "Thomson MO/TO",
+            batoceraShortName: "thomson",
+            esdeShortName: "moto",
+            retroArchSystemIDs: ["thomson_moto"],
+            category: .computer, otherShortNames: ["to8"]
+        ),
+        SystemDefinition(
+            canonicalID: .spectravideo,
+            displayName: "Spectravideo",
+            batoceraShortName: "spectravideo",
+            esdeShortName: "spectravideo",
+            retroArchSystemIDs: ["spectravideo"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .supervision,
+            displayName: "Watara Supervision",
+            batoceraShortName: "supervision",
+            esdeShortName: "supervision",
+            retroArchSystemIDs: ["supervision"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .x1,
+            displayName: "Sharp X1",
+            batoceraShortName: "x1",
+            esdeShortName: "x1",
+            retroArchSystemIDs: ["sharp_x1"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .segapico,
+            displayName: "Sega Pico",
+            batoceraShortName: "pico",
+            esdeShortName: "segapico",
+            retroArchSystemIDs: ["sega_pico"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .pet,
+            displayName: "Commodore PET",
+            batoceraShortName: "pet",
+            // ES-DE has no Commodore PET system; the same name, should it get one.
+            esdeShortName: "pet",
+            retroArchSystemIDs: ["commodore_pet"],
             category: .computer
         ),
         SystemDefinition(

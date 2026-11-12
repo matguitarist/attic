@@ -25,6 +25,11 @@ public enum CoreLaunchOptions {
             let romset = romURL.deletingPathExtension().lastPathComponent
             return ["fbneo-dipswitch-\(romset)-Free_play": "On"]
 
+        case "puae_libretro" where system == .amigacd32 || system == .cdtv:
+            // PUAE boots a disc as a CD32 unless told otherwise; its
+            // Automatic model takes this machine for CD images.
+            return ["puae_model_cd": system == .cdtv ? "CDTV" : "CD32"]
+
         default:
             return [:]
         }

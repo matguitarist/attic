@@ -414,7 +414,48 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4]
+    /// Sega Model 1 and Model 2, native on Apple Silicon (Vulkan through
+    /// the MoltenVK it bundles). It finds games by their contents rather
+    /// than their names, so any MAME romset version works. It has no HOME
+    /// based setup: its settings and saves go where `arguments(for:)`
+    /// points them, inside the Emulation folder.
+    public static let sm2Emu = StandaloneEmulator(
+        id: "sm2-emu",
+        name: "sm2-emu",
+        summary: String(localized: "The Sega Model 1 and Model 2 emulator, native on Apple Silicon.", bundle: .module),
+        appBundleName: "sm2-emu.app",
+        executableRelativePath: "Contents/MacOS/sm2-emu",
+        // --rom-dir lets a clone find the parent zip it shares chips with.
+        argumentTemplate: "--fullscreen --rom-dir {romDir} {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/dmanlfc/sm2-emu/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos.dmg"),
+        homepageURL: URL(string: "https://github.com/dmanlfc/sm2-emu")!,
+        license: "GPL-3.0",
+        systems: [.model1, .model2],
+        portableHome: nil
+    )
+
+    /// Sega Hikaru and Gaelco's ATV Track board (ATV Track, Gaelco
+    /// Football, Smashing Drive), emulated at a low level. It runs a game
+    /// by its MAME set name from the games folder, where it also finds
+    /// Hikaru's shared sets (hikaru, mie). Its settings file is passed with
+    /// `-c` (see `EmulationFolder.odinLaunchArguments`).
+    public static let odin = StandaloneEmulator(
+        id: "odin",
+        name: "Odin",
+        summary: String(localized: "The Sega Hikaru and Gaelco ATV Track emulator, low-level and accurate.", bundle: .module),
+        appBundleName: "Odin.app",
+        executableRelativePath: "Contents/MacOS/odin",
+        argumentTemplate: "-f -R {romDir} -r {romNameNoExt}",
+        downloadURL: URL(string: "https://api.github.com/repos/Tovarichtch/Odin/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos.dmg"),
+        homepageURL: URL(string: "https://github.com/Tovarichtch/Odin")!,
+        license: "GPL-3.0",
+        systems: [.hikaru, .gaelco],
+        portableHome: nil
+    )
+
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, sm2Emu, odin]
 
     // MARK: - Per-system table
 
@@ -432,6 +473,7 @@ public enum EmulatorCatalog {
     private static let fbneo = RecommendedCore("fbneo_libretro", "FinalBurn Neo", String(localized: "The reference Neo Geo and arcade emulator.", bundle: .module))
     private static let mameCurrent = RecommendedCore("mame_libretro", "MAME", String(localized: "Current MAME; needs romsets from the same MAME version.", bundle: .module))
     private static let beetlePCE = RecommendedCore("mednafen_pce_libretro", "Beetle PCE", String(localized: "Accurate PC Engine, CD and SuperGrafx.", bundle: .module))
+    private static let puaeCD = RecommendedCore("puae_libretro", "PUAE", String(localized: "The Amiga core, set to the CD32 or CDTV for these discs.", bundle: .module))
     private static let beetlePCEFast = RecommendedCore("mednafen_pce_fast_libretro", "Beetle PCE Fast", String(localized: "Lighter PC Engine core.", bundle: .module))
 
     public static let recommendations: [SystemEmulatorRecommendation] = [
@@ -584,10 +626,16 @@ public enum EmulatorCatalog {
         ], prefersStandalone: false),
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
+        // sm2-emu is the better Model 1 and 2 emulator; MAME stays the
+        // alternative.
+        .init(systemID: .model1, cores: [mameCurrent], standalone: [sm2Emu], bios: [], prefersStandalone: true),
+        .init(systemID: .model2, cores: [mameCurrent], standalone: [sm2Emu], bios: [], prefersStandalone: true),
         // MAME finds a board's BIOS set (stvbios.zip) beside the games.
-        .init(systemID: .model2, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .stv, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
-        .init(systemID: .gaelco, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        // Odin runs Gaelco's ATV Track board; MAME the other Gaelco games.
+        .init(systemID: .gaelco, cores: [mameCurrent], standalone: [odin], bios: [], prefersStandalone: true),
+        // MAME's Hikaru driver doesn't play the games, so Odin alone.
+        .init(systemID: .hikaru, cores: [], standalone: [odin], bios: [], prefersStandalone: true),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
@@ -634,6 +682,25 @@ public enum EmulatorCatalog {
         // No libretro core runs Triforce games; Dolphin's own app does.
         .init(systemID: .triforce, cores: [], standalone: [dolphin], bios: [], prefersStandalone: true),
 
+        .init(systemID: .amigacd32, cores: [puaeCD], standalone: [], bios: [
+            BIOSRequirement("kick40060.CD32", note: "CD32 Kickstart 3.1"),
+            BIOSRequirement("kick40060.CD32.ext", note: "CD32 extended ROM")
+        ], prefersStandalone: false),
+        .init(systemID: .cdtv, cores: [puaeCD], standalone: [], bios: [
+            BIOSRequirement("kick34005.A500", note: "Kickstart 1.3"),
+            BIOSRequirement("kick34005.CDTV", note: "CDTV extended ROM")
+        ], prefersStandalone: false),
+        .init(systemID: .gx4000, cores: [RecommendedCore("cap32_libretro", "Caprice32", String(localized: "The Amstrad CPC core, which also runs GX4000 cartridges.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .megaduck, cores: [RecommendedCore("sameduck_libretro", "SameDuck", String(localized: "The Mega Duck core, from SameBoy's authors.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .moto, cores: [RecommendedCore("theodore_libretro", "Theodore", String(localized: "The Thomson MO5, TO7, TO8 and TO9 computers.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .spectravideo, cores: [RecommendedCore("bluemsx_libretro", "blueMSX", String(localized: "Runs the Spectravideo SV-318 and SV-328.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .supervision, cores: [RecommendedCore("potator_libretro", "Potator", String(localized: "The Watara Supervision core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .x1, cores: [RecommendedCore("x1_libretro", "X Millennium", String(localized: "The Sharp X1 computer.", bundle: .module))], standalone: [], bios: [
+            BIOSRequirement("xmil/IPLROM.X1", required: false, note: "IPL ROM; without it a built-in replacement runs fewer games"),
+            BIOSRequirement("xmil/IPLROM.X1T", required: false, note: "Font ROM")
+        ], prefersStandalone: false),
+        .init(systemID: .segapico, cores: [RecommendedCore("picodrive_libretro", "PicoDrive", String(localized: "Runs Sega Pico storyware.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .pet, cores: [RecommendedCore("vice_xpet_libretro", "VICE xpet", String(localized: "The Commodore PET.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .cdi, cores: [
             RecommendedCore("same_cdi_libretro", "SAME CDi", String(localized: "The CD-i core.", bundle: .module))
         ], standalone: [], bios: [

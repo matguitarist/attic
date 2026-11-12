@@ -578,6 +578,34 @@ public struct EmulationFolder: Sendable, Hashable {
     /// account, in its settings file.
     static let achievementsSection = [EmulatorCatalog.duckStation.id: "Cheevos", EmulatorCatalog.pcsx2.id: "Achievements"]
 
+    /// sm2-emu's settings (`sm2-emu.ini`) in `Config/sm2-emu` and its
+    /// NVRAM and save states in the system's Saves folder, by its own
+    /// options rather than HOME.
+    public func sm2EmuArguments(for system: CanonicalSystemID) throws -> [String] {
+        let config = configHome(for: EmulatorCatalog.sm2Emu)
+        let saves = saves(for: system)
+        for directory in [config, saves] {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        return ["--config", config.path, "--nvram", saves.path]
+    }
+
+    /// Odin's settings file (`-c`), `Config/Odin/odin.ini`, with its
+    /// saves and states pointed at the system's folders here. Only those
+    /// two paths are Attic's; Odin writes the rest of the file itself.
+    public func odinLaunchArguments(for system: CanonicalSystemID) throws -> [String] {
+        let config = configHome(for: EmulatorCatalog.odin)
+        let settingsFile = config.appending(path: "odin.ini")
+        for directory in [config, saves(for: system), states(for: system)] {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        var ini = IniFile(contents: (try? String(contentsOf: settingsFile, encoding: .utf8)) ?? "")
+        ini.set(section: "paths", key: "saves", value: saves(for: system).path)
+        ini.set(section: "paths", key: "states", value: states(for: system).path)
+        try ini.contents.write(to: settingsFile, atomically: true, encoding: .utf8)
+        return ["-c", settingsFile.path]
+    }
+
     /// Points a standalone emulator's own settings file at this folder's
     /// BIOS/save/state directories, and returns the environment to launch
     /// it with. Re-run before every launch so the paths follow the folder.

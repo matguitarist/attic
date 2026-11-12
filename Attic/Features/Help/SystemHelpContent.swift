@@ -30,6 +30,8 @@ enum SystemHelpContent {
     private static let romsetNote = LocalizedStringResource("Keep each game zipped and named after its romset (for example mslug.zip). Don't unzip or rename them: arcade emulators find games by these names.")
     private static let fbneoVersionNote = LocalizedStringResource("Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.")
     private static let coinControls = LocalizedStringResource("Select inserts a coin, Start starts the game.")
+    private static let sm2EmuNote = LocalizedStringResource("sm2-emu recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.")
+    private static let odinNote = LocalizedStringResource("In Odin, Guide + Start or Ctrl+Q quits, and Guide or Escape opens its menu.")
     private static let mameVersionNote = LocalizedStringResource("These games run in MAME's current core, so the romsets must come from the same MAME version.")
     private static let sixButtonControls = LocalizedStringResource("Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.")
 
@@ -113,9 +115,13 @@ enum SystemHelpContent {
         .naomigd: .init(manufacturer: "Sega", year: 2001, wikipediaTitle: "Sega_NAOMI",
                     controls: [coinControls],
                     notes: [LocalizedStringResource("GD-ROM games are MAME romsets: keep each game's zip, and beside it the folder of the same name that holds its .chd. They boot from the NAOMI BIOS (naomi.zip), or NAOMI 2's (naomi2.zip) for NAOMI 2 games, in a dc folder inside the BIOS folder.")]),
+        .model1: .init(manufacturer: "Sega", year: 1992, wikipediaTitle: "Sega_Model_1",
+                    controls: [coinControls],
+                    notes: [romsetNote, sm2EmuNote,
+                            LocalizedStringResource("sm2-emu runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.")]),
         .model2: .init(manufacturer: "Sega", year: 1993, wikipediaTitle: "Sega_Model_2",
                     controls: [coinControls],
-                    notes: [romsetNote, mameVersionNote,
+                    notes: [romsetNote, sm2EmuNote,
                             LocalizedStringResource("Model 2 is demanding to emulate: the heaviest games may run slowly.")]),
         .stv: .init(manufacturer: "Sega", year: 1995, wikipediaTitle: "Sega_Titan_Video",
                     controls: [coinControls],
@@ -123,7 +129,15 @@ enum SystemHelpContent {
                             LocalizedStringResource("Put the ST-V BIOS (stvbios.zip) in the stv folder with the games: MAME looks for it there.")]),
         .gaelco: .init(manufacturer: "Gaelco", year: 1996, wikipediaTitle: "Gaelco",
                     controls: [coinControls],
-                    notes: [romsetNote, mameVersionNote]),
+                    notes: [romsetNote,
+                            LocalizedStringResource("Odin runs ATV Track, Gaelco Football and Smashing Drive. For the other Gaelco games, choose MAME in the game's emulator menu: its romsets must come from the same MAME version."),
+                            odinNote]),
+        .hikaru: .init(manufacturer: "Sega", year: 1999, wikipediaTitle: "Sega_Hikaru",
+                    controls: [coinControls],
+                    notes: [romsetNote,
+                            LocalizedStringResource("Put the shared sets hikaru.zip and mie.zip in the hikaru folder with the games: Odin looks for them there."),
+                            LocalizedStringResource("Odin runs Air Trix, Brave Firefighters, Planet Harriers, NASCAR Arcade, Star Wars Racer Arcade and Cyber Troopers Virtual-On Force. The first time you play a game, calibrate its controls in its test menu (key 0, or Guide held with R3)."),
+                            odinNote]),
         .model3: .init(manufacturer: "Sega", year: 1996, wikipediaTitle: "Sega_Model_3",
                     controls: [LocalizedStringResource("Select inserts a coin, Start starts the game.")],
                     notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name.")]),
@@ -191,6 +205,20 @@ enum SystemHelpContent {
                     notes: [LocalizedStringResource("Use .adf disks, or .lha/WHDLoad packs for hard-disk installs.")]),
         .zxspectrum: .init(manufacturer: "Sinclair", year: 1982, wikipediaTitle: "ZX_Spectrum"),
         .amstradcpc: .init(manufacturer: "Amstrad", year: 1984, wikipediaTitle: "Amstrad_CPC"),
+        .amigacd32: .init(manufacturer: "Commodore", year: 1993, wikipediaTitle: "Amiga_CD32",
+                    notes: [discNote, LocalizedStringResource("The CD32 Kickstart (kick40060.CD32) and its extended ROM (kick40060.CD32.ext) go in the BIOS folder.")]),
+        .cdtv: .init(manufacturer: "Commodore", year: 1991, wikipediaTitle: "Commodore_CDTV",
+                    notes: [discNote, LocalizedStringResource("The CDTV needs Kickstart 1.3 (kick34005.A500) and its extended ROM (kick34005.CDTV) in the BIOS folder.")]),
+        .gx4000: .init(manufacturer: "Amstrad", year: 1990, wikipediaTitle: "Amstrad_GX4000"),
+        .megaduck: .init(manufacturer: "Welback Holdings", year: 1993, wikipediaTitle: "Mega_Duck"),
+        .moto: .init(manufacturer: "Thomson", year: 1984, wikipediaTitle: "Thomson_MO5"),
+        .spectravideo: .init(manufacturer: "Spectravideo", year: 1983, wikipediaTitle: "Spectravideo",
+                    notes: [LocalizedStringResource("To start a cassette, type CLOAD and then RUN, or BLOAD \"CAS:\",R, depending on the game.")]),
+        .supervision: .init(manufacturer: "Watara", year: 1992, wikipediaTitle: "Watara_Supervision"),
+        .x1: .init(manufacturer: "Sharp", year: 1982, wikipediaTitle: "Sharp_X1",
+                    notes: [LocalizedStringResource("The IPL and font ROMs (IPLROM.X1 and IPLROM.X1T) go in an xmil folder inside the BIOS folder.")]),
+        .segapico: .init(manufacturer: "Sega", year: 1993, wikipediaTitle: "Sega_Pico"),
+        .pet: .init(manufacturer: "Commodore", year: 1977, wikipediaTitle: "Commodore_PET"),
         .mame: .init(manufacturer: "MAME team", year: 1997, wikipediaTitle: "MAME",
                     controls: [LocalizedStringResource("Select inserts a coin, Start starts the game.")],
                     notes: [LocalizedStringResource("Keep each game zipped with its romset name. Romsets must match the MAME version of the core you use.")]),

@@ -45,6 +45,21 @@ public enum ScreenScraperSystemID {
         .naomi2: 230,
         .naomigd: 227,
         .model2: 54,
+        // No Model 1 system found on ScreenScraper; its games are under MAME.
+        .model1: 75,
+        // Likewise for Hikaru.
+        .hikaru: 75,
+        // From ES-DE and Batocera's ScreenScraper tables.
+        .amigacd32: 130,
+        .cdtv: 129,
+        .gx4000: 87,
+        .megaduck: 90,
+        .moto: 141,
+        .spectravideo: 218,
+        .supervision: 207,
+        .x1: 220,
+        .segapico: 250,
+        .pet: 240,
         .stv: 69,
         .gaelco: 194,
         .n64dd: 122,

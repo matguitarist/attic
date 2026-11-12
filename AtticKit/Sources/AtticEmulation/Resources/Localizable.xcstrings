@@ -952,12 +952,52 @@
         }
       }
     },
+    "Runs Sega Pico storyware.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait tourner les livres-jeux Sega Pico."
+          }
+        }
+      }
+    },
+    "Runs the Spectravideo SV-318 and SV-328.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait tourner les Spectravideo SV-318 et SV-328."
+          }
+        }
+      }
+    },
     "The 3DO core.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur 3DO."
+          }
+        }
+      }
+    },
+    "The Amiga core, set to the CD32 or CDTV for these discs.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le core Amiga, réglé en CD32 ou CDTV pour ces disques."
+          }
+        }
+      }
+    },
+    "The Amstrad CPC core, which also runs GX4000 cartridges.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le core Amstrad CPC, qui fait aussi tourner les cartouches GX4000."
           }
         }
       }
@@ -1032,6 +1072,16 @@
         }
       }
     },
+    "The Commodore PET.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Commodore PET."
+          }
+        }
+      }
+    },
     "The Commodore Plus/4 and 16.": {
       "localizations": {
         "fr": {
@@ -1078,6 +1128,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Intellivision."
+          }
+        }
+      }
+    },
+    "The Mega Duck core, from SameBoy's authors.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le core Mega Duck, par les auteurs de SameBoy."
           }
         }
       }
@@ -1172,12 +1232,42 @@
         }
       }
     },
+    "The Sega Hikaru and Gaelco ATV Track emulator, low-level and accurate.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'émulateur Sega Hikaru et Gaelco ATV Track, bas niveau et précis."
+          }
+        }
+      }
+    },
+    "The Sega Model 1 and Model 2 emulator, native on Apple Silicon.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'émulateur Sega Model 1 et Model 2, natif sur Apple Silicon."
+          }
+        }
+      }
+    },
     "The Sega Model 3 emulator.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur Sega Model 3."
+          }
+        }
+      }
+    },
+    "The Sharp X1 computer.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'ordinateur Sharp X1."
           }
         }
       }
@@ -1212,6 +1302,16 @@
         }
       }
     },
+    "The Thomson MO5, TO7, TO8 and TO9 computers.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les ordinateurs Thomson MO5, TO7, TO8 et TO9."
+          }
+        }
+      }
+    },
     "The Vectrex core.": {
       "localizations": {
         "fr": {
@@ -1238,6 +1338,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "La console imaginaire WASM-4."
+          }
+        }
+      }
+    },
+    "The Watara Supervision core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le core Watara Supervision."
           }
         }
       }
