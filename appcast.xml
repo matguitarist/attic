@@ -3,6 +3,17 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.10.2</title>
+            <pubDate>Thu, 12 Nov 2026 18:22:26 -0500</pubDate>
+            <sparkle:version>51</sparkle:version>
+            <sparkle:shortVersionString>2.10.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Hikaru games start in Odin: put hikaru.zip and mie.zip in BIOS/mame/bios and Attic hands them to Odin at launch
+- Hikaru's BIOS list shows those sets, and jvs13551.zip, the optional I/O board program
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.10.2/Attic-2.10.2.zip" length="19637839" type="application/octet-stream" sparkle:edSignature="NA1S7vC/wAX7N5IVr3iJvLkuo66M9THn829OIJPr7CRo5AvClsK4T9kRCytb+8w03Lb5MIhngcAFgcrlYJIgDw=="/>
+        </item>
+        <item>
             <title>2.10.1</title>
             <pubDate>Thu, 12 Nov 2026 17:50:45 -0500</pubDate>
             <sparkle:version>50</sparkle:version>
