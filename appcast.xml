@@ -3,6 +3,18 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.10.1</title>
+            <pubDate>Thu, 12 Nov 2026 17:50:45 -0500</pubDate>
+            <sparkle:version>50</sparkle:version>
+            <sparkle:shortVersionString>2.10.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Model 1 and Model 2 games that need the I/O board's firmware (Daytona USA, Desert Tank, Virtua Cop and others) find it: put model1io.zip or model1io2.zip in BIOS/mame/bios and Attic hands it to sm2-emu at launch
+- Model 1 and Model 2 list those two sets in their BIOS list, with the games each one is for
+- model1io.zip and model1io2.zip no longer show up as games
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.10.1/Attic-2.10.1.zip" length="19636381" type="application/octet-stream" sparkle:edSignature="F0k+eTQ4PhsgMiyFvfxWepgs/FGnWvTml4zleoJAxd+nmIJz09opRaNE/bMClN/O/HBL0ICbmZmdW5ChzIf9Cg=="/>
+        </item>
+        <item>
             <title>2.10.0</title>
             <pubDate>Thu, 12 Nov 2026 17:31:54 -0500</pubDate>
             <sparkle:version>49</sparkle:version>
