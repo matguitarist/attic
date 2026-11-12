@@ -335,7 +335,7 @@ final class LaunchCoordinator {
                 if emulator.id == EmulatorCatalog.dolphin.id {
                     extraArguments = SystemSettingsSupport.dolphinArguments(systemSettings)
                 } else if emulator.id == EmulatorCatalog.sm2Emu.id {
-                    extraArguments = try retroArchStore.emulationFolderStore.folder.sm2EmuArguments(for: CanonicalSystemID(game.systemCanonicalID))
+                    extraArguments = try retroArchStore.emulationFolderStore.folder.sm2EmuArguments(for: CanonicalSystemID(game.systemCanonicalID), romURL: game.romAbsoluteURL)
                 } else if emulator.id == EmulatorCatalog.odin.id {
                     extraArguments = try retroArchStore.emulationFolderStore.folder.odinLaunchArguments(for: CanonicalSystemID(game.systemCanonicalID))
                 }

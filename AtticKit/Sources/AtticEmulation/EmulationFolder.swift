@@ -580,12 +580,22 @@ public struct EmulationFolder: Sendable, Hashable {
 
     /// sm2-emu's settings (`sm2-emu.ini`) in `Config/sm2-emu` and its
     /// NVRAM and save states in the system's Saves folder, by its own
-    /// options rather than HOME.
-    public func sm2EmuArguments(for system: CanonicalSystemID) throws -> [String] {
+    /// options rather than HOME. sm2-emu reads device sets (the I/O
+    /// boards' firmware) only from beside the game, so those in the BIOS
+    /// folder are copied there when missing.
+    public func sm2EmuArguments(for system: CanonicalSystemID, romURL: URL? = nil) throws -> [String] {
         let config = configHome(for: EmulatorCatalog.sm2Emu)
         let saves = saves(for: system)
         for directory in [config, saves] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        if let gameFolder = romURL?.deletingLastPathComponent() {
+            for requirement in EmulatorCatalog.model1IOBoards where requirement.isPresent(in: bios) {
+                let name = (requirement.fileName as NSString).lastPathComponent
+                let beside = gameFolder.appending(path: name)
+                guard !FileManager.default.fileExists(atPath: beside.path) else { continue }
+                try? FileManager.default.copyItem(at: bios.appending(path: requirement.fileName), to: beside)
+            }
         }
         return ["--config", config.path, "--nvram", saves.path]
     }

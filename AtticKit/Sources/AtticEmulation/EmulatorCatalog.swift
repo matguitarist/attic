@@ -455,6 +455,16 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
+    /// The Model 1 I/O boards' firmware, which some Model 1 and Model 2
+    /// games read (Daytona USA, Virtua Cop). Most full sets include it; a
+    /// split set needs the device set. MAME reads it here; for sm2-emu,
+    /// which only looks beside the game, Attic copies it there at launch
+    /// (see `EmulationFolder.sm2EmuArguments`).
+    public static let model1IOBoards: [BIOSRequirement] = [
+        BIOSRequirement("mame/bios/model1io.zip", required: false, note: "I/O board, for games whose zip doesn't include it: Virtua Racing, Virtua Fighter, Star Wars Arcade, Daytona USA, Desert Tank"),
+        BIOSRequirement("mame/bios/model1io2.zip", required: false, note: "Newer I/O board: Wing War, NetMerc, Virtua Cop")
+    ]
+
     public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, sm2Emu, odin]
 
     // MARK: - Per-system table
@@ -628,8 +638,8 @@ public enum EmulatorCatalog {
         .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
         // sm2-emu is the better Model 1 and 2 emulator; MAME stays the
         // alternative.
-        .init(systemID: .model1, cores: [mameCurrent], standalone: [sm2Emu], bios: [], prefersStandalone: true),
-        .init(systemID: .model2, cores: [mameCurrent], standalone: [sm2Emu], bios: [], prefersStandalone: true),
+        .init(systemID: .model1, cores: [mameCurrent], standalone: [sm2Emu], bios: model1IOBoards, prefersStandalone: true),
+        .init(systemID: .model2, cores: [mameCurrent], standalone: [sm2Emu], bios: model1IOBoards, prefersStandalone: true),
         // MAME finds a board's BIOS set (stvbios.zip) beside the games.
         .init(systemID: .stv, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         // Odin runs Gaelco's ATV Track board; MAME the other Gaelco games.

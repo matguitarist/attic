@@ -44,6 +44,23 @@ struct NewSystemsTests {
         #expect(FileManager.default.fileExists(atPath: folder.saves(for: .model2).path))
     }
 
+    @Test func sm2EmuFindsTheIOBoardBesideTheGame() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folder = EmulationFolder(root: root)
+        let set = folder.bios.appending(path: "mame/bios/model1io.zip")
+        try FileManager.default.createDirectory(at: set.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data("io".utf8).write(to: set)
+        let games = root.appending(path: "ROMs/model2")
+        try FileManager.default.createDirectory(at: games, withIntermediateDirectories: true)
+
+        _ = try folder.sm2EmuArguments(for: .model2, romURL: games.appending(path: "daytona.zip"))
+        #expect(FileManager.default.fileExists(atPath: games.appending(path: "model1io.zip").path))
+        #expect(!FileManager.default.fileExists(atPath: games.appending(path: "model1io2.zip").path))
+        #expect(ArcadeBIOSSets.isBIOSSet("model1io.zip", system: .model2))
+        #expect(EmulatorCatalog.recommendation(for: .model1)?.bios == EmulatorCatalog.model1IOBoards)
+    }
+
     @Test func odinIsTheDefaultForHikaruAndGaelco() throws {
         for system in [CanonicalSystemID.hikaru, .gaelco] {
             let recommendation = try #require(EmulatorCatalog.recommendation(for: system))
