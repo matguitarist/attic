@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.10.0</title>
+            <pubDate>Thu, 12 Nov 2026 17:31:54 -0500</pubDate>
+            <sparkle:version>49</sparkle:version>
+            <sparkle:shortVersionString>2.10.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Sega Model 1 and Model 2 play in sm2-emu, now the default emulator for both: native on Apple Silicon, and it takes romsets from any MAME version
+- Sega Hikaru is a new system, and Hikaru and Gaelco play in Odin by default, with saves and states kept in the Emulation folder
+- Ten more systems: Amiga CD32, CDTV, Amstrad GX4000, Mega Duck, Thomson MO/TO, Spectravideo, Watara Supervision, Sharp X1, Sega Pico and Commodore PET, each with a RetroArch core Attic installs in one click
+- CD32 and CDTV discs boot as their own machine, and the BIOS page lists the Kickstart files each one needs
+- Logos for every new system, and for Steam
+- New systems get their folder in ROMs the next time Attic starts
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.10.0/Attic-2.10.0.zip" length="19633521" type="application/octet-stream" sparkle:edSignature="1gK38hTh6eZIZsx/BDx4eRkfHLfI1rddfw65+g+zx3i08YY73vUPG6cfGDDxdwFTidfavAOS3wQHm9VPT7y8AQ=="/>
+        </item>
+        <item>
             <title>2.9.1</title>
             <pubDate>Fri, 30 Oct 2026 11:11:29 -0400</pubDate>
             <sparkle:version>48</sparkle:version>
