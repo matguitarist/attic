@@ -61,6 +61,24 @@ struct NewSystemsTests {
         #expect(EmulatorCatalog.recommendation(for: .model1)?.bios == EmulatorCatalog.model1IOBoards)
     }
 
+    @Test func odinFindsHikarusSharedSetsBesideTheGame() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folder = EmulationFolder(root: root)
+        for name in ["hikaru", "mie"] {
+            let set = folder.bios.appending(path: "mame/bios/\(name).zip")
+            try FileManager.default.createDirectory(at: set.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try Data(name.utf8).write(to: set)
+        }
+        let games = root.appending(path: "ROMs/hikaru")
+        try FileManager.default.createDirectory(at: games, withIntermediateDirectories: true)
+
+        _ = try folder.odinLaunchArguments(for: .hikaru, romURL: games.appending(path: "braveff.zip"))
+        #expect(FileManager.default.fileExists(atPath: games.appending(path: "hikaru.zip").path))
+        #expect(FileManager.default.fileExists(atPath: games.appending(path: "mie.zip").path))
+        #expect(EmulatorCatalog.recommendation(for: .hikaru)?.bios == EmulatorCatalog.hikaruSharedSets)
+    }
+
     @Test func odinIsTheDefaultForHikaruAndGaelco() throws {
         for system in [CanonicalSystemID.hikaru, .gaelco] {
             let recommendation = try #require(EmulatorCatalog.recommendation(for: system))

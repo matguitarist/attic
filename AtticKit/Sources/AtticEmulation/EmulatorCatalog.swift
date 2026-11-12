@@ -465,6 +465,15 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/model1io2.zip", required: false, note: "Newer I/O board: Wing War, NetMerc, Virtua Cop")
     ]
 
+    /// The sets every Hikaru game shares. Odin reads them from beside the
+    /// game; Attic copies them there at launch (see
+    /// `EmulationFolder.odinLaunchArguments`).
+    public static let hikaruSharedSets: [BIOSRequirement] = [
+        BIOSRequirement("mame/bios/hikaru.zip", note: "Hikaru BIOS"),
+        BIOSRequirement("mame/bios/mie.zip", note: "MIE, the board's I/O controller"),
+        BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
+    ]
+
     public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, sm2Emu, odin]
 
     // MARK: - Per-system table
@@ -645,7 +654,7 @@ public enum EmulatorCatalog {
         // Odin runs Gaelco's ATV Track board; MAME the other Gaelco games.
         .init(systemID: .gaelco, cores: [mameCurrent], standalone: [odin], bios: [], prefersStandalone: true),
         // MAME's Hikaru driver doesn't play the games, so Odin alone.
-        .init(systemID: .hikaru, cores: [], standalone: [odin], bios: [], prefersStandalone: true),
+        .init(systemID: .hikaru, cores: [], standalone: [odin], bios: hikaruSharedSets, prefersStandalone: true),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),

@@ -589,21 +589,26 @@ public struct EmulationFolder: Sendable, Hashable {
         for directory in [config, saves] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         }
-        if let gameFolder = romURL?.deletingLastPathComponent() {
-            for requirement in EmulatorCatalog.model1IOBoards where requirement.isPresent(in: bios) {
-                let name = (requirement.fileName as NSString).lastPathComponent
-                let beside = gameFolder.appending(path: name)
-                guard !FileManager.default.fileExists(atPath: beside.path) else { continue }
-                try? FileManager.default.copyItem(at: bios.appending(path: requirement.fileName), to: beside)
-            }
-        }
+        copyBesideGame(EmulatorCatalog.model1IOBoards, romURL: romURL)
         return ["--config", config.path, "--nvram", saves.path]
+    }
+
+    /// Copies the sets in `requirements` found in the BIOS folder into the
+    /// game's folder, for emulators that only look beside the game. A set
+    /// already there is left alone.
+    func copyBesideGame(_ requirements: [BIOSRequirement], romURL: URL?) {
+        guard let gameFolder = romURL?.deletingLastPathComponent() else { return }
+        for requirement in requirements where requirement.isPresent(in: bios) {
+            let beside = gameFolder.appending(path: (requirement.fileName as NSString).lastPathComponent)
+            guard !FileManager.default.fileExists(atPath: beside.path) else { continue }
+            try? FileManager.default.copyItem(at: bios.appending(path: requirement.fileName), to: beside)
+        }
     }
 
     /// Odin's settings file (`-c`), `Config/Odin/odin.ini`, with its
     /// saves and states pointed at the system's folders here. Only those
     /// two paths are Attic's; Odin writes the rest of the file itself.
-    public func odinLaunchArguments(for system: CanonicalSystemID) throws -> [String] {
+    public func odinLaunchArguments(for system: CanonicalSystemID, romURL: URL? = nil) throws -> [String] {
         let config = configHome(for: EmulatorCatalog.odin)
         let settingsFile = config.appending(path: "odin.ini")
         for directory in [config, saves(for: system), states(for: system)] {
@@ -613,6 +618,7 @@ public struct EmulationFolder: Sendable, Hashable {
         ini.set(section: "paths", key: "saves", value: saves(for: system).path)
         ini.set(section: "paths", key: "states", value: states(for: system).path)
         try ini.contents.write(to: settingsFile, atomically: true, encoding: .utf8)
+        copyBesideGame(EmulatorCatalog.hikaruSharedSets, romURL: romURL)
         return ["-c", settingsFile.path]
     }
 

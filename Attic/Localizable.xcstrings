@@ -11815,16 +11815,6 @@
         }
       }
     },
-    "Put the shared sets hikaru.zip and mie.zip in the hikaru folder with the games: Odin looks for them there.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mettez les sets partagés hikaru.zip et mie.zip dans le dossier hikaru avec les jeux : Odin les cherche là."
-          }
-        }
-      }
-    },
     "Put these in %@": {
       "localizations": {
         "fr": {
@@ -14869,6 +14859,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les ROM manquantes sont dans %@."
+          }
+        }
+      }
+    },
+    "The shared sets hikaru.zip and mie.zip go in BIOS/mame/bios; Attic puts a copy beside the games when Odin starts one.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sets partagés hikaru.zip et mie.zip vont dans BIOS/mame/bios ; Attic en met une copie à côté des jeux quand Odin en lance un."
           }
         }
       }

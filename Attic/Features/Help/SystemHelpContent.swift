@@ -135,7 +135,7 @@ enum SystemHelpContent {
         .hikaru: .init(manufacturer: "Sega", year: 1999, wikipediaTitle: "Sega_Hikaru",
                     controls: [coinControls],
                     notes: [romsetNote,
-                            LocalizedStringResource("Put the shared sets hikaru.zip and mie.zip in the hikaru folder with the games: Odin looks for them there."),
+                            LocalizedStringResource("The shared sets hikaru.zip and mie.zip go in BIOS/mame/bios; Attic puts a copy beside the games when Odin starts one."),
                             LocalizedStringResource("Odin runs Air Trix, Brave Firefighters, Planet Harriers, NASCAR Arcade, Star Wars Racer Arcade and Cyber Troopers Virtual-On Force. The first time you play a game, calibrate its controls in its test menu (key 0, or Guide held with R3)."),
                             odinNote]),
         .model3: .init(manufacturer: "Sega", year: 1996, wikipediaTitle: "Sega_Model_3",
