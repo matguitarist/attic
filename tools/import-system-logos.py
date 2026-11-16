@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds Attic/Resources/SystemLogos.xcassets from Dan Patrick's console logos.
 
-    python3 scripts/import-system-logos.py <extracted folder>
+    python3 tools/import-system-logos.py <extracted folder>
 
 <extracted folder> holds the "Light - Color" and "Dark - Color" folders of
 "v2.1 Recommended Versions (Normal) (1 Per Platform)" from

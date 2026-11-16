@@ -3,7 +3,7 @@
 size and MD5 of known good BIOS dumps, from libretro's System.dat:
 
     curl -LO https://raw.githubusercontent.com/libretro/libretro-database/master/dat/System.dat
-    scripts/import-known-bios.py System.dat
+    tools/import-known-bios.py System.dat
 
 Zipped sets are left out: a zip's checksum depends on how it was packed.
 The list is CC BY-SA 4.0, like libretro-database (see THIRD_PARTY_NOTICES.md).

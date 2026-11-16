@@ -40,7 +40,7 @@ Updates…).
 Needs Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```sh
-scripts/build.sh --open      # Release build into dist/, then launch it
+./build.sh --open      # Release build into dist/, then launch it
 cd AtticKit && swift test    # the package's tests
 ```
 

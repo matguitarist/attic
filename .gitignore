@@ -21,14 +21,10 @@ AtticKit/.swiftpm/
 # Claude Code local settings
 .claude/settings.local.json
 
-# Local release builds (scripts/build.sh)
+# Local builds (./build.sh)
 dist/
 .build-xcode/
 
 # Personal code-signing team (see Config/Signing.xcconfig)
 Config/Signing.local.xcconfig
 .build-xcode-strings/
-
-# Sparkle tools and release builds (from the old scripts/release.sh; tools/release.sh builds in ~/Library/Developer)
-.sparkle/
-.build-release/

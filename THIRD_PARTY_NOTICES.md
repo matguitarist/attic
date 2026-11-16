@@ -16,7 +16,7 @@ The logos themselves are trademarks of their respective owners (Nintendo,
 Sega, Sony, Microsoft, SNK, Capcom, NEC, Atari and others), shown only to
 identify each system. Attic isn't affiliated with or endorsed by any of them.
 
-`scripts/import-system-logos.py` rebuilds the catalog from the original
+`tools/import-system-logos.py` rebuilds the catalog from the original
 download.
 
 ## Known BIOS checksums
@@ -30,7 +30,7 @@ It's under the Creative Commons Attribution-ShareAlike 4.0 International
 license (https://creativecommons.org/licenses/by-sa/4.0/), not Attic's MIT
 license; Attic changed it only by leaving out zipped sets and other columns.
 It holds checksums only: Attic never ships or downloads BIOS files.
-`scripts/import-known-bios.py` rebuilds it from the original.
+`tools/import-known-bios.py` rebuilds it from the original.
 
 ## Switch 2 controller start-up
 

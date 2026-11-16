@@ -4,7 +4,7 @@
 # strings but never writes them back to the catalogs. Run after changing any
 # user-visible text, then commit the updated catalogs for translators.
 #
-#   scripts/sync-strings.sh
+#   tools/sync-strings.sh
 set -euo pipefail
 
 ROOT="${0:A:h:h}"

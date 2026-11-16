@@ -2,7 +2,7 @@
 # Signs a built Attic.app with your Developer ID (see signing_identity.sh)
 # and Apple's secure timestamp, ready for notarization:
 #
-#   scripts/sign_app.sh <Attic.app>      (SIGNING_IDENTITY overrides)
+#   tools/sign_app.sh <Attic.app>      (SIGNING_IDENTITY overrides)
 #
 # Signs inside out, as Sparkle's documentation describes: its helpers, the
 # framework, then the app with its own entitlements.

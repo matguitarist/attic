@@ -1,7 +1,7 @@
 // Draws the layers of Attic/Resources/AppIcon.icon (roof.png, cartridge.png)
 // plus preview.png, the icon as it looks in its squircle:
 //
-//     swift scripts/draw-icon.swift <output folder>
+//     swift tools/draw-icon.swift <output folder>
 //
 // Copy the two layers into AppIcon.icon/Assets afterwards. The background
 // gradient, glass and shadows are set in AppIcon.icon/icon.json.
