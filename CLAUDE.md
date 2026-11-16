@@ -4,6 +4,9 @@ A native macOS front end for a retro game library: ROM folders laid out like
 Batocera/ES-DE, scraping, RetroArch and standalone emulators, Cabinet Mode.
 Never download or ship BIOS files: Attic only checks the ones people provide.
 
+Shared rules for how every project is laid out and named:
+@~/.claude/project-layout.md
+
 ## Layout
 
 - `project.yml` is the XcodeGen spec; the `.xcodeproj` is generated and gitignored. Edit `project.yml`, never the project. The version is `MARKETING_VERSION` there.
