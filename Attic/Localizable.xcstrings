@@ -15813,6 +15813,16 @@
         }
       }
     },
+    "This Steam game has no app ID: import it again from Steam.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce jeu Steam n'a pas d'identifiant d'application : importez-le de nouveau depuis Steam."
+          }
+        }
+      }
+    },
     "This look needs RetroArch’s shader pack.": {
       "localizations": {
         "fr": {

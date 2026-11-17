@@ -46,6 +46,11 @@ final class ScanCoordinator {
         (try? await libraryStore.gameMedia()) ?? []
     }
 
+    /// A system's games missing any text info, by path.
+    func pathsMissingInfo(system: CanonicalSystemID) async -> Set<String> {
+        (try? await libraryStore.pathsMissingInfo(system: system)) ?? []
+    }
+
     func applyImported(_ info: [String: LibraryStore.ImportedInfo], replacing: Bool) async -> Int {
         (try? await libraryStore.applyImported(info, replacing: replacing)) ?? 0
     }
@@ -117,8 +122,18 @@ final class ScanCoordinator {
             summary += " (" + String(localized: "\(result.issues.count) folders skipped") + ")"
         }
         lastScanSummary = summary
+        let wasStopped = isStopping
         state = .idle
         isStopping = false
+        // Steam games added since (installed in Steam), or still missing
+        // their store info, get it now.
+        if !wasStopped, only?.contains(.steam) ?? true {
+            for root in romsRootURLs {
+                let folder = root.appending(path: "steam", directoryHint: .isDirectory)
+                guard FileManager.default.fileExists(atPath: folder.path) else { continue }
+                await SteamImport.fetchArtwork(in: folder, scanCoordinator: self, onlyMissingInfo: true)
+            }
+        }
     }
 
     /// Stops the scan under way after the system it's on: those scanned

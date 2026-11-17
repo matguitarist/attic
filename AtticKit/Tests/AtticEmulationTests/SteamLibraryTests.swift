@@ -175,6 +175,55 @@ struct SteamStoreTests {
         #expect(calendar.dateComponents([.year, .month, .day], from: date) == DateComponents(year: 2026, month: 7, day: 16))
     }
 
+    @Test func readsPlayersAndMetacriticFromTheStore() throws {
+        let json = """
+        {"413150":{"success":true,"data":{
+          "categories":[{"id":2,"description":"Single-player"},{"id":39,"description":"Shared/Split Screen Co-op"}],
+          "metacritic":{"score":89}
+        }}}
+        """
+        let info = try #require(SteamStore.details(from: Data(json.utf8), appID: "413150"))
+        #expect(info.players == "1-2")
+        #expect(info.rating == 0.89)
+        #expect(SteamStore.players(categoryIDs: [2, 22, 28]) == "1")
+        #expect(SteamStore.players(categoryIDs: [22]) == nil)
+    }
+
+    /// A game with no store page still gets its makers, date, genres,
+    /// modes and user score from the Steam client's app info.
+    @Test func readsTheClientsAppInfo() throws {
+        let json = """
+        {"data":{"367520":{"common":{
+          "associations":{"0":{"name":"Team Cherry","type":"developer"},"1":{"name":"Team Cherry","type":"publisher"},
+                          "2":{"name":"Hollow Knight","type":"franchise"}},
+          "genres":{"0":"1","1":"25","2":"23"},
+          "steam_release_date":"1487959200",
+          "metacritic_score":"87","review_percentage":"96",
+          "category":{"category_2":"1","category_22":"1"}
+        }}}}
+        """
+        let info = try #require(SteamStore.appInfo(from: Data(json.utf8), appID: "367520"))
+        #expect(info.developer == "Team Cherry")
+        #expect(info.publisher == "Team Cherry")
+        #expect(info.genre == "Action, Adventure, Indie")
+        #expect(info.players == "1")
+        // Steam's user reviews before Metacritic.
+        #expect(info.rating == 0.96)
+        #expect(info.releaseDate == Date(timeIntervalSince1970: 1487959200))
+    }
+
+    @Test func theAppInfoFillsWhatTheStoreLacks() async throws {
+        let appInfo = #"{"data":{"7":{"common":{"associations":{"0":{"name":"Maker","type":"developer"}},"review_percentage":"80"}}}}"#
+        let info = await SteamStore.info(appID: "7") { url in
+            // No store page, no assets: only the app info answers.
+            guard url.host() == "api.steamcmd.net" else { throw URLError(.badServerResponse) }
+            return Data(appInfo.utf8)
+        }
+        #expect(info.developer == "Maker")
+        #expect(info.rating == 0.8)
+        #expect(info.description == nil)
+    }
+
     @Test func failedDetailsGiveNothing() {
         #expect(SteamStore.details(from: Data(#"{"1":{"success":false}}"#.utf8), appID: "1") == nil)
     }

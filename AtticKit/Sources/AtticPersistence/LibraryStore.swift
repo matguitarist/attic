@@ -336,6 +336,17 @@ public actor LibraryStore {
         return changedGames
     }
 
+    /// The paths of a system's games missing any of their text info:
+    /// description, makers, genre, players, release date or rating.
+    public func pathsMissingInfo(system canonicalID: CanonicalSystemID) throws -> Set<String> {
+        let id = canonicalID.rawValue
+        let games = try modelContext.fetch(FetchDescriptor<Game>(predicate: #Predicate { $0.systemCanonicalID == id }))
+        return Set(games.filter { game in
+            (game.gameDescription ?? "").isEmpty || game.developer == nil || game.publisher == nil || game.genre == nil
+                || game.players == nil || game.releaseDate == nil || game.rating == nil
+        }.map(\.romAbsolutePath))
+    }
+
     public func systemCount() throws -> Int {
         try modelContext.fetchCount(FetchDescriptor<GameSystem>())
     }

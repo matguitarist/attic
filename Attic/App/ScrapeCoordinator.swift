@@ -85,9 +85,12 @@ final class ScrapeCoordinator {
     func scrape(_ game: Game, from source: ScraperSource, force: Bool = false) async {
         activityClearTask?.cancel()
         let title = game.title
-        activity = .scraping(title: title, source: source.name)
+        let isSteam = Self.isSteam(game)
+        activity = .scraping(title: title, source: isSteam ? "Steam" : source.name)
         let fields: [String]?
         switch source {
+        case _ where isSteam:
+            fields = await scrapeUsingSteam(game: game, force: force)
         case .screenScraper(let credentials):
             fields = await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
         case .theGamesDB(let credentials):
@@ -340,6 +343,12 @@ final class ScrapeCoordinator {
     static func lacksInfo(_ game: Game, from source: ScraperSource?, media: MediaIndex = MediaIndex()) -> Bool {
         if game.gameDescription == nil || game.coverArtPath == nil || game.titleScreenPath == nil
             || !media.has(.logos, game) || !media.has(.fanart, game) { return true }
+        // The Steam store has no 3D box nor disc, and its trailers come
+        // with Import Steam Games: only its text counts.
+        if isSteam(game) {
+            return game.developer == nil || game.publisher == nil || game.genre == nil || game.players == nil
+                || game.releaseDate == nil || game.rating == nil
+        }
         if case .theGamesDB? = source { return false }
         if !media.has(.boxes3D, game) { return true }
         if PhysicalMedium.of(CanonicalSystemID(game.systemCanonicalID)) != nil, !media.has(.physicalMedia, game) { return true }
@@ -362,6 +371,8 @@ final class ScrapeCoordinator {
             batchState = .running(completed: index, total: missing.count)
 
             switch source {
+            case _ where Self.isSteam(game):
+                await scrapeUsingSteam(game: game, force: force)
             case .screenScraper(let credentials):
                 await scrapeUsingScreenScraper(game: game, credentials: credentials, force: force)
             case .theGamesDB(let credentials):
@@ -376,6 +387,42 @@ final class ScrapeCoordinator {
         }
 
         batchState = .finished(scraped: scraped, alreadyPresent: games.count - missing.count, failed: failed)
+    }
+
+    static func isSteam(_ game: Game) -> Bool {
+        game.systemCanonicalID == CanonicalSystemID.steam.rawValue
+    }
+
+    /// Steam games from the Steam store, whatever scraper is chosen: none
+    /// lists them, and the store knows each by its app ID. The trailer
+    /// comes with Import Steam Games, which assembles it from the store's
+    /// stream.
+    @discardableResult
+    func scrapeUsingSteam(game: Game, force: Bool = false) async -> [String]? {
+        guard let appID = SteamLibrary.appID(shortcut: game.romAbsoluteURL) else {
+            state = .failed(String(localized: "This Steam game has no app ID: import it again from Steam."))
+            return nil
+        }
+        state = .scraping
+        let store = await SteamStore.info(appID: appID) { url in
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+            return data
+        }
+        let info = ScrapedGameInfo(
+            description: store.description, genre: store.genre, players: store.players,
+            developer: store.developer, publisher: store.publisher, releaseDate: store.releaseDate, rating: store.rating,
+            coverArtURL: store.coverURL, screenshotURL: store.screenshotURL,
+            logoURL: store.logoURL ?? SteamStore.classicLogoURL(appID: appID), fanartURL: store.heroURL
+        )
+        do {
+            let fields = try await apply(info, to: game, force: force)
+            state = .idle
+            return fields
+        } catch {
+            state = .failed(error.localizedDescription)
+            return nil
+        }
     }
 
     /// Scraped results are kept app-only, never written back into

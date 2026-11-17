@@ -50,12 +50,15 @@ enum SteamImport {
     /// missing any, from the Steam store, then SteamGridDB (with an API
     /// key) for the pictures the store doesn't have. Running the import
     /// again fills in what's still missing, and replaces logos at the
-    /// store's small size.
-    static func fetchArtwork(in folder: URL, scanCoordinator: ScanCoordinator) async {
+    /// store's small size. With `onlyMissingInfo` (after a library
+    /// refresh), only games missing text info are asked about: those just
+    /// installed, or filled before Attic read players and ratings.
+    static func fetchArtwork(in folder: URL, scanCoordinator: ScanCoordinator, onlyMissingInfo: Bool = false) async {
         let kinds: [MediaKind] = [.covers, .fanart, .logos, .screenshots, .videos]
         let gridKey = SteamGridDBCredentialsStore().trimmedKey
         let shortcuts = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? [])
             .filter { $0.pathExtension.lowercased() == SteamLibrary.shortcutExtension }
+        let missingInfo = await scanCoordinator.pathsMissingInfo(system: .steam)
         let wanted = shortcuts.map { shortcut in
             (shortcut, kinds.filter { kind in
                 let existing = MediaFolder.existingFiles(base: base(shortcut, in: folder, kind: kind))
@@ -67,7 +70,10 @@ enum SteamImport {
                 }
                 return existing.isEmpty
             })
-        }.filter { !$0.1.isEmpty }
+        }.filter { shortcut, media in
+            let lacksInfo = missingInfo.contains(shortcut.path) || missingInfo.contains(shortcut.resolvingSymlinksInPath().path)
+            return onlyMissingInfo ? lacksInfo : lacksInfo || !media.isEmpty
+        }
         guard !wanted.isEmpty else { return }
 
         let imported = await Task.detached {
@@ -114,7 +120,8 @@ enum SteamImport {
                 }
                 imported[shortcut.path] = LibraryStore.ImportedInfo(
                     description: info.description, developer: info.developer, publisher: info.publisher,
-                    genre: info.genre, releaseDate: info.releaseDate, coverPath: cover, screenshotPath: screenshot,
+                    genre: info.genre, players: info.players, releaseDate: info.releaseDate, rating: info.rating,
+                    coverPath: cover, screenshotPath: screenshot,
                     videoPath: video
                 )
             }
