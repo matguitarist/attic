@@ -3,6 +3,18 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.12.3</title>
+            <pubDate>Tue, 17 Nov 2026 17:08:50 -0500</pubDate>
+            <sparkle:version>56</sparkle:version>
+            <sparkle:shortVersionString>2.12.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Cabinet Mode's theme menu has Open Theme Editor: Cabinet Mode closes and the editor opens on the current theme
+- In Cabinet Mode's menu, A no longer changes a choice such as the theme: left and right do, or its arrows with the mouse
+- The Theme Editor's preview fits the backdrop to its screen, instead of stretching it up under the toolbar
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.12.3/Attic-2.12.3.zip" length="20234375" type="application/octet-stream" sparkle:edSignature="JfXt82J+wi+wqZ6Jrep6iNWJyjoC7JWRFxThpGgIJU6nwwLscaa8UZ4O4KwPwShLRc4mYF67VnHYEyCsmkH1Dw=="/>
+        </item>
+        <item>
             <title>2.12.2</title>
             <pubDate>Tue, 17 Nov 2026 16:20:58 -0500</pubDate>
             <sparkle:version>55</sparkle:version>
