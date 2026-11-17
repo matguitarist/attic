@@ -79,6 +79,8 @@ struct ArcadeVerifierTests {
         try chip(1).write(to: loose.appending(path: "g1.bin"))
         try chip(2).write(to: loose.appending(path: "g2.bin"))
         try chip(3).write(to: loose.appending(path: "gamej/g2j.bin"))
+        // The board's BIOS set the game boots from.
+        try zip(bios.appending(path: "board.zip"), ["bios.bin": chip(9)])
         // A clone unpacked on its own: its zip gets only its own chip.
         let clone = roms.appending(path: "gamej", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: clone, withIntermediateDirectories: true)
@@ -110,6 +112,8 @@ struct ArcadeVerifierTests {
     @Test func aCompleteSetIsVerified() throws {
         try writeMAMEList()
         try zip(roms.appending(path: "game.zip"), ["g1.bin": chip(1), "g2.bin": chip(2)])
+        // It boots from its board's BIOS set.
+        try zip(bios.appending(path: "board.zip"), ["bios.bin": chip(9)])
         let check = load(["game"]).check(roms.appending(path: "game.zip"), preferring: .mame, biosDirectory: bios)
         #expect(check?.verdict == .verified)
         #expect(check?.name == "A Game")
