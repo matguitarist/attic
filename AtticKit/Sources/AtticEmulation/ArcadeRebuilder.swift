@@ -110,7 +110,7 @@ extension ArcadeVerifier {
             for entry in entries where zipped[entry.crc] == nil { zipped[entry.crc] = (zip, entry.name) }
         }
 
-        func isBIOS(_ rom: ROM) -> Bool { set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") }
+        func isBIOS(_ rom: ROM) -> Bool { rom.biosChoice == true || set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") }
         // The chips a set's own zip holds: not its parent's, nor a BIOS's.
         func own(_ machine: Machine) -> [ROM] { machine.roms.filter { !$0.inParent && !isBIOS($0) } }
 

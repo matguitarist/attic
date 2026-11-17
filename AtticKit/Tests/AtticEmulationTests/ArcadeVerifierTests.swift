@@ -294,6 +294,41 @@ struct ArcadeVerifierTests {
         #expect(ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: "/x/mame0289lx.zip")))
     }
 
+    /// Hikaru's case: MAME lists the BIOS versions as choices, and the
+    /// EEPROMs' default contents, which most BIOS zips don't carry.
+    @Test func aBIOSSetWithoutItsEEPROMDefaultsIsntMissing() throws {
+        let xml = """
+        <?xml version="1.0"?>
+        <mame build="0.289 (mame0289)">
+          <machine name="racer" romof="hikaru">
+            <description>Racer</description>
+            <rom name="r1.bin" size="1024" crc="\(crc(chip(1)))"/>
+            <rom name="epr-23400a.ic94" merge="epr-23400a.ic94" bios="bios0" size="1024" crc="\(crc(chip(5)))"/>
+            <rom name="epr-23400.ic94" merge="epr-23400.ic94" bios="bios1" size="1024" crc="\(crc(chip(6)))"/>
+            <rom name="93c46.ic115" merge="93c46.ic115" size="128" crc="\(crc(chip(7)))"/>
+            <rom name="x76f100.ic85" merge="x76f100.ic85" size="132" crc="\(crc(chip(8)))" status="baddump"/>
+          </machine>
+          <machine name="hikaru" isbios="yes">
+            <description>Hikaru BIOS</description>
+          </machine>
+        </mame>
+        """
+        try Data(xml.utf8).write(to: dats.appending(path: "mame.xml"))
+        try zip(roms.appending(path: "racer.zip"), ["r1.bin": chip(1)])
+        try FileManager.default.createDirectory(at: bios.appending(path: "mame/bios"), withIntermediateDirectories: true)
+        try zip(bios.appending(path: "mame/bios/hikaru.zip"), ["epr-23400a.ic94": chip(5), "epr-23400.ic94": chip(6)])
+        let verifier = load(["racer"])
+        let check = verifier.check(roms.appending(path: "racer.zip"), preferring: .mame, biosDirectory: bios)
+        #expect(check?.problems?.missingBIOS == nil)
+        #expect(check?.verdict == .verified)
+
+        // Without the BIOS set, it's missing, with its chips to look for.
+        try FileManager.default.removeItem(at: bios.appending(path: "mame/bios/hikaru.zip"))
+        let missing = verifier.check(roms.appending(path: "racer.zip"), preferring: .mame, biosDirectory: bios)
+        #expect(missing?.problems?.missingBIOS == "hikaru.zip")
+        #expect(missing?.problems?.biosROMs?.map(\.name) == ["epr-23400a.ic94", "epr-23400.ic94"])
+    }
+
     // MARK: - Keisho
 
     /// An installed Keisho whose games.xml lists a Model 2 game, its

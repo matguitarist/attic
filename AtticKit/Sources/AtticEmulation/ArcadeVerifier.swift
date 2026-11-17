@@ -27,6 +27,9 @@ public struct ArcadeVerifier: Sendable {
         var inParent = false
         /// Other good dumps of the chip (Keisho lists a few).
         var alternates: [UInt32]?
+        /// One of the BIOS versions MAME offers (`bios="…"`): any one is
+        /// enough.
+        var biosChoice: Bool?
 
         func isIn(_ crcs: Swift.Set<UInt32>) -> Bool {
             crcs.contains(crc) || alternates?.contains(where: crcs.contains) == true
@@ -119,9 +122,14 @@ public struct ArcadeVerifier: Sendable {
         // set (Astro Chase its Atari XL chips from maxaflex.zip).
         let onBIOS = machine.cloneOf == nil && machine.romOf.map(ArcadeBIOSSets.names.contains) == true
         func isBIOS(_ rom: ROM) -> Bool {
-            set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") || (onBIOS && rom.inParent)
+            rom.biosChoice == true || set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") || (onBIOS && rom.inParent)
         }
+        // MAME's BIOS versions decide when it lists them: the rest of the
+        // BIOS set's chips can be an EEPROM's default contents (Hikaru's),
+        // which BIOS zips often don't carry and emulators don't need.
         let biosROMs = machine.roms.filter(isBIOS)
+        let choices = biosROMs.filter { $0.biosChoice == true }
+        let neededBIOS = choices.isEmpty ? biosROMs : choices
         for rom in machine.roms where !rom.isIn(crcs) && !isBIOS(rom) {
             if names.contains(rom.name.lowercased()) {
                 // The CRC it should have, and the one it has.
@@ -133,9 +141,9 @@ public struct ArcadeVerifier: Sendable {
             }
         }
         // Any one BIOS version does; none at all, and the game can't start.
-        if !biosROMs.isEmpty, !biosROMs.contains(where: { $0.isIn(crcs) }), let bios = Self.chain(of: setName, in: set).last {
+        if !neededBIOS.isEmpty, !neededBIOS.contains(where: { $0.isIn(crcs) }), let bios = Self.chain(of: setName, in: set).last {
             problems.missingBIOS = bios + ".zip"
-            problems.biosROMs = biosROMs.map { .init(name: $0.name, expected: Self.hex($0.crc)) }
+            problems.biosROMs = neededBIOS.map { .init(name: $0.name, expected: Self.hex($0.crc)) }
         }
         let folders = [setName] + Self.chain(of: setName, in: set)
         for disk in machine.disks {
@@ -229,7 +237,8 @@ public struct ArcadeVerifier: Sendable {
         sets[.keisho] = keishoSet(emulationRoot: folder.deletingLastPathComponent())
         for file in datFiles(in: folder) {
             let signature = Self.signature(of: file)
-            let cache = cacheDirectory.appending(path: "Arcade-\(signature.hash).json")
+            // The version: lists read by an older Attic lack what's read now.
+            let cache = cacheDirectory.appending(path: "Arcade-2-\(signature.hash).json")
             if let cached = (try? Data(contentsOf: cache)).flatMap({ try? JSONDecoder().decode(CachedSet.self, from: $0) }),
                cached.signature == signature, wanted.isSubset(of: cached.wanted) {
                 sets[cached.source] = sets[cached.source] ?? cached.set
@@ -302,8 +311,8 @@ public struct ArcadeVerifier: Sendable {
         return (source, Set(name: name, machines: reader.machines, parents: reader.parents, biosCRCs: bios))
     }
 
-    /// MAME's `<machine>` and Logiqx's `<game>`: their roms (but not a
-    /// BIOS choice's, nor dumps nobody has), disks, parent and BIOS.
+    /// MAME's `<machine>` and Logiqx's `<game>`: their roms (a BIOS
+    /// choice's marked, dumps nobody has left out), disks, parent and BIOS.
     private final class Reader: NSObject, XMLParserDelegate {
         let wanted: Swift.Set<String>
         var machines: [String: Machine] = [:]
@@ -345,10 +354,12 @@ public struct ArcadeVerifier: Sendable {
                 if attributes["merge"] != nil, let crc = attributes["crc"].flatMap({ UInt32($0, radix: 16) }) {
                     sharing[crc, default: 0] += 1
                 }
-                guard current.map(wanted.contains) == true, attributes["status"] != "nodump", attributes["bios"] == nil,
+                guard current.map(wanted.contains) == true, attributes["status"] != "nodump",
                       let name = attributes["name"], let size = attributes["size"].flatMap(Int.init),
                       let crc = attributes["crc"].flatMap({ UInt32($0, radix: 16) }) else { return }
-                roms.append(ROM(name: name, size: size, crc: crc, inParent: attributes["merge"] != nil))
+                var rom = ROM(name: name, size: size, crc: crc, inParent: attributes["merge"] != nil)
+                if attributes["bios"] != nil { rom.biosChoice = true }
+                roms.append(rom)
             case "disk":
                 guard current.map(wanted.contains) == true, attributes["status"] != "nodump",
                       let name = attributes["name"], let sha1 = attributes["sha1"] else { return }
