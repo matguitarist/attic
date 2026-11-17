@@ -3,6 +3,16 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.12.2</title>
+            <pubDate>Tue, 17 Nov 2026 16:20:58 -0500</pubDate>
+            <sparkle:version>55</sparkle:version>
+            <sparkle:shortVersionString>2.12.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- A game's description now comes first in its panel, above the developer, publisher and the rest of its info
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.12.2/Attic-2.12.2.zip" length="20216532" type="application/octet-stream" sparkle:edSignature="uDsegqHQ/sTYKSmB1VMOSyDPNvaqXwzr9AXNp4ZPgr7vmphkR/11l7zuIsmveWPhSeNthX7Q2FdSm5w8PD5CCw=="/>
+        </item>
+        <item>
             <title>2.12.1</title>
             <pubDate>Tue, 17 Nov 2026 15:57:18 -0500</pubDate>
             <sparkle:version>54</sparkle:version>
