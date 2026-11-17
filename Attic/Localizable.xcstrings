@@ -7801,12 +7801,12 @@
         }
       }
     },
-    "For MAME, NAOMI, Atomiswave, Model 2 and 3, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.": {
+    "For MAME, NAOMI, Atomiswave, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pour MAME, NAOMI, Atomiswave, Model 2 et 3, ST-V et les autres cartes que lance MAME. Environ 20 Mo, depuis la dernière version de MAME."
+            "value": "Pour MAME, NAOMI, Atomiswave, ST-V et les autres cartes que lance MAME. Environ 20 Mo, depuis la dernière version de MAME."
           }
         }
       }
@@ -9386,6 +9386,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Garde les jeux dans ROMs et leurs médias dans Media, et met à la corbeille ce que d’autres apps ont laissé. Vous voyez un rapport de chaque changement avant que rien ne se passe."
+          }
+        }
+      }
+    },
+    "Keisho recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keisho reconnaît les jeux par leur contenu : les romsets de n'importe quelle version de MAME fonctionnent, et un clone trouve les fichiers qu'il partage dans le zip de son parent, à côté. En jeu, Guide + Start ou Échap pour quitter."
+          }
+        }
+      }
+    },
+    "Keisho runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keisho fait tourner Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade et Wing War."
+          }
+        }
+      }
+    },
+    "Keisho, the Model 1 and 2 emulator, also runs most Model 3 games: choose it in the system's or the game's emulator menu.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keisho, l'émulateur du Model 1 et du Model 2, fait aussi tourner la plupart des jeux Model 3 : choisissez-le dans le menu d'émulateur du système ou du jeu."
           }
         }
       }
@@ -17187,26 +17217,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "vidéo du système plus nette"
-          }
-        }
-      }
-    },
-    "sm2-emu recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sm2-emu reconnaît les jeux par leur contenu : les romsets de n'importe quelle version de MAME fonctionnent, et un clone trouve les fichiers qu'il partage dans le zip de son parent, à côté. En jeu, Guide + Start ou Échap pour quitter."
-          }
-        }
-      }
-    },
-    "sm2-emu runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sm2-emu fait tourner Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade et Wing War."
           }
         }
       }

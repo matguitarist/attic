@@ -414,26 +414,35 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
-    /// Sega Model 1 and Model 2, native on Apple Silicon (Vulkan through
-    /// the MoltenVK it bundles). It finds games by their contents rather
-    /// than their names, so any MAME romset version works. It has no HOME
-    /// based setup: its settings and saves go where `arguments(for:)`
+    /// Sega Model 1, 2 and 3, native on Apple Silicon (Vulkan through
+    /// the MoltenVK it bundles). Called sm2-emu until 0.9.63 (see
+    /// `renamedEmulators`). It finds games by their contents rather than
+    /// their names, so any MAME romset version works. It has no HOME based
+    /// setup: its settings and saves go where `keishoArguments(for:)`
     /// points them, inside the Emulation folder.
-    public static let sm2Emu = StandaloneEmulator(
-        id: "sm2-emu",
-        name: "sm2-emu",
-        summary: String(localized: "The Sega Model 1 and Model 2 emulator, native on Apple Silicon.", bundle: .module),
-        appBundleName: "sm2-emu.app",
-        executableRelativePath: "Contents/MacOS/sm2-emu",
+    public static let keisho = StandaloneEmulator(
+        id: "keisho",
+        name: "Keisho",
+        summary: String(localized: "The Sega Model 1, 2 and 3 emulator, native on Apple Silicon.", bundle: .module),
+        appBundleName: "Keisho.app",
+        executableRelativePath: "Contents/MacOS/Keisho",
         // --rom-dir lets a clone find the parent zip it shares chips with.
         argumentTemplate: "--fullscreen --rom-dir {romDir} {romPath}",
-        downloadURL: URL(string: "https://api.github.com/repos/dmanlfc/sm2-emu/releases/latest")!,
+        downloadURL: URL(string: "https://api.github.com/repos/Keisho-Emu/Keisho/releases/latest")!,
         archive: .githubRelease(assetSuffix: "-macos.dmg"),
-        homepageURL: URL(string: "https://github.com/dmanlfc/sm2-emu")!,
+        homepageURL: URL(string: "https://github.com/Keisho-Emu/Keisho")!,
         license: "GPL-3.0",
-        systems: [.model1, .model2],
+        systems: [.model1, .model2, .model3],
         portableHome: nil
     )
+
+    /// Emulators whose project took a new name, by their old catalog ID:
+    /// the old name (its Config and Emulators folders, its settings file's
+    /// stem) and the emulator it is now. An install under the old name is
+    /// carried over at launch (see `EmulationFolder.adoptRenamedEmulators`).
+    public static let renamedEmulators: [String: (oldName: String, emulator: StandaloneEmulator)] = [
+        "sm2-emu": ("sm2-emu", keisho)
+    ]
 
     /// Sega Hikaru and Gaelco's ATV Track board (ATV Track, Gaelco
     /// Football, Smashing Drive), emulated at a low level. It runs a game
@@ -457,9 +466,9 @@ public enum EmulatorCatalog {
 
     /// The Model 1 I/O boards' firmware, which some Model 1 and Model 2
     /// games read (Daytona USA, Virtua Cop). Most full sets include it; a
-    /// split set needs the device set. MAME reads it here; for sm2-emu,
+    /// split set needs the device set. MAME reads it here; for Keisho,
     /// which only looks beside the game, Attic copies it there at launch
-    /// (see `EmulationFolder.sm2EmuArguments`).
+    /// (see `EmulationFolder.keishoArguments`).
     public static let model1IOBoards: [BIOSRequirement] = [
         BIOSRequirement("mame/bios/model1io.zip", required: false, note: "I/O board, for games whose zip doesn't include it: Virtua Racing, Virtua Fighter, Star Wars Arcade, Daytona USA, Desert Tank"),
         BIOSRequirement("mame/bios/model1io2.zip", required: false, note: "Newer I/O board: Wing War, NetMerc, Virtua Cop")
@@ -474,7 +483,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, sm2Emu, odin]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, keisho, odin]
 
     // MARK: - Per-system table
 
@@ -645,17 +654,17 @@ public enum EmulatorCatalog {
         ], prefersStandalone: false),
         .init(systemID: .atomiswave, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/awbios.zip")], prefersStandalone: false),
         .init(systemID: .naomi2, cores: [flycast], standalone: [], bios: [BIOSRequirement("dc/naomi2.zip")], prefersStandalone: false),
-        // sm2-emu is the better Model 1 and 2 emulator; MAME stays the
+        // Keisho is the better Model 1 and 2 emulator; MAME stays the
         // alternative.
-        .init(systemID: .model1, cores: [mameCurrent], standalone: [sm2Emu], bios: model1IOBoards, prefersStandalone: true),
-        .init(systemID: .model2, cores: [mameCurrent], standalone: [sm2Emu], bios: model1IOBoards, prefersStandalone: true),
+        .init(systemID: .model1, cores: [mameCurrent], standalone: [keisho], bios: model1IOBoards, prefersStandalone: true),
+        .init(systemID: .model2, cores: [mameCurrent], standalone: [keisho], bios: model1IOBoards, prefersStandalone: true),
         // MAME finds a board's BIOS set (stvbios.zip) beside the games.
         .init(systemID: .stv, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         // Odin runs Gaelco's ATV Track board; MAME the other Gaelco games.
         .init(systemID: .gaelco, cores: [mameCurrent], standalone: [odin], bios: [], prefersStandalone: true),
         // MAME's Hikaru driver doesn't play the games, so Odin alone.
         .init(systemID: .hikaru, cores: [], standalone: [odin], bios: hikaruSharedSets, prefersStandalone: true),
-        .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [keisho], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),

@@ -289,4 +289,76 @@ struct ArcadeVerifierTests {
         #expect(DATVerifier.load(from: dats).sets.isEmpty)
         #expect(ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: "/x/mame0289lx.zip")))
     }
+
+    // MARK: - Keisho
+
+    /// An installed Keisho whose games.xml lists a Model 2 game, its
+    /// clone (with an alternate dump of one chip) and an I/O board.
+    private func installKeisho() throws {
+        let app = root.appending(path: "Emulators/Keisho/Keisho.app/Contents", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: app.appending(path: "MacOS"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: app.appending(path: "Resources"), withIntermediateDirectories: true)
+        try Data().write(to: app.appending(path: "MacOS/Keisho"))
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!-- Keisho's comments may hold -- which XML forbids. -->
+        <games>
+          <game name="racer" board="model2">
+            <title>Racer</title>
+            <devices><device name="model1io"/></devices>
+            <roms>
+              <region name="ioboard"><file name="io.25" offset="0x0" crc="0x\(crc(chip(5)))"/></region>
+              <region name="maincpu"><file name="r1.12" offset="0x0" crc="0x\(crc(chip(1)))"/></region>
+              <region name="drivecpu" required="false"><file name="drive.ic12" offset="0x0" crc="0x\(crc(chip(8)))"/></region>
+            </roms>
+          </game>
+          <game name="racerj" parent="racer" board="model2">
+            <title>Racer (Japan)</title>
+            <roms>
+              <region name="maincpu"><file name="r1.12" offset="0x0" crc="0x\(crc(chip(1)))"/></region>
+              <region name="prot"><file name="key.bin" offset="0x0" crc="0x\(crc(chip(2)))" alt_crc="0x\(crc(chip(3)))"/></region>
+            </roms>
+          </game>
+        </games>
+        """
+        try Data(xml.utf8).write(to: app.appending(path: "Resources/games.xml"))
+    }
+
+    @Test func modelSetsAreCheckedAgainstTheInstalledKeisho() throws {
+        try installKeisho()
+        try zip(roms.appending(path: "racer.zip"), ["r1.12": chip(1)])
+        try zip(roms.appending(path: "racerj.zip"), ["key.bin": chip(3)])
+        let arcade = load(["racer", "racerj"])
+        #expect(arcade.sources == [.keisho])
+        #expect(arcade.canCheck(preferring: .keisho))
+        // Nothing for the boards MAME runs until its list is there.
+        #expect(!arcade.canCheck(preferring: .mame))
+
+        // The I/O board's chip is in neither zip: missing, until its
+        // device set is in the BIOS folder. The drive board's is optional.
+        let racer = try #require(arcade.check(roms.appending(path: "racer.zip"), preferring: .keisho, biosDirectory: bios))
+        #expect(racer.verdict == .incomplete)
+        #expect(racer.problems?.missingROMs.map(\.name) == ["io.25"])
+        #expect(racer.problems?.dat == "Keisho")
+        try FileManager.default.createDirectory(at: bios.appending(path: "mame/bios"), withIntermediateDirectories: true)
+        try zip(bios.appending(path: "mame/bios/model1io.zip"), ["io.25": chip(5)])
+        #expect(arcade.check(roms.appending(path: "racer.zip"), preferring: .keisho, biosDirectory: bios)?.verdict == .verified)
+
+        // The clone takes its shared chip from the parent's zip, and an
+        // alternate dump of its own counts.
+        let clone = try #require(arcade.check(roms.appending(path: "racerj.zip"), preferring: .keisho, biosDirectory: bios))
+        #expect(clone.verdict == .verified)
+        #expect(clone.name == "Racer (Japan)")
+    }
+
+    @Test func atticsCopyOfKeishosListStandsInUntilItIsInstalled() throws {
+        let set = try #require(ArcadeVerifier.keishoSet(emulationRoot: root))
+        #expect(set.name.hasPrefix("Keisho "))
+        let daytona = try #require(set.machines["daytona"])
+        #expect(daytona.title == "Daytona USA")
+        #expect(set.parents["daytona"]?.contains("model1io") == true)
+        #expect(set.machines.values.contains { $0.roms.contains { $0.alternates != nil } })
+        // Model 3 too.
+        #expect(set.machines["scud"] != nil)
+    }
 }

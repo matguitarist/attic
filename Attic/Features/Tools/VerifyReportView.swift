@@ -123,7 +123,9 @@ struct VerifyReportView: View {
                                 Text("For Neo Geo, CPS-1, CPS-2, CPS-3 and FinalBurn Neo's other boards. About 14 MB, from FinalBurn Neo's repository.")
                             case .mame:
                                 Text("MAME's game list")
-                                Text("For MAME, NAOMI, Atomiswave, Model 2 and 3, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.")
+                                Text("For MAME, NAOMI, Atomiswave, ST-V and the other boards MAME runs. About 20 MB, from MAME's latest release.")
+                            case .keisho:
+                                EmptyView()
                             }
                         }
                     }

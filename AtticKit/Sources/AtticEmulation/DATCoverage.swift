@@ -11,8 +11,9 @@ public struct DATCoverage: Sendable, Equatable {
         case noIntro
         /// Discs: redump.org. Not checked yet.
         case redump
-        /// Arcade sets, as MAME or FinalBurn Neo lists them.
-        case mame, fbneo
+        /// Arcade sets, as MAME or FinalBurn Neo lists them, or Keisho for
+        /// the Model boards (built in).
+        case mame, fbneo, keisho
         /// Hacks and homebrew: no DAT lists them.
         case none
     }
@@ -47,6 +48,10 @@ public struct DATCoverage: Sendable, Equatable {
     public static func coverage(for system: CanonicalSystemID, isArcade: Bool, arcadeSource: ArcadeVerifier.Source,
                                 datsFolder folder: URL) -> DATCoverage {
         if ROMHacks.base(of: system) != nil || unlisted.contains(system) { return DATCoverage(kind: .none, status: .notApplicable) }
+        if isArcade, arcadeSource == .keisho {
+            let name = ArcadeVerifier.keishoSet(emulationRoot: folder.deletingLastPathComponent())?.name
+            return DATCoverage(kind: .keisho, status: name.map { .present([$0], date: nil) } ?? .missing)
+        }
         if isArcade {
             let kind: Kind = arcadeSource == .fbneo ? .fbneo : .mame
             let files = ArcadeVerifier.datFiles(in: folder).filter { file in

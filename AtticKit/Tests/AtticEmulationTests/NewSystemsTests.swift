@@ -25,26 +25,61 @@ struct NewSystemsTests {
         #expect(SystemTaxonomy.system(forShortName: "naomi")?.canonicalID == .naomi)
     }
 
-    @Test func sm2EmuIsTheDefaultForModel1And2() throws {
+    @Test func keishoIsTheDefaultForModel1And2() throws {
         for system in [CanonicalSystemID.model1, .model2] {
             let recommendation = try #require(EmulatorCatalog.recommendation(for: system))
             #expect(recommendation.prefersStandalone)
-            #expect(recommendation.standalone.first == EmulatorCatalog.sm2Emu)
-            #expect(EmulatorCatalog.sm2Emu.systems.contains(system))
+            #expect(recommendation.standalone.first == EmulatorCatalog.keisho)
+            #expect(EmulatorCatalog.keisho.systems.contains(system))
         }
-        #expect(EmulatorCatalog.standaloneEmulators.contains(EmulatorCatalog.sm2Emu))
+        #expect(EmulatorCatalog.standaloneEmulators.contains(EmulatorCatalog.keisho))
     }
 
-    @Test func sm2EmuKeepsItsDataInTheEmulationFolder() throws {
+    @Test func keishoKeepsItsDataInTheEmulationFolder() throws {
         let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         let folder = EmulationFolder(root: root)
-        let arguments = try folder.sm2EmuArguments(for: .model2)
-        #expect(arguments == ["--config", folder.configHome(for: EmulatorCatalog.sm2Emu).path, "--nvram", folder.saves(for: .model2).path])
+        let arguments = try folder.keishoArguments(for: .model2)
+        #expect(arguments == ["--config", folder.configHome(for: EmulatorCatalog.keisho).path, "--nvram", folder.saves(for: .model2).path])
         #expect(FileManager.default.fileExists(atPath: folder.saves(for: .model2).path))
     }
 
-    @Test func sm2EmuFindsTheIOBoardBesideTheGame() throws {
+    @Test func keishoInstallsFromItsRenamedProject() throws {
+        let keisho = EmulatorCatalog.keisho
+        #expect(keisho.appBundleName == "Keisho.app")
+        #expect(keisho.executableRelativePath == "Contents/MacOS/Keisho")
+        #expect(keisho.downloadURL.absoluteString.contains("Keisho-Emu/Keisho"))
+        #expect(keisho.systems.contains(.model3))
+        #expect(EmulatorCatalog.recommendation(for: .model3)?.prefersStandalone == false)
+        #expect(EmulatorCatalog.renamedEmulators["sm2-emu"]?.emulator == keisho)
+    }
+
+    @Test func anSm2EmuSetupBecomesKeisho() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folder = EmulationFolder(root: root)
+        let fileManager = FileManager.default
+        let oldConfig = folder.config.appending(path: "sm2-emu")
+        try fileManager.createDirectory(at: oldConfig, withIntermediateDirectories: true)
+        try Data("[video]".utf8).write(to: oldConfig.appending(path: "sm2-emu.ini"))
+        let oldApp = folder.emulators.appending(path: "sm2-emu/sm2-emu.app/Contents/MacOS")
+        try fileManager.createDirectory(at: oldApp, withIntermediateDirectories: true)
+
+        folder.adoptRenamedEmulators()
+        let settings = folder.configHome(for: EmulatorCatalog.keisho).appending(path: "keisho.ini")
+        #expect(try String(contentsOf: settings, encoding: .utf8) == "[video]")
+        #expect(!fileManager.fileExists(atPath: oldConfig.path))
+        // Kept until Keisho is installed, so the games still have something.
+        #expect(fileManager.fileExists(atPath: oldApp.path))
+
+        let newApp = folder.emulators.appending(path: "Keisho/Keisho.app/Contents/MacOS")
+        try fileManager.createDirectory(at: newApp, withIntermediateDirectories: true)
+        try Data().write(to: newApp.appending(path: "Keisho"))
+        folder.adoptRenamedEmulators()
+        #expect(!fileManager.fileExists(atPath: folder.emulators.appending(path: "sm2-emu").path))
+    }
+
+    @Test func keishoFindsTheIOBoardBesideTheGame() throws {
         let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         let folder = EmulationFolder(root: root)
@@ -54,7 +89,7 @@ struct NewSystemsTests {
         let games = root.appending(path: "ROMs/model2")
         try FileManager.default.createDirectory(at: games, withIntermediateDirectories: true)
 
-        _ = try folder.sm2EmuArguments(for: .model2, romURL: games.appending(path: "daytona.zip"))
+        _ = try folder.keishoArguments(for: .model2, romURL: games.appending(path: "daytona.zip"))
         #expect(FileManager.default.fileExists(atPath: games.appending(path: "model1io.zip").path))
         #expect(!FileManager.default.fileExists(atPath: games.appending(path: "model1io2.zip").path))
         #expect(ArcadeBIOSSets.isBIOSSet("model1io.zip", system: .model2))

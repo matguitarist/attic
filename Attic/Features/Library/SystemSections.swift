@@ -871,6 +871,7 @@ struct DATCoverageRow: View {
         case .redump: "Redump"
         case .mame: "MAME"
         case .fbneo: "FinalBurn Neo"
+        case .keisho: "Keisho"
         case .none: String(localized: "None")
         }
     }

@@ -10,7 +10,13 @@ import AtticLibraryScanning
 /// their header: nothing is unpacked.
 public struct ArcadeVerifier: Sendable {
     public enum Source: String, Sendable, Codable, CaseIterable {
-        case fbneo, mame
+        /// Keisho's own list of the Model 1, 2 and 3 sets, built in (see
+        /// `ArcadeVerifier+Keisho`): nothing to download.
+        case fbneo, mame, keisho
+
+        /// A DAT the user adds to the DATs folder, or Verify Games
+        /// downloads.
+        public var isDownloadable: Bool { self != .keisho }
     }
 
     struct ROM: Sendable, Codable, Hashable {
@@ -19,6 +25,12 @@ public struct ArcadeVerifier: Sendable {
         let crc: UInt32
         /// Kept in the parent's zip (a clone's shared chip).
         var inParent = false
+        /// Other good dumps of the chip (Keisho lists a few).
+        var alternates: [UInt32]?
+
+        func isIn(_ crcs: Swift.Set<UInt32>) -> Bool {
+            crcs.contains(crc) || alternates?.contains(where: crcs.contains) == true
+        }
     }
 
     struct Disk: Sendable, Codable, Hashable {
@@ -67,12 +79,23 @@ public struct ArcadeVerifier: Sendable {
 
     static func hex(_ crc: UInt32) -> String { String(format: "%08x", crc) }
 
+    /// The lists a system's sets are looked up in, the preferred first: a
+    /// set it doesn't list may be in the other's. Keisho's only lists its
+    /// own boards, so it's only read for them.
+    private func available(preferring preferred: Source) -> [Set] {
+        ([preferred] + Source.allCases.filter { $0 != preferred && $0 != .keisho }).compactMap { sets[$0] }
+    }
+
+    /// Whether there's anything to check a system's sets against.
+    public func canCheck(preferring preferred: Source) -> Bool {
+        !available(preferring: preferred).isEmpty
+    }
+
     /// nil when there's no DAT, or the set can't be read (a 7z).
     public func check(_ url: URL, preferring preferred: Source, biosDirectory: URL) -> DATVerifier.Check? {
         guard url.pathExtension.lowercased() == "zip" else { return nil }
         let setName = url.deletingPathExtension().lastPathComponent.lowercased()
-        // A set the preferred DAT doesn't list may be in the other's.
-        let available = ([preferred] + Source.allCases.filter { $0 != preferred }).compactMap { sets[$0] }
+        let available = available(preferring: preferred)
         guard !available.isEmpty else { return nil }
         guard let set = available.first(where: { $0.machines[setName] != nil }), let machine = set.machines[setName] else {
             return DATVerifier.Check(verdict: .unknown, name: nil)
@@ -99,7 +122,7 @@ public struct ArcadeVerifier: Sendable {
             set.biosCRCs.contains(rom.crc) || rom.name.lowercased().contains("bios") || (onBIOS && rom.inParent)
         }
         let biosROMs = machine.roms.filter(isBIOS)
-        for rom in machine.roms where !crcs.contains(rom.crc) && !isBIOS(rom) {
+        for rom in machine.roms where !rom.isIn(crcs) && !isBIOS(rom) {
             if names.contains(rom.name.lowercased()) {
                 // The CRC it should have, and the one it has.
                 let found = pool.first { ($0.name as NSString).lastPathComponent.lowercased() == rom.name.lowercased() }?.crc
@@ -110,7 +133,7 @@ public struct ArcadeVerifier: Sendable {
             }
         }
         // Any one BIOS version does; none at all, and the game can't start.
-        if !biosROMs.isEmpty, !biosROMs.contains(where: { crcs.contains($0.crc) }), let bios = Self.chain(of: setName, in: set).last {
+        if !biosROMs.isEmpty, !biosROMs.contains(where: { $0.isIn(crcs) }), let bios = Self.chain(of: setName, in: set).last {
             problems.missingBIOS = bios + ".zip"
             problems.biosROMs = biosROMs.map { .init(name: $0.name, expected: Self.hex($0.crc)) }
         }
@@ -198,9 +221,12 @@ public struct ArcadeVerifier: Sendable {
     /// The arcade DATs in `folder` (MAME's `mame0289lx.zip` as it comes),
     /// keeping only the sets in `wanted` — MAME's list has some 50,000.
     /// What's read is cached in `cacheDirectory` until the DATs change.
+    /// Keisho's list is always there: the installed Keisho's, found from
+    /// the Emulation folder that holds `folder`, else Attic's copy.
     public static func load(from folder: URL, wanted: Swift.Set<String>, cacheDirectory: URL) -> ArcadeVerifier {
         let wanted = Swift.Set(wanted.map { $0.lowercased() })
         var sets: [Source: Set] = [:]
+        sets[.keisho] = keishoSet(emulationRoot: folder.deletingLastPathComponent())
         for file in datFiles(in: folder) {
             let signature = Self.signature(of: file)
             let cache = cacheDirectory.appending(path: "Arcade-\(signature.hash).json")

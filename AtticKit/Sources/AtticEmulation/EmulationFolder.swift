@@ -578,19 +578,46 @@ public struct EmulationFolder: Sendable, Hashable {
     /// account, in its settings file.
     static let achievementsSection = [EmulatorCatalog.duckStation.id: "Cheevos", EmulatorCatalog.pcsx2.id: "Achievements"]
 
-    /// sm2-emu's settings (`sm2-emu.ini`) in `Config/sm2-emu` and its
+    /// Keisho's settings (`keisho.ini`) in `Config/Keisho` and its
     /// NVRAM and save states in the system's Saves folder, by its own
-    /// options rather than HOME. sm2-emu reads device sets (the I/O
+    /// options rather than HOME. Keisho reads device sets (the I/O
     /// boards' firmware) only from beside the game, so those in the BIOS
     /// folder are copied there when missing.
-    public func sm2EmuArguments(for system: CanonicalSystemID, romURL: URL? = nil) throws -> [String] {
-        let config = configHome(for: EmulatorCatalog.sm2Emu)
+    public func keishoArguments(for system: CanonicalSystemID, romURL: URL? = nil) throws -> [String] {
+        let config = configHome(for: EmulatorCatalog.keisho)
         let saves = saves(for: system)
         for directory in [config, saves] {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         }
         copyBesideGame(EmulatorCatalog.model1IOBoards, romURL: romURL)
         return ["--config", config.path, "--nvram", saves.path]
+    }
+
+    /// Carries an emulator installed under its old name over to the new
+    /// one (see `EmulatorCatalog.renamedEmulators`): its Config folder
+    /// moves to the new name, with its settings file renamed to match
+    /// (`sm2-emu.ini` becomes `keisho.ini`), and the old app is removed
+    /// once the new one is installed. Safe to run at every launch.
+    public func adoptRenamedEmulators() {
+        let fileManager = FileManager.default
+        for (oldName, emulator) in EmulatorCatalog.renamedEmulators.values {
+            let oldConfig = config.appending(path: oldName, directoryHint: .isDirectory)
+            let newConfig = configHome(for: emulator)
+            if fileManager.fileExists(atPath: oldConfig.path), !fileManager.fileExists(atPath: newConfig.path),
+               (try? fileManager.moveItem(at: oldConfig, to: newConfig)) != nil {
+                let oldSettings = newConfig.appending(path: "\(oldName).ini")
+                let newSettings = newConfig.appending(path: "\(emulator.name.lowercased()).ini")
+                if !fileManager.fileExists(atPath: newSettings.path) {
+                    try? fileManager.moveItem(at: oldSettings, to: newSettings)
+                }
+            }
+            let oldApp = emulators.appending(path: oldName, directoryHint: .isDirectory)
+            let newApp = emulators.appending(path: emulator.name, directoryHint: .isDirectory)
+                .appending(path: emulator.appBundleName).appending(path: emulator.executableRelativePath)
+            if fileManager.fileExists(atPath: newApp.path), fileManager.fileExists(atPath: oldApp.path) {
+                try? fileManager.removeItem(at: oldApp)
+            }
+        }
     }
 
     /// Copies the sets in `requirements` found in the BIOS folder into the

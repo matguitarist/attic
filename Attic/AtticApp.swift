@@ -55,6 +55,8 @@ struct AtticApp: App {
         Self.followRenamedFolders(MediaFolder.adoptRenamedKinds(romsRoots: romsRootsStore.rootURLs), in: container)
         LegacyRomsBoxMigration.migrateFiles(emulationFolder: emulationFolderStore.folder, modelContainer: container)
         AppSupportMediaMigration.run(in: container)
+        // sm2-emu became Keisho in 0.9.63.
+        RenamedEmulatorMigration.run(emulationFolder: emulationFolderStore.folder, in: container)
         _romsRootsStore = State(initialValue: romsRootsStore)
         _emulationFolderStore = State(initialValue: emulationFolderStore)
         _shaderPackStore = State(initialValue: ShaderPackStore(emulationFolderStore: emulationFolderStore))

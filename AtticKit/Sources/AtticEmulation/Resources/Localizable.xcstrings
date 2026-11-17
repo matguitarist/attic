@@ -1242,12 +1242,12 @@
         }
       }
     },
-    "The Sega Model 1 and Model 2 emulator, native on Apple Silicon.": {
+    "The Sega Model 1, 2 and 3 emulator, native on Apple Silicon.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "L'émulateur Sega Model 1 et Model 2, natif sur Apple Silicon."
+            "value": "L'émulateur des Sega Model 1, 2 et 3, natif sur Apple Silicon."
           }
         }
       }

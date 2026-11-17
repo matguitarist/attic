@@ -75,7 +75,8 @@ extension ArcadeVerifier {
     /// be of no use. Reads only.
     public func rebuildPlan(folder: URL, preferring preferred: Source) -> RebuildPlan {
         var plan = RebuildPlan()
-        guard let set = sets[preferred] ?? sets.values.first else { return plan }
+        // Keisho's list only knows its own boards.
+        guard let set = sets[preferred] ?? sets.first(where: { $0.key != .keisho })?.value else { return plan }
         plan.dat = set.name
         let manager = FileManager.default
         let top = (try? manager.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)) ?? []

@@ -30,7 +30,7 @@ enum SystemHelpContent {
     private static let romsetNote = LocalizedStringResource("Keep each game zipped and named after its romset (for example mslug.zip). Don't unzip or rename them: arcade emulators find games by these names.")
     private static let fbneoVersionNote = LocalizedStringResource("Romsets must match FinalBurn Neo's version (1.0.0.03). Sets from other versions or from another emulator may fail to load.")
     private static let coinControls = LocalizedStringResource("Select inserts a coin, Start starts the game.")
-    private static let sm2EmuNote = LocalizedStringResource("sm2-emu recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.")
+    private static let keishoNote = LocalizedStringResource("Keisho recognizes games by their contents, so romsets from any MAME version work, and a clone finds the files it shares in its parent's zip beside it. In the game, Guide + Start or Escape quits.")
     private static let odinNote = LocalizedStringResource("In Odin, Guide + Start or Ctrl+Q quits, and Guide or Escape opens its menu.")
     private static let mameVersionNote = LocalizedStringResource("These games run in MAME's current core, so the romsets must come from the same MAME version.")
     private static let sixButtonControls = LocalizedStringResource("Six-button fighting games use the four face buttons for light and medium attacks, and L and R for the strongest ones.")
@@ -117,11 +117,11 @@ enum SystemHelpContent {
                     notes: [LocalizedStringResource("GD-ROM games are MAME romsets: keep each game's zip, and beside it the folder of the same name that holds its .chd. They boot from the NAOMI BIOS (naomi.zip), or NAOMI 2's (naomi2.zip) for NAOMI 2 games, in a dc folder inside the BIOS folder.")]),
         .model1: .init(manufacturer: "Sega", year: 1992, wikipediaTitle: "Sega_Model_1",
                     controls: [coinControls],
-                    notes: [romsetNote, sm2EmuNote,
-                            LocalizedStringResource("sm2-emu runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.")]),
+                    notes: [romsetNote, keishoNote,
+                            LocalizedStringResource("Keisho runs Virtua Racing, Virtua Formula, Virtua Fighter, Star Wars Arcade and Wing War.")]),
         .model2: .init(manufacturer: "Sega", year: 1993, wikipediaTitle: "Sega_Model_2",
                     controls: [coinControls],
-                    notes: [romsetNote, sm2EmuNote,
+                    notes: [romsetNote, keishoNote,
                             LocalizedStringResource("Model 2 is demanding to emulate: the heaviest games may run slowly.")]),
         .stv: .init(manufacturer: "Sega", year: 1995, wikipediaTitle: "Sega_Titan_Video",
                     controls: [coinControls],
@@ -140,7 +140,8 @@ enum SystemHelpContent {
                             odinNote]),
         .model3: .init(manufacturer: "Sega", year: 1996, wikipediaTitle: "Sega_Model_3",
                     controls: [LocalizedStringResource("Select inserts a coin, Start starts the game.")],
-                    notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name.")]),
+                    notes: [LocalizedStringResource("Keep each game zipped with its MAME romset name."),
+                            LocalizedStringResource("Keisho, the Model 1 and 2 emulator, also runs most Model 3 games: choose it in the system's or the game's emulator menu.")]),
         .psp: .init(manufacturer: "Sony", year: 2004, wikipediaTitle: "PlayStation_Portable",
                     notes: [LocalizedStringResource("Use .iso or .cso dumps. Attic also installs PPSSPP's support files (fonts and data) into the BIOS folder.")]),
         .ps2: .init(manufacturer: "Sony", year: 2000, wikipediaTitle: "PlayStation_2",

@@ -32,6 +32,18 @@ license; Attic changed it only by leaving out zipped sets and other columns.
 It holds checksums only: Attic never ships or downloads BIOS files.
 `tools/import-known-bios.py` rebuilds it from the original.
 
+## Sega Model 1, 2 and 3 sets
+
+`AtticKit/Sources/AtticEmulation/Resources/KeishoGames.xml` lists the Model
+1, 2 and 3 sets Keisho runs, with each chip's name and CRC32, taken from
+**Keisho**'s `data/games.xml` (v0.9.63): https://github.com/Keisho-Emu/Keisho
+Keisho transcribes these ROM layouts from MAME's Sega drivers
+(https://github.com/mamedev/mame, BSD-3-Clause, copyright Nicola Salmoria and
+the MAME team). Attic keeps only the set names, titles, parents, chip names
+and checksums, none of Keisho's own code or settings.
+`tools/import-keisho-games.py` rebuilds it from the original. When Keisho is
+installed, Attic reads that copy's list instead.
+
 ## Switch 2 controller start-up
 
 `AtticKit/Sources/AtticModels/Switch2Pad.swift` holds the USB start-up

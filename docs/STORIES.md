@@ -127,7 +127,7 @@ Screens: Library/BIOSSetLocating, Library/GameInfoHealthView
 Depends: S-013
 Acceptance:
 - [manual] Only the set's exact name can be picked.
-- [unit] Sets for sm2-emu (Model 1 I/O) and Odin (Hikaru) are copied beside the games.
+- [unit] Sets for Keisho (Model 1 I/O) and Odin (Hikaru) are copied beside the games.
 Status: done
 
 ### S-015 Learn why a game didn't start

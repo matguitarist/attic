@@ -236,11 +236,14 @@ final class ToolsCoordinator {
         SystemTaxonomy.definition(for: system)?.category == .arcade
     }
 
-    /// The arcade DAT for a system's emulator: FinalBurn Neo's for the
-    /// boards it runs, MAME's for the rest (Flycast and Supermodel take
-    /// MAME's sets).
+    /// The arcade DAT for a system's emulator: Keisho's own list for the
+    /// Model boards it runs (it takes sets from any MAME version),
+    /// FinalBurn Neo's for the boards it runs, MAME's for the rest
+    /// (Flycast and Supermodel take MAME's sets).
     nonisolated static func arcadeSource(for system: CanonicalSystemID) -> ArcadeVerifier.Source {
-        EmulatorCatalog.recommendation(for: system)?.recommendedCore?.coreIdentifier == "fbneo_libretro" ? .fbneo : .mame
+        let recommendation = EmulatorCatalog.recommendation(for: system)
+        if recommendation?.standalone.contains(EmulatorCatalog.keisho) == true { return .keisho }
+        return recommendation?.recommendedCore?.coreIdentifier == "fbneo_libretro" ? .fbneo : .mame
     }
 
     nonisolated static var arcadeCache: URL {
@@ -277,7 +280,7 @@ final class ToolsCoordinator {
                 if index % 20 == 0 { progress(Double(index) / Double(max(files.count, 1)), file.title) }
                 let url = URL(fileURLWithPath: file.path)
                 if Self.isArcade(file.system) {
-                    guard !arcade.sources.isEmpty else { continue }
+                    guard arcade.canCheck(preferring: Self.arcadeSource(for: file.system)) else { continue }
                     checks[file.path] = .some(arcade.check(url, preferring: Self.arcadeSource(for: file.system), biosDirectory: biosDirectory))
                     continue
                 }
@@ -309,9 +312,9 @@ final class ToolsCoordinator {
         }
         let arcadeSystems = Set(files.map(\.system).filter(Self.isArcade))
         result.missingArcadeDATs = ArcadeVerifier.Source.allCases.filter { source in
-            !arcade.sources.contains(source) && arcadeSystems.contains { Self.arcadeSource(for: $0) == source }
+            source.isDownloadable && !arcade.sources.contains(source) && arcadeSystems.contains { Self.arcadeSource(for: $0) == source }
         }
-        for source in ArcadeVerifier.Source.allCases where arcadeSystems.contains(where: { Self.arcadeSource(for: $0) == source }) {
+        for source in ArcadeVerifier.Source.allCases where source.isDownloadable && arcadeSystems.contains(where: { Self.arcadeSource(for: $0) == source }) {
             result.arcadeDATs[source] = arcade.name(of: source)
         }
         report = .verify(result)
@@ -362,7 +365,7 @@ final class ToolsCoordinator {
     /// Downloads an arcade DAT into the DATs folder, from FinalBurn Neo's
     /// repository or MAME's latest release, then checks again.
     func downloadArcadeDAT(_ source: ArcadeVerifier.Source, datsFolder: URL, scanCoordinator: ScanCoordinator, system: CanonicalSystemID?) async {
-        guard !isBusy else { return }
+        guard !isBusy, source.isDownloadable else { return }
         activity = Activity(title: source == .fbneo
                             ? String(localized: "Downloading FinalBurn Neo's DAT…")
                             : String(localized: "Downloading MAME's game list…"))
@@ -370,6 +373,9 @@ final class ToolsCoordinator {
         do {
             try FileManager.default.createDirectory(at: datsFolder, withIntermediateDirectories: true)
             switch source {
+            case .keisho:
+                // Built in: read from Keisho itself.
+                break
             case .fbneo:
                 let (data, response) = try await URLSession.shared.data(from: ArcadeNameIndex.datURL)
                 guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
