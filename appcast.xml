@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.12.0</title>
+            <pubDate>Tue, 17 Nov 2026 15:12:13 -0500</pubDate>
+            <sparkle:version>53</sparkle:version>
+            <sparkle:shortVersionString>2.12.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Keisho, sm2-emu's new name, installs and updates again; an sm2-emu setup carries over, settings included
+- Keisho runs Model 3 games too: choose it in the system's or a game's emulator menu (Supermodel stays the default)
+- Verify Games checks Model 1, 2 and 3 sets against Keisho's own list, from the installed Keisho: no DAT to download, and sets from any MAME version pass
+- Zipped BIOS sets (NAOMI, NAOMI 2, Atomiswave, Hikaru, Model 1 I/O, Neo Geo, CD-i) are verified chip by chip against MAME 0.289, and Compare… lists what's missing or different
+- More good BIOS dumps are recognized (Sega CD, BS-X, PC-98, X1, MSX, Atari 800), from Batocera's list
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.12.0/Attic-2.12.0.zip" length="20180555" type="application/octet-stream" sparkle:edSignature="DNkK5NpRcqdbbly2J8ph20/yWMMBo65FTTxycLOLlwyxnW4pkf+gyjGh8IdJQ/L5uQVqjn5JfqOsurKIY/C/Bw=="/>
+        </item>
+        <item>
             <title>2.11.0</title>
             <pubDate>Tue, 17 Nov 2026 14:06:42 -0500</pubDate>
             <sparkle:version>52</sparkle:version>
