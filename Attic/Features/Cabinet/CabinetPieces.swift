@@ -130,8 +130,8 @@ struct CabinetTile: View {
 }
 
 /// A game's box with its cartridge, disc or board in front of its bottom
-/// corner, both fitting the space together: Game Art's mix. Only the box
-/// when there's no picture of the medium.
+/// corner, both fitting the space together: Game Art's mix. Only the box,
+/// at the same size, when there's no picture of the medium.
 struct CabinetBoxWithMedium: View {
     let game: Game
     let boxURL: URL?
@@ -146,9 +146,10 @@ struct CabinetBoxWithMedium: View {
             let side = min(geometry.size.width, geometry.size.height) * Self.mediumShare
             ZStack(alignment: .bottomTrailing) {
                 GameCoverArtView(url: boxURL, title: game.title, showBackground: false, alignment: alignment)
-                    // Room for the medium to stand out past the box.
-                    .padding(.trailing, mediumURL == nil ? 0 : side * 0.3)
-                    .padding(.bottom, mediumURL == nil ? 0 : side * 0.15)
+                    // Room for the medium to stand out past the box, kept
+                    // with no medium too so every box is the same size.
+                    .padding(.trailing, side * 0.3)
+                    .padding(.bottom, side * 0.15)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
                 if let mediumURL {
                     GameCoverArtView(url: mediumURL, title: game.title, showBackground: false)

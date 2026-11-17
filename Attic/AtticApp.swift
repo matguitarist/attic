@@ -24,6 +24,8 @@ struct AtticApp: App {
     @State private var cabinetThemeStore = CabinetThemeStore()
 
     init() {
+        // Pictures of Cabinet Mode from a made-up library, then quit.
+        if let folder = CabinetSnapshot.folder { CabinetSnapshot.run(into: folder) }
         // Before any store reads its settings.
         LegacyRomsBoxMigration.migrateSettings()
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"

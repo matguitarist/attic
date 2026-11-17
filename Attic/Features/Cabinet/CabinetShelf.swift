@@ -147,17 +147,7 @@ struct CabinetShelf: View {
             } else {
                 let shelf = CabinetShelfContent(games: games, focusedID: focusedGame?.persistentModelID,
                                                 onFocus: { focus($0) }, onPlay: onPlay)
-                switch installed.theme.layout {
-                case .carousel: CabinetCarouselLayout(shelf: shelf)
-                case .coverFlow: CabinetCoverFlowLayout(shelf: shelf)
-                case .shelf: CabinetShelfLayout(shelf: shelf, columns: $columns)
-                case .unboxed: CabinetUnboxedLayout(shelf: shelf)
-                case .cabinet: CabinetWheelLayout(shelf: shelf, drawsCabinet: true)
-                case .hero: CabinetHeroLayout(shelf: shelf)
-                case .grid: CabinetGridLayout(shelf: shelf, columns: $columns)
-                case .wheel: CabinetWheelLayout(shelf: shelf)
-                case .list: CabinetListLayout(shelf: shelf)
-                }
+                CabinetLayoutSwitch(shelf: shelf, layout: installed.theme.layout, columns: $columns)
             }
         }
         .onAppear { focus(startsRandom ? games.randomElement() : games.first) }
@@ -240,6 +230,28 @@ struct CabinetShelf: View {
     private func focus(_ game: Game?) {
         guard let game else { return }
         focusedGame = game
+    }
+}
+
+/// The theme's layout for a shelf of games.
+struct CabinetLayoutSwitch: View {
+    let shelf: CabinetShelfContent
+    let layout: CabinetTheme.Layout
+    /// The grid's and shelf's, for moving up and down a row.
+    var columns: Binding<Int> = .constant(1)
+
+    var body: some View {
+        switch layout {
+        case .carousel: CabinetCarouselLayout(shelf: shelf)
+        case .coverFlow: CabinetCoverFlowLayout(shelf: shelf)
+        case .shelf: CabinetShelfLayout(shelf: shelf, columns: columns)
+        case .unboxed: CabinetUnboxedLayout(shelf: shelf)
+        case .cabinet: CabinetWheelLayout(shelf: shelf, drawsCabinet: true)
+        case .hero: CabinetHeroLayout(shelf: shelf)
+        case .grid: CabinetGridLayout(shelf: shelf, columns: columns)
+        case .wheel: CabinetWheelLayout(shelf: shelf)
+        case .list: CabinetListLayout(shelf: shelf)
+        }
     }
 }
 

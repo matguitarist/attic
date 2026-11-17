@@ -9,8 +9,9 @@ ships and from the Attic Roadmap project in Thimble. Stories marked `done`
 describe what Attic already does, so they can be checked again after changes.
 Stories marked `todo` are the open roadmap items.
 
-Attic has no snapshot mode yet, so `Screens:` names the view that shows each
-story (the Swift file under `Attic/Features/`).
+`Screens:` names the view that shows each story (the Swift file under
+`Attic/Features/`). Cabinet Mode stories are checked with `tools/snap.sh`;
+the library window has no snapshot mode yet.
 
 ---
 
@@ -347,7 +348,7 @@ Acceptance:
 - [unit] `CabinetTheme` Game Art gains `medium` and `mix` cases, and older theme.json files still decode.
 - [snap] Each layout shows the cartridge or disc when chosen, and the box when a game has no medium image.
 - [manual] The Themes "Read Me.md" documents the new values.
-Status: built (needs a look in each layout)
+Status: done
 
 ### S-056 Show marquees on a second display
 As the user with a real cabinet, the selected game's marquee shows on a second display while Cabinet Mode runs on the main one.
