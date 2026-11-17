@@ -40,10 +40,16 @@ struct ThemePreview: View {
     var body: some View {
         GeometryReader { geometry in
             let scale = min(geometry.size.width / Self.stage.width, geometry.size.height / Self.stage.height)
+            // Laid out at full size from the top left and scaled from there,
+            // so it never reaches up under the toolbar: Cabinet Mode's
+            // backdrop ignores the safe area, and stretched into the
+            // toolbar's, it came out taller and shifted.
             stage
                 .frame(width: Self.stage.width, height: Self.stage.height)
                 .clipped()
-                .scaleEffect(scale)
+                .scaleEffect(scale, anchor: .topLeading)
+                .frame(width: Self.stage.width * scale, height: Self.stage.height * scale, alignment: .topLeading)
+                .clipped()
                 .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .onChange(of: marqueeKey, initial: true) {
