@@ -13,6 +13,7 @@ struct CabinetSettingsView: View {
     @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
     @State private var screensRevision = 0
     @State private var themeError: String?
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         @Bindable var cabinetThemes = cabinetThemes
@@ -53,6 +54,8 @@ struct CabinetSettingsView: View {
                         }
                         .labelsHidden()
                         .fixedSize()
+                        Button("Edit…") { openWindow(id: ThemeEditorView.windowID) }
+                            .help("Change every setting of this theme with a live preview, and save it as a theme")
                         Button("Customize…") { customizeTheme() }
                             .help("Copy this theme into the Themes folder as a file to edit")
                         Button("Show Themes Folder") { showThemesFolder() }

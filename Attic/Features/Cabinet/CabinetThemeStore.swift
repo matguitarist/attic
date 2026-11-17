@@ -167,6 +167,42 @@ final class CabinetThemeStore {
     }
 
     /// What each setting does, beside the themes.
+    // MARK: Theme editor
+
+    /// Writes an edited theme over the folder theme it came from, and
+    /// shows it as saved: the person's adjustments to it were part of the
+    /// edit, so they go.
+    func save(_ theme: CabinetTheme, over installed: Installed) throws {
+        guard let folder = installed.folder else { throw CocoaError(.fileWriteNoPermission) }
+        var theme = theme
+        theme.id = folder.lastPathComponent
+        try CabinetThemeFolder.save(theme, in: folder)
+        adjustments[theme.id] = nil
+        saveAdjustments()
+        reload()
+    }
+
+    /// Saves an edited theme as a new folder named after it, and selects
+    /// it. Pictures from the folder it came from come along.
+    @discardableResult
+    func saveAsNew(_ theme: CabinetTheme, from source: Installed) throws -> Installed {
+        let fileManager = FileManager.default
+        try fileManager.createDirectory(at: Self.folderURL, withIntermediateDirectories: true)
+        let existing = (try? fileManager.contentsOfDirectory(atPath: Self.folderURL.path)) ?? []
+        let name = CabinetThemeFolder.newFolderName(for: theme.name, taken: Set(existing + CabinetTheme.builtIns.map(\.id)))
+        let folder = Self.folderURL.appending(path: name, directoryHint: .isDirectory)
+        if let sourceFolder = source.folder {
+            try fileManager.copyItem(at: sourceFolder, to: folder)
+        }
+        var theme = theme
+        theme.id = name
+        try CabinetThemeFolder.save(theme, in: folder)
+        writeGuide()
+        reload()
+        selectedID = name
+        return themes.first { $0.id == name } ?? Installed(theme: theme, folder: folder)
+    }
+
     private func writeGuide() {
         let url = Self.folderURL.appending(path: "Read Me.md")
         guard !FileManager.default.fileExists(atPath: url.path) else { return }

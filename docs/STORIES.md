@@ -362,12 +362,12 @@ Status: built (needs a second screen to check)
 
 ### S-057 Build a theme in a theme creator
 As the user, I edit a Cabinet theme's colors, fonts, layout and art in a live editor and save it as a theme folder.
-Screens: Settings/CabinetSettingsView
+Screens: Cabinet/ThemeEditor/ThemeEditorView, Settings/CabinetSettingsView
 Depends: S-055, S-056
 Acceptance:
 - [manual] Every `CabinetTheme` setting can be changed and shows at once in a preview.
 - [unit] A saved theme writes theme.json that loads back unchanged.
-Status: todo
+Status: built (Save and Save as New need a try in the real window)
 
 ---
 

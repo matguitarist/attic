@@ -152,6 +152,16 @@ struct AtticApp: App {
         .commandsRemoved()
         .modelContainer(modelContainer)
 
+        Window("Theme Editor", id: ThemeEditorView.windowID) {
+            withAppEnvironment(ThemeEditorView())
+                .frame(minWidth: 1000, minHeight: 620)
+        }
+        .defaultSize(width: 1360, height: 820)
+        .defaultLaunchBehavior(.suppressed)
+        .modelContainer(modelContainer)
+        .restorationBehavior(.disabled)
+        .commandsRemoved()
+
         Window("Library Statistics", id: LibraryStatsView.windowID) {
             withAppEnvironment(LibraryStatsView())
                 .frame(minWidth: 560, minHeight: 480)

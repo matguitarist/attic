@@ -3216,6 +3216,16 @@
         }
       }
     },
+    "A folder in the theme's folder with a picture per system, named after its ROMs folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un dossier dans celui du thème, avec une image par système, nommée d’après son dossier de ROM"
+          }
+        }
+      }
+    },
     "A folder of series logos named like ES-DE and Batocera themes' (mario.png, zelda.png…). A collection made from a series, or named like one, takes its logo from here; it's copied into the collection's folder.": {
       "extractionState": "stale",
       "localizations": {
@@ -3313,6 +3323,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Un logo sur fond transparent rend mieux : PNG, HEIC ou WebP."
+          }
+        }
+      }
+    },
+    "A picture in the theme's folder, drawn under the art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une image dans le dossier du thème, dessinée sous l’illustration"
           }
         }
       }
@@ -4046,6 +4066,26 @@
         }
       }
     },
+    "Art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Illustration"
+          }
+        }
+      }
+    },
+    "Art beside the list's picture": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Illustration à côté de l’image de la liste"
+          }
+        }
+      }
+    },
     "Artwork": {
       "localizations": {
         "fr": {
@@ -4082,6 +4122,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Attribuer…"
+          }
+        }
+      }
+    },
+    "At the Foot": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En bas"
           }
         }
       }
@@ -4196,6 +4246,16 @@
         }
       }
     },
+    "Author": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auteur"
+          }
+        }
+      }
+    },
     "Automatic": {
       "localizations": {
         "fr": {
@@ -4212,6 +4272,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "A–Z"
+          }
+        }
+      }
+    },
+    "B goes back to them from the games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "B y revient depuis les jeux"
           }
         }
       }
@@ -4326,12 +4396,32 @@
         }
       }
     },
+    "Back to the theme as last saved": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenir au thème tel qu’enregistré"
+          }
+        }
+      }
+    },
     "Back up every week": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Sauvegarder chaque semaine"
+          }
+        }
+      }
+    },
+    "Backdrop": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrière-plan"
           }
         }
       }
@@ -4372,6 +4462,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mauvais dumps"
+          }
+        }
+      }
+    },
+    "Band": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bande"
           }
         }
       }
@@ -4469,6 +4569,16 @@
         }
       }
     },
+    "Blur": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flou"
+          }
+        }
+      }
+    },
     "Boards": {
       "localizations": {
         "fr": {
@@ -4556,6 +4666,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Parcourir les jeux"
+          }
+        }
+      }
+    },
+    "Built in: saving makes a new theme": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intégré : l’enregistrement crée un nouveau thème"
           }
         }
       }
@@ -4730,6 +4850,26 @@
         }
       }
     },
+    "Capitals": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Majuscules"
+          }
+        }
+      }
+    },
+    "Card behind the art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carte derrière l’illustration"
+          }
+        }
+      }
+    },
     "Cards": {
       "localizations": {
         "fr": {
@@ -4780,6 +4920,16 @@
         }
       }
     },
+    "Cartridge or disc on a game's page": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartouche ou disque sur la page d’un jeu"
+          }
+        }
+      }
+    },
     "Cartridges": {
       "localizations": {
         "fr": {
@@ -4826,6 +4976,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Modifiez le choix de chaque système ci-dessous."
+          }
+        }
+      }
+    },
+    "Change every setting of this theme with a live preview, and save it as a theme": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier chaque réglage de ce thème avec un aperçu en direct, et l’enregistrer comme thème"
           }
         }
       }
@@ -5270,6 +5430,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cliquez pour renommer"
+          }
+        }
+      }
+    },
+    "Clock": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horloge"
           }
         }
       }
@@ -5746,6 +5916,16 @@
         }
       }
     },
+    "Corner Radius": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrondi des coins"
+          }
+        }
+      }
+    },
     "Couch mode": {
       "localizations": {
         "fr": {
@@ -6185,6 +6365,26 @@
         }
       }
     },
+    "Darken": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assombrir"
+          }
+        }
+      }
+    },
+    "Darken Behind": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assombrir derrière"
+          }
+        }
+      }
+    },
     "Date Added": {
       "localizations": {
         "fr": {
@@ -6285,12 +6485,32 @@
         }
       }
     },
+    "Description Lines": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lignes de description"
+          }
+        }
+      }
+    },
     "Descriptions": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Descriptions"
+          }
+        }
+      }
+    },
+    "Design": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Style"
           }
         }
       }
@@ -6501,6 +6721,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les images disque fonctionnent le mieux en .chd — un fichier compressé par disque. Pour les dumps .cue/.bin, gardez chaque .cue à côté de ses fichiers .bin."
+          }
+        }
+      }
+    },
+    "Discard Changes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abandonner les modifications"
+          }
+        }
+      }
+    },
+    "Discard your changes to %@?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abandonner vos modifications de %@ ?"
           }
         }
       }
@@ -6945,6 +7185,16 @@
         }
       }
     },
+    "Edited": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifié"
+          }
+        }
+      }
+    },
     "Edit…": {
       "localizations": {
         "fr": {
@@ -7285,6 +7535,26 @@
         }
       }
     },
+    "Facts": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fiche"
+          }
+        }
+      }
+    },
+    "Fade into the background": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fondre dans l’arrière-plan"
+          }
+        }
+      }
+    },
     "Failed to save %@: %@": {
       "localizations": {
         "en": {
@@ -7401,6 +7671,16 @@
         }
       }
     },
+    "Fill the Screen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplir l’écran"
+          }
+        }
+      }
+    },
     "FinalBurn Neo's DAT": {
       "localizations": {
         "fr": {
@@ -7427,6 +7707,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En chercher un meilleur"
+          }
+        }
+      }
+    },
+    "Fit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustement"
           }
         }
       }
@@ -7461,6 +7751,16 @@
         }
       }
     },
+    "Focused Size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille du jeu sélectionné"
+          }
+        }
+      }
+    },
     "Folder added. Ready to scan.": {
       "localizations": {
         "fr": {
@@ -7487,6 +7787,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Suivre en direct"
+          }
+        }
+      }
+    },
+    "Font": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Police"
           }
         }
       }
@@ -7780,6 +8090,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Infos et illustrations"
+          }
+        }
+      }
+    },
+    "Game Page": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page du jeu"
           }
         }
       }
@@ -8148,6 +8468,16 @@
         }
       }
     },
+    "Glow around the focused game": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halo autour du jeu sélectionné"
+          }
+        }
+      }
+    },
     "Good dumps with file names of their own. Their media, gamelist entries and saves follow, and they keep their play history and collections.": {
       "localizations": {
         "fr": {
@@ -8224,6 +8554,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode hardcore"
+          }
+        }
+      }
+    },
+    "Header": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En-tête"
           }
         }
       }
@@ -8494,6 +8834,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En jeu"
+          }
+        }
+      }
+    },
+    "In the Themes folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans le dossier Thèmes"
           }
         }
       }
@@ -9437,6 +9787,16 @@
         }
       }
     },
+    "Logo in place of the title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo à la place du titre"
+          }
+        }
+      }
+    },
     "Logos": {
       "localizations": {
         "fr": {
@@ -9454,6 +9814,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dossier de logos"
+          }
+        }
+      }
+    },
+    "Logos on a Band": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logos sur une bande"
           }
         }
       }
@@ -9766,6 +10136,16 @@
         }
       }
     },
+    "Middle": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au centre"
+          }
+        }
+      }
+    },
     "Mini vMac needs a Mac II ROM (MacII.ROM) and a system disk: games and System 6/7 go on .dsk disk images.": {
       "localizations": {
         "fr": {
@@ -9812,6 +10192,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le Model 2 est exigeant à émuler : les jeux les plus lourds peuvent ralentir."
+          }
+        }
+      }
+    },
+    "Monospaced": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chasse fixe"
           }
         }
       }
@@ -11031,6 +11421,26 @@
         }
       }
     },
+    "Number of games": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de jeux"
+          }
+        }
+      }
+    },
+    "Numbers": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistiques"
+          }
+        }
+      }
+    },
     "OK": {
       "localizations": {
         "fr": {
@@ -11281,6 +11691,16 @@
         }
       }
     },
+    "Others' Opacity": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opacité des autres"
+          }
+        }
+      }
+    },
     "Otherwise only the games missing something get it. The files replaced go to the Trash.": {
       "extractionState": "stale",
       "localizations": {
@@ -11288,6 +11708,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sinon, seuls les jeux auxquels il manque quelque chose le reçoivent. Les fichiers remplacés vont à la corbeille."
+          }
+        }
+      }
+    },
+    "Own band color": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleur de bande propre"
           }
         }
       }
@@ -11384,6 +11814,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Image"
+          }
+        }
+      }
+    },
+    "Picture Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dossier d’images"
+          }
+        }
+      }
+    },
+    "Picture and Cards": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image et cartes"
           }
         }
       }
@@ -11549,6 +11999,26 @@
         }
       }
     },
+    "Play the game's video there": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Y lire la vidéo du jeu"
+          }
+        }
+      }
+    },
+    "Play the system's video": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lire la vidéo du système"
+          }
+        }
+      }
+    },
     "Play the video's sound": {
       "localizations": {
         "fr": {
@@ -11679,6 +12149,16 @@
         }
       }
     },
+    "Position": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
     "Present": {
       "localizations": {
         "fr": {
@@ -11735,6 +12215,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Appuyer sur les deux sticks"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aperçu"
           }
         }
       }
@@ -12845,6 +13335,16 @@
         }
       }
     },
+    "Revert": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir"
+          }
+        }
+      }
+    },
     "Rewind": {
       "localizations": {
         "fr": {
@@ -12935,6 +13435,16 @@
         }
       }
     },
+    "Ring around the focused game": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anneau autour du jeu sélectionné"
+          }
+        }
+      }
+    },
     "Romset": {
       "localizations": {
         "fr": {
@@ -12951,6 +13461,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les romsets doivent correspondre à la version de FinalBurn Neo (1.0.0.03). Ceux d’autres versions ou d’un autre émulateur peuvent ne pas se charger."
+          }
+        }
+      }
+    },
+    "Rounded": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrondi"
           }
         }
       }
@@ -13065,12 +13585,42 @@
         }
       }
     },
+    "Save as New Theme": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer comme nouveau thème"
+          }
+        }
+      }
+    },
     "Save covers, logos and fan art as HEIC": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Enregistrer jaquettes, logos et fan arts en HEIC"
+          }
+        }
+      }
+    },
+    "Save over this theme's theme.json": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer par-dessus le theme.json de ce thème"
+          }
+        }
+      }
+    },
+    "Save these settings as a new theme in the Themes folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer ces réglages comme nouveau thème dans le dossier Thèmes"
           }
         }
       }
@@ -13437,6 +13987,16 @@
         }
       }
     },
+    "Section": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Section"
+          }
+        }
+      }
+    },
     "Section's Order": {
       "localizations": {
         "fr": {
@@ -13544,6 +14104,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Séries"
+          }
+        }
+      }
+    },
+    "Serif": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avec empattements"
           }
         }
       }
@@ -14155,6 +14725,16 @@
         }
       }
     },
+    "Spacing": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espacement"
+          }
+        }
+      }
+    },
     "Split archives need unar: brew install unar": {
       "localizations": {
         "fr": {
@@ -14201,6 +14781,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Application autonome"
+          }
+        }
+      }
+    },
+    "Standard": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard"
           }
         }
       }
@@ -14396,6 +14986,16 @@
         }
       }
     },
+    "Style": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disposition"
+          }
+        }
+      }
+    },
     "SuFami Turbo cartridges are .st files. Snes9x plays them through the SuFami Turbo BIOS (STBIOS.bin), in the BIOS folder.": {
       "localizations": {
         "fr": {
@@ -14536,6 +15136,16 @@
         }
       }
     },
+    "System logos": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logos des systèmes"
+          }
+        }
+      }
+    },
     "System videos": {
       "localizations": {
         "fr": {
@@ -14602,6 +15212,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Texte"
+          }
+        }
+      }
+    },
+    "Text Size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille du texte"
           }
         }
       }
@@ -14692,6 +15312,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le pavé numérique de la Jaguar n’existe pas sur les manettes modernes ; les jeux qui en ont besoin associent ses touches à des boutons libres."
+          }
+        }
+      }
+    },
+    "The Theme's Design": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le style du thème"
           }
         }
       }
@@ -14923,6 +15553,16 @@
         }
       }
     },
+    "The theme to edit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le thème à modifier"
+          }
+        }
+      }
+    },
     "The touch screen follows the mouse; click to touch.": {
       "localizations": {
         "fr": {
@@ -15019,6 +15659,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thème"
+          }
+        }
+      }
+    },
+    "Theme Editor": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Éditeur de thèmes"
           }
         }
       }
@@ -15153,12 +15803,42 @@
         }
       }
     },
+    "Title Position": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position du titre"
+          }
+        }
+      }
+    },
+    "Title Size": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille des titres"
+          }
+        }
+      }
+    },
     "Titles containing": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Titres contenant"
+          }
+        }
+      }
+    },
+    "Titles under the art": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titres sous l’illustration"
           }
         }
       }
@@ -15223,6 +15903,16 @@
         }
       }
     },
+    "Toward the bottom and the left, so text over it reads with no blur": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vers le bas et la gauche, pour que le texte se lise sans flou"
+          }
+        }
+      }
+    },
     "Triforce games run in Dolphin, the GameCube and Wii emulator, which now includes Triforce support. Use .iso, .gcz or .rvz dumps.": {
       "localizations": {
         "fr": {
@@ -15269,6 +15959,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Déballé"
+          }
+        }
+      }
+    },
+    "Under the Picture": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sous l’image"
           }
         }
       }
@@ -15831,6 +16531,16 @@
         }
       }
     },
+    "What the preview shows": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que montre l’aperçu"
+          }
+        }
+      }
+    },
     "What your library holds and what you play": {
       "localizations": {
         "fr": {
@@ -15901,6 +16611,26 @@
         }
       }
     },
+    "Whole Marquee": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fronton entier"
+          }
+        }
+      }
+    },
+    "Whose games the preview shows": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux que montre l’aperçu"
+          }
+        }
+      }
+    },
     "Widescreen (16:9)": {
       "localizations": {
         "fr": {
@@ -15917,6 +16647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’écran large affiche une plus grande partie de la scène au lieu de l’étirer ; certains jeux présentent des défauts sur les bords."
+          }
+        }
+      }
+    },
+    "Width": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Largeur"
           }
         }
       }

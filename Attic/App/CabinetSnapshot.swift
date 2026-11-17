@@ -44,6 +44,18 @@ enum CabinetSnapshot {
                     print(file.path)
                 }
             }
+            if themeIDs == nil || themeIDs?.contains("editor") == true {
+                // The whole form at once, every section in sight.
+                let form = folder.appending(path: "editor-form.png")
+                try capture(EditorForm(), to: form, size: CGSize(width: 420, height: 3400))
+                print(form.path)
+                for page in [ThemePreviewPage.games, .systems, .marquee] {
+                    let file = folder.appending(path: "editor-\(page.rawValue).png")
+                    try capture(EditorStage(page: page).modelContainer(seed.container).environment(seed.launchCoordinator),
+                                to: file, size: CGSize(width: 1360, height: 820))
+                    print(file.path)
+                }
+            }
             if themeIDs == nil || themeIDs?.contains("marquee") == true {
                 try marquees(seed, into: folder)
             }
@@ -249,5 +261,43 @@ enum CabinetSnapshot {
             NSGraphicsContext.restoreGraphicsState()
             return rep.representation(using: .png, properties: [:]) ?? Data()
         }
+    }
+}
+
+/// The Theme Editor's form and preview without its window and store, so
+/// the snapshot never reads or writes the Themes folder.
+private struct EditorStage: View {
+    let page: ThemePreviewPage
+    /// No controller hints: they need the gamepad monitor, which the
+    /// snapshot doesn't start.
+    @State private var theme: CabinetTheme = {
+        var theme = CabinetTheme.unboxed
+        theme.showsHints = false
+        return theme
+    }()
+    @State private var selection: LibrarySelection = .allGames
+
+    var body: some View {
+        let sections = [CabinetSection(selection: .allGames, title: "All Games"),
+                        CabinetSection(selection: .favorites, title: String(localized: "Favorites"))]
+        HStack(spacing: 0) {
+            ThemeEditorForm(theme: $theme)
+                .frame(width: 400)
+            Divider()
+            ThemePreview(installed: .init(theme: theme), page: page, sections: sections, selection: $selection)
+                .padding(20)
+                .background(.black)
+        }
+        .background(Color(nsColor: .windowBackgroundColor))
+    }
+}
+
+private struct EditorForm: View {
+    @State private var theme = CabinetTheme.unboxed
+
+    var body: some View {
+        ThemeEditorForm(theme: $theme)
+            .scrollDisabled(true)
+            .background(Color(nsColor: .windowBackgroundColor))
     }
 }

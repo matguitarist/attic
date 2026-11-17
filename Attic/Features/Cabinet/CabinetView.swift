@@ -306,23 +306,7 @@ struct CabinetView: View {
     /// system that actually has games. No All Games: thousands of games in
     /// one shelf made everything slower, and search covers finding one.
     private func buildSections() -> [CabinetSection] {
-        [
-            CabinetSection(selection: .favorites, title: String(localized: "Favorites")),
-            CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played")),
-            CabinetSection(selection: .recentlyAdded, title: String(localized: "Recently Added"))
-        ] + collections
-            .filter { !$0.games.isEmpty && !$0.isHidden }
-            .map { collection in
-                let root = CollectionFolders.root(in: emulationFolderStore.folder.root)
-                let logo = SystemLogoCache.image(at: CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: root))
-                    .map { Image(nsImage: $0) }
-                return CabinetSection(selection: .collection(collection.collectionID), title: collection.name, logo: logo,
-                                      artSource: .collection(CollectionFolders.folderURL(for: collection, root: root)))
-            }
-        + systems
-            .filter { $0.gameCount > 0 }
-            .orderedByCategory()
-            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.logo, artSource: .system($0.romsRootURL)) }
+        CabinetSection.build(collections: collections, systems: systems, emulationRoot: emulationFolderStore.folder.root)
     }
 
     /// While the menu is open, it gets every command but Start.
@@ -420,6 +404,29 @@ struct CabinetView: View {
 }
 
 struct CabinetSection: Identifiable, Hashable {
+    /// Library shortcuts first, then non-empty collections, then every
+    /// system that actually has games (see `CabinetView`).
+    @MainActor
+    static func build(collections: [GameCollection], systems: [GameSystem], emulationRoot: URL) -> [CabinetSection] {
+        [
+            CabinetSection(selection: .favorites, title: String(localized: "Favorites")),
+            CabinetSection(selection: .recentlyPlayed, title: String(localized: "Recently Played")),
+            CabinetSection(selection: .recentlyAdded, title: String(localized: "Recently Added"))
+        ] + collections
+            .filter { !$0.games.isEmpty && !$0.isHidden }
+            .map { collection in
+                let root = CollectionFolders.root(in: emulationRoot)
+                let logo = SystemLogoCache.image(at: CollectionFolders.image(named: CollectionFile.logoName, for: collection, root: root))
+                    .map { Image(nsImage: $0) }
+                return CabinetSection(selection: .collection(collection.collectionID), title: collection.name, logo: logo,
+                                      artSource: .collection(CollectionFolders.folderURL(for: collection, root: root)))
+            }
+        + systems
+            .filter { $0.gameCount > 0 }
+            .orderedByCategory()
+            .map { CabinetSection(selection: .system($0.systemID), title: $0.displayName, logo: $0.logo, artSource: .system($0.romsRootURL)) }
+    }
+
     let selection: LibrarySelection
     let title: String
     /// Systems show their logo instead of their name.
@@ -477,7 +484,7 @@ struct CabinetSection: Identifiable, Hashable {
 
 // MARK: - Header, hints and backdrop
 
-private struct CabinetHeader: View {
+struct CabinetHeader: View {
     let sections: [CabinetSection]
     @Binding var selection: LibrarySelection
     let gameCount: Int
@@ -581,7 +588,7 @@ private struct CabinetHeader: View {
     }
 }
 
-private struct CabinetHintBar: View {
+struct CabinetHintBar: View {
     let level: CabinetView.Level
     let backGoesToSystems: Bool
     let isFiltered: Bool
@@ -633,7 +640,7 @@ private struct CabinetHintBar: View {
 
 /// The theme's picture, then the focused game's art per the theme —
 /// blurred, darkened, cross-fading as focus moves.
-private struct CabinetBackdrop: View {
+struct CabinetBackdrop: View {
     let game: Game?
     /// Shown without a game.
     var fallback: URL? = nil
