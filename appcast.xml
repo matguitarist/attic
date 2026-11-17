@@ -3,6 +3,19 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.12.1</title>
+            <pubDate>Tue, 17 Nov 2026 15:57:18 -0500</pubDate>
+            <sparkle:version>54</sparkle:version>
+            <sparkle:shortVersionString>2.12.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Steam games get their description, developer, publisher, genre, players, release date and rating from Steam: a library refresh fills in whatever's missing, games imported earlier included
+- Scrape and Scrape All Missing take Steam games from the Steam store, whichever scraper is chosen
+- A Steam game no longer sold still gets its makers, date, genre and rating from the Steam client's app info
+- Fixed: Verify Games said "BIOS set hikaru.zip missing" for every Hikaru game though hikaru.zip was in the BIOS folder; games now count any of the BIOS versions MAME lists
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.12.1/Attic-2.12.1.zip" length="20216764" type="application/octet-stream" sparkle:edSignature="/onn2FlWucZK4m6VI0mJf/9bF8lH0f4hc7EQWwp8yxqhmIioZgF1H1Ii7JCohFJJr7BoktyWIW+iKqtGdZMYDg=="/>
+        </item>
+        <item>
             <title>2.12.0</title>
             <pubDate>Tue, 17 Nov 2026 15:12:13 -0500</pubDate>
             <sparkle:version>53</sparkle:version>
