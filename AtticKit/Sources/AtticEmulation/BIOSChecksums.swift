@@ -1,9 +1,12 @@
 import Foundation
 import CryptoKit
 
-/// Known good BIOS dumps, by MD5 (from libretro's System.dat, in
-/// KnownBIOS.tsv): is a file the dump an emulator expects, and is a
-/// missing one in the BIOS folder under another name.
+/// Known good BIOS dumps, by MD5 (from libretro's System.dat and
+/// Batocera's list, in KnownBIOS.tsv): is a file the dump an emulator
+/// expects, and is a missing one in the BIOS folder under another name.
+/// A zipped set (naomi.zip, hikaru.zip) is checked by the chips in it,
+/// from MAME's list (KnownBIOSSets.tsv): a zip's own checksum depends on
+/// how it was packed.
 public enum BIOSChecksums {
     public enum Verdict: Sendable, Hashable {
         /// A known good dump of the file.
@@ -32,6 +35,32 @@ public enum BIOSChecksums {
         public var size: Int?
         /// Matched once a copier's 512-byte header was skipped.
         public var hasHeader = false
+        /// For a zipped set: what it was checked against ("MAME 0.289"),
+        /// nil for a single file.
+        public var setList: String?
+        /// For a zipped set: the chips it lacks. With `needsRevision`,
+        /// those of one BIOS revision, when it has none complete: any
+        /// revision would do.
+        public var missingChips: [Chip] = []
+        public var needsRevision = false
+        /// For a zipped set: chips named right with other data, as they
+        /// should be.
+        public var otherChips: [Chip] = []
+    }
+
+    /// One chip of a zipped BIOS set, as MAME lists it.
+    public struct Chip: Sendable, Hashable {
+        public let set: String
+        /// The BIOS revision it belongs to; empty for one every revision
+        /// needs.
+        public let revision: String
+        public let name: String
+        public let size: Int
+        public let crc: UInt32
+        /// False for an EEPROM's default contents, which emulators make.
+        public let required: Bool
+
+        public var crcText: String { String(format: "%08x", crc) }
     }
 
     static let entries: [Entry] = {
@@ -43,6 +72,56 @@ public enum BIOSChecksums {
             return Entry(name: String(parts[0]), size: size, md5: String(parts[2]))
         }
     }()
+
+    /// The zipped sets' chips, and the list they come from.
+    static let sets: (list: String, chips: [Chip]) = {
+        guard let url = Bundle.module.url(forResource: "KnownBIOSSets", withExtension: "tsv"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return ("", []) }
+        var list = ""
+        var chips: [Chip] = []
+        for line in text.split(whereSeparator: \.isNewline) {
+            if line.hasPrefix("# ") { list = String(line.dropFirst(2)); continue }
+            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard parts.count == 6, let size = Int(parts[3]), let crc = UInt32(parts[4], radix: 16) else { continue }
+            chips.append(Chip(set: String(parts[0]), revision: String(parts[1]), name: String(parts[2]),
+                              size: size, crc: crc, required: parts[5] == "1"))
+        }
+        return (list, chips)
+    }()
+
+    /// The chips of the set a zip requirement names ("dc/naomi.zip").
+    static func chips(for fileName: String, in chips: [Chip] = sets.chips) -> [Chip] {
+        let set = ((fileName as NSString).lastPathComponent as NSString).deletingPathExtension.lowercased()
+        return chips.filter { $0.set == set }
+    }
+
+    /// Whether a zipped set holds what its emulator reads: every chip
+    /// all revisions share, one BIOS revision complete (any one), and no
+    /// chip named right with other data. Chips are matched by CRC, so a
+    /// set from another MAME version, with other names, still passes.
+    static func checkSet(_ zip: URL, chips: [Chip], list: String) -> Check {
+        var check = Check(setList: list)
+        guard let entries = ZipContents.entries(of: zip)?.filter({ !$0.name.hasSuffix("/") }) else { return check }
+        let crcs = Set(entries.map(\.crc))
+        let byName = Dictionary(entries.map { (($0.name as NSString).lastPathComponent.lowercased(), $0.crc) }, uniquingKeysWith: { first, _ in first })
+        let knownCRCs = Set(chips.map(\.crc))
+        // Named like a chip, holding none of the known data.
+        var reported = Set<String>()
+        for chip in chips {
+            let name = chip.name.lowercased()
+            guard let crc = byName[name], !knownCRCs.contains(crc), reported.insert(name).inserted else { continue }
+            check.otherChips.append(chip)
+        }
+        check.missingChips = chips.filter { $0.revision.isEmpty && $0.required && !crcs.contains($0.crc) }
+        let revisions = Dictionary(grouping: chips.filter { !$0.revision.isEmpty }, by: \.revision)
+        if !revisions.isEmpty, !revisions.values.contains(where: { $0.allSatisfy { crcs.contains($0.crc) } }),
+           let first = chips.first(where: { !$0.revision.isEmpty })?.revision, let wanted = revisions[first] {
+            check.missingChips += wanted
+            check.needsRevision = true
+        }
+        check.verdict = check.missingChips.isEmpty && check.otherChips.isEmpty ? .verified : .unrecognized
+        return check
+    }
 
     /// The known dumps of a file, by its path in the BIOS folder
     /// ("dc/dc_boot.bin"); a folder requirement ("pcsx2/bios/") takes any
@@ -70,7 +149,10 @@ public enum BIOSChecksums {
         let known = known(for: fileName, in: entries)
         let isFolder = fileName.hasSuffix("/")
         var check = Check(expected: isFolder ? [] : known)
-        guard file.pathExtension.lowercased() != "zip" else { return check }
+        if file.pathExtension.lowercased() == "zip" {
+            let chips = chips(for: fileName)
+            return chips.isEmpty ? check : checkSet(file, chips: chips, list: sets.list)
+        }
         let size = MD5Cache.size(of: file)
         check.size = size >= 0 ? size : nil
         check.md5 = MD5Cache.md5(of: file)

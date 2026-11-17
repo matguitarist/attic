@@ -345,13 +345,70 @@ struct FlowLayout: Layout {
 }
 
 /// A BIOS file next to the known good dumps of it: size and MD5, the
-/// differences marked.
+/// differences marked. For a zipped set, the chips it lacks or holds
+/// another version of.
 struct BIOSComparisonView: View {
     let file: BIOSFileStatus
 
     var body: some View {
+        if let list = file.check.setList {
+            setComparison(list)
+        } else {
+            fileComparison
+        }
+    }
+
+    private func setComparison(_ list: String) -> some View {
         let check = file.check
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
+            Text("\(file.fileName) isn't a known set").font(.headline)
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
+                GridRow {
+                    Text("")
+                    Text("Chip").foregroundStyle(.secondary)
+                    Text("Size").foregroundStyle(.secondary)
+                    Text("CRC32").foregroundStyle(.secondary)
+                }
+                .font(.caption)
+                ForEach(check.otherChips, id: \.self) { chip in
+                    GridRow {
+                        Text("Other data").bold().foregroundStyle(.orange)
+                        Text(verbatim: chip.name)
+                        Text(size(chip.size))
+                        Text(verbatim: chip.crcText)
+                    }
+                }
+                ForEach(check.missingChips, id: \.self) { chip in
+                    GridRow {
+                        Text("Missing").bold().foregroundStyle(.orange)
+                        Text(verbatim: chip.name)
+                        Text(size(chip.size))
+                        Text(verbatim: chip.crcText)
+                    }
+                }
+            }
+            .font(.callout.monospaced())
+            .textSelection(.enabled)
+            Text(check.needsRevision
+                 ? String(localized: "It has none of the BIOS versions \(list) knows: any one would do, the first is shown. Chips are matched by their data, so sets from other MAME versions pass too.")
+                 : String(localized: "Checked against \(list), by each chip's data: sets from other MAME versions pass too. A set from a much older MAME may lack chips that came later."))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                if let url = file.url {
+                    Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+                }
+                Spacer()
+            }
+        }
+        .padding(16)
+        .frame(width: 560)
+    }
+
+    private var fileComparison: some View {
+        let check = file.check
+        return VStack(alignment: .leading, spacing: 12) {
             Text("\(file.fileName) isn't a known dump").font(.headline)
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
                 GridRow {

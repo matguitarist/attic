@@ -30,7 +30,16 @@ It's under the Creative Commons Attribution-ShareAlike 4.0 International
 license (https://creativecommons.org/licenses/by-sa/4.0/), not Attic's MIT
 license; Attic changed it only by leaving out zipped sets and other columns.
 It holds checksums only: Attic never ships or downloads BIOS files.
-`tools/import-known-bios.py` rebuilds it from the original.
+It also lists the other good dumps of the same files that **Batocera**'s
+BIOS check accepts (`batocera-systems`, https://github.com/batocera-linux/batocera.linux):
+their names and MD5 checksums only.
+`tools/import-known-bios.py` rebuilds it from the originals.
+
+`AtticKit/Sources/AtticEmulation/Resources/KnownBIOSSets.tsv` lists the chips
+of the zipped BIOS sets Attic asks for (naomi.zip, hikaru.zip, neogeo.zip…),
+with their sizes and CRC32 checksums, from **MAME** 0.289's game list
+(https://github.com/mamedev/mame, BSD-3-Clause for this data, copyright
+Nicola Salmoria and the MAME team). `tools/import-bios-sets.py` rebuilds it.
 
 ## Sega Model 1, 2 and 3 sets
 

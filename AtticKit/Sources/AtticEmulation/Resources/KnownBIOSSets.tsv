@@ -1,0 +1,132 @@
+# MAME 0.289
+airlbios	bios0	epr-21802.ic27	2097152	a77c6b1c	1
+airlbios	bios1	epr-21801.ic27	2097152	a21bef24	1
+airlbios		main_eeprom.bin	128	fea29cbb	0
+airlbios		x76f100_eeprom.bin	132	3ea24b6a	0
+awbios	bios0	bios0.ic23	131072	719b2b0b	1
+awbios	bios0	bios1.ic23	131072	d3e80a9f	1
+awbios	bios1	fpr-24363.ic48	524288	82a105f0	1
+cdimono1	mcdi200	cdi200.rom	524288	40c4e6b9	1
+cdimono1	pcdi220	cdi220b.rom	524288	279683ca	1
+cdimono1	pcdi220_alt	cdi220.rom	524288	584c0af8	1
+cdimono1		zx405037p__cdi_servo_2.1__b43t__llek9215.mc68hc705c8a_withtestrom.7201	8192	7a3af407	1
+cdimono1		zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206	8192	688cda63	1
+f355bios	bios0	epr-22851.ic27	2097152	62483677	1
+f355bios	bios1	epr-22850.ic27	2097152	28aa539d	1
+f355bios	bios2	epr-22849.ic27	2097152	121e009c	1
+f355bios		main_eeprom.bin	128	fea29cbb	0
+f355bios		x76f100_eeprom.bin	132	3ea24b6a	0
+f355dlx	bios0	epr-21864.ic27	2097152	12ed7c66	1
+f355dlx	bios1	epr-21863.ic27	2097152	0615a4d1	1
+f355dlx	bios2	epr-21862.ic27	2097152	1f630716	1
+f355dlx	bios3	epr-21864p.ic27	2097152	05128861	1
+f355dlx	bios4	epr-21862p.ic27	2097152	f0cd4aaa	1
+f355dlx		main_eeprom.bin	128	fea29cbb	0
+f355dlx		x76f100_eeprom.bin	132	3ea24b6a	0
+hikaru	bios0	epr-23400a.ic94	2097152	2aa906a7	1
+hikaru	bios1	epr-23400.ic94	2097152	3d557104	1
+hikaru	bios1	epr-21904.ic94	2097152	d96298b6	1
+hikaru	bios1	prot_bot.ic94	2097152	7cbf2fb6	1
+hikaru		93c46.ic115	128	737dc714	0
+hikaru		x76f100.ic85	132	194c6c18	0
+hod2bios	bios0	epr-21331.ic27	2097152	065f8500	1
+hod2bios	bios1	epr-21330.ic27	2097152	9e3bfa1b	1
+hod2bios	bios2	epr-21329.ic27	2097152	d99e5b9b	1
+hod2bios	bios3	epr-21332.ic27	2097152	bd6ce0ec	1
+hod2bios	bios4	hotd2biosproto.ic27	2097152	ea74e967	1
+hod2bios		main_eeprom.bin	128	fea29cbb	0
+hod2bios		x76f100_eeprom.bin	132	3ea24b6a	0
+naomi	bios0	epr-21576h.ic27	2097152	d4895685	1
+naomi	bios1	epr-21576g.ic27	2097152	d2a1c6bf	1
+naomi	bios2	epr-21576e.ic27	2097152	08c0add7	1
+naomi	bios3	epr-21576d.ic27	2097152	3b2afa7b	1
+naomi	bios4	epr-21576c.ic27	2097152	4599ad13	1
+naomi	bios5	epr-21576b.ic27	2097152	755a6e07	1
+naomi	bios6	epr-21576a.ic27	2097152	cedfe439	1
+naomi	bios7	epr-21576.ic27	2097152	9dad3495	1
+naomi	bios8	epr-21578h.ic27	2097152	7b452946	1
+naomi	bios9	epr-21578g.ic27	2097152	55413214	1
+naomi	bios10	epr-21578f.ic27	2097152	628a27fd	1
+naomi	bios11	epr-21578e.ic27	2097152	087f09a3	1
+naomi	bios12	epr-21578d.ic27	2097152	dfd5f42a	1
+naomi	bios13	epr-21578a.ic27	2097152	6c9aad83	1
+naomi	bios14	epr-21577h.ic27	2097152	fdf17452	1
+naomi	bios15	epr-21577g.ic27	2097152	25f64af7	1
+naomi	bios16	epr-21577e.ic27	2097152	cf36e97b	1
+naomi	bios17	epr-21577d.ic27	2097152	60ddcbbe	1
+naomi	bios18	epr-21577a.ic27	2097152	969dc491	1
+naomi	bios19	epr-21579d.ic27	2097152	33513691	1
+naomi	bios20	epr-21579.ic27	2097152	71f9c918	1
+naomi	bios21	boot_rom_64b8.ic606	524288	7a50fab9	1
+naomi	bios22	develop110.ic27	2097152	de7cfdb0	1
+naomi	bios23	develop.ic27	2097152	309a196a	1
+naomi	bios24	zukinver0930.ic25	2097152	58e17c23	1
+naomi	bios25	epr-21576h_multi.ic27	2097152	cce01f1f	1
+naomi	bios26	epr-21336a.ic27	2097152	d3d57af8	1
+naomi	bios27	naomi_boot_2491.ic27	2097152	5b28f868	1
+naomi	bios28	epr-21580a.ic27	2097152	46dbe90f	1
+naomi		315-6188.ic31	8244	7c9fea46	1
+naomi		main_eeprom.bin	128	fea29cbb	0
+naomi		x76f100_eeprom.bin	132	3ea24b6a	0
+naomi2	bios0	epr-23605c.ic27	2097152	297ea6ed	1
+naomi2	bios1	epr-23605b.ic27	2097152	3a3242d4	1
+naomi2	bios2	epr-23605a.ic27	2097152	7bc3fc2d	1
+naomi2	bios3	epr-23605.ic27	2097152	5731e446	1
+naomi2	bios4	epr-23608c.ic27	2097152	6ef1dd8e	1
+naomi2	bios5	epr-23608b.ic27	2097152	a554b1e3	1
+naomi2	bios6	epr-23608a.ic27	2097152	e8f884d1	1
+naomi2	bios8	epr-23608.ic27	2097152	929cc3a6	1
+naomi2	bios8	epr-23607c.ic27	2097152	750e254b	1
+naomi2	bios9	epr-23607b.ic27	2097152	f308c5e9	1
+naomi2	bios10	epr-23607.ic27	2097152	2b55add2	1
+naomi2	bios11	epr-23609b.ic27	2097152	99e3751f	1
+naomi2	bios12	epr-23610b.ic27	2097152	de8e1267	1
+naomi2	bios13	epr-23605c_multi.ic27	2097152	353fdbcd	1
+naomi2		main_eeprom.bin	128	fea29cbb	0
+naomi2		x76f100_eeprom.bin	132	3ea24b6a	0
+neogeo	euro	sp-s2.sp1	131072	9036d879	1
+neogeo	euro-s1	sp-s.sp1	131072	c7f2fa45	1
+neogeo	asia-mv1c	sp-45.sp1	524288	03cc9f6a	1
+neogeo	asia-mv1b	sp-s3.sp1	131072	91b64be3	1
+neogeo	us	sp-u2.sp1	131072	e72943de	1
+neogeo	us-e	sp-e.sp1	131072	2723a5b5	1
+neogeo	us-v2	sp1-u2	131072	62f021f4	1
+neogeo	us-u4	sp1-u4.bin	131072	1179a30f	1
+neogeo	us-u3	sp1-u3.bin	131072	2025b7a2	1
+neogeo	japan	vs-bios.rom	131072	f0e8f27d	1
+neogeo	japan-s2	sp-j2.sp1	131072	acede59c	1
+neogeo	japan-s1	sp1.jipan.1024	131072	9fb0abe4	1
+neogeo	japan-mv1b	japan-j3.bin	131072	dff6d41f	1
+neogeo	japan-j3a	sp1-j3.bin	131072	fbc6d469	1
+neogeo	japan-mv1c	sp-j3.sp1	524288	486cb450	1
+neogeo	japan-hotel	sp-1v1_3db8c.bin	131072	162f0ebe	1
+neogeo	unibios40	uni-bios_4_0.rom	131072	a7aab458	1
+neogeo	unibios33	uni-bios_3_3.rom	131072	24858466	1
+neogeo	unibios32	uni-bios_3_2.rom	131072	a4e8b9b3	1
+neogeo	unibios31	uni-bios_3_1.rom	131072	0c58093f	1
+neogeo	unibios30	uni-bios_3_0.rom	131072	a97c89a9	1
+neogeo	unibios23	uni-bios_2_3.rom	131072	27664eb5	1
+neogeo	unibios23o	uni-bios_2_3o.rom	131072	601720ae	1
+neogeo	unibios22	uni-bios_2_2.rom	131072	2d50996a	1
+neogeo	unibios21	uni-bios_2_1.rom	131072	8dabf76b	1
+neogeo	unibios20	uni-bios_2_0.rom	131072	0c12c2ad	1
+neogeo	unibios13	uni-bios_1_3.rom	131072	b24b44a0	1
+neogeo	unibios12	uni-bios_1_2.rom	131072	4fa698e9	1
+neogeo	unibios12o	uni-bios_1_2o.rom	131072	e19d3ce9	1
+neogeo	unibios11	uni-bios_1_1.rom	131072	5dda0d84	1
+neogeo	unibios10	uni-bios_1_0.rom	131072	0ce453a0	1
+neogeo		sm1.sm1	131072	94416d67	1
+neogeo		000-lo.lo	131072	5a86cff2	1
+neogeo		sfix.sfix	131072	c2ea0cfd	1
+model1io2	epr16891	epr-16891.6	65536	a33f84d1	1
+model1io2	epr18021	epr-18021.6	65536	5551837e	1
+model1io2	epr17181	epr-17181.6	65536	1add2b82	1
+model1io	epr14869	epr-14869.25	65536	6187cd7a	1
+model1io	epr14869b	epr-14869b.25	65536	2d093304	1
+model1io	epr14869c	epr-14869c.25	65536	24b68e64	1
+jvs13551		sp5001.bin	16384	3456c8cc	1
+jvs13551		sp5001-a.bin	16384	b52d3777	1
+jvs13551		sp5001-b.bin	16384	28b5fb84	1
+jvs13551		sp5002-a.bin	16384	72983a0f	1
+jvs13551		315-6215.bin	16384	98202738	1
+mie		315-6146.bin	2048	9b197e35	1

@@ -210,6 +210,16 @@
         }
       }
     },
+    "%@ isn't a known set": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ n'est pas un ensemble connu"
+          }
+        }
+      }
+    },
     "%@ missing": {
       "localizations": {
         "fr": {
@@ -4770,6 +4780,16 @@
         }
       }
     },
+    "CRC32": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CRC32"
+          }
+        }
+      }
+    },
     "CRT TV": {
       "localizations": {
         "fr": {
@@ -5081,6 +5101,16 @@
         }
       }
     },
+    "Checked against %@, by each chip's data: sets from other MAME versions pass too. A set from a much older MAME may lack chips that came later.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifié d'après %@, par le contenu de chaque puce : les ensembles d'autres versions de MAME passent aussi. Un ensemble d'une version bien plus ancienne de MAME peut manquer de puces ajoutées depuis."
+          }
+        }
+      }
+    },
     "Checked against %@.": {
       "localizations": {
         "fr": {
@@ -5129,6 +5159,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vérifie vos jeux d’après les listes de bons dumps de No-Intro."
+          }
+        }
+      }
+    },
+    "Chip": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puce"
           }
         }
       }
@@ -9169,6 +9209,16 @@
         }
       }
     },
+    "It has none of the BIOS versions %@ knows: any one would do, the first is shown. Chips are matched by their data, so sets from other MAME versions pass too.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il ne contient aucune des versions du BIOS que connaît %@ : n'importe laquelle convient, la première est affichée. Les puces sont reconnues par leur contenu : les ensembles d'autres versions de MAME passent aussi."
+          }
+        }
+      }
+    },
     "It's this game under another name: don't list it again": {
       "localizations": {
         "fr": {
@@ -11707,6 +11757,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fichiers d’autres apps"
+          }
+        }
+      }
+    },
+    "Other data": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autre contenu"
           }
         }
       }
