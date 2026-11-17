@@ -222,7 +222,10 @@ struct CabinetMenuView: View {
                 .foregroundStyle(isOn.wrappedValue ? theme.palette.background.color : secondary)
         case .choice(let options, let selection, let swatches):
             HStack(spacing: 10) {
-                if isFocused { Image(systemName: "chevron.left").foregroundStyle(secondary) }
+                // Left and right change it (A doesn't, so passing through
+                // can't switch a theme by accident); with the mouse, its
+                // arrows.
+                if isFocused { arrow("chevron.left", item, by: -1, color: secondary) }
                 if let swatch = swatches?[safe: selection.wrappedValue] {
                     Circle()
                         .fill(swatch)
@@ -231,7 +234,7 @@ struct CabinetMenuView: View {
                 }
                 Text(verbatim: options[safe: selection.wrappedValue] ?? "")
                     .lineLimit(1)
-                if isFocused { Image(systemName: "chevron.right").foregroundStyle(secondary) }
+                if isFocused { arrow("chevron.right", item, by: 1, color: secondary) }
             }
             .font(theme.bodyFont(.medium))
         case .action:
@@ -295,6 +298,15 @@ struct CabinetMenuView: View {
         return index
     }
 
+    /// A choice's arrow, which steps it when clicked.
+    private func arrow(_ symbol: String, _ item: CabinetMenuItem, by offset: Int, color: Color) -> some View {
+        Image(systemName: symbol)
+            .foregroundStyle(color)
+            .padding(6)
+            .contentShape(Rectangle())
+            .onTapGesture { adjust(item, by: offset) }
+    }
+
     private func adjust(_ item: CabinetMenuItem, by offset: Int) {
         switch item.kind {
         case .toggle(let isOn): isOn.wrappedValue.toggle()
@@ -309,7 +321,9 @@ struct CabinetMenuView: View {
     private func activate(_ item: CabinetMenuItem) {
         switch item.kind {
         case .page(let target): open(target)
-        case .toggle, .choice: adjust(item, by: 1)
+        case .toggle: adjust(item, by: 1)
+        // Left and right change a choice: A on it does nothing.
+        case .choice: break
         case .action(let confirm, let perform):
             if confirm && armedID != item.id {
                 armedID = item.id
