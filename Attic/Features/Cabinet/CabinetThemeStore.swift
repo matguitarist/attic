@@ -250,6 +250,10 @@ final class CabinetThemeStore {
           while `showsPicture`), `band` (the carousel band's color; unset,
           `surface`).
         - `showsHints`: the controller buttons along the bottom.
+        - `marquee`: the second screen chosen in Settings › Cabinet Mode ›
+          Marquee Display. `fit` (`fit`: all of the marquee, `background`
+          around it; `fill`: the whole screen, cropping its edges),
+          `background` (a color).
 
         """
 }

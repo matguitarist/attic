@@ -44,10 +44,37 @@ enum CabinetSnapshot {
                     print(file.path)
                 }
             }
+            if themeIDs == nil || themeIDs?.contains("marquee") == true {
+                try marquees(seed, into: folder)
+            }
             exit(0)
         } catch {
             FileHandle.standardError.write(Data("Snapshot failed: \(error)\n".utf8))
             exit(1)
+        }
+    }
+
+    /// The marquee screen in each of its states, and with a theme that
+    /// fills it.
+    private static func marquees(_ seed: Seed, into folder: URL) throws {
+        let byTitle = Dictionary(uniqueKeysWithValues: seed.games.map { ($0.title, $0) })
+        let systemLogo = NSImage(data: Art.logo("SUPER NES", color: .systemPurple)).map { Image(nsImage: $0) }
+        var filled = CabinetTheme.arcade
+        filled.marquee = CabinetTheme.Marquee(fit: .fill, background: ThemeColor(hex: "#1B2838")!)
+        let shots: [(name: String, theme: CabinetTheme, game: Game?, logo: Image?)] = [
+            ("marquee-game", .arcade, byTitle["Rocket Zone"], nil),
+            ("marquee-game-fill", filled, byTitle["Rocket Zone"], nil),
+            ("marquee-logo", .arcade, byTitle["Comet Racer"], nil),
+            ("marquee-system", .arcade, nil, systemLogo),
+            ("marquee-section-title", .classic, nil, nil)
+        ]
+        for shot in shots {
+            let model = CabinetMarqueeModel()
+            model.theme = shot.theme
+            model.show(shot.game, section: CabinetSection(selection: .system("snes"), title: "Super Nintendo", logo: shot.logo))
+            let file = folder.appending(path: "\(shot.name).png")
+            try capture(CabinetMarqueeView(model: model).modelContainer(seed.container), to: file, size: CGSize(width: 1280, height: 400))
+            print(file.path)
         }
     }
 
@@ -72,7 +99,7 @@ enum CabinetSnapshot {
 
     /// Draws `view` offscreen, waits for its pictures and animations, and
     /// writes it as a PNG.
-    static func capture(_ view: some View, to file: URL) throws {
+    static func capture(_ view: some View, to file: URL, size: CGSize = size) throws {
         let hosting = NSHostingView(rootView: view.frame(width: size.width, height: size.height))
         hosting.frame = CGRect(origin: .zero, size: size)
         let window = NSWindow(contentRect: CGRect(origin: CGPoint(x: -20_000, y: -20_000), size: size),

@@ -23,6 +23,8 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
     public var menu: Menu
     public var systems: Systems
     public var showsHints: Bool
+    /// The second screen a real cabinet has above its main one.
+    public var marquee = Marquee()
 
     public enum Layout: String, Codable, CaseIterable, Sendable {
         /// A row of big covers, the focused one's details below (Showcase).
@@ -238,6 +240,41 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
         public var cornerRadius: Double
         /// How much the screen behind darkens, 0 to 1.
         public var dim: Double
+    }
+
+    /// The marquee screen: the focused game's marquee, else its logo, on
+    /// a display of its own (Settings › Cabinet Mode › Marquee Display).
+    public struct Marquee: Codable, Hashable, Sendable {
+        public enum Fit: String, Codable, CaseIterable, Sendable {
+            /// All of the picture, with the background around it.
+            case fit
+            /// The whole screen, cropping the picture's edges.
+            case fill
+        }
+        public var fit: Fit = .fit
+        /// Around a picture that doesn't fill the screen.
+        public var background = ThemeColor(red: 0, green: 0, blue: 0)
+
+        public init(fit: Fit = .fit, background: ThemeColor = ThemeColor(red: 0, green: 0, blue: 0)) {
+            self.fit = fit
+            self.background = background
+        }
+
+        /// What the marquee screen shows, from what there is to show.
+        public enum Content: Equatable, Sendable {
+            case gameMarquee, gameLogo, gameTitle
+            case sectionLogo, sectionTitle
+
+            /// A focused game's marquee, else its logo, else its title.
+            /// With no game focused (on the systems), the system's or
+            /// collection's logo, else its name.
+            public static func resolve(hasGame: Bool, hasMarquee: Bool, hasLogo: Bool, sectionHasLogo: Bool) -> Content {
+                if hasGame {
+                    return hasMarquee ? .gameMarquee : hasLogo ? .gameLogo : .gameTitle
+                }
+                return sectionHasLogo ? .sectionLogo : .sectionTitle
+            }
+        }
     }
 }
 

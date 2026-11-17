@@ -10,6 +10,8 @@ struct CabinetSettingsView: View {
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
+    @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
+    @State private var screensRevision = 0
     @State private var themeError: String?
 
     var body: some View {
@@ -24,6 +26,16 @@ struct CabinetSettingsView: View {
                 Toggle(isOn: $playsSystemVideos) {
                     Text("Play system and collection videos")
                     Text("On the systems, after a moment, in place of the picture")
+                }
+                Picker(selection: $marqueeDisplayName) {
+                    let _ = screensRevision
+                    ForEach(CabinetMarqueeDisplay.options, id: \.self) { Text(verbatim: CabinetMarqueeDisplay.title(of: $0)).tag($0) }
+                } label: {
+                    Text("Marquee Display")
+                    Text("For a cabinet with a second screen: the selected game's marquee, else its logo, and the system's logo on the systems")
+                }
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in
+                    screensRevision += 1
                 }
             } footer: {
                 Text("Full-screen couch mode: ⌘⇧B, or Menu/Start on a controller. Start opens its menu, where all of this can be set from the couch too.")

@@ -74,6 +74,7 @@ struct CabinetMenuView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("cabinetScrapeSource") private var scrapeSourceName = "LaunchBox"
     @AppStorage(CabinetDisplay.key) private var displayName = ""
+    @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
     /// Bumped as screens come and go, for the Display choices.
     @State private var screensRevision = 0
     @AppStorage(GameHeaderMedia.previewsKey) private var playsVideoPreviews = true
@@ -468,6 +469,15 @@ struct CabinetMenuView: View {
                                 set: { index in
                                     displayName = options[index]
                                     if let window = CabinetWindows.cabinet { CabinetDisplay.move(window) }
+                                    CabinetMarqueeWindow.shared.refresh()
+                                }
+                            ))),
+            CabinetMenuItem(id: "marquee", title: String(localized: "Marquee Display"), symbol: "rectangle.topthird.inset.filled",
+                            kind: .choice(options: CabinetMarqueeDisplay.options.map(CabinetMarqueeDisplay.title(of:)), selection: Binding(
+                                get: { CabinetMarqueeDisplay.options.firstIndex(of: marqueeDisplayName) ?? 0 },
+                                set: { index in
+                                    marqueeDisplayName = CabinetMarqueeDisplay.options[index]
+                                    CabinetMarqueeWindow.shared.refresh()
                                 }
                             ))),
             CabinetMenuItem(id: "airplay", title: String(localized: "Connect an AirPlay Display…"), symbol: "airplayvideo",

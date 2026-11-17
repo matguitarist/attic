@@ -7511,6 +7511,16 @@
         }
       }
     },
+    "For a cabinet with a second screen: the selected game's marquee, else its logo, and the system's logo on the systems": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour une borne avec un deuxième écran : le fronton du jeu sélectionné, sinon son logo, et le logo du système sur les systèmes"
+          }
+        }
+      }
+    },
     "For anything still missing, see Game Info & Art.": {
       "localizations": {
         "fr": {
@@ -9651,6 +9661,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Marquee"
+          }
+        }
+      }
+    },
+    "Marquee Display": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écran du fronton"
           }
         }
       }

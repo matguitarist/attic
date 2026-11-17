@@ -358,7 +358,7 @@ Acceptance:
 - [manual] Choosing a marquee display in Settings shows the system's logo, then the game's marquee as focus moves.
 - [manual] Unplugging the second display doesn't stop Cabinet Mode.
 - [unit] The marquee's fit and background come from `CabinetTheme`.
-Status: todo
+Status: built (needs a second screen to check)
 
 ### S-057 Build a theme in a theme creator
 As the user, I edit a Cabinet theme's colors, fonts, layout and art in a live editor and save it as a theme folder.

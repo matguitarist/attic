@@ -248,11 +248,16 @@ struct CabinetView: View {
             // Picks up themes added or edited since.
             themeStore.reload()
             level = themeStore.current.theme.systems.isEnabled ? .systems : .games
+            CabinetMarqueeWindow.shared.start()
+            updateMarquee()
         }
+        // The marquee screen follows focus, section and theme.
+        .onChange(of: marqueeKey) { updateMarquee() }
         .onChange(of: theme.systems.isEnabled) { _, isEnabled in
             if !isEnabled { level = .games }
         }
         .onDisappear {
+            CabinetMarqueeWindow.shared.stop()
             gamepad.isCabinetActive = false
             CabinetWindows.showOthers()
         }
@@ -261,6 +266,18 @@ struct CabinetView: View {
         .onChange(of: launchCoordinator.state) { old, new in
             if case .running = old, new == .idle { CabinetWindows.bringCabinetForward() }
         }
+    }
+
+    /// What the marquee screen depends on, cheap to compare.
+    private var marqueeKey: [AnyHashable] {
+        let game = level == .games ? (pageGame ?? focusedGame) : nil
+        return [game?.persistentModelID, selection, level == .games, themeStore.current.theme, builtSections.count]
+    }
+
+    private func updateMarquee() {
+        let marquee = CabinetMarqueeWindow.shared.model
+        marquee.theme = themeStore.current.theme
+        marquee.show(level == .games ? (pageGame ?? focusedGame) : nil, section: sections.first { $0.selection == selection })
     }
 
     /// On the systems, when the theme shows no picture (the fan art behind

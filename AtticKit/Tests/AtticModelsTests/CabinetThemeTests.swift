@@ -96,6 +96,34 @@ struct CabinetThemeTests {
         }
     }
 
+    @Test func theMarqueeComesFromTheTheme() throws {
+        #expect(CabinetTheme.arcade.marquee == CabinetTheme.Marquee())
+        #expect(CabinetTheme.arcade.marquee.fit == .fit)
+        #expect(CabinetTheme.arcade.marquee.background.hex == "#000000")
+        let json = ##"{ "name": "Lit", "base": "arcade", "marquee": { "fit": "fill", "background": "#1B2838" } }"##
+        let theme = try CabinetTheme.decode(Data(json.utf8), id: "lit")
+        #expect(theme.marquee.fit == .fill)
+        #expect(theme.marquee.background.hex == "#1B2838")
+        #expect(try CabinetTheme.decode(theme.encoded(), id: "lit") == theme)
+        // Only one of the two: the other from the base.
+        let half = try CabinetTheme.decode(Data(#"{ "name": "Half", "marquee": { "fit": "fill" } }"#.utf8), id: "half")
+        #expect(half.marquee.background == CabinetTheme.showcase.marquee.background)
+        // A file written before there was a marquee.
+        var object = try #require(JSONSerialization.jsonObject(with: CabinetTheme.upright.encoded()) as? [String: Any])
+        object["marquee"] = nil
+        object["base"] = "upright"
+        #expect(try CabinetTheme.decode(JSONSerialization.data(withJSONObject: object), id: "old").marquee == CabinetTheme.Marquee())
+    }
+
+    @Test func theMarqueeShowsTheBestThereIs() {
+        typealias Content = CabinetTheme.Marquee.Content
+        #expect(Content.resolve(hasGame: true, hasMarquee: true, hasLogo: true, sectionHasLogo: true) == .gameMarquee)
+        #expect(Content.resolve(hasGame: true, hasMarquee: false, hasLogo: true, sectionHasLogo: true) == .gameLogo)
+        #expect(Content.resolve(hasGame: true, hasMarquee: false, hasLogo: false, sectionHasLogo: true) == .gameTitle)
+        #expect(Content.resolve(hasGame: false, hasMarquee: true, hasLogo: true, sectionHasLogo: true) == .sectionLogo)
+        #expect(Content.resolve(hasGame: false, hasMarquee: false, hasLogo: false, sectionHasLogo: false) == .sectionTitle)
+    }
+
     @Test func badValuesAreErrors() {
         #expect(throws: (any Error).self) {
             try CabinetTheme.decode(Data(#"{ "palette": { "accent": "pink" } }"#.utf8), id: "bad")

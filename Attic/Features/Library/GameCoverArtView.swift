@@ -23,6 +23,8 @@ struct GameCoverArtView: View {
     var alignment: Alignment = .center
     /// Fills the frame, cropping, instead of fitting inside it: wide cards.
     var fills = false
+    /// 0 for art that runs to a screen's edges, such as a marquee.
+    var cornerRadius: CGFloat = 10
 
     @Environment(\.displayScale) private var displayScale
     @State private var loadedImage: LoadedImage?
@@ -51,7 +53,7 @@ struct GameCoverArtView: View {
 
             ZStack {
                 if showBackground {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .fill(Color.card)
                 }
 
@@ -79,7 +81,7 @@ struct GameCoverArtView: View {
                 }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 
     /// Prefers whatever's already in the shared cache (so cells scrolling
