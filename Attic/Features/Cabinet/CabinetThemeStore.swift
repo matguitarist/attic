@@ -219,7 +219,9 @@ final class CabinetThemeStore {
           `fade` (the art fading into the background toward the bottom and
           left).
         - `tiles`: `art` (`cover`, `box3D`, `screenshot`, `logo`, `fanart`,
-          `logoCard`),
+          `logoCard`, `medium` (the cartridge, disc or board, else the 2D
+          box), `mix` (the 3D box, else the 2D one, with the cartridge or
+          disc at its corner)),
           `size` (of the
           shelf's height; in the wheel, of an entry's), `spacing`,
           `cornerRadius`, `showsBackground`, `focusScale`, `unfocusedOpacity`
@@ -340,6 +342,8 @@ extension CabinetTheme.Tiles.Art {
         case .logo: String(localized: "Logo")
         case .fanart: String(localized: "Fan Art")
         case .logoCard: String(localized: "Logo Card")
+        case .medium: String(localized: "Cartridge or Disc")
+        case .mix: String(localized: "Box with Cartridge or Disc")
         }
     }
 }

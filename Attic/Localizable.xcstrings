@@ -4519,6 +4519,16 @@
         }
       }
     },
+    "Box with Cartridge or Disc": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîte avec cartouche ou disque"
+          }
+        }
+      }
+    },
     "Brings in the covers, screenshots, videos, manuals and descriptions another front-end has for your games, and the games you don't have if you like.": {
       "localizations": {
         "fr": {
@@ -4756,6 +4766,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeux cartouche en ZIP"
+          }
+        }
+      }
+    },
+    "Cartridge or Disc": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cartouche ou disque"
           }
         }
       }

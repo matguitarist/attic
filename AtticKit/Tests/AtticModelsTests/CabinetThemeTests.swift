@@ -76,6 +76,26 @@ struct CabinetThemeTests {
         #expect(try CabinetTheme.arcade.applying([:]) == .arcade)
     }
 
+    @Test func gameArtTakesACartridgeOrAMix() throws {
+        for art in [CabinetTheme.Tiles.Art.medium, .mix] {
+            let json = #"{ "name": "Mine", "base": "arcade", "tiles": { "art": "\#(art.rawValue)" } }"#
+            let theme = try CabinetTheme.decode(Data(json.utf8), id: "mine")
+            #expect(theme.tiles.art == art)
+            #expect(try CabinetTheme.decode(theme.encoded(), id: "mine") == theme)
+        }
+        #expect(CabinetTheme.Tiles.Art.mix.usesBox3D && CabinetTheme.Tiles.Art.mix.usesMedium)
+        #expect(CabinetTheme.Tiles.Art.medium.usesMedium && !CabinetTheme.Tiles.Art.medium.usesBox3D)
+        #expect(!CabinetTheme.Tiles.Art.cover.usesMedium)
+    }
+
+    @Test func aThemeFromBeforeCartridgesStillReads() throws {
+        // 2.10 themes name only the arts they had.
+        for art in ["cover", "box3D", "screenshot", "logo", "fanart", "logoCard"] {
+            let json = #"{ "name": "Old", "base": "showcase", "tiles": { "art": "\#(art)" } }"#
+            #expect(try CabinetTheme.decode(Data(json.utf8), id: "old").tiles.art.rawValue == art)
+        }
+    }
+
     @Test func badValuesAreErrors() {
         #expect(throws: (any Error).self) {
             try CabinetTheme.decode(Data(#"{ "palette": { "accent": "pink" } }"#.utf8), id: "bad")

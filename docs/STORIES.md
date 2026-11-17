@@ -347,7 +347,7 @@ Acceptance:
 - [unit] `CabinetTheme` Game Art gains `medium` and `mix` cases, and older theme.json files still decode.
 - [snap] Each layout shows the cartridge or disc when chosen, and the box when a game has no medium image.
 - [manual] The Themes "Read Me.md" documents the new values.
-Status: todo
+Status: built (needs a look in each layout)
 
 ### S-056 Show marquees on a second display
 As the user with a real cabinet, the selected game's marquee shows on a second display while Cabinet Mode runs on the main one.

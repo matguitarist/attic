@@ -109,7 +109,7 @@ struct CabinetCoverFlowLayout: View {
 
     private func flow(coverHeight: CGFloat, width: CGFloat) -> some View {
         let coverWidth = coverHeight * 0.75
-        let step = coverWidth * (installed.theme.tiles.art == .box3D ? Self.boxStep : Self.step) + installed.theme.tiles.spacing
+        let step = coverWidth * (installed.theme.tiles.art.usesBox3D ? Self.boxStep : Self.step) + installed.theme.tiles.spacing
         let games = shelf.games
         let focused = games.firstIndex { shelf.isFocused($0) } ?? 0
         // Only the covers on screen, and one more each side to slide in.
@@ -154,8 +154,9 @@ private struct CabinetCoverFlowItem: View {
     let size: CGSize
 
     @Environment(\.cabinetTheme) private var installed
-    /// Looked up once: the 3D box lives by file alone.
+    /// Looked up once: the 3D box and medium live by file alone.
     @State private var box3DURL: URL?
+    @State private var mediumURL: URL?
 
     var body: some View {
         let theme = installed.theme
@@ -190,17 +191,29 @@ private struct CabinetCoverFlowItem: View {
                      anchor: UnitPoint(x: 0.5, y: 1 / (1 + CabinetCoverFlowLayout.reflection)))
         .shadow(color: isFocused && theme.tiles.focusGlow ? theme.palette.accent.color.opacity(0.6) : .clear, radius: 24)
         .task(id: [game.persistentModelID.hashValue, theme.tiles.art.hashValue]) {
-            box3DURL = theme.tiles.art == .box3D ? game.box3DURL : nil
+            box3DURL = theme.tiles.art.usesBox3D ? game.box3DURL : nil
+            mediumURL = theme.tiles.art.usesMedium ? game.physicalMediaURL : nil
         }
     }
 
     /// The cover and the 3D box both drawn, so moving in or out of the
     /// middle fades from one to the other instead of loading it then.
+    /// With the medium as Game Art, the cartridge or disc stands in for
+    /// the cover; with the mix, it sits at the focused cover's corner.
     private var art: some View {
         let standing = offset != 0 && box3DURL != nil
+        let art = installed.theme.tiles.art
         return ZStack {
-            GameCoverArtView(url: game.coverArtURL, title: game.title, showBackground: false, alignment: .bottom)
-                .opacity(standing ? 0 : 1)
+            Group {
+                if art == .mix {
+                    CabinetBoxWithMedium(game: game, boxURL: game.coverArtURL, mediumURL: offset == 0 ? mediumURL : nil,
+                                         alignment: .bottom)
+                } else {
+                    GameCoverArtView(url: art == .medium ? mediumURL ?? game.coverArtURL : game.coverArtURL,
+                                     title: game.title, showBackground: false, alignment: .bottom)
+                }
+            }
+            .opacity(standing ? 0 : 1)
             if let box3DURL {
                 GameCoverArtView(url: box3DURL, title: game.title, showBackground: false, alignment: .bottom)
                     .opacity(standing ? 1 : 0)

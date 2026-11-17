@@ -117,9 +117,19 @@ public struct CabinetTheme: Codable, Hashable, Sendable, Identifiable {
             case fanart
             /// The logo alone on a card in the `surface` color.
             case logoCard
+            /// The game's cartridge, disc or board.
+            case medium
+            /// The 3D box, else the 2D one, with the cartridge or disc at
+            /// its corner.
+            case mix
+
+            /// Whether the tile looks for the game's 3D box.
+            public var usesBox3D: Bool { self == .box3D || self == .mix }
+            /// Whether the tile looks for the game's cartridge or disc.
+            public var usesMedium: Bool { self == .medium || self == .mix }
         }
         /// What each game's tile shows. A 3D box falls back to the cover,
-        /// a logo to the title.
+        /// a logo to the title, a cartridge or disc to the 2D box.
         public var art: Art
         /// Of the shelf's height (the room between the header and the
         /// hints): carousel covers and grid tiles. In the wheel, of one

@@ -125,13 +125,14 @@ private struct CabinetShelfBox: View {
     let isFocused: Bool
 
     @Environment(\.cabinetTheme) private var installed
-    /// Looked up once: the 3D box lives by file alone.
+    /// Looked up once: the 3D box and medium live by file alone.
     @State private var box3DURL: URL?
+    @State private var mediumURL: URL?
 
     var body: some View {
         let theme = installed.theme
         let tiles = theme.tiles
-        GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false, alignment: .bottom)
+        art(tiles.art)
             .overlay(alignment: .topTrailing) {
                 if game.favorite {
                     Image(systemName: "star.fill")
@@ -149,8 +150,21 @@ private struct CabinetShelfBox: View {
                     radius: isFocused ? 22 : 5, y: isFocused ? 10 : 2)
             .animation(.snappy(duration: 0.25), value: isFocused)
             .task(id: [game.persistentModelID.hashValue, tiles.art.hashValue]) {
-                box3DURL = tiles.art == .box3D ? game.box3DURL : nil
+                box3DURL = tiles.art.usesBox3D ? game.box3DURL : nil
+                mediumURL = tiles.art.usesMedium ? game.physicalMediaURL : nil
             }
+    }
+
+    @ViewBuilder
+    private func art(_ art: CabinetTheme.Tiles.Art) -> some View {
+        switch art {
+        case .mix:
+            CabinetBoxWithMedium(game: game, boxURL: box3DURL ?? game.coverArtURL, mediumURL: mediumURL, alignment: .bottom)
+        case .medium:
+            GameCoverArtView(url: mediumURL ?? game.coverArtURL, title: game.title, showBackground: false, alignment: .bottom)
+        default:
+            GameCoverArtView(url: box3DURL ?? game.coverArtURL, title: game.title, showBackground: false, alignment: .bottom)
+        }
     }
 }
 

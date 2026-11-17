@@ -13,9 +13,10 @@ struct CabinetTile: View {
     var fillsArt = false
 
     @Environment(\.cabinetTheme) private var installed
-    /// Looked up once: the logo and 3D box live by file alone.
+    /// Looked up once: the logo, 3D box and medium live by file alone.
     @State private var logoURL: URL?
     @State private var box3DURL: URL?
+    @State private var mediumURL: URL?
 
     var body: some View {
         let theme = installed.theme
@@ -54,7 +55,8 @@ struct CabinetTile: View {
         .animation(.snappy(duration: 0.25), value: isFocused)
         .task(id: [game.persistentModelID.hashValue, tiles.art.hashValue]) {
             logoURL = tiles.art == .logo || tiles.art == .logoCard ? game.logoURL : nil
-            box3DURL = tiles.art == .box3D ? game.box3DURL : nil
+            box3DURL = tiles.art.usesBox3D ? game.box3DURL : nil
+            mediumURL = tiles.art.usesMedium ? game.physicalMediaURL : nil
         }
     }
 
@@ -89,6 +91,10 @@ struct CabinetTile: View {
                 theme.palette.surface.color
                 cardLogo(theme)
             }
+        case .medium:
+            GameCoverArtView(url: mediumURL ?? game.coverArtURL, title: game.title, showBackground: false)
+        case .mix:
+            CabinetBoxWithMedium(game: game, boxURL: box3DURL ?? game.coverArtURL, mediumURL: mediumURL)
         }
     }
 
@@ -120,6 +126,37 @@ struct CabinetTile: View {
     private func glowColor(_ theme: CabinetTheme) -> Color {
         guard isFocused else { return .clear }
         return theme.tiles.focusGlow ? theme.palette.accent.color.opacity(0.65) : .black.opacity(0.6)
+    }
+}
+
+/// A game's box with its cartridge, disc or board in front of its bottom
+/// corner, both fitting the space together: Game Art's mix. Only the box
+/// when there's no picture of the medium.
+struct CabinetBoxWithMedium: View {
+    let game: Game
+    let boxURL: URL?
+    let mediumURL: URL?
+    var alignment: Alignment = .center
+
+    /// The medium, of the space's shorter side.
+    static let mediumShare: CGFloat = 0.5
+
+    var body: some View {
+        GeometryReader { geometry in
+            let side = min(geometry.size.width, geometry.size.height) * Self.mediumShare
+            ZStack(alignment: .bottomTrailing) {
+                GameCoverArtView(url: boxURL, title: game.title, showBackground: false, alignment: alignment)
+                    // Room for the medium to stand out past the box.
+                    .padding(.trailing, mediumURL == nil ? 0 : side * 0.3)
+                    .padding(.bottom, mediumURL == nil ? 0 : side * 0.15)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                if let mediumURL {
+                    GameCoverArtView(url: mediumURL, title: game.title, showBackground: false)
+                        .frame(width: side, height: side)
+                        .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+                }
+            }
+        }
     }
 }
 
