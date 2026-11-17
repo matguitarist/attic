@@ -3,6 +3,20 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.11.0</title>
+            <pubDate>Tue, 17 Nov 2026 14:06:42 -0500</pubDate>
+            <sparkle:version>52</sparkle:version>
+            <sparkle:shortVersionString>2.11.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Theme Editor: Settings › Cabinet Mode › Theme › Edit… changes every setting of a Cabinet theme beside a live preview with your own games, and saves it as a theme
+- The preview shows the games, a game's page, the systems, the menu and the marquee screen, so each change shows at once where it applies
+- Marquee Display: a cabinet with a second screen shows the selected game's marquee there, else its logo, and the system's logo on the systems
+- The marquee screen comes and goes with its display, and Cabinet Mode carries on either way; a theme sets whether the marquee fits or fills it, and its background
+- Game Art can show each game's cartridge or disc, or its box with the cartridge or disc at the corner, in every layout
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.11.0/Attic-2.11.0.zip" length="20079328" type="application/octet-stream" sparkle:edSignature="ioZgPrtL9SGWoA3imUTe5hdMSHQgKw/as41epclj7e8Zrq6pnguZI0ee7BsvnfGp9O6/kHjTKLdBEFZXMZFLCQ=="/>
+        </item>
+        <item>
             <title>2.10.2</title>
             <pubDate>Thu, 12 Nov 2026 18:22:26 -0500</pubDate>
             <sparkle:version>51</sparkle:version>
