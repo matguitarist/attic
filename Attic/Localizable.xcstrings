@@ -11671,6 +11671,16 @@
         }
       }
     },
+    "Open Theme Editor": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir l'éditeur de thèmes"
+          }
+        }
+      }
+    },
     "Open on the systems": {
       "localizations": {
         "fr": {

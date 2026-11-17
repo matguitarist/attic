@@ -64,6 +64,7 @@ struct CabinetMenuView: View {
     @Environment(\.cabinetTheme) private var installed
     @Environment(CabinetBrowse.self) private var browse
     @Environment(CabinetThemeStore.self) private var themeStore
+    @Environment(\.openWindow) private var openWindow
     @Environment(ControllerSettingsStore.self) private var controllerSettings
     @Environment(GamepadInputMonitor.self) private var gamepad
     @Environment(ScanCoordinator.self) private var scanCoordinator
@@ -376,6 +377,16 @@ struct CabinetMenuView: View {
                                 get: { themes.firstIndex { $0.id == themeStore.selectedID } ?? 0 },
                                 set: { if themes.indices.contains($0) { themeStore.selectedID = themes[$0].id } }
                             ))),
+            // The editor is a Mac window for the mouse and keyboard: Cabinet
+            // Mode closes first, so it isn't behind the full screen.
+            CabinetMenuItem(id: "editor", title: String(localized: "Open Theme Editor"), symbol: "slider.horizontal.3",
+                            kind: .action(confirm: false, perform: { [openWindow] in
+                                onExit()
+                                Task { @MainActor in
+                                    try? await Task.sleep(for: .milliseconds(400))
+                                    openWindow(id: ThemeEditorView.windowID)
+                                }
+                            })),
             CabinetMenuItem(id: "layout", title: String(localized: "Layout"), symbol: "square.grid.2x2",
                             kind: .choice(options: layouts.map(\.title), selection: Binding(
                                 get: { layouts.firstIndex(of: current.theme.layout) ?? 0 },
