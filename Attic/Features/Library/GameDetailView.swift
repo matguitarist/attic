@@ -23,8 +23,9 @@ struct GameDetailView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(GameInfoEditor.self) private var infoEditor
 
-    /// The description box grows into whatever height the panel has spare,
-    /// which keeps Info and Play History at the bottom; it never goes below
+    /// The description box, right under the header, grows into whatever
+    /// height the panel has spare, which keeps the media at the bottom; it
+    /// never goes below
     /// `minimumDescriptionHeight`, past which the panel just scrolls.
     @State private var descriptionHeight: CGFloat = Self.minimumDescriptionHeight
     private static let minimumDescriptionHeight: CGFloat = 120
@@ -35,6 +36,22 @@ struct GameDetailView: View {
             Form {
                 Section {
                     header(for: game)
+                }
+
+                Section("Description") {
+                    // TextEditor has no Return-to-submit (Return is a
+                    // newline), so this one commits on focus loss only.
+                    CommitOnBlurField(
+                        value: game.gameDescription ?? "",
+                        onCommit: { commitOptionalText($0, to: \.gameDescription, for: game) }
+                    ) { text, focus in
+                        TextEditor(text: text)
+                            .font(.callout)
+                            .frame(height: descriptionHeight)
+                            .scrollContentBackground(.hidden)
+                            .focused(focus)
+                    }
+                    .labelsHidden()
                 }
 
                 Section("Info") {
@@ -73,21 +90,6 @@ struct GameDetailView: View {
 
                 DiscImageSection(game: game)
 
-                Section("Description") {
-                    // TextEditor has no Return-to-submit (Return is a
-                    // newline), so this one commits on focus loss only.
-                    CommitOnBlurField(
-                        value: game.gameDescription ?? "",
-                        onCommit: { commitOptionalText($0, to: \.gameDescription, for: game) }
-                    ) { text, focus in
-                        TextEditor(text: text)
-                            .font(.callout)
-                            .frame(height: descriptionHeight)
-                            .scrollContentBackground(.hidden)
-                            .focused(focus)
-                    }
-                    .labelsHidden()
-                }
             }
             .formStyle(.grouped)
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
