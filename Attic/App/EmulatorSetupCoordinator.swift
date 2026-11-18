@@ -169,6 +169,9 @@ final class EmulatorSetupCoordinator {
         if system.systemID == .steam {
             return SteamImport.isSteamInstalled ? .ready("Steam") : .broken(String(localized: "Steam isn't installed."))
         }
+        if system.systemID == .ports {
+            return .ready(String(localized: "Mac apps"))
+        }
         switch system.defaultLaunchTarget {
         case .none:
             return .notSetUp

@@ -190,8 +190,8 @@ struct GitHubReleaseTests {
 
 struct EmulatorCatalogTests {
     @Test func everyTaxonomySystemHasAnEmulator() {
-        // Steam runs its own games.
-        for system in SystemTaxonomy.allSystems where system.canonicalID != .steam {
+        // Steam runs its own games, and ports are Mac apps.
+        for system in SystemTaxonomy.allSystems where system.canonicalID != .steam && system.canonicalID != .ports {
             let recommendation = EmulatorCatalog.recommendation(for: system.canonicalID)
             let hasEmulator = recommendation?.recommendedCore != nil || recommendation?.standalone.isEmpty == false
             #expect(hasEmulator, "No emulator for \(system.canonicalID.rawValue)")

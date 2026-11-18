@@ -184,6 +184,8 @@ enum SystemHelpContent {
                     notes: [LocalizedStringResource("xemu needs the Xbox boot ROM (MCPX), a flash BIOS and a hard disk image. Set them once in xemu (Settings › System)."), LocalizedStringResource("Games must be xiso-format .iso dumps.")]),
         .msx: .init(manufacturer: "Microsoft, ASCII", year: 1983, wikipediaTitle: "MSX",
                     notes: [LocalizedStringResource("Attic installs blueMSX's machine and database files into the BIOS folder with the core.")]),
+        .ports: .init(manufacturer: "Various", year: 1997, wikipediaTitle: "Porting",
+                      notes: [LocalizedStringResource("Put Mac apps of games and source ports here (Ship of Harkinian, OpenGOAL, GZDoom, DevilutionX…), or .command scripts that start one. Attic opens them as they are, with no emulator.")]),
         .dos: .init(manufacturer: "Microsoft", year: 1981, wikipediaTitle: "MS-DOS",
                     notes: [LocalizedStringResource("Keep each game zipped (.zip or .dosz); DOSBox Pure runs it straight from the archive and asks which program to start the first time.")]),
         .wonderswan: .init(manufacturer: "Bandai", year: 1999, wikipediaTitle: "WonderSwan",

@@ -6062,6 +6062,22 @@
         }
       }
     },
+    "Couldn't open “%@”: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Couldn't open “%1$@”: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’ouvrir « %1$@ » : %2$@"
+          }
+        }
+      }
+    },
     "Couldn't reach EmuMovies' server.": {
       "localizations": {
         "fr": {
@@ -10074,6 +10090,16 @@
         }
       }
     },
+    "Mac apps": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps Mac"
+          }
+        }
+      }
+    },
     "Makes a playlist for each multi-disc game, so it's one game and emulators can swap its discs, and fixes playlists made on Windows.": {
       "localizations": {
         "fr": {
@@ -12435,6 +12461,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez les fichiers BIOS dans %@. Extrayez-les du matériel que vous possédez ; Attic ne les télécharge jamais."
+          }
+        }
+      }
+    },
+    "Put Mac apps of games and source ports here (Ship of Harkinian, OpenGOAL, GZDoom, DevilutionX…), or .command scripts that start one. Attic opens them as they are, with no emulator.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettez ici les apps Mac de jeux et de portages (Ship of Harkinian, OpenGOAL, GZDoom, DevilutionX…), ou des scripts .command qui en lancent un. Attic les ouvre telles quelles, sans émulateur."
           }
         }
       }
@@ -17429,6 +17465,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "« %1$@ » a ses %2$lld jeux."
+          }
+        }
+      }
+    },
+    "“%@” isn't a Mac app or a script.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %@ » n’est ni une app Mac ni un script."
           }
         }
       }

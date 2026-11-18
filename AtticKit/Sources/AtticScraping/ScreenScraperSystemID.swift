@@ -90,6 +90,8 @@ public enum ScreenScraperSystemID {
         .xbox: 32,
         .msx: 113,
         .dos: 135,
+        // ScreenScraper files most ports and native games under PC.
+        .ports: 135,
         .wonderswan: 45,
         .wonderswancolor: 46,
         .ngp: 25,

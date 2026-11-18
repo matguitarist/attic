@@ -73,6 +73,7 @@ public enum TheGamesDBSystemID {
         .xbox: 14,
         .msx: 4929,
         .dos: 1,
+        .ports: 1,
         .wonderswan: 4925,
         .wonderswancolor: 4926,
         .ngp: 4922,

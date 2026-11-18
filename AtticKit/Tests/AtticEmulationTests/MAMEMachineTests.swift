@@ -65,3 +65,23 @@ struct MAMEMachineTests {
         }
     }
 }
+
+struct PortLaunchTests {
+    @Test func appsOpenAndScriptsRun() {
+        #expect(PortLaunch(URL(filePath: "/ports/Ship of Harkinian.app")) == .app(URL(filePath: "/ports/Ship of Harkinian.app")))
+        #expect(PortLaunch(URL(filePath: "/ports/Doom.command")) == .script(URL(filePath: "/ports/Doom.command")))
+        #expect(PortLaunch(URL(filePath: "/ports/start.SH")) == .script(URL(filePath: "/ports/start.SH")))
+        #expect(PortLaunch(URL(filePath: "/ports/readme.txt")) == nil)
+    }
+
+    @Test func scriptsRunFromTheirFolder() {
+        let process = PortLaunch.scriptProcess(URL(filePath: "/ports/OpenGOAL/run.sh"))
+        #expect(process.arguments == ["/ports/OpenGOAL/run.sh"])
+        #expect(process.currentDirectoryURL?.path == "/ports/OpenGOAL")
+    }
+
+    @Test func portsFolderIsASystem() {
+        #expect(SystemTaxonomy.system(forShortName: "ports")?.canonicalID == .ports)
+        #expect(SystemROMExtensions.gameFolderExtensions.contains("app"))
+    }
+}

@@ -38,6 +38,6 @@ public enum PhysicalMedium: String, Sendable, CaseIterable {
     ]
 
     private static let noMedium: Set<String> = [
-        "steam", "scummvm", "doom", "quake", "easyrpg", "pico8", "tic80", "wasm4", "arduboy", "gameandwatch", "lcdgames", "lowresnx", "lutro", "vircon32"
+        "steam", "ports", "scummvm", "doom", "quake", "easyrpg", "pico8", "tic80", "wasm4", "arduboy", "gameandwatch", "lcdgames", "lowresnx", "lutro", "vircon32"
     ]
 }

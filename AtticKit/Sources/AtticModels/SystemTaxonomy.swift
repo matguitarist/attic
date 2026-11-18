@@ -894,6 +894,14 @@ public enum SystemTaxonomy {
             category: .computer
         ),
         SystemDefinition(
+            canonicalID: .ports,
+            displayName: "Ports",
+            batoceraShortName: "ports",
+            esdeShortName: "ports",
+            retroArchSystemIDs: [],
+            category: .computer
+        ),
+        SystemDefinition(
             canonicalID: .mame,
             displayName: "MAME",
             batoceraShortName: "mame",

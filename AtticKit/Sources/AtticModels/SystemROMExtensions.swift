@@ -84,6 +84,9 @@ public enum SystemROMExtensions {
         // Mac games installed through Steam; a .steam file names one by its
         // app ID (see SteamLibrary).
         .steam: ["steam"],
+        // Mac apps (Ship of Harkinian, OpenGOAL, GZDoom…) and scripts that
+        // start a game, run as they are (see PortLaunch).
+        .ports: ["app", "command", "sh"],
         .scummvm: ["scummvm"],
         .doom: ["iwad", "pk3", "pwad", "wad"],
         .quake: ["quake"],
@@ -168,7 +171,7 @@ public enum SystemROMExtensions {
 
     /// Folders that are games themselves (`Game.ps3`, `Monkey Island.scummvm`),
     /// the way Batocera and ES-DE store those systems' games.
-    public static let gameFolderExtensions: Set<String> = ["ps3", "ps4", "scummvm", "quake", "easyrpg"]
+    public static let gameFolderExtensions: Set<String> = ["ps3", "ps4", "scummvm", "quake", "easyrpg", "app"]
 
     /// The file inside a game folder that a core is given: one named like
     /// the folder (ScummVM's hook file), Quake's id1/pak0.pak, or an RPG

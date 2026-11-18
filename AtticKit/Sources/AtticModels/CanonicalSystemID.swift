@@ -123,6 +123,8 @@ public extension CanonicalSystemID {
     static let macintosh = CanonicalSystemID("macintosh")
     /// Mac games installed through Steam, played through it.
     static let steam = CanonicalSystemID("steam")
+    /// Native Mac games and source ports: apps and scripts, run as they are.
+    static let ports = CanonicalSystemID("ports")
     static let xbox = CanonicalSystemID("xbox")
     static let msx = CanonicalSystemID("msx")
     static let dos = CanonicalSystemID("dos")

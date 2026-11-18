@@ -64,6 +64,10 @@ final class LaunchCoordinator {
             playThroughSteam(game)
             return
         }
+        if CanonicalSystemID(game.systemCanonicalID) == .ports {
+            playPort(game)
+            return
+        }
 
         guard let target = LaunchTargetResolution.resolve(
             gameOverride: game.launchOverride,
@@ -137,6 +141,59 @@ final class LaunchCoordinator {
         AppLog.post(.info, "Launching “\(game.title)” through Steam (app \(installed.appID)).")
         NSWorkspace.shared.open(SteamLibrary.runURL(appID: installed.appID))
         Task { await follow(game, installedIn: installed.folder) }
+    }
+
+    // MARK: - Ports
+
+    /// A Mac app or a script from the Ports folder, run with no emulator.
+    private func playPort(_ game: Game) {
+        guard let port = PortLaunch(game.romAbsoluteURL) else {
+            state = .failed(String(localized: "“\(game.title)” isn't a Mac app or a script."))
+            return
+        }
+        state = .launching
+        AppLog.post(.info, "Launching “\(game.title)” from Ports: \(game.romAbsoluteURL.path)")
+        switch port {
+        case .app(let url):
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.activates = true
+            Task {
+                do {
+                    let app = try await NSWorkspace.shared.openApplication(at: url, configuration: configuration)
+                    await timePort(game) { !app.isTerminated }
+                } catch {
+                    state = .failed(String(localized: "Couldn't open “\(game.title)”: \(error.localizedDescription)"))
+                    AppLog.post(.error, "Couldn't open “\(game.title)”: \(error.localizedDescription).")
+                }
+            }
+        case .script(let url):
+            let process = PortLaunch.scriptProcess(url)
+            do {
+                try process.run()
+            } catch {
+                state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
+                AppLog.post(.error, "Couldn't run “\(url.lastPathComponent)”: \(error.localizedDescription)")
+                return
+            }
+            Task { await timePort(game) { process.isRunning } }
+        }
+    }
+
+    /// Records a play session for as long as `isRunning` says the port runs.
+    private func timePort(_ game: Game, isRunning: @escaping () -> Bool) async {
+        state = .running(gameID: game.persistentModelID)
+        var playSession: PlaySession?
+        if let context = game.modelContext {
+            let session = PlaySession(game: game, launchMethodRaw: "ports")
+            context.insert(session)
+            try? context.save()
+            playSession = session
+        }
+        while isRunning() {
+            try? await Task.sleep(for: .seconds(2))
+        }
+        AppLog.post(.info, "Ports: “\(game.title)” quit.")
+        recordSessionEnded(game: game, playSession: playSession)
     }
 
     private func follow(_ game: Game, installedIn folder: URL) async {
