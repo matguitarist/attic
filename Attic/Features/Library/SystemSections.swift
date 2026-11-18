@@ -103,7 +103,8 @@ struct SystemVerificationSection: View {
 }
 
 /// The popover behind a system's Verification row: each verdict's count
-/// and games, when it was checked, and Verify Again.
+/// and games, when it was checked, and Verify Games (or Verify Again
+/// once a game has a verdict).
 private struct VerificationDetails: View {
     let systemID: CanonicalSystemID
     let host: ToolsCoordinator.Host
@@ -136,7 +137,9 @@ private struct VerificationDetails: View {
             }
             HStack {
                 Spacer()
-                Button(verification == nil ? String(localized: "Verify Games…") : String(localized: "Verify Again…")) {
+                // Verify Again only once a game has a verdict: a run that found
+                // no DAT (or no match) leaves the system not verified yet.
+                Button(verdicts.keys.allSatisfy(\.isEmpty) ? String(localized: "Verify Games…") : String(localized: "Verify Again…")) {
                     dismiss()
                     Task {
                         await tools.verify(datsFolder: emulationFolderStore.folder.dats, scanCoordinator: scanCoordinator,
