@@ -12,6 +12,8 @@ struct CabinetSettingsView: View {
     @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
     @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
     @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
+    @AppStorage(CabinetMusic.enabledKey) private var playsMusic = false
+    @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @State private var screensRevision = 0
     @State private var themeError: String?
     @Environment(\.openWindow) private var openWindow
@@ -36,6 +38,15 @@ struct CabinetSettingsView: View {
                 } label: {
                     Text("Attract Mode")
                     Text("With nothing pressed for a while, random games play their video or show their art. A plays the game on screen.")
+                }
+                LabeledContent {
+                    HStack {
+                        Button("Show Music Folder") { showMusicFolder() }
+                        Toggle("Play Music", isOn: $playsMusic).labelsHidden()
+                    }
+                } label: {
+                    Text("Play Music")
+                    Text("Shuffles the tracks in the Music folder of the Emulation folder, or in Music/snes and such while that system's games are shown. MP3, AAC, WAV, AIFF or FLAC.")
                 }
                 Picker(selection: $marqueeDisplayName) {
                     let _ = screensRevision
@@ -196,5 +207,14 @@ struct CabinetSettingsView: View {
     private func showThemesFolder() {
         try? FileManager.default.createDirectory(at: CabinetThemeStore.folderURL, withIntermediateDirectories: true)
         NSWorkspace.shared.open(CabinetThemeStore.folderURL)
+    }
+}
+
+private extension CabinetSettingsView {
+    /// Makes the Music folder if needed and shows it in the Finder.
+    func showMusicFolder() {
+        let folder = emulationFolderStore.folder.root.appending(path: CabinetMusic.folderName, directoryHint: .isDirectory)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        NSWorkspace.shared.activateFileViewerSelecting([folder])
     }
 }

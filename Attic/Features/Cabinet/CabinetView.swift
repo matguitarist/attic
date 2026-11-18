@@ -84,6 +84,7 @@ struct CabinetView: View {
     @State private var attractEvent: CabinetEvent?
     @State private var lastInput = Date.now
     @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
+    @AppStorage(CabinetMusic.enabledKey) private var playsMusic = false
 
     enum Level {
         case systems, games
@@ -273,12 +274,14 @@ struct CabinetView: View {
             CabinetMarqueeWindow.shared.start()
             updateMarquee()
         }
+        .onChange(of: musicKey, initial: true) { updateMusic() }
         // The marquee screen follows focus, section and theme.
         .onChange(of: marqueeKey) { updateMarquee() }
         .onChange(of: theme.systems.isEnabled) { _, isEnabled in
             if !isEnabled { level = .games }
         }
         .onDisappear {
+            CabinetMusic.shared.stop()
             CabinetMarqueeWindow.shared.stop()
             gamepad.isCabinetActive = false
             CabinetWindows.showOthers()
@@ -299,6 +302,29 @@ struct CabinetView: View {
               launchCoordinator.state == .idle, NSApp.isActive,
               Date.now.timeIntervalSince(lastInput) >= Double(attractMinutes * 60) else { return }
         isAttracting = true
+    }
+
+    /// What the music depends on, cheap to compare.
+    private var musicKey: [AnyHashable] {
+        var running = false
+        if case .running = launchCoordinator.state { running = true }
+        return [playsMusic, musicSystem, isAttracting, pageGame == nil, running]
+    }
+
+    /// The system whose games are shown, for its own music.
+    private var musicSystem: String? {
+        guard level == .games, case .system(let id) = selection else { return nil }
+        return id.rawValue
+    }
+
+    /// Music plays on Cabinet Mode's screens, not over a game, its page's
+    /// video or the attract mode.
+    private func updateMusic() {
+        let music = CabinetMusic.shared
+        guard playsMusic else { return music.stop() }
+        if case .running = launchCoordinator.state { return music.pause() }
+        if isAttracting || pageGame != nil { return music.pause() }
+        music.play(from: CabinetMusic.folder(in: emulationFolderStore.folder.root, system: musicSystem))
     }
 
     /// What the marquee screen depends on, cheap to compare.

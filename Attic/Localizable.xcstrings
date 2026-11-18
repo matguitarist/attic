@@ -12145,6 +12145,16 @@
         }
       }
     },
+    "Play Music": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer de la musique"
+          }
+        }
+      }
+    },
     "Play Time": {
       "localizations": {
         "fr": {
@@ -14564,6 +14574,16 @@
         }
       }
     },
+    "Show Music Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher le dossier Music"
+          }
+        }
+      }
+    },
     "Show ROMs Folder": {
       "localizations": {
         "fr": {
@@ -14691,6 +14711,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Affiché à la place du nom, dans le panneau latéral et le mode Cabinet."
+          }
+        }
+      }
+    },
+    "Shuffles the tracks in the Music folder of the Emulation folder, or in Music/snes and such while that system's games are shown. MP3, AAC, WAV, AIFF or FLAC.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Joue au hasard les morceaux du dossier Music du dossier Emulation, ou de Music/snes et autres pendant que les jeux de ce système sont affichés. MP3, AAC, WAV, AIFF ou FLAC."
           }
         }
       }
