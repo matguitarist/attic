@@ -274,9 +274,20 @@ notarize() {   # notarize <file>: waits for Apple, prints Apple's log when it sa
   fi
 }
 
+# Apple's ticket can take a few minutes to be served after "Accepted":
+# staple again every 30 seconds, for up to 10 minutes.
+staple() {   # staple <file>
+  local try
+  for try in {1..20}; do
+    xcrun stapler staple "$1" >>"$log" 2>&1 && return 0
+    (( try < 20 )) && sleep 30
+  done
+  die "stapler couldn't get Apple's ticket for $1 (see $log)"
+}
+
 step "notarize (Apple usually answers within a few minutes)"
 notarize "$dmg"
-quiet xcrun stapler staple "$dmg"
+staple "$dmg"
 # The disk image's ticket covers the app inside it: same signature, so the copy
 # Sparkle ships can be stapled without a second submission.
 if ! quiet xcrun stapler staple "$app"; then
@@ -284,7 +295,7 @@ if ! quiet xcrun stapler staple "$app"; then
   ditto -c -k --norsrc --noextattr --keepParent "$app" "$work/notarize.zip"
   notarize "$work/notarize.zip"
   rm -f "$work/notarize.zip"
-  quiet xcrun stapler staple "$app"
+  staple "$app"
 fi
 quiet xcrun stapler validate "$app"
 quiet spctl --assess --type execute --verbose "$app"
