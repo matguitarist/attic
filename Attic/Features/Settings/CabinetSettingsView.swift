@@ -11,6 +11,7 @@ struct CabinetSettingsView: View {
     @AppStorage("videoPreviewsMuted") private var videoPreviewsMuted = true
     @AppStorage(CabinetSystemsView.playsVideosKey) private var playsSystemVideos = false
     @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
+    @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
     @State private var screensRevision = 0
     @State private var themeError: String?
     @Environment(\.openWindow) private var openWindow
@@ -27,6 +28,14 @@ struct CabinetSettingsView: View {
                 Toggle(isOn: $playsSystemVideos) {
                     Text("Play system and collection videos")
                     Text("On the systems, after a moment, in place of the picture")
+                }
+                Picker(selection: $attractMinutes) {
+                    ForEach(CabinetAttractView.minuteChoices, id: \.self) { minutes in
+                        if minutes == 0 { Text("Never").tag(0) } else { Text("After \(minutes) minutes").tag(minutes) }
+                    }
+                } label: {
+                    Text("Attract Mode")
+                    Text("With nothing pressed for a while, random games play their video or show their art. A plays the game on screen.")
                 }
                 Picker(selection: $marqueeDisplayName) {
                     let _ = screensRevision

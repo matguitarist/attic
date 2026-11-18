@@ -3844,6 +3844,16 @@
         }
       }
     },
+    "After %lld minutes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après %lld minutes"
+          }
+        }
+      }
+    },
     "After each library scan, for instance once you've added a system.": {
       "localizations": {
         "fr": {
@@ -4252,6 +4262,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Attic lit les dossiers de ROMs organisés comme Batocera, RetroBat et ES-DE : un sous-dossier par système, nommé d’après le système (snes, megadrive, neogeo…). La page d’aide de chaque système indique les noms de dossier reconnus."
+          }
+        }
+      }
+    },
+    "Attract Mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode démo"
           }
         }
       }
@@ -10684,6 +10704,16 @@
         }
       }
     },
+    "Never": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jamais"
+          }
+        }
+      }
+    },
     "New Collection": {
       "localizations": {
         "fr": {
@@ -12331,6 +12361,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Présent"
+          }
+        }
+      }
+    },
+    "Press A to play, any other button to go back": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyez sur A pour jouer, sur un autre bouton pour revenir"
           }
         }
       }
@@ -16903,6 +16943,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wikipédia"
+          }
+        }
+      }
+    },
+    "With nothing pressed for a while, random games play their video or show their art. A plays the game on screen.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans rien toucher un moment, des jeux au hasard passent leur vidéo ou montrent leurs illustrations. A lance le jeu à l’écran."
           }
         }
       }

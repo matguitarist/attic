@@ -118,6 +118,11 @@ enum CabinetSnapshot {
         }
         .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme)), to: picker)
         print(picker.path)
+        let attract = folder.appending(path: "attract.png")
+        try capture(CabinetAttractView(event: nil, onPlay: { _ in }, onClose: {}, first: seed.games[2])
+            .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme))
+            .modelContainer(seed.container), to: attract)
+        print(attract.path)
     }
 
     private static func list(_ value: String?) -> [String]? {

@@ -79,6 +79,11 @@ struct CabinetView: View {
     /// The letter an L2/R2 jump landed on, shown for a moment.
     @State private var jumpLabel: String?
     @FocusState private var hasKeyboardFocus: Bool
+    /// The attract mode is showing (see `CabinetAttractView`).
+    @State private var isAttracting = false
+    @State private var attractEvent: CabinetEvent?
+    @State private var lastInput = Date.now
+    @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
 
     enum Level {
         case systems, games
@@ -150,6 +155,13 @@ struct CabinetView: View {
                     .allowsHitTesting(false)
             }
 
+            if isAttracting {
+                CabinetAttractView(event: attractEvent,
+                                   onPlay: { game in isAttracting = false; play(game) },
+                                   onClose: { isAttracting = false })
+                    .transition(.opacity)
+            }
+
             if !menuPath.isEmpty {
                 CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit,
                                 onSurprise: { menuPath = []; send(.random) },
@@ -160,6 +172,14 @@ struct CabinetView: View {
             }
         }
         .animation(.snappy(duration: 0.2), value: menuPath.isEmpty)
+        .animation(.easeInOut(duration: 0.6), value: isAttracting)
+        // Starts the attract mode once nothing has been pressed for a while.
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(5))
+                startAttractIfIdle()
+            }
+        }
         .animation(.snappy(duration: 0.25), value: isSearching)
         .animation(.snappy(duration: 0.25), value: pageGame == nil)
         .environment(browse)
@@ -267,7 +287,18 @@ struct CabinetView: View {
         // here, not to whichever Attic window macOS would pick.
         .onChange(of: launchCoordinator.state) { old, new in
             if case .running = old, new == .idle { CabinetWindows.bringCabinetForward() }
+            lastInput = .now
         }
+    }
+
+    /// The attract mode starts after the chosen minutes without input,
+    /// only on Cabinet Mode's own screens: not over a game, the menu or
+    /// the search.
+    private func startAttractIfIdle() {
+        guard attractMinutes > 0, !isAttracting, menuPath.isEmpty, !isSearching,
+              launchCoordinator.state == .idle, NSApp.isActive,
+              Date.now.timeIntervalSince(lastInput) >= Double(attractMinutes * 60) else { return }
+        isAttracting = true
     }
 
     /// What the marquee screen depends on, cheap to compare.
@@ -315,6 +346,12 @@ struct CabinetView: View {
     private func send(_ command: CabinetEvent.Command) {
         eventSequence += 1
         let newEvent = CabinetEvent(command: command, sequence: eventSequence)
+        lastInput = .now
+        // The press that ends the attract mode does nothing else.
+        if isAttracting {
+            attractEvent = newEvent
+            return
+        }
         switch command {
         case .menu:
             menuPath = menuPath.isEmpty ? [.main] : []
