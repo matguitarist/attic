@@ -61,6 +61,17 @@ import Testing
         #expect(SystemTaxonomy.system(forShortName: "genesis")?.canonicalID == .genesis)
     }
 
+    @Test func retroBatAndBatoceraFolderNamesFindTheirSystem() {
+        let folders: [String: CanonicalSystemID] = [
+            "segastv": .stv, "c20": .vic20, "cplus4": .plus4, "msx2plus": .msx, "amiga4000": .amiga,
+            "xegs": .atari800, "megadrive-msu": .genesis, "snes-msu1": .snes, "hbmame": .mame, "cave": .mame,
+            "videopacplus": .odyssey2, "sc3000": .sg1000,
+        ]
+        for (folder, system) in folders {
+            #expect(SystemTaxonomy.system(forShortName: folder)?.canonicalID == system, "\(folder)")
+        }
+    }
+
     @Test func definitionRoundTripsFromCanonicalID() {
         let definition = SystemTaxonomy.definition(for: .genesis)
         #expect(definition?.batoceraShortName == "megadrive")

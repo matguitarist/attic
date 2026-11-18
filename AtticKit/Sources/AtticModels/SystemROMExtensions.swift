@@ -49,7 +49,7 @@ public enum SystemROMExtensions {
         .fds: ["7z", "fds", "nes", "unf", "unif", "zip"],
         .pokemini: ["7z", "min", "zip"],
         .gameandwatch: ["7z", "mgw", "zip"],
-        .sg1000: ["68k", "7z", "bin", "bms", "chd", "cue", "gen", "gg", "iso", "m3u", "md", "mdx", "ri", "rom", "sg", "sgd", "smd", "sms", "zip"],
+        .sg1000: ["68k", "7z", "bin", "bms", "chd", "cue", "gen", "gg", "iso", "m3u", "md", "mdx", "ri", "rom", "sc", "sg", "sgd", "smd", "sms", "zip"],
         .naomi: ["7z", "bin", "dat", "elf", "lst", "zip"],
         .atomiswave: ["7z", "bin", "dat", "elf", "lst", "zip"],
         .naomi2: ["7z", "bin", "dat", "elf", "lst", "zip"],

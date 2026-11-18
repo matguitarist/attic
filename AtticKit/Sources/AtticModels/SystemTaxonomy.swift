@@ -84,7 +84,8 @@ public enum SystemTaxonomy {
             displayName: "Super Nintendo Entertainment System",
             batoceraShortName: "snes",
             esdeShortName: "snes",
-            retroArchSystemIDs: ["super_nes", "snes"]
+            retroArchSystemIDs: ["super_nes", "snes"],
+            otherShortNames: ["snes-msu1", "snes-msu"]
         ),
         SystemDefinition(
             canonicalID: .satellaview,
@@ -107,7 +108,8 @@ public enum SystemTaxonomy {
             displayName: "Sega Genesis / Mega Drive",
             batoceraShortName: "megadrive",
             esdeShortName: "genesis",
-            retroArchSystemIDs: ["mega_drive", "megadrive", "genesis"]
+            retroArchSystemIDs: ["mega_drive", "megadrive", "genesis"],
+            otherShortNames: ["megadrive-msu", "msu-md"]
         ),
         SystemDefinition(
             canonicalID: .psx,
@@ -397,7 +399,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "sg1000",
             esdeShortName: "sg-1000",
             retroArchSystemIDs: ["sg_1000", "sg1000"],
-            category: .console
+            category: .console, otherShortNames: ["sc3000"]
         ),
         SystemDefinition(
             canonicalID: .naomi,
@@ -463,7 +465,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "stv",
             esdeShortName: "stv",
             retroArchSystemIDs: ["stv"],
-            category: .arcade
+            category: .arcade, otherShortNames: ["segastv"]
         ),
         SystemDefinition(
             canonicalID: .gaelco,
@@ -536,7 +538,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "msx1",
             esdeShortName: "msx",
             retroArchSystemIDs: ["msx"],
-            category: .computer, otherShortNames: ["msx2", "msx2+", "msxturbor"]
+            category: .computer, otherShortNames: ["msx2", "msx2+", "msxturbor", "msx1", "msx2plus"]
         ),
         SystemDefinition(
             canonicalID: .dos,
@@ -600,7 +602,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "atari800",
             esdeShortName: "atari800",
             retroArchSystemIDs: ["atari_8bit", "atari800"],
-            category: .computer, otherShortNames: ["atarixe"]
+            category: .computer, otherShortNames: ["atarixe", "xegs"]
         ),
         SystemDefinition(
             canonicalID: .colecovision,
@@ -632,7 +634,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "o2em",
             esdeShortName: "odyssey2",
             retroArchSystemIDs: ["odyssey2"],
-            category: .console, otherShortNames: ["videopac"]
+            category: .console, otherShortNames: ["videopac", "videopacplus"]
         ),
         SystemDefinition(
             canonicalID: .channelf,
@@ -656,7 +658,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "amiga500",
             esdeShortName: "amiga",
             retroArchSystemIDs: ["commodore_amiga", "amiga"],
-            category: .computer, otherShortNames: ["amiga600", "amiga1200"]
+            category: .computer, otherShortNames: ["amiga600", "amiga1200", "amiga4000"]
         ),
         SystemDefinition(
             canonicalID: .zxspectrum,
@@ -849,7 +851,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "vic20",
             esdeShortName: "vic20",
             retroArchSystemIDs: ["commodore_vic20", "vic20"],
-            category: .computer
+            category: .computer, otherShortNames: ["c20"]
         ),
         SystemDefinition(
             canonicalID: .plus4,
@@ -857,7 +859,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "plus4",
             esdeShortName: "plus4",
             retroArchSystemIDs: ["commodore_plus4", "plus4"],
-            category: .computer, otherShortNames: ["c16"]
+            category: .computer, otherShortNames: ["c16", "cplus4"]
         ),
         SystemDefinition(
             canonicalID: .c128,
@@ -897,7 +899,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "mame",
             esdeShortName: "mame",
             retroArchSystemIDs: ["mame"],
-            category: .arcade, otherShortNames: ["arcade"]
+            category: .arcade, otherShortNames: ["arcade", "hbmame", "cave"]
         ),
         SystemDefinition(
             canonicalID: .fbneo,
