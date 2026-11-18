@@ -35,7 +35,10 @@ struct EmuMoviesReportView: View {
     private static let kindsKey = "emuMoviesKinds"
 
     private func remember() {
-        UserDefaults.standard.set(chosen.map(\.rawValue).sorted(), forKey: Self.systemsKey)
+        // A system's or a few games' look leaves the library's choice alone.
+        if plan.scope == nil {
+            UserDefaults.standard.set(chosen.map(\.rawValue).sorted(), forKey: Self.systemsKey)
+        }
         UserDefaults.standard.set(kinds.map(\.rawValue).sorted(), forKey: Self.kindsKey)
     }
 
@@ -111,6 +114,11 @@ struct EmuMoviesReportView: View {
                     .font(.title2.bold())
                 Text("Artwork comes in one pack per system and kind: Attic downloads it, keeps the pictures of your games and deletes the rest.")
                     .foregroundStyle(.secondary)
+                if let scope = plan.scope {
+                    Text(scope.count == 1 ? String(localized: "For 1 game: the whole pack is still downloaded to get its pictures.")
+                                          : String(localized: "For \(scope.count) games: the whole pack is still downloaded to get their pictures."))
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
@@ -190,8 +198,9 @@ struct EmuMoviesReportView: View {
         }
         .frame(width: 720, height: 680)
         .onAppear {
+            // A system's or a few games' look starts with their systems picked.
             let last = Set(UserDefaults.standard.stringArray(forKey: Self.systemsKey) ?? [])
-            for system in plan.systems where last.contains(system.id.rawValue) { choose(system.id, true) }
+            for system in plan.systems where plan.scope != nil || last.contains(system.id.rawValue) { choose(system.id, true) }
         }
         .onDisappear { plan.stop() }
     }

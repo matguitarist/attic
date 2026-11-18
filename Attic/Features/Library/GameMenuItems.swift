@@ -71,6 +71,8 @@ struct ScrapeMenuItems: View {
         Menu("Replace Existing Info") {
             sourceButtons(force: true)
         }
+        Divider()
+        EmuMoviesMediaButton { [game.romAbsolutePath] }
     }
 
     @ViewBuilder

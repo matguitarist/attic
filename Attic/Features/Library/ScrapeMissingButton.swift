@@ -73,6 +73,11 @@ struct ScrapeSelectionMenu: View {
             Section("All Games, Replacing Existing Info") {
                 sourceButtons(force: true)
             }
+            Divider()
+            EmuMoviesMediaButton {
+                let descriptor = FetchDescriptor(predicate: GameGridView.selectionPredicate(selection))
+                return Set(((try? modelContext.fetch(descriptor)) ?? []).map(\.romAbsolutePath))
+            }
         }
         .disabled(isRunning)
     }
@@ -153,6 +158,32 @@ struct ScrapeSelectionButton: View {
 
     private func start(_ source: ScrapeCoordinator.ScraperSource, force: Bool) {
         scrapeCoordinator.scrape(selection, from: source, force: force, in: modelContext)
+    }
+}
+
+/// "Media from EmuMovies…" in a Scrape menu: Get Media from EmuMovies for
+/// only these games (by path), or the EmuMovies login in Settings first.
+struct EmuMoviesMediaButton: View {
+    let paths: () -> Set<String>
+
+    @Environment(ToolsCoordinator.self) private var tools
+    @Environment(ScanCoordinator.self) private var scanCoordinator
+    @Environment(\.openSettings) private var openSettings
+    @AppStorage(SettingsTabView.selectionKey) private var settingsTab = SettingsTabView.Tab.general
+
+    var body: some View {
+        Button("Media from EmuMovies…") {
+            guard let server = EmuMoviesCredentialsStore().server else {
+                settingsTab = .emuMovies
+                openSettings()
+                return
+            }
+            let paths = paths()
+            guard !paths.isEmpty else { return }
+            Task { await tools.analyzeEmuMovies(server: server, scanCoordinator: scanCoordinator, host: .library, scope: paths) }
+        }
+        .disabled(tools.isBusy)
+        .help("Box art, logos, fan art, screenshots, manuals and videos for these games from EmuMovies, with your EmuMovies login.")
     }
 }
 

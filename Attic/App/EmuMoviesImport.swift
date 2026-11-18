@@ -55,6 +55,9 @@ final class EmuMoviesPlan {
     /// `unar`, from Homebrew.
     let unar: URL?
     let server: EmuMoviesServer
+    /// The paths of the games asked for from a system's or a game's menu,
+    /// or nil for the whole library.
+    let scope: Set<String>?
     private let games: [CanonicalSystemID: [LibraryStore.GameMedia]]
     private var queue: [CanonicalSystemID] = []
     private var worker: Task<Void, Never>?
@@ -67,8 +70,10 @@ final class EmuMoviesPlan {
 
     nonisolated static let kinds: [MediaKind] = [.covers, .boxes3D, .physicalMedia, .logos, .fanart, .screenshots]
 
-    init(server: EmuMoviesServer, games: [LibraryStore.GameMedia]) {
+    init(server: EmuMoviesServer, games: [LibraryStore.GameMedia], scope: Set<String>? = nil) {
         self.server = server
+        self.scope = scope
+        let games = scope.map { scope in games.filter { scope.contains($0.path) } } ?? games
         unar = ["/opt/homebrew/bin/unar", "/usr/local/bin/unar"].map(URL.init(fileURLWithPath:))
             .first { FileManager.default.isExecutableFile(atPath: $0.path) }
         let bySystem = Dictionary(grouping: games, by: \.system).filter { EmuMovies.names(for: $0.key) != nil }
@@ -224,15 +229,17 @@ struct EmuMoviesChoice {
 }
 
 extension ToolsCoordinator {
-    /// Shows the library's systems EmuMovies has media for; each is looked
-    /// up on its server when it's picked.
-    func analyzeEmuMovies(server: EmuMoviesServer, scanCoordinator: ScanCoordinator, host: Host) async {
+    /// Shows the library's systems EmuMovies has media for (or those of
+    /// the games in `scope`, by path); each is looked up on its server
+    /// when it's picked.
+    func analyzeEmuMovies(server: EmuMoviesServer, scanCoordinator: ScanCoordinator, host: Host, scope: Set<String>? = nil) async {
         guard !isBusy else { return }
         reportHost = host
-        let plan = EmuMoviesPlan(server: server, games: await scanCoordinator.gameMedia())
+        let plan = EmuMoviesPlan(server: server, games: await scanCoordinator.gameMedia(), scope: scope)
         guard !plan.systems.isEmpty else {
             outcome = Outcome(title: String(localized: "Get Media from EmuMovies"),
-                              message: String(localized: "EmuMovies has nothing for the systems in your library."))
+                              message: scope == nil ? String(localized: "EmuMovies has nothing for the systems in your library.")
+                                                    : String(localized: "EmuMovies has nothing for these games' systems."))
             return
         }
         report = .emuMovies(plan)
@@ -292,7 +299,8 @@ extension ToolsCoordinator {
         plan.stop()
         let task = Task {
             activity = Activity(title: String(localized: "Getting media from EmuMovies…"), fraction: 0)
-            let games = Dictionary(grouping: await scanCoordinator.gameMedia(), by: \.system)
+            let all = await scanCoordinator.gameMedia()
+            let games = Dictionary(grouping: plan.scope.map { scope in all.filter { scope.contains($0.path) } } ?? all, by: \.system)
             let jobs = Self.jobs(plan, choice: choice, games: games)
             let total = max(jobs.reduce(0) { $0 + $1.bytes }, 1)
             var done: Int64 = 0

@@ -4669,6 +4669,16 @@
         }
       }
     },
+    "Box art, logos, fan art, screenshots, manuals and videos for these games from EmuMovies, with your EmuMovies login.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîtiers, logos, fan art, captures d’écran, manuels et vidéos de ces jeux depuis EmuMovies, avec votre compte EmuMovies."
+          }
+        }
+      }
+    },
     "Box with Cartridge or Disc": {
       "localizations": {
         "fr": {
@@ -7351,6 +7361,16 @@
         }
       }
     },
+    "EmuMovies has nothing for these games' systems.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EmuMovies n’a rien pour les systèmes de ces jeux."
+          }
+        }
+      }
+    },
     "EmuMovies refused this username or password.": {
       "localizations": {
         "fr": {
@@ -7923,6 +7943,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Police"
+          }
+        }
+      }
+    },
+    "For %lld games: the whole pack is still downloaded to get their pictures.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour %lld jeux : le pack entier est tout de même téléchargé pour obtenir leurs images."
+          }
+        }
+      }
+    },
+    "For 1 game: the whole pack is still downloaded to get its pictures.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour 1 jeu : le pack entier est tout de même téléchargé pour obtenir ses images."
           }
         }
       }
@@ -10307,6 +10347,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Médias de jeux absents"
+          }
+        }
+      }
+    },
+    "Media from EmuMovies…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Médias d’EmuMovies…"
           }
         }
       }

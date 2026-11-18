@@ -73,6 +73,8 @@ struct MultipleGamesScrapeItems: View {
         Menu("Replace Existing Info") {
             sourceButtons(force: true)
         }
+        Divider()
+        EmuMoviesMediaButton { Set(games.map(\.romAbsolutePath)) }
     }
 
     @ViewBuilder
