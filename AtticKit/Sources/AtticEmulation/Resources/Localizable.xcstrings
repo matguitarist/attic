@@ -1292,6 +1292,16 @@
         }
       }
     },
+    "The Nintendo Switch emulator, native on Apple Silicon.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulateur Nintendo Switch, natif sur Apple Silicon."
+          }
+        }
+      }
+    },
     "The PS Vita emulator, native on Apple Silicon.": {
       "localizations": {
         "fr": {

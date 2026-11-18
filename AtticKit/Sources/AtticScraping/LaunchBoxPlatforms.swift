@@ -136,7 +136,8 @@ public enum LaunchBoxPlatforms {
         .fm7: ["Fujitsu FM-7"],
         .fmtowns: ["Fujitsu FM Towns Marty"],
         .camplynx: ["Camputers Lynx"],
-        .adam: ["Coleco ADAM"]
+        .adam: ["Coleco ADAM"],
+        .switch: ["Nintendo Switch"],
     ]
 
     /// Most likely first; empty when LaunchBox has no platform for it.

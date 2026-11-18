@@ -118,7 +118,8 @@ public enum TheGamesDBSystemID {
         .ti99: 4953,
         .samcoupe: 4979,
         .fm7: 4978,
-        .fmtowns: 4932
+        .fmtowns: 4932,
+        .switch: 4971
     ]
 
     public static func platformID(for canonicalID: CanonicalSystemID) -> Int? {

@@ -160,7 +160,8 @@ public enum SystemROMExtensions {
         .fmtowns: ["chd", "cue", "iso", "m3u", "zip"],
         .camplynx: ["7z", "tap", "zip"],
         .adam: ["7z", "bin", "col", "ddp", "dsk", "rom", "zip"],
-        .bk: ["7z", "bin", "zip"]
+        .bk: ["7z", "bin", "zip"],
+        .switch: ["nca", "nro", "nso", "nsp", "xci"]
     ]
 
     /// Lowercased extensions without the dot; `nil` for a system with no

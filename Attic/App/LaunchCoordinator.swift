@@ -403,6 +403,8 @@ final class LaunchCoordinator {
                     extraArguments = SystemSettingsSupport.dolphinArguments(systemSettings)
                 } else if emulator.id == EmulatorCatalog.keisho.id {
                     extraArguments = try retroArchStore.emulationFolderStore.folder.keishoArguments(for: CanonicalSystemID(game.systemCanonicalID), romURL: game.romAbsoluteURL)
+                } else if emulator.id == EmulatorCatalog.ryujinx.id {
+                    extraArguments = try retroArchStore.emulationFolderStore.folder.ryujinxArguments()
                 } else if emulator.id == EmulatorCatalog.odin.id {
                     extraArguments = try retroArchStore.emulationFolderStore.folder.odinLaunchArguments(for: CanonicalSystemID(game.systemCanonicalID), romURL: game.romAbsoluteURL)
                 }

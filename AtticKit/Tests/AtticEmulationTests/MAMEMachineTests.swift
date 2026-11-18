@@ -85,3 +85,32 @@ struct PortLaunchTests {
         #expect(SystemROMExtensions.gameFolderExtensions.contains("app"))
     }
 }
+
+struct RyujinxTests {
+    @Test func switchRunsInRyujinx() {
+        let recommendation = EmulatorCatalog.recommendation(for: .switch)
+        #expect(recommendation?.standalone.first?.id == "ryujinx")
+        #expect(recommendation?.bios.first?.fileName == "switch/prod.keys")
+        #expect(SystemROMExtensions.accepts("Game.nsp", for: .switch))
+    }
+
+    @Test func keysAreCopiedIntoRyujinxsDataFolder() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folder = EmulationFolder(root: root)
+        try FileManager.default.createDirectory(at: folder.bios.appending(path: "switch"), withIntermediateDirectories: true)
+        try Data("keys".utf8).write(to: folder.bios.appending(path: "switch/prod.keys"))
+        let arguments = try folder.ryujinxArguments()
+        let data = folder.configHome(for: EmulatorCatalog.ryujinx)
+        #expect(arguments == ["--root-data-dir", data.path])
+        #expect(try Data(contentsOf: data.appending(path: "system/prod.keys")) == Data("keys".utf8))
+        #expect(!FileManager.default.fileExists(atPath: data.appending(path: "system/title.keys").path))
+    }
+
+    @Test func releaseFeedNamesTheMacBuild() {
+        let feed = #"{"tag_name":"1.3.3","assets":[{"id":503,"name":"ryujinx-1.3.3-linux_x64.tar.gz","browser_download_url":"https://x/l.tar.gz"},{"id":504,"name":"ryujinx-1.3.3-macos_universal.app.tar.gz","browser_download_url":"https://x/m.tar.gz"}]}"#
+        let release = EmulatorInstaller.release(inGitHubRelease: Data(feed.utf8), suffix: "-macos_universal.app.tar.gz")
+        #expect(release?.downloadURL.absoluteString == "https://x/m.tar.gz")
+        #expect(release?.version == "1.3.3")
+    }
+}

@@ -464,6 +464,26 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
+    /// Nintendo Switch, from Ryubing's builds of Ryujinx (universal app).
+    /// Its release feed answers like GitHub's. Its data folder is set with
+    /// --root-data-dir (see `EmulationFolder.ryujinxArguments`), where Attic
+    /// copies the keys the user put in BIOS/switch. Firmware is installed
+    /// from Ryujinx's own menu.
+    public static let ryujinx = StandaloneEmulator(
+        id: "ryujinx",
+        name: "Ryujinx",
+        summary: String(localized: "The Nintendo Switch emulator, native on Apple Silicon.", bundle: .module),
+        appBundleName: "Ryujinx.app",
+        executableRelativePath: "Contents/MacOS/Ryujinx",
+        argumentTemplate: "--fullscreen {romPath}",
+        downloadURL: URL(string: "https://git.ryujinx.app/api/v1/repos/projects/Ryubing/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos_universal.app.tar.gz"),
+        homepageURL: URL(string: "https://ryujinx.app")!,
+        license: "MIT",
+        systems: [.switch],
+        portableHome: nil
+    )
+
     /// The Model 1 I/O boards' firmware, which some Model 1 and Model 2
     /// games read (Daytona USA, Virtua Cop). Most full sets include it; a
     /// split set needs the device set. MAME reads it here; for Keisho,
@@ -483,7 +503,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, keisho, odin]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, keisho, odin, ryujinx]
 
     // MARK: - Per-system table
 
@@ -789,7 +809,11 @@ public enum EmulatorCatalog {
         .init(systemID: .fmtowns, cores: [geartownsCore, mameMachine], standalone: [], bios: [mameSet(.fmtowns)], prefersStandalone: false),
         .init(systemID: .camplynx, cores: [mameMachine], standalone: [], bios: [mameSet(.camplynx)], prefersStandalone: false),
         .init(systemID: .adam, cores: [mameMachine], standalone: [], bios: [mameSet(.adam)], prefersStandalone: false),
-        .init(systemID: .bk, cores: [bkCore, mameMachine], standalone: [], bios: [mameSet(.bk)], prefersStandalone: false)
+        .init(systemID: .bk, cores: [bkCore, mameMachine], standalone: [], bios: [mameSet(.bk)], prefersStandalone: false),
+        .init(systemID: .switch, cores: [], standalone: [ryujinx], bios: [
+            BIOSRequirement("switch/prod.keys", note: "Dumped from your own Switch"),
+            BIOSRequirement("switch/title.keys", required: false, note: "Dumped from your own Switch")
+        ], prefersStandalone: true)
     ]
 
     public static func recommendation(for systemID: CanonicalSystemID) -> SystemEmulatorRecommendation? {

@@ -1212,6 +1212,14 @@ public enum SystemTaxonomy {
             esdeShortName: "bk",
             retroArchSystemIDs: ["bk"],
             category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .switch,
+            displayName: "Nintendo Switch",
+            batoceraShortName: "switch",
+            esdeShortName: "switch",
+            retroArchSystemIDs: [],
+            category: .console
         )
     ]
 

@@ -148,6 +148,7 @@ public extension CanonicalSystemID {
     static let fbneo = CanonicalSystemID("fbneo")
 
     // Added from Batocera's and RetroBat's systems.
+    static let `switch` = CanonicalSystemID("switch")
     static let sgb = CanonicalSystemID("sgb")
     static let advision = CanonicalSystemID("advision")
     static let arcadia = CanonicalSystemID("arcadia")

@@ -153,7 +153,8 @@ public enum ScreenScraperSystemID {
         .fmtowns: 253,
         .camplynx: 88,
         .adam: 89,
-        .bk: 93
+        .bk: 93,
+        .switch: 225
     ]
 
     public static func systemeID(for canonicalID: CanonicalSystemID) -> Int? {

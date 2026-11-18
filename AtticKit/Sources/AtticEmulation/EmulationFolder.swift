@@ -583,6 +583,24 @@ public struct EmulationFolder: Sendable, Hashable {
     /// options rather than HOME. Keisho reads device sets (the I/O
     /// boards' firmware) only from beside the game, so those in the BIOS
     /// folder are copied there when missing.
+    /// Ryujinx keeps its data in Config/Ryujinx, with the keys from
+    /// BIOS/switch copied into its system folder (where it reads them)
+    /// whenever they're new or changed.
+    public func ryujinxArguments() throws -> [String] {
+        let root = configHome(for: EmulatorCatalog.ryujinx)
+        let system = root.appending(path: "system", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: system, withIntermediateDirectories: true)
+        for name in ["prod.keys", "title.keys"] {
+            let source = bios.appending(path: "switch/\(name)")
+            guard let data = try? Data(contentsOf: source) else { continue }
+            let destination = system.appending(path: name)
+            if (try? Data(contentsOf: destination)) != data {
+                try data.write(to: destination)
+            }
+        }
+        return ["--root-data-dir", root.path]
+    }
+
     public func keishoArguments(for system: CanonicalSystemID, romURL: URL? = nil) throws -> [String] {
         let config = configHome(for: EmulatorCatalog.keisho)
         let saves = saves(for: system)

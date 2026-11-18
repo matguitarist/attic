@@ -34,7 +34,7 @@ public enum PhysicalMedium: String, Sendable, CaseIterable {
         "msx": .cartridge, "vic20": .cartridge, "atari800": .cartridge,
         "zxspectrum": .cassette, "zx81": .cassette, "plus4": .cassette,
         // Added from Batocera's and RetroBat's systems.
-        "bk": .cassette, "camplynx": .cassette, "oricatmos": .cassette, "electron": .cassette, "ti99": .cartridge, "fmtowns": .disc, "adam": .cassette, "loopy": .cartridge,
+        "bk": .cassette, "camplynx": .cassette, "oricatmos": .cassette, "electron": .cassette, "ti99": .cartridge, "fmtowns": .disc, "adam": .cassette, "loopy": .cartridge, "switch": .cartridge,
     ]
 
     private static let noMedium: Set<String> = [

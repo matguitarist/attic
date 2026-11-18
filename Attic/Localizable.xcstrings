@@ -15202,6 +15202,16 @@
         }
       }
     },
+    "Switch games run in Ryujinx. Put prod.keys (and title.keys) from your own Switch in a switch folder inside the BIOS folder; Attic copies them to Ryujinx. Install your console's firmware once from Ryujinx's Tools menu.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Switch tournent dans Ryujinx. Mettez prod.keys (et title.keys) tirés de votre propre Switch dans un dossier switch du dossier BIOS ; Attic les copie pour Ryujinx. Installez une fois le firmware de votre console depuis le menu Outils de Ryujinx."
+          }
+        }
+      }
+    },
     "Switch sections with LB / RB.": {
       "localizations": {
         "fr": {
@@ -16382,6 +16392,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisez des dumps .iso ou .cso. Attic installe aussi les fichiers de PPSSPP (polices et données) dans le dossier BIOS."
+          }
+        }
+      }
+    },
+    "Use .nsp or .xci dumps.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisez des dumps .nsp ou .xci."
           }
         }
       }

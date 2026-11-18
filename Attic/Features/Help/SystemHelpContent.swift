@@ -272,7 +272,10 @@ enum SystemHelpContent {
         .fmtowns: .init(manufacturer: "Fujitsu", year: 1989, wikipediaTitle: "FM_Towns"),
         .camplynx: .init(manufacturer: "Camputers", year: 1983, wikipediaTitle: "Camputers_Lynx"),
         .adam: .init(manufacturer: "Coleco", year: 1983, wikipediaTitle: "Coleco_Adam"),
-        .bk: .init(manufacturer: "Elektronika", year: 1985, wikipediaTitle: "Electronika_BK")
+        .bk: .init(manufacturer: "Elektronika", year: 1985, wikipediaTitle: "Electronika_BK"),
+        .switch: .init(manufacturer: "Nintendo", year: 2017, wikipediaTitle: "Nintendo_Switch",
+                       notes: [LocalizedStringResource("Switch games run in Ryujinx. Put prod.keys (and title.keys) from your own Switch in a switch folder inside the BIOS folder; Attic copies them to Ryujinx. Install your console's firmware once from Ryujinx's Tools menu."),
+                               LocalizedStringResource("Use .nsp or .xci dumps.")])
     ]
 }
 
