@@ -92,7 +92,7 @@ struct ThemePreview: View {
                     .id(selection)
                     .opacity(0)
                 if let focusedGame {
-                    CabinetGamePage(game: focusedGame, event: nil, onPlay: { _ in }, onClose: {})
+                    CabinetGamePage(game: focusedGame, event: nil, onPlay: { _ in }, onPlayState: { _, _ in }, onClose: {})
                         .id(focusedGame.persistentModelID)
                 }
             case .systems:

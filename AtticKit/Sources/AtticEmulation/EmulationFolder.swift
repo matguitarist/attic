@@ -150,6 +150,8 @@ public struct EmulationFolder: Sendable, Hashable {
             ("sort_savestates_enable", "false"),
             ("sort_savefiles_by_content_enable", "false"),
             ("sort_savestates_by_content_enable", "false"),
+            // A screenshot beside each state, for picking one in Attic.
+            ("savestate_thumbnail_enable", "true"),
             ("rgui_config_directory", retroArchConfigDirectory.appending(path: "overrides").path),
             ("input_remapping_directory", retroArchConfigDirectory.appending(path: "remaps").path),
             ("global_core_options", "true"),

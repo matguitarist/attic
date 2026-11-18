@@ -4,16 +4,21 @@ import SwiftUI
 import SwiftData
 import AtticModels
 import AtticPersistence
+import AtticEmulation
 
 /// A game's page in Cabinet Mode, between choosing it and playing it: its
-/// art, video, facts and description, and Play, Favorite, Collections and
-/// Manual. Left and right pick an action, up and down scroll the
+/// art, video, facts and description, and Play, Save States, Favorite,
+/// Collections and Manual. Left and right pick an action, up and down scroll the
 /// description, B goes back to the games.
 struct CabinetGamePage: View {
     let game: Game
     let event: CabinetEvent?
     let onPlay: (Game) -> Void
+    let onPlayState: (Game, SaveState) -> Void
     let onClose: () -> Void
+    /// The game's RetroArch save states, newest first (none in the Theme
+    /// Editor's preview).
+    var saveStates: [SaveState] = []
 
     @Environment(\.cabinetTheme) private var installed
     @Environment(GamepadInputMonitor.self) private var gamepad
@@ -39,15 +44,15 @@ struct CabinetGamePage: View {
     @State private var overlaySequence = 0
 
     enum Action: CaseIterable {
-        case play, favorite, collections, manual
+        case play, saveStates, favorite, collections, manual
     }
 
     enum Overlay {
-        case collections, manual(URL)
+        case collections, manual(URL), saveStates
     }
 
     private var actions: [Action] {
-        Action.allCases.filter { $0 != .manual || manualURL != nil }
+        Action.allCases.filter { ($0 != .manual || manualURL != nil) && ($0 != .saveStates || !saveStates.isEmpty) }
     }
 
     var body: some View {
@@ -72,6 +77,11 @@ struct CabinetGamePage: View {
                     .transition(.opacity)
             case .manual(let url):
                 CabinetManualView(url: url, event: overlayEvent, onClose: { overlay = nil })
+                    .transition(.opacity)
+            case .saveStates:
+                CabinetSaveStatePicker(states: saveStates, event: overlayEvent,
+                                       onPick: { state in overlay = nil; onPlayState(game, state) },
+                                       onClose: { overlay = nil })
                     .transition(.opacity)
             case nil:
                 EmptyView()
@@ -187,11 +197,23 @@ struct CabinetGamePage: View {
         }
     }
 
+    /// Every action with its name when they fit on one line; else only
+    /// the focused one is named and the others show their symbol.
     private func actionRow(_ theme: CabinetTheme) -> some View {
+        ViewThatFits(in: .horizontal) {
+            actionButtons(theme, namesAll: true)
+            actionButtons(theme, namesAll: false)
+        }
+    }
+
+    private func actionButtons(_ theme: CabinetTheme, namesAll: Bool) -> some View {
         HStack(spacing: 14) {
             ForEach(actions, id: \.self) { action in
                 let isFocused = action == focusedAction
                 Label(title(of: action), systemImage: symbol(of: action))
+                    .labelStyle(ActionLabelStyle(showsTitle: namesAll || isFocused))
+                    .lineLimit(1)
+                    .fixedSize()
                     .font(theme.largeFont(isFocused ? .bold : .medium))
                     .padding(.horizontal, 24)
                     .padding(.vertical, 14)
@@ -199,6 +221,7 @@ struct CabinetGamePage: View {
                     .background(isFocused ? theme.palette.accent.color : theme.palette.surface.color, in: Capsule())
                     .scaleEffect(isFocused ? 1.06 : 1)
                     .animation(.snappy(duration: 0.15), value: isFocused)
+                    .accessibilityLabel(title(of: action))
                     .onTapGesture {
                         focusedAction = action
                         perform(action)
@@ -207,10 +230,21 @@ struct CabinetGamePage: View {
         }
     }
 
+    private struct ActionLabelStyle: LabelStyle {
+        let showsTitle: Bool
+        func makeBody(configuration: Configuration) -> some View {
+            HStack(spacing: 8) {
+                configuration.icon
+                if showsTitle { configuration.title }
+            }
+        }
+    }
+
     private func title(of action: Action) -> String {
         switch action {
         case .play: launchCoordinator.state == .running(gameID: game.persistentModelID) ? String(localized: "Playing") : String(localized: "Play")
         case .favorite: game.favorite ? String(localized: "Favorite") : String(localized: "Add to Favorites")
+        case .saveStates: String(localized: "Save States")
         case .collections: String(localized: "Collections")
         case .manual: String(localized: "Manual")
         }
@@ -220,6 +254,7 @@ struct CabinetGamePage: View {
         switch action {
         case .play: "play.fill"
         case .favorite: game.favorite ? "star.fill" : "star"
+        case .saveStates: "clock.arrow.circlepath"
         case .collections: "rectangle.stack"
         case .manual: "book"
         }
@@ -258,7 +293,77 @@ struct CabinetGamePage: View {
             game.favorite.toggle()
             try? game.modelContext?.save()
         case .collections: overlay = .collections
+        case .saveStates: overlay = .saveStates
         case .manual: if let manualURL { overlay = .manual(manualURL) }
+        }
+    }
+}
+
+/// The game's save states, newest first: left and right pick one, A plays
+/// from it, B closes.
+struct CabinetSaveStatePicker: View {
+    let states: [SaveState]
+    let event: CabinetEvent?
+    let onPick: (SaveState) -> Void
+    let onClose: () -> Void
+
+    @Environment(\.cabinetTheme) private var installed
+    @State private var focused = 0
+
+    var body: some View {
+        let theme = installed.theme
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Save States")
+                .font(theme.font(size: theme.typography.titleSize * 0.8, weight: .bold))
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 20) {
+                        ForEach(Array(states.enumerated()), id: \.element.id) { index, state in
+                            let isFocused = index == focused
+                            VStack(alignment: .leading, spacing: 8) {
+                                Group {
+                                    if let thumbnail = state.thumbnail, let image = NSImage(contentsOf: thumbnail) {
+                                        Image(nsImage: image).resizable().interpolation(.none).aspectRatio(contentMode: .fill)
+                                    } else {
+                                        theme.palette.surface.color
+                                    }
+                                }
+                                .frame(width: 256, height: 192)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay {
+                                    if isFocused { RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(theme.palette.accent.color, lineWidth: 4) }
+                                }
+                                Text("Slot \(state.slot)")
+                                    .font(theme.largeFont(isFocused ? .semibold : .regular))
+                                Text(state.date, format: .relative(presentation: .named))
+                                    .font(theme.bodyFont())
+                                    .foregroundStyle(theme.palette.secondaryText.color)
+                            }
+                            .scaleEffect(isFocused ? 1.04 : 1)
+                            .animation(.snappy(duration: 0.15), value: isFocused)
+                            .id(index)
+                            .onTapGesture { focused = index; onPick(state) }
+                        }
+                    }
+                    .padding(8)
+                }
+                .scrollIndicators(.never)
+                .onChange(of: focused) { _, index in withAnimation { proxy.scrollTo(index) } }
+            }
+        }
+        .padding(28)
+        .frame(maxWidth: 1000)
+        .background(theme.palette.background.color.opacity(0.95), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .shadow(color: .black.opacity(0.5), radius: 40)
+        .onChange(of: event) { _, newEvent in
+            guard let command = newEvent?.command else { return }
+            switch command {
+            case .move(.left): focused = max(0, focused - 1)
+            case .move(.right): focused = min(max(0, states.count - 1), focused + 1)
+            case .activate: if let state = states[safe: focused] { onPick(state) }
+            case .back: onClose()
+            default: break
+            }
         }
     }
 }

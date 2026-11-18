@@ -4,6 +4,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import AtticEmulation
 
 /// Pictures of Cabinet Mode for checking a change without a library or a
 /// person at the screen: `ATTIC_SNAPSHOT=<folder>` (see tools/snap.sh)
@@ -56,6 +57,9 @@ enum CabinetSnapshot {
                     print(file.path)
                 }
             }
+            if themeIDs == nil || themeIDs?.contains("page") == true {
+                try gamePage(seed, into: folder)
+            }
             if themeIDs == nil || themeIDs?.contains("marquee") == true {
                 try marquees(seed, into: folder)
             }
@@ -88,6 +92,32 @@ enum CabinetSnapshot {
             try capture(CabinetMarqueeView(model: model).modelContainer(seed.container), to: file, size: CGSize(width: 1280, height: 400))
             print(file.path)
         }
+    }
+
+    /// A game's page with save states, and their picker, with the game's
+    /// pictures standing in for the states' screenshots.
+    private static func gamePage(_ seed: Seed, into folder: URL) throws {
+        let game = seed.games[1]
+        let pictures = seed.games.compactMap(\.coverArtURL)
+        let states = pictures.prefix(3).enumerated().map { index, url in
+            SaveState(slot: index + 1, url: url, thumbnail: url, date: Date.now.addingTimeInterval(Double(-3600 * (index * 20 + 2))))
+        }
+        let theme = CabinetTheme.builtIns[0]
+        let page = folder.appending(path: "page-savestates.png")
+        try capture(CabinetGamePage(game: game, event: nil, onPlay: { _ in }, onPlayState: { _, _ in }, onClose: {}, saveStates: states)
+            .background(theme.palette.background.color)
+            .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme))
+            .environment(seed.launchCoordinator)
+            .environment(seed.gamepad)
+            .modelContainer(seed.container), to: page)
+        print(page.path)
+        let picker = folder.appending(path: "page-savestates-picker.png")
+        try capture(ZStack {
+            theme.palette.background.color
+            CabinetSaveStatePicker(states: states, event: nil, onPick: { _ in }, onClose: {})
+        }
+        .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme)), to: picker)
+        print(picker.path)
     }
 
     private static func list(_ value: String?) -> [String]? {
@@ -139,6 +169,8 @@ enum CabinetSnapshot {
         let container: ModelContainer
         let games: [Game]
         let launchCoordinator: LaunchCoordinator
+        /// For the game page, which reads the pad's buttons.
+        let gamepad: GamepadInputMonitor
 
         init() throws {
             let roms = URL(fileURLWithPath: NSTemporaryDirectory()).appending(path: "Attic-snapshot-roms", directoryHint: .isDirectory)
@@ -146,7 +178,9 @@ enum CabinetSnapshot {
             container = try AtticModelContainer.makeInMemory()
             let defaults = UserDefaults(suiteName: "attic.snapshot") ?? .standard
             let emulation = EmulationFolderStore(userDefaults: defaults, romsRoots: [roms])
-            launchCoordinator = LaunchCoordinator(controllerSettingsStore: ControllerSettingsStore(userDefaults: defaults, emulationFolderStore: emulation))
+            let controllerSettings = ControllerSettingsStore(userDefaults: defaults, emulationFolderStore: emulation)
+            launchCoordinator = LaunchCoordinator(controllerSettingsStore: controllerSettings)
+            gamepad = GamepadInputMonitor(controllerSettingsStore: controllerSettings)
 
             let entries: [(system: String, file: String, title: String, hue: Double, medium: Bool)] = [
                 ("snes", "Comet Racer.sfc", "Comet Racer", 0.02, true),

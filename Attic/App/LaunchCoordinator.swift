@@ -57,7 +57,8 @@ final class LaunchCoordinator {
 
     /// `checkingBIOS: false` is "Play Anyway" from the missing-BIOS alert,
     /// for dumps named differently from what Attic looks for.
-    func play(game: Game, retroArchStore: RetroArchSettingsStore, checkingBIOS: Bool = true) {
+    /// `saveState` starts the game from that save state (RetroArch only).
+    func play(game: Game, retroArchStore: RetroArchSettingsStore, checkingBIOS: Bool = true, from saveState: SaveState? = nil) {
         guard state == .idle || isFailed else { return }
 
         if CanonicalSystemID(game.systemCanonicalID) == .steam {
@@ -98,7 +99,7 @@ final class LaunchCoordinator {
         let session: RunningGameSession
         do {
             session = try launch(
-                target, game: game, retroArchStore: retroArchStore,
+                target, game: game, retroArchStore: retroArchStore, saveState: saveState,
                 onOutput: Self.outputHandler(source: emulator.source, diagnosis: diagnosis, session: sessionBox)
             )
         } catch {
@@ -324,6 +325,7 @@ final class LaunchCoordinator {
         _ target: LaunchTargetReference,
         game: Game,
         retroArchStore: RetroArchSettingsStore,
+        saveState: SaveState? = nil,
         onOutput: @escaping @Sendable (String) -> Void
     ) throws -> RunningGameSession {
         switch target {
@@ -376,7 +378,7 @@ final class LaunchCoordinator {
             ))
             return try RetroArchLauncher(retroArchBinaryURL: retroArchStore.binaryURL).launch(
                 coreDylibURL: core.dylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL,
-                extraArguments: folder.retroArchShaderArguments(for: systemSettings),
+                extraArguments: folder.retroArchShaderArguments(for: systemSettings) + (saveState?.launchArguments ?? []),
                 onOutput: onOutput
             )
 

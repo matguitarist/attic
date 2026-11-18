@@ -3,6 +3,7 @@ import AtticLibraryScanning
 import SwiftData
 import AtticModels
 import AtticPersistence
+import AtticEmulation
 
 /// One input to Cabinet Mode, from either the controller or the keyboard —
 /// wrapped with a sequence number so repeating the same command still
@@ -129,7 +130,8 @@ struct CabinetView: View {
             }
 
             if let pageGame {
-                CabinetGamePage(game: pageGame, event: pageEvent, onPlay: play, onClose: { closePage() })
+                CabinetGamePage(game: pageGame, event: pageEvent, onPlay: play, onPlayState: play, onClose: { closePage() },
+                                saveStates: SaveStatesSection.states(of: pageGame, retroArchStore: retroArchStore))
                     .transition(.opacity.combined(with: .scale(scale: 1.03)))
             }
 
@@ -364,6 +366,12 @@ struct CabinetView: View {
     private func play(_ game: Game) {
         focusedGame = game
         launchCoordinator.play(game: game, retroArchStore: retroArchStore)
+    }
+
+    /// A save state picked on the game's page.
+    private func play(_ game: Game, from state: SaveState) {
+        focusedGame = game
+        launchCoordinator.play(game: game, retroArchStore: retroArchStore, from: state)
     }
 
     private func closePage() {

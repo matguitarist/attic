@@ -12145,6 +12145,16 @@
         }
       }
     },
+    "Play from slot %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jouer depuis l’emplacement %lld"
+          }
+        }
+      }
+    },
     "Play system and collection videos": {
       "localizations": {
         "fr": {
@@ -13751,6 +13761,16 @@
         }
       }
     },
+    "Save States": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sauvegardes d’état"
+          }
+        }
+      }
+    },
     "Save as New Theme": {
       "localizations": {
         "fr": {
@@ -14711,6 +14731,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Passer"
+          }
+        }
+      }
+    },
+    "Slot %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Emplacement %lld"
           }
         }
       }

@@ -86,6 +86,8 @@ struct GameDetailView: View {
                     }
                 }
 
+                SaveStatesSection(game: game)
+
                 GameMediaSection(game: game)
 
                 DiscImageSection(game: game)
