@@ -60,6 +60,8 @@ struct CabinetMenuView: View {
     /// The game in front and the section being browsed, for Scrape Info.
     var game: Game? = nil
     var section: CabinetSection? = nil
+    /// Kid Mode: only finding games and leaving (which asks for the PIN).
+    var isKidMode = false
 
     @Environment(\.cabinetTheme) private var installed
     @Environment(CabinetBrowse.self) private var browse
@@ -358,6 +360,12 @@ struct CabinetMenuView: View {
     }
 
     private var mainItems: [CabinetMenuItem] {
+        let items = allMainItems
+        guard isKidMode else { return items }
+        return items.filter { ["surprise", "search", "exit"].contains($0.id) }
+    }
+
+    private var allMainItems: [CabinetMenuItem] {
         [
             CabinetMenuItem(id: "surprise", title: String(localized: "Surprise Me"), symbol: "dice",
                             kind: .action(confirm: false, perform: onSurprise)),

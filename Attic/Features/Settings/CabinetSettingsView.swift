@@ -1,6 +1,8 @@
 import AppKit
 import SwiftUI
+import SwiftData
 import AtticModels
+import AtticPersistence
 
 /// Settings › Cabinet Mode: opening it, its theme, and the person's
 /// adjustments to the theme (layout, art, colors), kept apart from it.
@@ -13,6 +15,10 @@ struct CabinetSettingsView: View {
     @AppStorage(CabinetMarqueeDisplay.key) private var marqueeDisplayName = ""
     @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
     @AppStorage(CabinetMusic.enabledKey) private var playsMusic = false
+    @AppStorage(CabinetKidMode.enabledKey) private var kidModeEnabled = false
+    @AppStorage(CabinetKidMode.collectionKey) private var kidCollection = ""
+    @AppStorage(CabinetKidMode.pinKey) private var kidPIN = ""
+    @Query(sort: \GameCollection.name) private var collections: [GameCollection]
     @Environment(EmulationFolderStore.self) private var emulationFolderStore
     @State private var screensRevision = 0
     @State private var themeError: String?
@@ -60,6 +66,41 @@ struct CabinetSettingsView: View {
                 }
             } footer: {
                 Text("Full-screen couch mode: ⌘⇧B, or Menu/Start on a controller. Start opens its menu, where all of this can be set from the couch too.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Toggle(isOn: $kidModeEnabled) {
+                    Text("Kid Mode")
+                    Text("Cabinet Mode keeps to the games below, its menu only finds games, and leaving asks for the PIN")
+                }
+                Picker("Games", selection: $kidCollection) {
+                    Text("All Games").tag("")
+                    ForEach(collections) { collection in
+                        Text(verbatim: collection.name).tag(collection.collectionID.uuidString)
+                    }
+                }
+                .disabled(!kidModeEnabled)
+                LabeledContent {
+                    SecureField("PIN", text: Binding(get: { kidPIN }, set: { kidPIN = String($0.filter(\.isASCIIDigit).prefix(4)) }),
+                                prompt: Text(verbatim: "0000"))
+                        .labelsHidden()
+                        .frame(width: 80)
+                } label: {
+                    Text("PIN")
+                    Text("Four digits. Kid Mode stays off until there is one.")
+                }
+                .disabled(!kidModeEnabled)
+                if kidModeEnabled && !CabinetKidMode.isValidPIN(kidPIN) {
+                    Text("Set a four-digit PIN to turn on Kid Mode.")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            } header: {
+                Text("Kid Mode")
+            } footer: {
+                Text("The PIN guards the controller's ways out. On a Mac keyboard, ⌘Q still quits Attic.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

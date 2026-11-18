@@ -85,6 +85,12 @@ struct CabinetView: View {
     @State private var lastInput = Date.now
     @AppStorage(CabinetAttractView.minutesKey) private var attractMinutes = CabinetAttractView.defaultMinutes
     @AppStorage(CabinetMusic.enabledKey) private var playsMusic = false
+    @AppStorage(CabinetKidMode.enabledKey) private var kidModeEnabled = false
+    @AppStorage(CabinetKidMode.collectionKey) private var kidCollection = ""
+    @AppStorage(CabinetKidMode.pinKey) private var kidPIN = ""
+    /// Leaving in Kid Mode: the PIN pad is up.
+    @State private var asksPIN = false
+    @State private var pinEvent: CabinetEvent?
 
     enum Level {
         case systems, games
@@ -163,12 +169,18 @@ struct CabinetView: View {
                     .transition(.opacity)
             }
 
+            if asksPIN {
+                CabinetPINView(event: pinEvent, onSuccess: { asksPIN = false; leave() }, onCancel: { asksPIN = false })
+                    .transition(.opacity)
+            }
+
             if !menuPath.isEmpty {
                 CabinetMenuView(path: $menuPath, event: menuEvent, onExit: exit,
                                 onSurprise: { menuPath = []; send(.random) },
                                 onSearch: { menuPath = []; send(.search) },
                                 game: level == .games ? (pageGame ?? focusedGame) : nil,
-                                section: sections.first { $0.selection == selection })
+                                section: sections.first { $0.selection == selection },
+                                isKidMode: isKidMode)
                     .transition(.opacity)
             }
         }
@@ -259,11 +271,9 @@ struct CabinetView: View {
         }
         .onChange(of: sectionsKey, initial: true) {
             builtSections = buildSections()
-            // A collection hidden or emptied meanwhile.
-            if !builtSections.contains(where: { $0.selection == selection }), let first = builtSections.first {
-                selection = first.selection
-            }
+            keepSelectionShown()
         }
+        .onChange(of: isKidMode) { keepSelectionShown() }
         .onAppear {
             CabinetWindows.hideOthers()
             gamepad.isCabinetActive = true
@@ -352,7 +362,19 @@ struct CabinetView: View {
     /// Built when the systems or collections change, not on every redraw:
     /// finding their logos and pictures reads folders, and every press
     /// redraws.
-    private var sections: [CabinetSection] { builtSections }
+    private var sections: [CabinetSection] {
+        isKidMode ? CabinetKidMode.sections(builtSections, collectionID: kidCollection) : builtSections
+    }
+
+    /// A collection hidden or emptied meanwhile, or Kid Mode's one
+    /// collection: back to a section that's shown.
+    private func keepSelectionShown() {
+        if !sections.contains(where: { $0.selection == selection }), let first = sections.first {
+            selection = first.selection
+        }
+    }
+
+    private var isKidMode: Bool { kidModeEnabled && CabinetKidMode.isValidPIN(kidPIN) }
 
     /// What `sections` depends on, cheap to compare.
     private var sectionsKey: [String] {
@@ -376,6 +398,10 @@ struct CabinetView: View {
         // The press that ends the attract mode does nothing else.
         if isAttracting {
             attractEvent = newEvent
+            return
+        }
+        if asksPIN {
+            pinEvent = newEvent
             return
         }
         switch command {
@@ -468,7 +494,17 @@ struct CabinetView: View {
         }
     }
 
+    /// In Kid Mode, only with the PIN.
     private func exit() {
+        menuPath = []
+        if isKidMode {
+            asksPIN = true
+        } else {
+            leave()
+        }
+    }
+
+    private func leave() {
         gamepad.isCabinetActive = false
         dismissWindow(id: Self.windowID)
     }

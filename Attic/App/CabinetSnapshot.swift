@@ -123,6 +123,13 @@ enum CabinetSnapshot {
             .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme))
             .modelContainer(seed.container), to: attract)
         print(attract.path)
+        let pin = folder.appending(path: "kid-pin.png")
+        try capture(ZStack {
+            Color.gray
+            CabinetPINView(event: nil, onSuccess: {}, onCancel: {})
+        }
+        .environment(\.cabinetTheme, CabinetThemeStore.Installed(theme: theme)), to: pin)
+        print(pin.path)
     }
 
     private static func list(_ value: String?) -> [String]? {

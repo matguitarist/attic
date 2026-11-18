@@ -3377,6 +3377,16 @@
         }
       }
     },
+    "A to confirm, B to cancel": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A pour confirmer, B pour annuler"
+          }
+        }
+      }
+    },
     "A wallpaper behind the system in Cabinet Mode": {
       "localizations": {
         "fr": {
@@ -4846,6 +4856,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le mode Cabinet est une vue plein écran pensée pour la télé et une manette. Ouvrez-le avec ⌘⇧B, le bouton Mode Cabinet de la barre d’outils, ou Menu / Start sur une manette ; quittez-le avec le bouton retour."
+          }
+        }
+      }
+    },
+    "Cabinet Mode keeps to the games below, its menu only finds games, and leaving asks for the PIN": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode Cabinet s’en tient aux jeux ci-dessous, son menu ne sert qu’à trouver des jeux, et le quitter demande le code"
           }
         }
       }
@@ -7411,6 +7431,16 @@
         }
       }
     },
+    "Enter the PIN": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrez le code"
+          }
+        }
+      }
+    },
     "Errors": {
       "localizations": {
         "fr": {
@@ -7993,6 +8023,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trouvés par la recherche"
+          }
+        }
+      }
+    },
+    "Four digits. Kid Mode stays off until there is one.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quatre chiffres. Le mode Enfant reste désactivé tant qu’il n’y en a pas."
           }
         }
       }
@@ -9552,6 +9592,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clavier"
+          }
+        }
+      }
+    },
+    "Kid Mode": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode Enfant"
           }
         }
       }
@@ -11914,6 +11964,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "PCSX2 a besoin d’un dump du BIOS PS2 dans le dossier pcsx2/bios du dossier BIOS (n’importe quelle région). Les dumps fonctionnent le mieux en .chd ou .iso."
+          }
+        }
+      }
+    },
+    "PIN": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code"
           }
         }
       }
@@ -14384,6 +14444,16 @@
         }
       }
     },
+    "Set a four-digit PIN to turn on Kid Mode.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un code à quatre chiffres pour activer le mode Enfant."
+          }
+        }
+      }
+    },
     "Set up ScreenScraper or TheGamesDB in Settings first": {
       "localizations": {
         "fr": {
@@ -15522,6 +15592,16 @@
         }
       }
     },
+    "That's not the PIN.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce n’est pas le bon code."
+          }
+        }
+      }
+    },
     "The %@ core isn't installed.": {
       "localizations": {
         "fr": {
@@ -15588,6 +15668,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le pavé numérique de la Jaguar n’existe pas sur les manettes modernes ; les jeux qui en ont besoin associent ses touches à des boutons libres."
+          }
+        }
+      }
+    },
+    "The PIN guards the controller's ways out. On a Mac keyboard, ⌘Q still quits Attic.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le code protège les sorties à la manette. Sur un clavier de Mac, ⌘Q quitte toujours Attic."
           }
         }
       }
