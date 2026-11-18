@@ -284,14 +284,24 @@ final class LaunchCoordinator {
             // So do EasyRPG (zipped RPG Maker games) and game folders
             // (ScummVM, Quake), which get the file inside that the core reads.
             let isFolder = (try? game.romAbsoluteURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
-            let romURL = isFolder
+            // LCD games are MAME romsets, read zipped like arcade games.
+            let runsRomsets = MAMEMachine.machine(for: systemID)?.runsRomsets == true
+            var romURL = isFolder
                 ? SystemROMExtensions.launchFile(forGameFolder: game.romAbsoluteURL)
-                : SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos || systemID == .easyrpg
+                : SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos || systemID == .easyrpg || runsRomsets
                 ? game.romAbsoluteURL
                 : zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let folder = retroArchStore.emulationFolderStore.folder
+            // MAME runs computers and lesser-known consoles as a machine
+            // with the game in a slot, from a .cmd file it reads.
+            if MAMEMachine.coreIdentifiers.contains(identifier),
+               let commandFile = try folder.mameCommandFile(
+                   for: systemID, romURL: romURL, gameFolder: game.romAbsoluteURL.deletingLastPathComponent()
+               ) {
+                romURL = commandFile
+            }
             let systemSettings = SystemSettingsSupport.effective(
                 game.system?.settings ?? SystemSettings(),
                 system: systemID,

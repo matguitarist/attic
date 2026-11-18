@@ -102,7 +102,22 @@ public enum TheGamesDBSystemID {
         // "SuperGrafx" entry, only TurboGrafx-16/TurboGrafx-CD) — leaving
         // it unmapped rather than guessing an ID or reusing TG16's.
         .threedo: 25,
-        .cdi: 4917
+        .cdi: 4917,
+        .arcadia: 4963,
+        .astrocade: 4968,
+        .crvision: 5005,
+        .scv: 4966,
+        .pv1000: 4964,
+        .vsmile: 4988,
+        .gamecom: 4940,
+        .apple2: 4942,
+        .bbcmicro: 5013,
+        .coco: 4941,
+        .dragon32: 4952,
+        .ti99: 4953,
+        .samcoupe: 4979,
+        .fm7: 4978,
+        .fmtowns: 4932
     ]
 
     public static func platformID(for canonicalID: CanonicalSystemID) -> Int? {

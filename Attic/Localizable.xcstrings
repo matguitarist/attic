@@ -4970,6 +4970,16 @@
         }
       }
     },
+    "Cartridges must be in MAME's .rpk format.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les cartouches doivent être au format .rpk de MAME."
+          }
+        }
+      }
+    },
     "Carts are .p8 or .p8.png files, from the PICO-8 website (Splore) or itch.io. Retro8 runs most of them; the official PICO-8 app runs all.": {
       "localizations": {
         "fr": {
@@ -7095,6 +7105,16 @@
         }
       }
     },
+    "Each game is a MAME romset, zipped with its set name, with its artwork in the same zip.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est un romset MAME, compressé sous le nom de son set, avec ses illustrations dans le même zip."
+          }
+        }
+      }
+    },
     "Each game is a folder named like Monkey Island.scummvm holding the game's files and a file of the same name (Monkey Island.scummvm) containing ScummVM's ID for it, such as monkey.": {
       "localizations": {
         "fr": {
@@ -8110,6 +8130,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Illustration des jeux"
+          }
+        }
+      }
+    },
+    "Game Boy games run with the Super Game Boy's borders and colors.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Game Boy tournent avec les bordures et les couleurs du Super Game Boy."
           }
         }
       }
@@ -15979,6 +16009,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pour lancer une cassette, tapez CLOAD puis RUN, ou BLOAD \"CAS:\",R, selon le jeu."
+          }
+        }
+      }
+    },
+    "To start a tape, type *T. then CHAIN\"\" (or CH.\"\").": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour lancer une cassette, tapez *T. puis CHAIN\"\" (ou CH.\"\")."
           }
         }
       }

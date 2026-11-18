@@ -504,6 +504,25 @@ public enum EmulatorCatalog {
     private static let puaeCD = RecommendedCore("puae_libretro", "PUAE", String(localized: "The Amiga core, set to the CD32 or CDTV for these discs.", bundle: .module))
     private static let beetlePCEFast = RecommendedCore("mednafen_pce_fast_libretro", "Beetle PCE Fast", String(localized: "Lighter PC Engine core.", bundle: .module))
 
+    private static let amiarcadiaCore = RecommendedCore("amiarcadia_libretro", "AmiArcadia", String(localized: "Arcadia 2001, Interton VC 4000 and their clones.", bundle: .module))
+    private static let jollycvCore = RecommendedCore("jollycv_libretro", "JollyCV", String(localized: "ColecoVision, CreatiVision and My Vision.", bundle: .module))
+    private static let pd777Core = RecommendedCore("pd777_libretro", "pd777", String(localized: "The Epoch Cassette Vision.", bundle: .module))
+    private static let emuscvCore = RecommendedCore("emuscv_libretro", "EmuSCV", String(localized: "The Epoch Super Cassette Vision.", bundle: .module))
+    private static let uzemCore = RecommendedCore("uzem_libretro", "Uzem", String(localized: "The Uzebox open-source console.", bundle: .module))
+    private static let lowresnxCore = RecommendedCore("lowresnx_libretro", "LowRes NX", String(localized: "The LowRes NX fantasy console.", bundle: .module))
+    private static let lutroCore = RecommendedCore("lutro_libretro", "Lutro", String(localized: "Lua games made for Lutro.", bundle: .module))
+    private static let vircon32Core = RecommendedCore("vircon32_libretro", "Vircon32", String(localized: "The Vircon32 fantasy console.", bundle: .module))
+    private static let mameRomsets = RecommendedCore("mame_libretro", "MAME", String(localized: "Each game is a MAME romset with its artwork.", bundle: .module))
+    private static let applewinCore = RecommendedCore("applewin_libretro", "AppleWin", String(localized: "The Apple II, IIe and IIc.", bundle: .module))
+    private static let b2Core = RecommendedCore("b2_libretro", "b2", String(localized: "The BBC Micro.", bundle: .module))
+    private static let geartownsCore = RecommendedCore("geartowns_libretro", "GearTowns", String(localized: "The FM Towns and FM Towns Marty.", bundle: .module))
+    private static let bkCore = RecommendedCore("bk_libretro", "BK", String(localized: "The Elektronika BK-0010 and BK-0011.", bundle: .module))
+    /// MAME running a machine with the game in one of its slots (see `MAMEMachine`).
+    private static let mameMachine = RecommendedCore("mame_libretro", "MAME", String(localized: "Runs the machine with the game in its drive or slot. Its MAME set goes in the BIOS folder.", bundle: .module))
+    /// The MAME set of `system`'s machine, which MAME needs to start it.
+    private static func mameSet(_ system: CanonicalSystemID) -> BIOSRequirement {
+        BIOSRequirement(MAMEMachine.machine(for: system)?.biosSetFileName ?? "", required: false, note: "MAME's set for this machine, needed when MAME runs it")
+    }
     public static let recommendations: [SystemEmulatorRecommendation] = [
         .init(systemID: .nes, cores: [
             RecommendedCore("mesen_libretro", "Mesen", String(localized: "Most accurate NES core.", bundle: .module)),
@@ -733,7 +752,44 @@ public enum EmulatorCatalog {
             RecommendedCore("same_cdi_libretro", "SAME CDi", String(localized: "The CD-i core.", bundle: .module))
         ], standalone: [], bios: [
             BIOSRequirement("same_cdi/bios/cdimono1.zip")
-        ], prefersStandalone: false)
+        ], prefersStandalone: false),
+        .init(systemID: .sgb, cores: [sameBoy, gearboy], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .advision, cores: [mameMachine], standalone: [], bios: [mameSet(.advision)], prefersStandalone: false),
+        .init(systemID: .arcadia, cores: [amiarcadiaCore, mameMachine], standalone: [], bios: [mameSet(.arcadia)], prefersStandalone: false),
+        .init(systemID: .astrocade, cores: [mameMachine], standalone: [], bios: [mameSet(.astrocade)], prefersStandalone: false),
+        .init(systemID: .crvision, cores: [jollycvCore, mameMachine], standalone: [], bios: [mameSet(.crvision)], prefersStandalone: false),
+        .init(systemID: .cassettevision, cores: [pd777Core], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .scv, cores: [emuscvCore, mameMachine], standalone: [], bios: [BIOSRequirement("upd7801g.s01", required: false, note: "Optional for EmuSCV"), mameSet(.scv)], prefersStandalone: false),
+        .init(systemID: .vc4000, cores: [amiarcadiaCore, mameMachine], standalone: [], bios: [mameSet(.vc4000)], prefersStandalone: false),
+        .init(systemID: .pv1000, cores: [mameMachine], standalone: [], bios: [mameSet(.pv1000)], prefersStandalone: false),
+        .init(systemID: .supracan, cores: [mameMachine], standalone: [], bios: [mameSet(.supracan)], prefersStandalone: false),
+        .init(systemID: .vsmile, cores: [mameMachine], standalone: [], bios: [mameSet(.vsmile)], prefersStandalone: false),
+        .init(systemID: .loopy, cores: [mameMachine], standalone: [], bios: [mameSet(.loopy)], prefersStandalone: false),
+        .init(systemID: .uzebox, cores: [uzemCore], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .lowresnx, cores: [lowresnxCore], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .lutro, cores: [lutroCore], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .vircon32, cores: [vircon32Core], standalone: [], bios: [BIOSRequirement("StandardBios.v32", required: true, note: "From the Vircon32 release")], prefersStandalone: false),
+        .init(systemID: .gamate, cores: [mameMachine], standalone: [], bios: [mameSet(.gamate)], prefersStandalone: false),
+        .init(systemID: .gamecom, cores: [mameMachine], standalone: [], bios: [mameSet(.gamecom)], prefersStandalone: false),
+        .init(systemID: .gmaster, cores: [mameMachine], standalone: [], bios: [mameSet(.gmaster)], prefersStandalone: false),
+        .init(systemID: .gamepock, cores: [mameMachine], standalone: [], bios: [mameSet(.gamepock)], prefersStandalone: false),
+        .init(systemID: .lcdgames, cores: [mameRomsets], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .apple2, cores: [applewinCore, mameMachine], standalone: [], bios: [mameSet(.apple2)], prefersStandalone: false),
+        .init(systemID: .apple2gs, cores: [mameMachine], standalone: [], bios: [mameSet(.apple2gs)], prefersStandalone: false),
+        .init(systemID: .bbcmicro, cores: [b2Core, mameMachine], standalone: [], bios: [mameSet(.bbcmicro)], prefersStandalone: false),
+        .init(systemID: .electron, cores: [mameMachine], standalone: [], bios: [mameSet(.electron)], prefersStandalone: false),
+        .init(systemID: .atom, cores: [mameMachine], standalone: [], bios: [mameSet(.atom)], prefersStandalone: false),
+        .init(systemID: .archimedes, cores: [mameMachine], standalone: [], bios: [mameSet(.archimedes)], prefersStandalone: false),
+        .init(systemID: .coco, cores: [mameMachine], standalone: [], bios: [mameSet(.coco)], prefersStandalone: false),
+        .init(systemID: .dragon32, cores: [mameMachine], standalone: [], bios: [mameSet(.dragon32)], prefersStandalone: false),
+        .init(systemID: .ti99, cores: [mameMachine], standalone: [], bios: [mameSet(.ti99)], prefersStandalone: false),
+        .init(systemID: .oricatmos, cores: [mameMachine], standalone: [], bios: [mameSet(.oricatmos)], prefersStandalone: false),
+        .init(systemID: .samcoupe, cores: [mameMachine], standalone: [], bios: [mameSet(.samcoupe)], prefersStandalone: false),
+        .init(systemID: .fm7, cores: [mameMachine], standalone: [], bios: [mameSet(.fm7)], prefersStandalone: false),
+        .init(systemID: .fmtowns, cores: [geartownsCore, mameMachine], standalone: [], bios: [mameSet(.fmtowns)], prefersStandalone: false),
+        .init(systemID: .camplynx, cores: [mameMachine], standalone: [], bios: [mameSet(.camplynx)], prefersStandalone: false),
+        .init(systemID: .adam, cores: [mameMachine], standalone: [], bios: [mameSet(.adam)], prefersStandalone: false),
+        .init(systemID: .bk, cores: [bkCore, mameMachine], standalone: [], bios: [mameSet(.bk)], prefersStandalone: false)
     ]
 
     public static func recommendation(for systemID: CanonicalSystemID) -> SystemEmulatorRecommendation? {

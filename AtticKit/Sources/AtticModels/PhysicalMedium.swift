@@ -33,9 +33,11 @@ public enum PhysicalMedium: String, Sendable, CaseIterable {
         // Computers that took cartridges or tapes.
         "msx": .cartridge, "vic20": .cartridge, "atari800": .cartridge,
         "zxspectrum": .cassette, "zx81": .cassette, "plus4": .cassette,
+        // Added from Batocera's and RetroBat's systems.
+        "bk": .cassette, "camplynx": .cassette, "oricatmos": .cassette, "electron": .cassette, "ti99": .cartridge, "fmtowns": .disc, "adam": .cassette, "loopy": .cartridge,
     ]
 
     private static let noMedium: Set<String> = [
-        "steam", "scummvm", "doom", "quake", "easyrpg", "pico8", "tic80", "wasm4", "arduboy", "gameandwatch"
+        "steam", "scummvm", "doom", "quake", "easyrpg", "pico8", "tic80", "wasm4", "arduboy", "gameandwatch", "lcdgames", "lowresnx", "lutro", "vircon32"
     ]
 }

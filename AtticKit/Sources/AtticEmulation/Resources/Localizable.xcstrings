@@ -465,6 +465,16 @@
         }
       }
     },
+    "Arcadia 2001, Interton VC 4000 and their clones.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’Arcadia 2001, l’Interton VC 4000 et leurs clones."
+          }
+        }
+      }
+    },
     "Atari 400/800, XL and XE.": {
       "localizations": {
         "fr": {
@@ -522,6 +532,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le successeur de Citra, activement développé."
+          }
+        }
+      }
+    },
+    "ColecoVision, CreatiVision and My Vision.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ColecoVision, CreatiVision et My Vision."
           }
         }
       }
@@ -652,6 +672,16 @@
         }
       }
     },
+    "Each game is a MAME romset with its artwork.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est un romset MAME avec ses illustrations."
+          }
+        }
+      }
+    },
     "Famicom Disk System support built in.": {
       "localizations": {
         "fr": {
@@ -758,6 +788,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cœur PC Engine plus léger."
+          }
+        }
+      }
+    },
+    "Lua games made for Lutro.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux Lua faits pour Lutro."
           }
         }
       }
@@ -972,6 +1012,16 @@
         }
       }
     },
+    "Runs the machine with the game in its drive or slot. Its MAME set goes in the BIOS folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lance la machine avec le jeu dans son lecteur ou son port. Son set MAME va dans le dossier BIOS."
+          }
+        }
+      }
+    },
     "The 3DO core.": {
       "localizations": {
         "fr": {
@@ -1012,6 +1062,16 @@
         }
       }
     },
+    "The Apple II, IIe and IIc.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les Apple II, IIe et IIc."
+          }
+        }
+      }
+    },
     "The Arduboy handheld.": {
       "localizations": {
         "fr": {
@@ -1038,6 +1098,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’émulateur Atari ST, STE, TT et Falcon."
+          }
+        }
+      }
+    },
+    "The BBC Micro.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le BBC Micro."
           }
         }
       }
@@ -1112,6 +1182,46 @@
         }
       }
     },
+    "The Elektronika BK-0010 and BK-0011.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les Elektronika BK-0010 et BK-0011."
+          }
+        }
+      }
+    },
+    "The Epoch Cassette Vision.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Cassette Vision d’Epoch."
+          }
+        }
+      }
+    },
+    "The Epoch Super Cassette Vision.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Super Cassette Vision d’Epoch."
+          }
+        }
+      }
+    },
+    "The FM Towns and FM Towns Marty.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le FM Towns et le FM Towns Marty."
+          }
+        }
+      }
+    },
     "The GameCube and Wii emulator, which also runs Triforce arcade games.": {
       "localizations": {
         "fr": {
@@ -1128,6 +1238,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Intellivision."
+          }
+        }
+      }
+    },
+    "The LowRes NX fantasy console.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console imaginaire LowRes NX."
           }
         }
       }
@@ -1312,12 +1432,32 @@
         }
       }
     },
+    "The Uzebox open-source console.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’Uzebox, console open source."
+          }
+        }
+      }
+    },
     "The Vectrex core.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Le cœur Vectrex."
+          }
+        }
+      }
+    },
+    "The Vircon32 fantasy console.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La console imaginaire Vircon32."
           }
         }
       }

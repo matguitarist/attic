@@ -30,6 +30,10 @@ public enum CoreLaunchOptions {
             // Automatic model takes this machine for CD images.
             return ["puae_model_cd": system == .cdtv ? "CDTV" : "CD32"]
 
+        case "sameboy_libretro" where system == .sgb:
+            // The Super Game Boy folder: its borders and palettes.
+            return ["sameboy_model": "Super Game Boy"]
+
         default:
             return [:]
         }

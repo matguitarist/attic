@@ -399,7 +399,7 @@ public enum SystemTaxonomy {
             batoceraShortName: "sg1000",
             esdeShortName: "sg-1000",
             retroArchSystemIDs: ["sg_1000", "sg1000"],
-            category: .console, otherShortNames: ["sc3000"]
+            category: .console, otherShortNames: ["sc3000", "multivision"]
         ),
         SystemDefinition(
             canonicalID: .naomi,
@@ -908,6 +908,302 @@ public enum SystemTaxonomy {
             esdeShortName: "fbneo",
             retroArchSystemIDs: ["fb_alpha", "fbneo"],
             category: .arcade, otherShortNames: ["fba"]
+        ),
+        SystemDefinition(
+            canonicalID: .sgb,
+            displayName: "Super Game Boy",
+            batoceraShortName: "sgb",
+            esdeShortName: "sgb",
+            retroArchSystemIDs: ["super_game_boy"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .advision,
+            displayName: "Entex Adventure Vision",
+            batoceraShortName: "advision",
+            esdeShortName: "advision",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .arcadia,
+            displayName: "Emerson Arcadia 2001",
+            batoceraShortName: "arcadia",
+            esdeShortName: "arcadia",
+            retroArchSystemIDs: ["arcadia"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .astrocade,
+            displayName: "Bally Astrocade",
+            batoceraShortName: "astrocade",
+            esdeShortName: "astrocde",
+            retroArchSystemIDs: [],
+            category: .console, otherShortNames: ["astrocde"]
+        ),
+        SystemDefinition(
+            canonicalID: .crvision,
+            displayName: "VTech CreatiVision",
+            batoceraShortName: "crvision",
+            esdeShortName: "crvision",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .cassettevision,
+            displayName: "Epoch Cassette Vision",
+            batoceraShortName: "cassettevision",
+            esdeShortName: "cassettevision",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .scv,
+            displayName: "Epoch Super Cassette Vision",
+            batoceraShortName: "scv",
+            esdeShortName: "scv",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .vc4000,
+            displayName: "Interton VC 4000",
+            batoceraShortName: "vc4000",
+            esdeShortName: "vc4000",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .pv1000,
+            displayName: "Casio PV-1000",
+            batoceraShortName: "pv1000",
+            esdeShortName: "pv1000",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .supracan,
+            displayName: "Funtech Super A'Can",
+            batoceraShortName: "supracan",
+            esdeShortName: "supracan",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .vsmile,
+            displayName: "VTech V.Smile",
+            batoceraShortName: "vsmile",
+            esdeShortName: "vsmile",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .loopy,
+            displayName: "Casio Loopy",
+            batoceraShortName: "loopy",
+            esdeShortName: "casloopy",
+            retroArchSystemIDs: [],
+            category: .console, otherShortNames: ["casloopy"]
+        ),
+        SystemDefinition(
+            canonicalID: .uzebox,
+            displayName: "Uzebox",
+            batoceraShortName: "uzebox",
+            esdeShortName: "uzebox",
+            retroArchSystemIDs: ["uzebox"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .lowresnx,
+            displayName: "LowRes NX",
+            batoceraShortName: "lowresnx",
+            esdeShortName: "lowresnx",
+            retroArchSystemIDs: ["lowres_nx"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .lutro,
+            displayName: "Lutro",
+            batoceraShortName: "lutro",
+            esdeShortName: "lutro",
+            retroArchSystemIDs: ["lutro"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .vircon32,
+            displayName: "Vircon32",
+            batoceraShortName: "vircon32",
+            esdeShortName: "vircon32",
+            retroArchSystemIDs: ["vircon32"],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .gamate,
+            displayName: "Bit Corporation Gamate",
+            batoceraShortName: "gamate",
+            esdeShortName: "gamate",
+            retroArchSystemIDs: [],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gamecom,
+            displayName: "Tiger Game.com",
+            batoceraShortName: "gamecom",
+            esdeShortName: "gamecom",
+            retroArchSystemIDs: [],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gmaster,
+            displayName: "Hartung Game Master",
+            batoceraShortName: "gmaster",
+            esdeShortName: "gmaster",
+            retroArchSystemIDs: [],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .gamepock,
+            displayName: "Epoch Game Pocket Computer",
+            batoceraShortName: "gamepock",
+            esdeShortName: "gamepock",
+            retroArchSystemIDs: [],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .lcdgames,
+            displayName: "LCD Games",
+            batoceraShortName: "lcdgames",
+            esdeShortName: "lcdgames",
+            retroArchSystemIDs: [],
+            category: .handheld, otherShortNames: ["handheld"]
+        ),
+        SystemDefinition(
+            canonicalID: .apple2,
+            displayName: "Apple II",
+            batoceraShortName: "apple2",
+            esdeShortName: "apple2",
+            retroArchSystemIDs: ["apple_ii"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .apple2gs,
+            displayName: "Apple IIGS",
+            batoceraShortName: "apple2gs",
+            esdeShortName: "apple2gs",
+            retroArchSystemIDs: ["apple_iigs"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .bbcmicro,
+            displayName: "BBC Micro",
+            batoceraShortName: "bbcmicro",
+            esdeShortName: "bbcmicro",
+            retroArchSystemIDs: ["bbc_micro"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .electron,
+            displayName: "Acorn Electron",
+            batoceraShortName: "electron",
+            esdeShortName: "electron",
+            retroArchSystemIDs: ["acorn_electron"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .atom,
+            displayName: "Acorn Atom",
+            batoceraShortName: "atom",
+            esdeShortName: "atom",
+            retroArchSystemIDs: ["acorn_atom"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .archimedes,
+            displayName: "Acorn Archimedes",
+            batoceraShortName: "archimedes",
+            esdeShortName: "archimedes",
+            retroArchSystemIDs: ["acorn_archimedes"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .coco,
+            displayName: "Tandy Color Computer",
+            batoceraShortName: "coco",
+            esdeShortName: "coco",
+            retroArchSystemIDs: ["coco"],
+            category: .computer, otherShortNames: ["trs80coco"]
+        ),
+        SystemDefinition(
+            canonicalID: .dragon32,
+            displayName: "Dragon 32/64",
+            batoceraShortName: "dragon32",
+            esdeShortName: "dragon32",
+            retroArchSystemIDs: ["dragon32"],
+            category: .computer, otherShortNames: ["dragon64", "dragon"]
+        ),
+        SystemDefinition(
+            canonicalID: .ti99,
+            displayName: "Texas Instruments TI-99/4A",
+            batoceraShortName: "ti99",
+            esdeShortName: "ti99",
+            retroArchSystemIDs: ["ti99"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .oricatmos,
+            displayName: "Oric Atmos",
+            batoceraShortName: "oricatmos",
+            esdeShortName: "oric",
+            retroArchSystemIDs: ["oric"],
+            category: .computer, otherShortNames: ["oric"]
+        ),
+        SystemDefinition(
+            canonicalID: .samcoupe,
+            displayName: "SAM Coupé",
+            batoceraShortName: "samcoupe",
+            esdeShortName: "samcoupe",
+            retroArchSystemIDs: ["sam_coupe"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .fm7,
+            displayName: "Fujitsu FM-7",
+            batoceraShortName: "fm7",
+            esdeShortName: "fm7",
+            retroArchSystemIDs: ["fm7"],
+            category: .computer, otherShortNames: ["fm77av"]
+        ),
+        SystemDefinition(
+            canonicalID: .fmtowns,
+            displayName: "Fujitsu FM Towns",
+            batoceraShortName: "fmtowns",
+            esdeShortName: "fmtowns",
+            retroArchSystemIDs: ["fm_towns"],
+            category: .computer, otherShortNames: ["fmtmarty"]
+        ),
+        SystemDefinition(
+            canonicalID: .camplynx,
+            displayName: "Camputers Lynx",
+            batoceraShortName: "camplynx",
+            esdeShortName: "camplynx",
+            retroArchSystemIDs: [],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .adam,
+            displayName: "Coleco Adam",
+            batoceraShortName: "adam",
+            esdeShortName: "adam",
+            retroArchSystemIDs: ["coleco_adam"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .bk,
+            displayName: "Elektronika BK",
+            batoceraShortName: "bk",
+            esdeShortName: "bk",
+            retroArchSystemIDs: ["bk"],
+            category: .computer
         )
     ]
 
