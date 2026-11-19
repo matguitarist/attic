@@ -36,7 +36,7 @@ public enum SystemSettingsSupport {
         .psx, .n64, .saturn, .dreamcast, .naomi, .atomiswave, .ps2, .psp, .nds, .n3ds,
         .gamecube, .wii, .wiiu, .ps3, .ps4, .psvita, .xbox, .model3, .triforce,
         .naomi2, .naomigd, .model1, .model2, .hikaru, .gaelco, .n64dd, .namco2x6,
-        .namco22, .neogeo64, .zinc, .pspminis, .wiiware, .doom3, .xbox360, .xbla
+        .namco22, .neogeo64, .zinc, .pspminis, .wiiware, .doom3, .xbox360, .xbla, .chihiro
     ]
 
     public static func settings(for system: CanonicalSystemID, backend: SystemSettingsBackend) -> [SystemSetting] {

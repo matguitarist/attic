@@ -56,6 +56,7 @@ public enum TheGamesDBSystemID {
         .cannonball: 1, .cavestory: 1, .dinothawr: 1, .ecwolf: 1, .reminiscence: 1, .doom3: 1,
         .j2me: 5018,
         .xbox360: 15, .xbla: 15,
+        .chihiro: 23,
         .n64dd: 3,
         .satellaview: 6,
         .sufami: 6,

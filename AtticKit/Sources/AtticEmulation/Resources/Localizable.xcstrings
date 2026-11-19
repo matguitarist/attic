@@ -1872,6 +1872,26 @@
           }
         }
       }
+    },
+    "xemu Chihiro needs MAME's Chihiro BIOS: put chihiro.zip in %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xemu Chihiro a besoin du BIOS Chihiro de MAME : placez chihiro.zip dans %@."
+          }
+        }
+      }
+    },
+    "xemu made to run Sega's Chihiro arcade board, with its light guns and drive boards.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xemu adapté à la carte d’arcade Chihiro de Sega, avec ses pistolets et ses cartes de pilotage."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

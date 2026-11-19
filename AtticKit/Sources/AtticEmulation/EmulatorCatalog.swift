@@ -57,6 +57,10 @@ public struct StandaloneEmulator: Sendable, Hashable, Identifiable {
     /// How to keep this emulator's data inside the Emulation folder, when
     /// it supports that. `nil` means it keeps its data in ~/Library.
     public let portableHome: PortableHome?
+    /// Only Attic's own install counts, never a copy in /Applications:
+    /// for a fork named like the app it comes from (xemu Chihiro's
+    /// xemu.app).
+    public var installedOnlyByAttic = false
 }
 
 /// Keeps a standalone emulator's data in `Emulation/Config/<Name>` by
@@ -310,6 +314,25 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
+    /// Tovarichtch's xemu fork, the one that runs Sega Chihiro games, from
+    /// netboot images (.bin) made with his chihiro-netboot tool. Its Mac
+    /// build is unsigned; it's set up by `xemuChihiroLaunch`.
+    public static let xemuChihiro = StandaloneEmulator(
+        id: "xemu-chihiro",
+        name: "xemu Chihiro",
+        summary: String(localized: "xemu made to run Sega's Chihiro arcade board, with its light guns and drive boards.", bundle: .module),
+        appBundleName: "xemu.app",
+        executableRelativePath: "Contents/MacOS/xemu",
+        argumentTemplate: "-full-screen -dvd_path {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/Tovarichtch/xemu/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos-universal-unsigned.zip"),
+        homepageURL: URL(string: "https://github.com/Tovarichtch/xemu")!,
+        license: "GPL-2.0",
+        systems: [.chihiro],
+        portableHome: nil,
+        installedOnlyByAttic: true
+    )
+
     /// macXenos, the Mac port of Xenia Canary with a Metal renderer:
     /// signed, notarized and universal. It takes the game (.iso, .xex or a
     /// .zar archive) as its only argument and keeps its data where the
@@ -558,7 +581,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, macXenos, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, xemuChihiro, macXenos, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
 
     // MARK: - Per-system table
 
@@ -781,6 +804,11 @@ public enum EmulatorCatalog {
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),
         .init(systemID: .xbox360, cores: [], standalone: [macXenos], bios: [], prefersStandalone: true),
+        .init(systemID: .chihiro, cores: [], standalone: [xemuChihiro], bios: [
+            BIOSRequirement("mame/bios/chihiro.zip", required: false, note: "MAME's Chihiro BIOS: the Xbox BIOS, the media board's flash and the base board's EEPROMs"),
+            BIOSRequirement("mcpx_1.0.bin", required: false, note: "The Xbox boot ROM"),
+            BIOSRequirement("ver1305.bin", required: false, note: "The network board's firmware, for linked cabinets and network games")
+        ], prefersStandalone: true),
         .init(systemID: .xbla, cores: [], standalone: [macXenos], bios: [], prefersStandalone: true),
         .init(systemID: .psvita, cores: [], standalone: [vita3K], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),

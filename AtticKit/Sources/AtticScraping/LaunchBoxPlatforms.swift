@@ -96,6 +96,7 @@ public enum LaunchBoxPlatforms {
         .tutor: ["Tomy Tutor"], .aquarius: ["Mattel Aquarius"], .vg5k: ["Philips VG 5000"], .p2000t: ["Philips P2000T"],
         .cannonball: ["Windows", "Arcade"], .cavestory: ["Windows"], .dinothawr: ["Windows"], .ecwolf: ["MS-DOS", "Windows"],
         .reminiscence: ["MS-DOS", "Commodore Amiga"], .doom3: ["Windows"], .j2me: ["J2ME"],
+        .chihiro: ["Sega Chihiro", "Arcade"],
         .xbox360: ["Microsoft Xbox 360"], .xbla: ["Microsoft Xbox Live Arcade", "Microsoft Xbox 360"],
         .naomi: ["Sega Naomi", "Arcade"],
         .naomigd: ["Sega Naomi", "Arcade"],

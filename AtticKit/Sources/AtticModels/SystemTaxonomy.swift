@@ -493,6 +493,14 @@ public enum SystemTaxonomy {
             category: .arcade, otherShortNames: ["namco246", "namco256", "sys246", "sys256"]
         ),
         SystemDefinition(
+            canonicalID: .chihiro,
+            displayName: "Sega Chihiro",
+            batoceraShortName: "chihiro",
+            esdeShortName: "chihiro",
+            retroArchSystemIDs: [],
+            category: .arcade
+        ),
+        SystemDefinition(
             canonicalID: .namco22,
             displayName: "Namco System 22",
             batoceraShortName: "namco22",

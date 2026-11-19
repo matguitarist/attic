@@ -185,6 +185,8 @@ public enum SystemROMExtensions {
         .j2me: ["jar"],
         .xbox360: ["iso", "xex", "zar"],
         .xbla: ["iso", "xex", "zar"],
+        // Netboot images made with chihiro-netboot.
+        .chihiro: ["bin"],
         .switch: ["nca", "nro", "nso", "nsp", "xci"]
     ]
 

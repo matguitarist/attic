@@ -8584,6 +8584,16 @@
         }
       }
     },
+    "Games run in xemu Chihiro, a fork of xemu, as netboot images (.bin). Make them from MAME's sets (the game's zip and its .chd) with chihiro-netboot (github.com/Tovarichtch/chihiro-netboot). Games extracted for Cxbx-Reloaded don't work.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux tournent dans xemu Chihiro, une variante de xemu, en images netboot (.bin). Créez-les à partir des sets MAME (le zip du jeu et son .chd) avec chihiro-netboot (github.com/Tovarichtch/chihiro-netboot). Les jeux extraits pour Cxbx-Reloaded ne fonctionnent pas."
+          }
+        }
+      }
+    },
     "Games show in red and black on a flat screen. Attic turns off the core's VR mode, which needs a kind of OpenGL macOS doesn't offer.": {
       "localizations": {
         "fr": {
@@ -12781,6 +12791,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez le BIOS System 256 de MAME (sys256.zip, ou sys246.zip) dans BIOS/mame/bios."
+          }
+        }
+      }
+    },
+    "Put MAME's chihiro.zip in BIOS/mame/bios, and mcpx_1.0.bin in the BIOS folder. ver1305.bin, the network board's firmware, is needed for OutRun 2 SP and Gundam.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez le chihiro.zip de MAME dans BIOS/mame/bios, et mcpx_1.0.bin dans le dossier BIOS. ver1305.bin, le firmware de la carte réseau, est nécessaire pour OutRun 2 SP et Gundam."
           }
         }
       }
@@ -17893,6 +17913,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "vidéo"
+          }
+        }
+      }
+    },
+    "xemu Chihiro keeps its own settings, apart from xemu's. Its controls are set in its Chihiro settings.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xemu Chihiro garde ses propres réglages, séparés de ceux de xemu. Ses commandes se règlent dans ses réglages Chihiro."
           }
         }
       }

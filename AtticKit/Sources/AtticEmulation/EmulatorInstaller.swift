@@ -219,7 +219,7 @@ public struct EmulatorInstaller: Sendable {
     /// others the data lives in ~/Library either way, so any copy will do.
     public func installedAppURL(for emulator: StandaloneEmulator) -> URL? {
         var candidates = [appDirectory(for: emulator)]
-        if emulator.portableHome == nil {
+        if emulator.portableHome == nil, !emulator.installedOnlyByAttic {
             candidates += [
                 URL(fileURLWithPath: "/Applications", isDirectory: true),
                 FileManager.default.homeDirectoryForCurrentUser.appending(path: "Applications", directoryHint: .isDirectory)
