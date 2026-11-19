@@ -10360,6 +10360,16 @@
         }
       }
     },
+    "Make a folder named diablo.game and put DIABDAT.MPQ from your Diablo CD or GOG copy in it, with Hellfire's .mpq files for Hellfire. DevilutionX runs it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez un dossier nommé diablo.game et placez-y le DIABDAT.MPQ de votre CD de Diablo ou de votre copie GOG, avec les fichiers .mpq de Hellfire pour Hellfire. DevilutionX le fait tourner."
+          }
+        }
+      }
+    },
     "Makes a playlist for each multi-disc game, so it's one game and emulators can swap its discs, and fixes playlists made on Windows.": {
       "localizations": {
         "fr": {

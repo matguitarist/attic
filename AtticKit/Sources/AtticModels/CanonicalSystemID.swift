@@ -120,6 +120,7 @@ public extension CanonicalSystemID {
     static let xbox360 = CanonicalSystemID("xbox360")
     static let xbla = CanonicalSystemID("xbla")
     static let chihiro = CanonicalSystemID("chihiro")
+    static let devilutionx = CanonicalSystemID("devilutionx")
     static let n64dd = CanonicalSystemID("n64dd")
     static let satellaview = CanonicalSystemID("satellaview")
     static let sufami = CanonicalSystemID("sufami")

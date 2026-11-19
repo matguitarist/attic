@@ -656,6 +656,16 @@
         }
       }
     },
+    "Diablo and Hellfire, rebuilt for today's computers.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diablo et Hellfire, réécrits pour les ordinateurs d’aujourd’hui."
+          }
+        }
+      }
+    },
     "Dolphin as a RetroArch core; the standalone app is more complete.": {
       "localizations": {
         "fr": {

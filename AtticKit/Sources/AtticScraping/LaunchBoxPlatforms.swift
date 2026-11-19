@@ -97,6 +97,7 @@ public enum LaunchBoxPlatforms {
         .cannonball: ["Windows", "Arcade"], .cavestory: ["Windows"], .dinothawr: ["Windows"], .ecwolf: ["MS-DOS", "Windows"],
         .reminiscence: ["MS-DOS", "Commodore Amiga"], .doom3: ["Windows"], .j2me: ["J2ME"],
         .chihiro: ["Sega Chihiro", "Arcade"],
+        .devilutionx: ["Windows"],
         .xbox360: ["Microsoft Xbox 360"], .xbla: ["Microsoft Xbox Live Arcade", "Microsoft Xbox 360"],
         .naomi: ["Sega Naomi", "Arcade"],
         .naomigd: ["Sega Naomi", "Arcade"],

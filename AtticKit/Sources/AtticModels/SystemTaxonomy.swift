@@ -919,6 +919,14 @@ public enum SystemTaxonomy {
             category: .handheld, otherShortNames: ["javame"]
         ),
         SystemDefinition(
+            canonicalID: .devilutionx,
+            displayName: "Diablo",
+            batoceraShortName: "devilutionx",
+            esdeShortName: "devilutionx",
+            retroArchSystemIDs: [],
+            category: .computer, otherShortNames: ["diablo"]
+        ),
+        SystemDefinition(
             canonicalID: .easyrpg,
             displayName: "EasyRPG",
             batoceraShortName: "easyrpg",

@@ -57,6 +57,7 @@ public enum TheGamesDBSystemID {
         .j2me: 5018,
         .xbox360: 15, .xbla: 15,
         .chihiro: 23,
+        .devilutionx: 1,
         .n64dd: 3,
         .satellaview: 6,
         .sufami: 6,

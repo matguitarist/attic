@@ -333,6 +333,24 @@ public enum EmulatorCatalog {
         installedOnlyByAttic: true
     )
 
+    /// DevilutionX, Diablo and Hellfire rebuilt. A game is the folder of
+    /// its MPQ files (`diablo.game`), given with --data-dir; it finds
+    /// Hellfire's files there by itself.
+    public static let devilutionX = StandaloneEmulator(
+        id: "devilutionx",
+        name: "DevilutionX",
+        summary: String(localized: "Diablo and Hellfire, rebuilt for today's computers.", bundle: .module),
+        appBundleName: "devilutionX.app",
+        executableRelativePath: "Contents/MacOS/devilutionX",
+        argumentTemplate: "--data-dir {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/diasurgical/devilutionX/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macOS-universal.dmg"),
+        homepageURL: URL(string: "https://github.com/diasurgical/devilutionX")!,
+        license: "Sustainable Use License",
+        systems: [.devilutionx],
+        portableHome: nil
+    )
+
     /// macXenos, the Mac port of Xenia Canary with a Metal renderer:
     /// signed, notarized and universal. It takes the game (.iso, .xex or a
     /// .zar archive) as its only argument and keeps its data where the
@@ -581,7 +599,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, xemuChihiro, macXenos, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, xemuChihiro, macXenos, devilutionX, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
 
     // MARK: - Per-system table
 
@@ -804,6 +822,7 @@ public enum EmulatorCatalog {
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),
         .init(systemID: .xbox360, cores: [], standalone: [macXenos], bios: [], prefersStandalone: true),
+        .init(systemID: .devilutionx, cores: [], standalone: [devilutionX], bios: [], prefersStandalone: true),
         .init(systemID: .chihiro, cores: [], standalone: [xemuChihiro], bios: [
             BIOSRequirement("mame/bios/chihiro.zip", required: false, note: "MAME's Chihiro BIOS: the Xbox BIOS, the media board's flash and the base board's EEPROMs"),
             BIOSRequirement("mcpx_1.0.bin", required: false, note: "The Xbox boot ROM"),

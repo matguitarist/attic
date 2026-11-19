@@ -190,6 +190,8 @@ enum SystemHelpContent {
                     notes: [LocalizedStringResource("Each game is a folder named like Monkey Island.scummvm holding the game's files and a file of the same name (Monkey Island.scummvm) containing ScummVM's ID for it, such as monkey.")]),
         .doom: .init(manufacturer: "id Software", year: 1993, wikipediaTitle: "Doom_(1993_video_game)",
                     notes: [LocalizedStringResource("Put the game's .wad files here: doom.wad, doom2.wad, or the free freedoom1.wad. Attic installs the prboom.wad PrBoom needs.")]),
+        .devilutionx: .init(manufacturer: "Blizzard North", year: 1996, wikipediaTitle: "Diablo_(video_game)",
+                    notes: [LocalizedStringResource("Make a folder named diablo.game and put DIABDAT.MPQ from your Diablo CD or GOG copy in it, with Hellfire's .mpq files for Hellfire. DevilutionX runs it.")]),
         .cannonball: .init(manufacturer: "Sega", year: 1986, wikipediaTitle: "Out_Run",
                     notes: [LocalizedStringResource("Put OutRun's arcade ROMs (the files of MAME's outrun set, unzipped) in this folder with an empty file named CannonBall.game: that file is the game in the list.")]),
         .cavestory: .init(manufacturer: "Studio Pixel", year: 2004, wikipediaTitle: "Cave_Story",

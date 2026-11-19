@@ -70,6 +70,7 @@ public enum ScreenScraperSystemID {
         .vg5k: 261, .p2000t: 287, .tutor: 317,
         .xbox360: 33, .xbla: 33,
         .chihiro: 75,
+        .devilutionx: 135,
         .n64dd: 122,
         .satellaview: 107,
         .sufami: 108,

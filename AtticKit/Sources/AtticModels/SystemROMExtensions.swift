@@ -187,6 +187,8 @@ public enum SystemROMExtensions {
         .xbla: ["iso", "xex", "zar"],
         // Netboot images made with chihiro-netboot.
         .chihiro: ["bin"],
+        // A folder of the game's MPQ files.
+        .devilutionx: ["game"],
         .switch: ["nca", "nro", "nso", "nsp", "xci"]
     ]
 
@@ -198,7 +200,7 @@ public enum SystemROMExtensions {
 
     /// Folders that are games themselves (`Game.ps3`, `Monkey Island.scummvm`),
     /// the way Batocera and ES-DE store those systems' games.
-    public static let gameFolderExtensions: Set<String> = ["ps3", "ps4", "scummvm", "quake", "easyrpg", "app"]
+    public static let gameFolderExtensions: Set<String> = ["ps3", "ps4", "scummvm", "quake", "easyrpg", "app", "game"]
 
     /// The file inside a game folder that a core is given: one named like
     /// the folder (ScummVM's hook file), Quake's id1/pak0.pak, or an RPG
