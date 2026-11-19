@@ -63,6 +63,8 @@ public enum ScreenScraperSystemID {
         .stv: 69,
         .gaelco: 194,
         .namco2x6: 75,
+        .namco22: 75, .neogeo64: 75, .zinc: 75,
+        .pspminis: 61, .wiiware: 16, .dsiware: 15,
         .n64dd: 122,
         .satellaview: 107,
         .sufami: 108,

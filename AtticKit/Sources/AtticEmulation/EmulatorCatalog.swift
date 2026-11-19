@@ -291,7 +291,7 @@ public enum EmulatorCatalog {
         archive: .dolphinReleaseFeed,
         homepageURL: URL(string: "https://dolphin-emu.org")!,
         license: "GPL-2.0-or-later",
-        systems: [.gamecube, .wii, .triforce],
+        systems: [.gamecube, .wii, .wiiware, .triforce],
         portableHome: nil
     )
 
@@ -705,9 +705,17 @@ public enum EmulatorCatalog {
             BIOSRequirement("64DD_IPL.bin", note: "The same IPL, for ParaLLEl N64", notNeededBy: ["mupen64plus_next_libretro"])
         ], prefersStandalone: false),
         .init(systemID: .nds, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Accurate DS and DSi, no BIOS needed.", bundle: .module)), RecommendedCore("desmume_libretro", "DeSmuME", String(localized: "Older, widely compatible DS core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios7.bin", required: false, note: "Optional; melonDS DS has a built-in replacement"), BIOSRequirement("bios9.bin", required: false), BIOSRequirement("firmware.bin", required: false)], prefersStandalone: false),
+        .init(systemID: .dsiware, cores: [RecommendedCore("melondsds_libretro", "melonDS DS", String(localized: "Runs DSiWare in DSi mode, installing each game on the NAND for the session.", bundle: .module))], standalone: [], bios: [
+            BIOSRequirement("dsi_bios7.bin", note: "DSi ARM7 BIOS"),
+            BIOSRequirement("dsi_bios9.bin", note: "DSi ARM9 BIOS"),
+            BIOSRequirement("dsi_firmware.bin", note: "DSi firmware; melonDS DS takes any name"),
+            BIOSRequirement("dsi_nand.bin", note: "DSi system NAND; melonDS DS takes any name")
+        ], prefersStandalone: false),
         .init(systemID: .n3ds, cores: [RecommendedCore("azahar_libretro", "Azahar", String(localized: "Citra's actively developed successor.", bundle: .module)), RecommendedCore("panda3ds_libretro", "Panda3DS", String(localized: "Newer, lighter 3DS core.", bundle: .module)), RecommendedCore("citra_libretro", "Citra", String(localized: "The original 3DS core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .gamecube, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
         .init(systemID: .wii, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
+        // Dolphin boots a .wad as it is, installing it for the session.
+        .init(systemID: .wiiware, cores: [dolphinCore], standalone: [dolphin], bios: [], prefersStandalone: true),
         .init(systemID: .wiiu, cores: [RecommendedCore("cemu_libretro", "Cemu", String(localized: "The Wii U emulator, as a RetroArch core.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .fds, cores: [RecommendedCore("fceumm_libretro", "FCEUmm", String(localized: "Famicom Disk System support built in.", bundle: .module)), RecommendedCore("mesen_libretro", "Mesen", String(localized: "Most accurate NES core, with disk support.", bundle: .module))], standalone: [], bios: [BIOSRequirement("disksys.rom", note: "Famicom Disk System BIOS")], prefersStandalone: false),
         .init(systemID: .pokemini, cores: [RecommendedCore("pokemini_libretro", "PokeMini", String(localized: "The Pokémon Mini core.", bundle: .module))], standalone: [], bios: [BIOSRequirement("bios.min", required: false, note: "A free replacement is built in")], prefersStandalone: false),
@@ -739,11 +747,17 @@ public enum EmulatorCatalog {
         .init(systemID: .gaelco, cores: [mameCurrent], standalone: [odin], bios: [], prefersStandalone: true),
         // MAME's Hikaru driver doesn't play the games, so Odin alone.
         .init(systemID: .hikaru, cores: [], standalone: [odin], bios: hikaruSharedSets, prefersStandalone: true),
+        .init(systemID: .namco22, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        // MAME looks for the board's BIOS (hng64.zip) beside the games.
+        .init(systemID: .neogeo64, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
+        // Each maker's ZN BIOS (cpzn1.zip, coh1000c.zip…) goes beside the games.
+        .init(systemID: .zinc, cores: [mameCurrent], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .namco2x6, cores: [], standalone: [pcsx2x6], bios: [
             BIOSRequirement("mame/bios/sys256.zip", required: false, note: "System 256 BIOS, from MAME; System 246 games run on it too. sys246.zip works when it's the only one.")
         ], prefersStandalone: true),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [keisho], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
+        .init(systemID: .pspminis, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),

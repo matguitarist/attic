@@ -1052,6 +1052,16 @@
         }
       }
     },
+    "Runs DSiWare in DSi mode, installing each game on the NAND for the session.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fait tourner les DSiWare en mode DSi, en installant chaque jeu sur la NAND le temps de la partie."
+          }
+        }
+      }
+    },
     "Runs Sega Pico storyware.": {
       "localizations": {
         "fr": {

@@ -30,6 +30,11 @@ public enum CoreLaunchOptions {
             // Automatic model takes this machine for CD images.
             return ["puae_model_cd": system == .cdtv ? "CDTV" : "CD32"]
 
+        case "melondsds_libretro" where system == .dsiware || system == .nds:
+            // DSiWare boots the DSi menu from the NAND, where melonDS DS
+            // installs the game for the session; DS games go back to a DS.
+            return ["melonds_console_mode": system == .dsiware ? "dsi" : "ds"]
+
         case "sameboy_libretro" where system == .sgb:
             // The Super Game Boy folder: its borders and palettes.
             return ["sameboy_model": "Super Game Boy"]

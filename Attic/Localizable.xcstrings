@@ -6471,6 +6471,16 @@
         }
       }
     },
+    "DSiWare runs on a DSi, so melonDS DS needs a DSi's own files in the BIOS folder: dsi_bios7.bin, dsi_bios9.bin, its firmware and its system NAND.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les DSiWare tournent sur une DSi : melonDS DS a donc besoin des fichiers d’une DSi dans le dossier BIOS : dsi_bios7.bin, dsi_bios9.bin, son firmware et sa NAND système."
+          }
+        }
+      }
+    },
     "DVD": {
       "localizations": {
         "fr": {
@@ -7201,6 +7211,16 @@
         }
       }
     },
+    "Each game is installed on the NAND while you play it and removed afterwards. melonDS DS downloads the game's name and icon from Nintendo the first time.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est installé sur la NAND le temps de la partie, puis retiré. melonDS DS télécharge le nom et l’icône du jeu chez Nintendo la première fois."
+          }
+        }
+      }
+    },
     "Each game's data, checked against %@. Nothing has been changed.": {
       "localizations": {
         "fr": {
@@ -7237,6 +7257,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chacune est déplacée dans le dossier du jeu qui l'utilise, là où les émulateurs la cherchent ; son SHA-1 correspond à celui que liste le DAT."
+          }
+        }
+      }
+    },
+    "Each maker's ZN BIOS (cpzn1.zip and cpzn2.zip for Capcom, coh1000c.zip, taitofx1.zip and the others) goes in the folder with the games: MAME looks for it there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le BIOS ZN de chaque fabricant (cpzn1.zip et cpzn2.zip pour Capcom, coh1000c.zip, taitofx1.zip et les autres) va dans le dossier des jeux : c’est là que MAME le cherche."
           }
         }
       }
@@ -9506,6 +9536,16 @@
         }
       }
     },
+    "Keep each game as a .wad file: Dolphin installs it for the session when it starts.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu en fichier .wad : Dolphin l’installe le temps de la partie au démarrage."
+          }
+        }
+      }
+    },
     "Keep each game zipped (.zip or .dosz); DOSBox Pure runs it straight from the archive and asks which program to start the first time.": {
       "localizations": {
         "fr": {
@@ -10216,6 +10256,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "MAME range la plupart des disques sous une forme que PCSX2x6 ne lit pas : la première fois que vous y jouez, Attic en convertit une copie dans Config/PCSX2x6, ce qui prend quelques minutes et nécessite chdman (brew install rom-tools)."
+          }
+        }
+      }
+    },
+    "MAME's Hyper Neo Geo 64 is still a work in progress: the fighting games run best, the racing games may show glitches.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’émulation de la Hyper Neo Geo 64 dans MAME n’est pas terminée : les jeux de combat tournent le mieux, les jeux de course peuvent avoir des défauts graphiques."
           }
         }
       }
@@ -12721,6 +12771,16 @@
         }
       }
     },
+    "Put the board's BIOS (hng64.zip) in the folder with the games: MAME looks for it there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez le BIOS de la carte (hng64.zip) dans le dossier des jeux : c’est là que MAME le cherche."
+          }
+        }
+      }
+    },
     "Put the game's .wad files here: doom.wad, doom2.wad, or the free freedoom1.wad. Attic installs the prboom.wad PrBoom needs.": {
       "localizations": {
         "fr": {
@@ -14981,6 +15041,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Emplacement %lld"
+          }
+        }
+      }
+    },
+    "Small PlayStation Store games for the PSP, as .cso or .iso files. They run in PPSSPP like other PSP games.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petits jeux du PlayStation Store pour la PSP, en fichiers .cso ou .iso. Ils tournent dans PPSSPP comme les autres jeux PSP."
           }
         }
       }

@@ -53,6 +53,7 @@ public enum LibretroDatabase {
         .atomiswave: ["Atomiswave"],
         .model3: ["Sega - Model 3"],
         .psp: ["Sony - PlayStation Portable"],
+        .pspminis: ["Sony - PlayStation Portable"],
         .ps2: ["Sony - PlayStation 2"],
         .ps3: ["Sony - PlayStation 3"],
         .scummvm: ["ScummVM"],

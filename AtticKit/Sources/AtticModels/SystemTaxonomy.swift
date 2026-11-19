@@ -219,7 +219,9 @@ public enum SystemTaxonomy {
             displayName: "NEC TurboGrafx-CD",
             batoceraShortName: "pcenginecd",
             esdeShortName: "turbografxcd",
-            retroArchSystemIDs: ["pc_engine_cd", "turbografx_16_cd", "pce_cd"]
+            retroArchSystemIDs: ["pc_engine_cd", "turbografx_16_cd", "pce_cd"],
+            // RetroBat's TurboGrafx-CD folder.
+            otherShortNames: ["tgcd"]
         ),
         SystemDefinition(
             canonicalID: .pcfx,
@@ -338,6 +340,14 @@ public enum SystemTaxonomy {
             category: .handheld
         ),
         SystemDefinition(
+            canonicalID: .dsiware,
+            displayName: "DSiWare",
+            batoceraShortName: "dsiware",
+            esdeShortName: "dsiware",
+            retroArchSystemIDs: ["dsiware"],
+            category: .handheld
+        ),
+        SystemDefinition(
             canonicalID: .n3ds,
             displayName: "Nintendo 3DS",
             batoceraShortName: "3ds",
@@ -360,6 +370,13 @@ public enum SystemTaxonomy {
             esdeShortName: "wii",
             retroArchSystemIDs: ["wii"],
             category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .wiiware,
+            displayName: "WiiWare",
+            batoceraShortName: "wiiware",
+            esdeShortName: "wiiware",
+            retroArchSystemIDs: ["wiiware"]
         ),
         SystemDefinition(
             canonicalID: .wiiu,
@@ -476,6 +493,30 @@ public enum SystemTaxonomy {
             category: .arcade, otherShortNames: ["namco246", "namco256", "sys246", "sys256"]
         ),
         SystemDefinition(
+            canonicalID: .namco22,
+            displayName: "Namco System 22",
+            batoceraShortName: "namco22",
+            esdeShortName: "namco22",
+            retroArchSystemIDs: ["namco22"],
+            category: .arcade
+        ),
+        SystemDefinition(
+            canonicalID: .neogeo64,
+            displayName: "Hyper Neo Geo 64",
+            batoceraShortName: "neogeo64",
+            esdeShortName: "neogeo64",
+            retroArchSystemIDs: ["hng64"],
+            category: .arcade, otherShortNames: ["hng64", "hyperneogeo64"]
+        ),
+        SystemDefinition(
+            canonicalID: .zinc,
+            displayName: "Sony ZN-1 / ZN-2",
+            batoceraShortName: "zinc",
+            esdeShortName: "zinc",
+            retroArchSystemIDs: ["zinc"],
+            category: .arcade, otherShortNames: ["sonyzn"]
+        ),
+        SystemDefinition(
             canonicalID: .gaelco,
             displayName: "Gaelco",
             batoceraShortName: "gaelco",
@@ -498,6 +539,14 @@ public enum SystemTaxonomy {
             batoceraShortName: "psp",
             esdeShortName: "psp",
             retroArchSystemIDs: ["playstation_portable", "psp"],
+            category: .handheld
+        ),
+        SystemDefinition(
+            canonicalID: .pspminis,
+            displayName: "PSP Minis",
+            batoceraShortName: "pspminis",
+            esdeShortName: "pspminis",
+            retroArchSystemIDs: ["psp_minis"],
             category: .handheld
         ),
         SystemDefinition(

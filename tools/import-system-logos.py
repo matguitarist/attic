@@ -13,8 +13,8 @@ Unzip them with `ditto -x -k`: unzip trips on "SAM Coupé" and "Pokémon".
 Systems' logos are named "SystemLogo/<system>"; arcade companies' (Cave,
 Data East, Toaplan…) "ArcadeLogo/<maker>", for `ArcadeMaker` in AtticModels.
 The set also has arcade boards Attic has no system for yet (Daphne, PGM,
-Hyper Neo Geo 64, Sega System 16 and 32, Namco System 22, Taito Type X,
-TeknoParrot): add the system to LOGOS when Attic gets it.
+Sega System 16 and 32, Taito Type X, TeknoParrot): add the system to LOGOS
+when Attic gets it.
 
 "Dark - Color" logos are drawn for light backgrounds and "Light - Color" for
 dark ones, so each system gets one image set with both appearances. Logos are
@@ -160,6 +160,11 @@ LOGOS = {
     "fmtowns": "Computers/Fujitsu FM Towns",
     "camplynx": "Computers/Camputers Lynx",
     "adam": "Computers/Coleco ADAM",
+    "namco22": "Arcade/Namco System 22",
+    "neogeo64": "Arcade/Hyper Neo Geo 64",
+    "pspminis": "Handhelds/Sony PSP Minis",
+    "wiiware": "Consoles/Nintendo WiiWare",
+    "dsiware": "Handhelds/Nintendo DSi Ware",
 }
 
 # Systems whose logo is one of the set's word logos, from the SVG set:
@@ -230,7 +235,7 @@ def main(source, svg_source):
             missing.append(word)
             continue
         write_imageset(systems, system, pair, ["magick", "-background", "none", "-density", "150", "{src}",
-                                               "-resize", "600x600", "{dest}"])
+                                               "-resize", "600x600", "-define", "png:exclude-chunks=date,time", "{dest}"])
     makers = namespace("ArcadeLogo")
     for maker, logo in sorted(ARCADE.items()):
         pair = (find(source, "Dark - Color", logo), find(source, "Light - Color", logo))

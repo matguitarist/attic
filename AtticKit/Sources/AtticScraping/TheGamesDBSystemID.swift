@@ -51,6 +51,8 @@ public enum TheGamesDBSystemID {
         .stv: 23,
         .gaelco: 23,
         .namco2x6: 23,
+        .namco22: 23, .neogeo64: 23, .zinc: 23,
+        .pspminis: 13, .wiiware: 9, .dsiware: 8,
         .n64dd: 3,
         .satellaview: 6,
         .sufami: 6,
