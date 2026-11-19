@@ -341,7 +341,7 @@ public enum SystemTaxonomy {
         ),
         SystemDefinition(
             canonicalID: .dsiware,
-            displayName: "DSiWare",
+            displayName: "Nintendo DSiWare",
             batoceraShortName: "dsiware",
             esdeShortName: "dsiware",
             retroArchSystemIDs: ["dsiware"],
@@ -373,7 +373,7 @@ public enum SystemTaxonomy {
         ),
         SystemDefinition(
             canonicalID: .wiiware,
-            displayName: "WiiWare",
+            displayName: "Nintendo WiiWare",
             batoceraShortName: "wiiware",
             esdeShortName: "wiiware",
             retroArchSystemIDs: ["wiiware"]
