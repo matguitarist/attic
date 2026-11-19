@@ -50,6 +50,7 @@ public enum TheGamesDBSystemID {
         .model2: 23,
         .stv: 23,
         .gaelco: 23,
+        .namco2x6: 23,
         .n64dd: 3,
         .satellaview: 6,
         .sufami: 6,

@@ -5855,6 +5855,16 @@
         }
       }
     },
+    "Converting the disc for PCSX2x6. This takes a few minutes, the first time only.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversion du disque pour PCSX2x6. Cela prend quelques minutes, la première fois seulement."
+          }
+        }
+      }
+    },
     "Copied %lld BIOS files from %@.": {
       "localizations": {
         "fr": {
@@ -7207,6 +7217,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les données de chaque jeu, vérifiées d’après %lld fichiers DAT de No-Intro. Rien n’a été modifié."
+          }
+        }
+      }
+    },
+    "Each game's dongle becomes a memory card in Saves/namco2x6, where the game keeps its settings and records.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dongle de chaque jeu devient une carte mémoire dans Saves/namco2x6, où le jeu garde ses réglages et ses records."
           }
         }
       }
@@ -9476,6 +9496,16 @@
         }
       }
     },
+    "Keep each game as MAME has it: its zip (the security dongle), and beside it the folder of the same name that holds its .chd. PCSX2x6 runs them; Attic makes what it needs at launch and never changes your files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez chaque jeu tel que MAME le range : son zip (le dongle de sécurité) et, à côté, le dossier du même nom qui contient son .chd. PCSX2x6 les fait tourner ; Attic prépare ce qu’il lui faut au lancement et ne modifie jamais vos fichiers."
+          }
+        }
+      }
+    },
     "Keep each game zipped (.zip or .dosz); DOSBox Pure runs it straight from the archive and asks which program to start the first time.": {
       "localizations": {
         "fr": {
@@ -10176,6 +10206,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fichiers isolés"
+          }
+        }
+      }
+    },
+    "MAME keeps most discs in a form PCSX2x6 can't read: the first time you play one, Attic converts a copy into Config/PCSX2x6, which takes a few minutes and needs chdman (brew install rom-tools).": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MAME range la plupart des disques sous une forme que PCSX2x6 ne lit pas : la première fois que vous y jouez, Attic en convertit une copie dans Config/PCSX2x6, ce qui prend quelques minutes et nécessite chdman (brew install rom-tools)."
           }
         }
       }
@@ -12631,6 +12671,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placez les fichiers BIOS dans %@. Extrayez-les du matériel que vous possédez ; Attic ne les télécharge jamais."
+          }
+        }
+      }
+    },
+    "Put MAME's System 256 BIOS (sys256.zip, or sys246.zip) in BIOS/mame/bios.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez le BIOS System 256 de MAME (sys256.zip, ou sys246.zip) dans BIOS/mame/bios."
           }
         }
       }

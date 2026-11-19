@@ -69,6 +69,7 @@ public enum SystemROMExtensions {
         .model2: ["7z", "zip"],
         .stv: ["7z", "zip"],
         .gaelco: ["7z", "zip"],
+        .namco2x6: ["zip"],
         .n64dd: ["7z", "bin", "d64", "n64", "ndd", "u1", "v64", "z64", "zip"],
         .satellaview: ["7z", "bml", "bs", "fig", "sfc", "smc", "st", "swc", "zip"],
         .sufami: ["7z", "bml", "bs", "fig", "sfc", "smc", "st", "zip"],

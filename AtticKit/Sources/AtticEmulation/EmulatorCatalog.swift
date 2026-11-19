@@ -345,6 +345,42 @@ public enum EmulatorCatalog {
         )
     )
 
+    /// PCSX2 made for Namco's System 246, 256 and Super 256 arcade boards.
+    /// It boots a game from a `.acgame` file, which Attic writes from the
+    /// MAME set at launch (see `EmulationFolder.preparePCSX2x6Game`), with
+    /// MAME's System 256 BIOS. Intel-only, so it runs through Rosetta; its
+    /// archive names the app "PCSX2-v0.2.22.app", installed as PCSX2.app.
+    /// It's PCSX2 underneath, so with HOME redirected its data goes there.
+    public static let pcsx2x6 = StandaloneEmulator(
+        id: "pcsx2x6",
+        name: "PCSX2x6",
+        summary: String(localized: "PCSX2 made for Namco's System 246 and 256 arcade boards. Intel-only, so it runs through Rosetta.", bundle: .module),
+        appBundleName: "PCSX2.app",
+        executableRelativePath: "Contents/MacOS/PCSX2",
+        argumentTemplate: "-batch -nogui -fullscreen -- {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/PS2Homebrew-arcade/pcsx2x6/releases/latest")!,
+        archive: .githubRelease(assetSuffix: "-macos-Qt.tar.xz"),
+        homepageURL: URL(string: "https://ps2homebrew-arcade.github.io/pcsx2x6/")!,
+        license: "GPL-3.0",
+        systems: [.namco2x6],
+        portableHome: PortableHome(
+            settingsRelativePath: "Library/Application Support/PCSX2x6/inis/PCSX2.ini",
+            settings: [
+                .init("UI", "SetupWizardIncomplete", "false"),
+                .init("UI", "ConfirmShutdown", "false"),
+                .init("AutoUpdater", "CheckAtStartup", "false"),
+                // The dongles are its memory cards, and hold each game's
+                // settings and records: they're the system's saves.
+                .init("Folders", "MemoryCards", "{saves}"),
+                .init("Folders", "Savestates", "{states}"),
+                .init("InputSources", "SDL", "true", onlyIfMissing: true)
+            ] + pcsx2ControllerDefaults,
+            quitComboSettings: [
+                .init("Hotkeys", "ShutdownVM", "SDL-0/Back & SDL-0/Start")
+            ]
+        )
+    )
+
     /// Player 1 on the first SDL controller (PCSX2's own defaults are
     /// keyboard keys). PCSX2 names SDL buttons by position: FaceSouth is
     /// A on an Xbox pad, Cross on a PlayStation one.
@@ -503,7 +539,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, vita3K, shadPS4, keisho, odin, ryujinx]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
 
     // MARK: - Per-system table
 
@@ -703,6 +739,9 @@ public enum EmulatorCatalog {
         .init(systemID: .gaelco, cores: [mameCurrent], standalone: [odin], bios: [], prefersStandalone: true),
         // MAME's Hikaru driver doesn't play the games, so Odin alone.
         .init(systemID: .hikaru, cores: [], standalone: [odin], bios: hikaruSharedSets, prefersStandalone: true),
+        .init(systemID: .namco2x6, cores: [], standalone: [pcsx2x6], bios: [
+            BIOSRequirement("mame/bios/sys256.zip", required: false, note: "System 256 BIOS, from MAME; System 246 games run on it too. sys246.zip works when it's the only one.")
+        ], prefersStandalone: true),
         .init(systemID: .model3, cores: [RecommendedCore("supermodel_libretro", "Supermodel", String(localized: "The Sega Model 3 emulator.", bundle: .module))], standalone: [keisho], bios: [], prefersStandalone: false),
         .init(systemID: .psp, cores: [RecommendedCore("ppsspp_libretro", "PPSSPP", String(localized: "The PSP emulator, with upscaling.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),

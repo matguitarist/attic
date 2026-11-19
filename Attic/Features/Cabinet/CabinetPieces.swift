@@ -293,6 +293,11 @@ struct CabinetGameInfo: View {
                     Text(message)
                         .font(theme.bodyFont())
                         .foregroundStyle(.red)
+                } else if let preparation = launchCoordinator.preparation {
+                    Text(preparation)
+                        .font(theme.bodyFont())
+                        .foregroundStyle(theme.palette.secondaryText.color)
+                        .multilineTextAlignment(textAlignment)
                 } else if showsDescription, theme.details.showsDescription, let description = game.gameDescription {
                     Text(description)
                         .font(theme.bodyFont())

@@ -62,6 +62,7 @@ public enum ScreenScraperSystemID {
         .pet: 240,
         .stv: 69,
         .gaelco: 194,
+        .namco2x6: 75,
         .n64dd: 122,
         .satellaview: 107,
         .sufami: 108,

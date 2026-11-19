@@ -872,6 +872,26 @@
         }
       }
     },
+    "No disc or hard disk image for %@: MAME keeps it in the folder named like the game, beside its zip.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune image de disque ou de disque dur pour %@ : MAME la range dans le dossier du même nom que le jeu, à côté de son zip."
+          }
+        }
+      }
+    },
+    "No security dongle found in %@.zip.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun dongle de sécurité trouvé dans %@.zip."
+          }
+        }
+      }
+    },
     "Not needed by %@": {
       "localizations": {
         "fr": {
@@ -908,6 +928,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cœur DS plus ancien, très compatible."
+          }
+        }
+      }
+    },
+    "PCSX2 made for Namco's System 246 and 256 arcade boards. Intel-only, so it runs through Rosetta.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PCSX2 adapté aux cartes d’arcade System 246 et 256 de Namco. Pour Intel seulement, il passe donc par Rosetta."
+          }
+        }
+      }
+    },
+    "PCSX2x6 doesn't know the set “%@”. Keep each game zipped with its MAME romset name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PCSX2x6 ne connaît pas le set « %@ ». Gardez chaque jeu zippé sous son nom de romset MAME."
+          }
+        }
+      }
+    },
+    "PCSX2x6 needs MAME's System 256 BIOS: put sys256.zip (or sys246.zip) in %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PCSX2x6 a besoin du BIOS System 256 de MAME : placez sys256.zip (ou sys246.zip) dans %@."
+          }
+        }
+      }
+    },
+    "PCSX2x6's game library has no boot program for %@.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La bibliothèque de jeux de PCSX2x6 n’a pas de programme de démarrage pour %@."
           }
         }
       }
@@ -1642,12 +1702,32 @@
         }
       }
     },
+    "This game's disc has to be converted once for PCSX2x6, which needs MAME's chdman tool: install Homebrew (brew.sh), then run “brew install rom-tools” in Terminal.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le disque de ce jeu doit être converti une fois pour PCSX2x6, ce qui nécessite l’outil chdman de MAME : installez Homebrew (brew.sh), puis lancez « brew install rom-tools » dans le Terminal."
+          }
+        }
+      }
+    },
     "Very accurate, with upscaling.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Très précis, avec mise à l’échelle."
+          }
+        }
+      }
+    },
+    "chdman couldn't convert %@'s disc for PCSX2x6.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chdman n’a pas pu convertir le disque de %@ pour PCSX2x6."
           }
         }
       }

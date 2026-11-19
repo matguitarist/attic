@@ -96,6 +96,7 @@ public extension CanonicalSystemID {
     static let model2 = CanonicalSystemID("model2")
     static let stv = CanonicalSystemID("stv")
     static let gaelco = CanonicalSystemID("gaelco")
+    static let namco2x6 = CanonicalSystemID("namco2x6")
     static let n64dd = CanonicalSystemID("n64dd")
     static let satellaview = CanonicalSystemID("satellaview")
     static let sufami = CanonicalSystemID("sufami")

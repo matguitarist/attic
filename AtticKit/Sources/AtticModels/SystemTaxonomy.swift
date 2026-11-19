@@ -468,6 +468,14 @@ public enum SystemTaxonomy {
             category: .arcade, otherShortNames: ["segastv"]
         ),
         SystemDefinition(
+            canonicalID: .namco2x6,
+            displayName: "Namco System 246/256",
+            batoceraShortName: "namco2x6",
+            esdeShortName: "namco2x6",
+            retroArchSystemIDs: ["namco2x6"],
+            category: .arcade, otherShortNames: ["namco246", "namco256", "sys246", "sys256"]
+        ),
+        SystemDefinition(
             canonicalID: .gaelco,
             displayName: "Gaelco",
             batoceraShortName: "gaelco",

@@ -5,6 +5,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticEmulation
+import AtticLibraryScanning
 
 /// Resolves a game's launch target (per-game override, else per-system
 /// default, via `LaunchTargetResolution`) and runs it through whichever
@@ -20,6 +21,9 @@ final class LaunchCoordinator {
     }
 
     private(set) var state: State = .idle
+    /// What's being done before a game can start, when it takes a while
+    /// (a System 246 disc converted for PCSX2x6).
+    private(set) var preparation: String?
 
     /// A game held back because its emulator's BIOS isn't there: launching
     /// would only crash or hang the emulator. Shown as an alert.
@@ -93,13 +97,50 @@ final class LaunchCoordinator {
         let emulator = emulatorName(for: target, game: game)
         AppLog.post(.info, "Launching “\(game.title)” (\(game.systemCanonicalID)) with \(emulator.description): \(game.romAbsoluteURL.path)")
 
+        // PCSX2x6 boots a .acgame made from the MAME set, which may need
+        // its disc converted first: done off the main thread.
+        if isCatalogEmulator(EmulatorCatalog.pcsx2x6, target: target, game: game) {
+            let romURL = game.romAbsoluteURL
+            if folder.pcsx2x6NeedsConversion(romURL: romURL) {
+                preparation = String(localized: "Converting the disc for PCSX2x6. This takes a few minutes, the first time only.")
+                AppLog.post(.info, "Converting “\(game.title)”'s disc for PCSX2x6.")
+            }
+            Task {
+                let chdman = CHDConversion.findCHDMan()
+                let result = await Task.detached(priority: .userInitiated) {
+                    Result { try folder.preparePCSX2x6Game(romURL: romURL, chdman: chdman) }
+                }.value
+                preparation = nil
+                switch result {
+                case .success(let acgame):
+                    start(target, game: game, retroArchStore: retroArchStore, saveState: saveState, emulator: emulator, romURL: acgame)
+                case .failure(let error):
+                    state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
+                    AppLog.post(.error, "Couldn't launch “\(game.title)”: \(error.localizedDescription)")
+                }
+            }
+            return
+        }
+        start(target, game: game, retroArchStore: retroArchStore, saveState: saveState, emulator: emulator)
+    }
+
+    /// Whether `target` is the copy of `emulator` Attic installed.
+    private func isCatalogEmulator(_ emulator: StandaloneEmulator, target: LaunchTargetReference, game: Game) -> Bool {
+        guard case .emulatorProfile(let id) = target else { return false }
+        return fetchEmulatorProfile(id: id, context: game.modelContext)?.catalogEmulatorID == emulator.id
+    }
+
+    /// Runs the game and follows it until it quits. `romURL` stands in for
+    /// the game's file (PCSX2x6's .acgame).
+    private func start(_ target: LaunchTargetReference, game: Game, retroArchStore: RetroArchSettingsStore, saveState: SaveState?,
+                       emulator: (description: String, source: String), romURL: URL? = nil) {
         let diagnosis = LaunchDiagnosis()
         // Filled in once launched, for the output handler to close it.
         let sessionBox = SessionBox()
         let session: RunningGameSession
         do {
             session = try launch(
-                target, game: game, retroArchStore: retroArchStore, saveState: saveState,
+                target, game: game, retroArchStore: retroArchStore, saveState: saveState, romURL: romURL,
                 onOutput: Self.outputHandler(source: emulator.source, diagnosis: diagnosis, session: sessionBox)
             )
         } catch {
@@ -326,6 +367,7 @@ final class LaunchCoordinator {
         game: Game,
         retroArchStore: RetroArchSettingsStore,
         saveState: SaveState? = nil,
+        romURL romOverride: URL? = nil,
         onOutput: @escaping @Sendable (String) -> Void
     ) throws -> RunningGameSession {
         switch target {
@@ -414,7 +456,7 @@ final class LaunchCoordinator {
             return try CustomEmulatorLauncher().launch(
                 executableURL: profile.executableURL,
                 argumentTemplate: profile.argumentTemplate,
-                romURL: game.romAbsoluteURL,
+                romURL: romOverride ?? game.romAbsoluteURL,
                 workingDirectoryURL: profile.workingDirectoryURL,
                 environmentOverrides: environment,
                 extraArguments: extraArguments,

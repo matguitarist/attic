@@ -87,6 +87,7 @@ public enum LaunchBoxPlatforms {
         .cps2: ["Arcade"],
         .cps3: ["Arcade"],
         .gaelco: ["Arcade"],
+        .namco2x6: ["Namco System 246", "Arcade"],
         .naomi: ["Sega Naomi", "Arcade"],
         .naomigd: ["Sega Naomi", "Arcade"],
         .naomi2: ["Sega Naomi 2", "Arcade"],

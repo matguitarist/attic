@@ -186,6 +186,12 @@ struct GameDetailView: View {
                 EmulatorSuggestionView(system: system)
             }
 
+            if let preparation = launchCoordinator.preparation {
+                HStack(spacing: 6) {
+                    ProgressView().controlSize(.small)
+                    Text(preparation).foregroundStyle(.secondary).font(.callout)
+                }
+            }
             if case .failed(let message) = launchCoordinator.state {
                 Text(message).foregroundStyle(.red).font(.callout)
                 Button("Show Log") { openWindow(id: LogView.windowID) }
