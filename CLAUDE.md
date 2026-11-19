@@ -19,6 +19,7 @@ Shared rules for how every project is laid out and named:
 - Build: `./build.sh` → `dist/Attic.app` (regenerates the project first). `--open` launches it.
 - Tests: `swift test --package-path AtticKit --scratch-path ~/Library/Developer/Attic/test-build`.
 - Cabinet Mode pictures: `tools/snap.sh` (after `./build.sh`) writes `/tmp/Attic-shots/<theme>-<art>.png` for every built-in theme from a made-up library in /tmp; `ATTIC_SNAPSHOT_THEMES` and `ATTIC_SNAPSHOT_ARTS` narrow it. It never opens the real library. Look at them after any Cabinet change.
+- App icon: `Attic/Resources/AppIcon.icon` (Icon Composer, SVG layers; Xcode compiles it). `tools/icon_review.sh` renders every look into `/tmp/Attic-icon.png`.
 - After changing user-visible text: `tools/sync-strings.sh`, then commit the updated catalogs.
 - Release: `tools/release.sh <version>` (settings in `release.conf`). Use the mac-release skill.
 

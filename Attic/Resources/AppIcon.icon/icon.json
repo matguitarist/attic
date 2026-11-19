@@ -8,38 +8,20 @@
   "groups" : [
     {
       "layers" : [
-        {
-          "image-name" : "cartridge.png",
-          "name" : "cartridge"
-        }
+        { "image-name" : "buttons.svg", "name" : "buttons" },
+        { "image-name" : "controller.svg", "name" : "controller" }
       ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.3
-      }
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.3 }
     },
     {
       "layers" : [
-        {
-          "image-name" : "roof.png",
-          "name" : "roof"
-        }
+        { "image-name" : "roof.svg", "name" : "roof" },
+        { "image-name" : "window.svg", "name" : "window" }
       ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.3
-      }
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.3 }
     }
   ],
-  "supported-platforms" : {
-    "squares" : "shared"
-  }
+  "supported-platforms" : { "squares" : "shared" }
 }
