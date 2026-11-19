@@ -310,6 +310,25 @@ public enum EmulatorCatalog {
         portableHome: nil
     )
 
+    /// macXenos, the Mac port of Xenia Canary with a Metal renderer:
+    /// signed, notarized and universal. It takes the game (.iso, .xex or a
+    /// .zar archive) as its only argument and keeps its data where the
+    /// user's own setup is, like xemu.
+    public static let macXenos = StandaloneEmulator(
+        id: "macxenos",
+        name: "macXenos",
+        summary: String(localized: "Xenia, the Xbox 360 emulator, ported to the Mac.", bundle: .module),
+        appBundleName: "macXenos.app",
+        executableRelativePath: "Contents/MacOS/macXenos",
+        argumentTemplate: "--fullscreen=true {romPath}",
+        downloadURL: URL(string: "https://api.github.com/repos/bourbonicfisky/macXenos/releases/latest")!,
+        archive: .githubRelease(assetSuffix: ".dmg"),
+        homepageURL: URL(string: "https://macxenos.com")!,
+        license: "BSD-3-Clause",
+        systems: [.xbox360, .xbla],
+        portableHome: nil
+    )
+
     /// PCSX2's Mac build is Intel-only, so it runs through Rosetta; the
     /// core runs natively and stays the first pick. Its release archive
     /// names the app with its version ("PCSX2-v2.8.2.app"); it's installed
@@ -539,7 +558,7 @@ public enum EmulatorCatalog {
         BIOSRequirement("mame/bios/jvs13551.zip", required: false, note: "I/O board program; without it Odin imitates the board")
     ]
 
-    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
+    public static let standaloneEmulators: [StandaloneEmulator] = [duckStation, dolphin, xemu, macXenos, rpcs3, pcsx2, pcsx2x6, vita3K, shadPS4, keisho, odin, ryujinx]
 
     // MARK: - Per-system table
 
@@ -761,6 +780,8 @@ public enum EmulatorCatalog {
         .init(systemID: .ps2, cores: [RecommendedCore("pcsx2_libretro", "PCSX2", String(localized: "The reference PS2 emulator, as a RetroArch core.", bundle: .module))], standalone: [pcsx2], bios: [BIOSRequirement("pcsx2/bios/", note: "Any PS2 BIOS dump, in this folder", supportedDumps: ["scph39001.bin", "scph70012.bin", "scph77001.bin", "scph30004r.bin", "scph70004.bin", "scph50000.bin", "scph77000.bin"])], prefersStandalone: false),
         .init(systemID: .ps3, cores: [RecommendedCore("rpcs3_libretro", "RPCS3", String(localized: "RPCS3 as a RetroArch core; the standalone app is the reference.", bundle: .module))], standalone: [rpcs3], bios: [], prefersStandalone: true),
         .init(systemID: .ps4, cores: [], standalone: [shadPS4], bios: [], prefersStandalone: true),
+        .init(systemID: .xbox360, cores: [], standalone: [macXenos], bios: [], prefersStandalone: true),
+        .init(systemID: .xbla, cores: [], standalone: [macXenos], bios: [], prefersStandalone: true),
         .init(systemID: .psvita, cores: [], standalone: [vita3K], bios: [], prefersStandalone: true),
         .init(systemID: .xbox, cores: [], standalone: [xemu], bios: [], prefersStandalone: true),
         .init(systemID: .scummvm, cores: [RecommendedCore("scummvm_libretro", "ScummVM", String(localized: "LucasArts, Sierra and other classic adventures.", bundle: .module))], standalone: [], bios: [], prefersStandalone: false),

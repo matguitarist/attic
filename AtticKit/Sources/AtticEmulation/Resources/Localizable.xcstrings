@@ -1822,6 +1822,16 @@
         }
       }
     },
+    "Xenia, the Xbox 360 emulator, ported to the Mac.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xenia, l’émulateur Xbox 360, porté sur Mac."
+          }
+        }
+      }
+    },
     "chdman couldn't convert %@'s disc for PCSX2x6.": {
       "localizations": {
         "fr": {

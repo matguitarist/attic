@@ -68,6 +68,7 @@ public enum ScreenScraperSystemID {
         .cannonball: 135, .cavestory: 135, .dinothawr: 135, .ecwolf: 135, .reminiscence: 135, .doom3: 135,
         .j2me: 302,
         .vg5k: 261, .p2000t: 287, .tutor: 317,
+        .xbox360: 33, .xbla: 33,
         .n64dd: 122,
         .satellaview: 107,
         .sufami: 108,

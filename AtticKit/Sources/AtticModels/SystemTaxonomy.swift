@@ -590,6 +590,22 @@ public enum SystemTaxonomy {
             category: .console
         ),
         SystemDefinition(
+            canonicalID: .xbox360,
+            displayName: "Microsoft Xbox 360",
+            batoceraShortName: "xbox360",
+            esdeShortName: "xbox360",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .xbla,
+            displayName: "Xbox Live Arcade",
+            batoceraShortName: "xbla",
+            esdeShortName: "xbla",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
             canonicalID: .msx,
             displayName: "MSX",
             batoceraShortName: "msx1",

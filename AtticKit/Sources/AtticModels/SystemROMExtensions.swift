@@ -183,6 +183,8 @@ public enum SystemROMExtensions {
         .reminiscence: ["rem"],
         .doom3: ["boom3"],
         .j2me: ["jar"],
+        .xbox360: ["iso", "xex", "zar"],
+        .xbla: ["iso", "xex", "zar"],
         .switch: ["nca", "nro", "nso", "nsp", "xci"]
     ]
 

@@ -169,6 +169,8 @@ LOGOS = {
     "tutor": "Computers/Tomy Tutor",
     "aquarius": "Computers/Mattel Aquarius",
     "apfm1000": "Consoles/APF Imagination Machine",
+    "xbox360": "Consoles/Microsoft Xbox 360",
+    "xbla": "Consoles/Microsoft Xbox Live Arcade",
 }
 
 # Systems whose logo is one of the set's word logos, from the SVG set:

@@ -117,6 +117,8 @@ public extension CanonicalSystemID {
     static let reminiscence = CanonicalSystemID("reminiscence")
     static let doom3 = CanonicalSystemID("doom3")
     static let j2me = CanonicalSystemID("j2me")
+    static let xbox360 = CanonicalSystemID("xbox360")
+    static let xbla = CanonicalSystemID("xbla")
     static let n64dd = CanonicalSystemID("n64dd")
     static let satellaview = CanonicalSystemID("satellaview")
     static let sufami = CanonicalSystemID("sufami")

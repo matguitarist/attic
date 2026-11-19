@@ -7181,6 +7181,16 @@
         }
       }
     },
+    "Each game is a .zar archive (or its .xex), run by macXenos, the Mac port of Xenia.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque jeu est une archive .zar (ou son .xex), lancée par macXenos, le portage Mac de Xenia."
+          }
+        }
+      }
+    },
     "Each game is a .zip, or a folder named like Game.easyrpg with its RPG_RT.ldb inside.": {
       "localizations": {
         "fr": {
@@ -8560,6 +8570,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les jeux tournent en partie gratuite : Start lance une partie sans pièces. Ils affichent d'abord l'écran de démarrage Neo Geo pendant une dizaine de secondes."
+          }
+        }
+      }
+    },
+    "Games run in macXenos, the Mac port of Xenia, as .iso, .xex or .zar files. No BIOS is needed. Many games run, not all: macXenos's site lists how well each one does.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les jeux tournent dans macXenos, le portage Mac de Xenia, en fichiers .iso, .xex ou .zar. Aucun BIOS n’est nécessaire. Beaucoup de jeux tournent, pas tous : le site de macXenos indique où en est chacun."
           }
         }
       }
@@ -17733,6 +17753,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "logo"
+          }
+        }
+      }
+    },
+    "macXenos uses its own controller setup: configure it once in macXenos.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macXenos a ses propres réglages de manette : configurez-les une fois dans macXenos."
           }
         }
       }
