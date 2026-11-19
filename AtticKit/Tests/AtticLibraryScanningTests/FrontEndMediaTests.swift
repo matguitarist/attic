@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import AtticLibraryScanning
+import AtticModels
 
 struct FrontEndMediaTests {
     @Test func readsARetroBatSystemFolder() throws {
@@ -41,6 +42,20 @@ struct FrontEndMediaTests {
         #expect(entry?.video == nil)
         // One system's folder on its own.
         #expect(FrontEndMedia.systems(in: nes).count == 1)
+    }
+
+    @Test func aSystemFolderWithNoneOfYourGamesStartsReadyToCopyThem() {
+        let wiiware = CanonicalSystemID("wiiware")
+        let start = FrontEndMedia.startingChoice([(wiiware, 0)])
+        #expect(start.systems == [wiiware])
+        #expect(start.copyingGames)
+    }
+
+    @Test func aRomsFolderStartsWithTheSystemsThatHaveYourGames() {
+        let nes = CanonicalSystemID("nes"), wiiware = CanonicalSystemID("wiiware")
+        let start = FrontEndMedia.startingChoice([(nes, 12), (wiiware, 0)])
+        #expect(start.systems == [nes])
+        #expect(!start.copyingGames)
     }
 
     @Test func copiesAGameWithItsFiles() throws {

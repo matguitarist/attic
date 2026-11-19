@@ -88,6 +88,16 @@ public enum FrontEndMedia {
         .sorted { $0.folder.lastPathComponent < $1.folder.lastPathComponent }
     }
 
+    /// What an import starts with, from how many of your games each
+    /// system has: the systems with some, or, when none has any (one
+    /// system's folder you don't have yet), every system with its games
+    /// to copy, since that's all it can bring.
+    public static func startingChoice(_ systems: [(id: CanonicalSystemID, matched: Int)])
+        -> (systems: Set<CanonicalSystemID>, copyingGames: Bool) {
+        let yours = Set(systems.filter { $0.matched > 0 }.map(\.id))
+        return yours.isEmpty ? (Set(systems.map(\.id)), true) : (yours, false)
+    }
+
     /// How a game is looked up: its file name without extension,
     /// lowercased ("./1942 (Japan, USA) (En).zip" → "1942 (japan, usa) (en)").
     public static func key(for path: String) -> String {

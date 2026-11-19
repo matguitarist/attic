@@ -1,5 +1,6 @@
 import SwiftUI
 import AtticModels
+import AtticLibraryScanning
 
 /// What importing from another front-end would bring, before it's done:
 /// the systems to take it from, and whether to copy the games the library
@@ -19,8 +20,9 @@ struct MediaImportReportView: View {
         self.plan = plan
         self.romsRoot = romsRoot
         self.onImport = onImport
-        // The systems with your games in them, to start with.
-        _chosen = State(initialValue: Set(plan.systems.filter { $0.matched > 0 }.map(\.id)))
+        let start = FrontEndMedia.startingChoice(plan.systems.map { ($0.id, $0.matched) })
+        _chosen = State(initialValue: start.systems)
+        _copyingGames = State(initialValue: start.copyingGames)
     }
 
     private func counts(of system: MediaImportPlan.System) -> MediaImportPlan.Counts {
