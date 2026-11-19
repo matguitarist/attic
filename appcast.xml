@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.14.0</title>
+            <pubDate>Wed, 18 Nov 2026 21:40:12 -0500</pubDate>
+            <sparkle:version>58</sparkle:version>
+            <sparkle:shortVersionString>2.14.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- New icon: an Atari-style joystick under the attic roof
+- Xbox 360 and Xbox Live Arcade games run in macXenos, Sega Chihiro games in xemu Chihiro, and Namco System 246/256 games in PCSX2x6, straight from their MAME sets: Attic installs each one
+- Diablo and Hellfire run in DevilutionX, which Attic installs
+- 20 more systems from RetroBat, among them Namco System 22, Hyper Neo Geo 64, Sony ZN-1/ZN-2, Nintendo WiiWare, Nintendo DSiWare, PSP Minis, Cave Story, Wolfenstein 3D and DOOM 3
+- Get media from EmuMovies for one system or a few games, from the Scrape menus, and logos for 29 more systems and 31 arcade companies
+- Importing one system's folder from another front-end works again: the system starts ticked, with its games set to copy
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.14.0/Attic-2.14.0.zip" length="24407720" type="application/octet-stream" sparkle:edSignature="TcizSToFA1vUFgMnGPSHmjsUF6YwA6O0c5/9G7xKqVb9SJFyK6bdhHVjNZgQdCTWbcnSw1bxdMsLhcb71f0eCQ=="/>
+        </item>
+        <item>
             <title>2.13.0</title>
             <pubDate>Wed, 18 Nov 2026 16:42:17 -0500</pubDate>
             <sparkle:version>57</sparkle:version>
