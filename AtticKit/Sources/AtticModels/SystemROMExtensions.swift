@@ -168,6 +168,21 @@ public enum SystemROMExtensions {
         .camplynx: ["7z", "tap", "zip"],
         .adam: ["7z", "bin", "col", "ddp", "dsk", "rom", "zip"],
         .bk: ["7z", "bin", "zip"],
+        .apfm1000: ["7z", "bin", "zip"],
+        .socrates: ["7z", "bin", "zip"],
+        .pv2000: ["7z", "bin", "zip"],
+        .tutor: ["7z", "bin", "wav", "zip"],
+        .aquarius: ["7z", "bin", "caq", "rom", "zip"],
+        .vg5k: ["7z", "k7", "wav", "zip"],
+        .p2000t: ["cas", "zip"],
+        // Engine ports: the file their core is given (see GamePorts).
+        .cannonball: ["game"],
+        .cavestory: ["exe"],
+        .dinothawr: ["game"],
+        .ecwolf: ["pk3"],
+        .reminiscence: ["rem"],
+        .doom3: ["boom3"],
+        .j2me: ["jar"],
         .switch: ["nca", "nro", "nso", "nsp", "xci"]
     ]
 

@@ -9526,6 +9526,16 @@
         }
       }
     },
+    "Java phone games, as .jar files. SquirrelJME runs many of them, not all.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux pour téléphones Java, en fichiers .jar. SquirrelJME en fait tourner beaucoup, pas tous."
+          }
+        }
+      }
+    },
     "Keep each game as MAME has it: its zip (the security dongle), and beside it the folder of the same name that holds its .chd. PCSX2x6 runs them; Attic makes what it needs at launch and never changes your files.": {
       "localizations": {
         "fr": {
@@ -9632,6 +9642,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Les garder : seuls les jeux à qui il manque quelque chose le reçoivent"
+          }
+        }
+      }
+    },
+    "Keep the free original release in its own folder, with Doukutsu.exe and its data folder: the .exe is the game in the list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez la version originale gratuite dans son propre dossier, avec Doukutsu.exe et son dossier data : le .exe est le jeu dans la liste."
+          }
+        }
+      }
+    },
+    "Keep the game's base folder (and d3xp for Resurrection of Evil) here, with a .boom3 file for each game that holds the path of its first pak: base/pak000.pk4, or d3xp/pak000.pk4.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardez ici le dossier base du jeu (et d3xp pour Resurrection of Evil), avec un fichier .boom3 par jeu qui contient le chemin de son premier pak : base/pak000.pk4, ou d3xp/pak000.pk4."
           }
         }
       }
@@ -12745,6 +12775,16 @@
         }
       }
     },
+    "Put OutRun's arcade ROMs (the files of MAME's outrun set, unzipped) in this folder with an empty file named CannonBall.game: that file is the game in the list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez les ROM d’arcade d’OutRun (les fichiers du set outrun de MAME, dézippés) dans ce dossier avec un fichier vide nommé CannonBall.game : ce fichier est le jeu dans la liste."
+          }
+        }
+      }
+    },
     "Put in %@: %@.": {
       "localizations": {
         "en": {
@@ -12757,6 +12797,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Placé dans %@ : %@."
+          }
+        }
+      }
+    },
+    "Put the PC version's files in a Flashback folder, with an empty file named Flashback.rem beside it: that file is the game in the list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez les fichiers de la version PC dans un dossier Flashback, avec à côté un fichier vide nommé Flashback.rem : ce fichier est le jeu dans la liste."
           }
         }
       }
@@ -12787,6 +12837,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mettez ici les fichiers .wad du jeu : doom.wad, doom2.wad, ou le gratuit freedoom1.wad. Attic installe le prboom.wad dont PrBoom a besoin."
+          }
+        }
+      }
+    },
+    "Put the game's data files (.wl6, or .sod for Spear of Destiny) here with ecwolf.pk3 from ECWolf: ecwolf.pk3 is the game in the list.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez ici les fichiers de données du jeu (.wl6, ou .sod pour Spear of Destiny) avec le ecwolf.pk3 d’ECWolf : ecwolf.pk3 est le jeu dans la liste."
+          }
+        }
+      }
+    },
+    "Put the game's files here, with dinothawr.game.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placez ici les fichiers du jeu, avec dinothawr.game."
           }
         }
       }

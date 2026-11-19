@@ -371,7 +371,11 @@ final class LaunchCoordinator {
         onOutput: @escaping @Sendable (String) -> Void
     ) throws -> RunningGameSession {
         switch target {
-        case .retroArchCore(let identifier):
+        case .retroArchCore(let systemCore):
+            // A port's game may need another core (DOOM 3's expansion),
+            // when that one is installed.
+            let identifier = GamePorts.coreIdentifier(for: game.romAbsoluteURL, system: CanonicalSystemID(game.systemCanonicalID))
+                .flatMap { retroArchStore.core(withIdentifier: $0) == nil ? nil : $0 } ?? systemCore
             guard let core = retroArchStore.core(withIdentifier: identifier) else {
                 throw LaunchError.coreNotInstalled(identifier)
             }
@@ -391,7 +395,7 @@ final class LaunchCoordinator {
                 ? SystemROMExtensions.launchFile(forGameFolder: game.romAbsoluteURL)
                 : SystemTaxonomy.definition(for: systemID)?.category == .arcade || systemID == .dos || systemID == .easyrpg || runsRomsets
                 ? game.romAbsoluteURL
-                : zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL)
+                : GamePorts.contentFile(for: zippedROMExtractor.resolvedROMURL(for: game.romAbsoluteURL), system: systemID)
             // Config, BIOS, saves and states all come from the Emulation
             // folder; the user's global retroarch.cfg is never touched.
             let folder = retroArchStore.emulationFolderStore.folder

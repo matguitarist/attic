@@ -36,9 +36,11 @@ import AtticModels
     }
 
     @Test func allTaxonomySystemsHaveAScreenScraperMapping() {
-        // No published ScreenScraper system ID found for Triforce yet.
+        // No published ScreenScraper system ID found for Triforce yet, nor
+        // (checked against its systems pages 1–700 on 2026-11-18) for the
+        // APF M-1000, VTech Socrates, Casio PV-2000 and Mattel Aquarius.
         // Steam games get their info and art from the Steam store.
-        let knownGaps: Set<CanonicalSystemID> = [.triforce, .steam]
+        let knownGaps: Set<CanonicalSystemID> = [.triforce, .steam, .apfm1000, .socrates, .pv2000, .aquarius]
         for definition in SystemTaxonomy.allSystems where !knownGaps.contains(definition.canonicalID) {
             #expect(ScreenScraperSystemID.systemeID(for: definition.canonicalID) != nil, "missing ScreenScraper ID for \(definition.canonicalID)")
         }

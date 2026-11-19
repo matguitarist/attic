@@ -61,6 +61,9 @@ public struct MAMEMachine: Sendable, Hashable {
         "gamecom": .init("gamecom", "cart1"),
         "gmaster": .init("gmaster", "cart"),
         "gamepock": .init("gamepock", "cart"),
+        "apfm1000": .init("apfm1000", "cart"),
+        "socrates": .init("socrates", "cart"),
+        "pv2000": .init("pv2000", "cart"),
         "lcdgames": .init("", ""),
         // Computers.
         "apple2": .init("apple2ee", "flop1"),
@@ -81,6 +84,9 @@ public struct MAMEMachine: Sendable, Hashable {
         "camplynx": .init("lynx48k", "cass", autoboot: #"mload"""#),
         "adam": .init("adam", "cass", byExtension: ["dsk": "flop1", "col": "cart1", "rom": "cart1", "bin": "cart1"]),
         "bk": .init("bk001001", "cass", autoboot: #"LOAD\n"#),
+        "tutor": .init("tutor", "cart", byExtension: ["wav": "cass"]),
+        "aquarius": .init("aquarius", "cart", byExtension: ["caq": "cass", "wav": "cass"]),
+        "vg5k": .init("vg5k", "cass", autoboot: #"CLOAD\n"#),
     ]
 
     /// The slot `romURL` goes in.

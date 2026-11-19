@@ -165,6 +165,10 @@ LOGOS = {
     "pspminis": "Handhelds/Sony PSP Minis",
     "wiiware": "Consoles/Nintendo WiiWare",
     "dsiware": "Handhelds/Nintendo DSi Ware",
+    "vg5k": "Computers/Phillips VG 5000",
+    "tutor": "Computers/Tomy Tutor",
+    "aquarius": "Computers/Mattel Aquarius",
+    "apfm1000": "Consoles/APF Imagination Machine",
 }
 
 # Systems whose logo is one of the set's word logos, from the SVG set:
@@ -235,7 +239,7 @@ def main(source, svg_source):
             missing.append(word)
             continue
         write_imageset(systems, system, pair, ["magick", "-background", "none", "-density", "150", "{src}",
-                                               "-resize", "600x600", "-define", "png:exclude-chunks=date,time", "{dest}"])
+                                               "-resize", "600x600", "-define", "png:exclude-chunk=date,time", "{dest}"])
     makers = namespace("ArcadeLogo")
     for maker, logo in sorted(ARCADE.items()):
         pair = (find(source, "Dark - Color", logo), find(source, "Light - Color", logo))
@@ -276,9 +280,10 @@ def write_imageset(folder, name, pair, command):
 def find(source, variant, logo):
     """The two variants don't always spell a file the same way
     ("Sega Model 3 " vs "Sega Model 3", "…Disk System-02", "Pico-8-10",
+    "APF Imagination Machine-03" and "-04",
     "Data East Classics"), one is misspelled ("Sharp X6800"), and accented
     names come out of the zip mangled ("SAM CoupÇ")."""
-    for name in (logo, logo + " ", logo + "-02", logo + "-10", logo + " Classics", logo.replace("X68000", "X6800")):
+    for name in (logo, logo + " ", logo + "-02", logo + "-03", logo + "-04", logo + "-10", logo + " Classics", logo.replace("X68000", "X6800")):
         path = os.path.join(source, variant, name + ".png")
         if os.path.exists(path):
             return path

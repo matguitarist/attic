@@ -53,6 +53,8 @@ public enum TheGamesDBSystemID {
         .namco2x6: 23,
         .namco22: 23, .neogeo64: 23, .zinc: 23,
         .pspminis: 13, .wiiware: 9, .dsiware: 8,
+        .cannonball: 1, .cavestory: 1, .dinothawr: 1, .ecwolf: 1, .reminiscence: 1, .doom3: 1,
+        .j2me: 5018,
         .n64dd: 3,
         .satellaview: 6,
         .sufami: 6,

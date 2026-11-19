@@ -526,6 +526,16 @@
         }
       }
     },
+    "Cave Story's engine, rebuilt.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le moteur de Cave Story, réécrit."
+          }
+        }
+      }
+    },
     "Citra's actively developed successor.": {
       "localizations": {
         "fr": {
@@ -592,6 +602,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Précis au cycle près ; plus exigeant."
+          }
+        }
+      }
+    },
+    "DOOM 3, from its pak files.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DOOM 3, à partir de ses fichiers pak."
+          }
+        }
+      }
+    },
+    "DOOM 3: Resurrection of Evil.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DOOM 3 : Resurrection of Evil."
           }
         }
       }
@@ -742,6 +772,16 @@
         }
       }
     },
+    "Flashback's engine, rebuilt.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le moteur de Flashback, réécrit."
+          }
+        }
+      }
+    },
     "Games made with RPG Maker 2000 and 2003.": {
       "localizations": {
         "fr": {
@@ -758,6 +798,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sega 8/16 bits et Sega CD avec une grande précision."
+          }
+        }
+      }
+    },
+    "Java phone games (.jar); many run, not all.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux pour téléphones Java (.jar) ; beaucoup tournent, pas tous."
           }
         }
       }
@@ -928,6 +978,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cœur DS plus ancien, très compatible."
+          }
+        }
+      }
+    },
+    "OutRun rebuilt, from the arcade ROMs beside it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OutRun réécrit, à partir des ROM d’arcade à côté."
           }
         }
       }
@@ -1412,6 +1472,16 @@
         }
       }
     },
+    "The Philips P2000T, with its tapes.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Philips P2000T, avec ses cassettes."
+          }
+        }
+      }
+    },
     "The PlayStation 3 emulator, native on Apple Silicon.": {
       "localizations": {
         "fr": {
@@ -1612,6 +1682,16 @@
         }
       }
     },
+    "The free puzzle game, as a core.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le jeu de réflexion gratuit, en cœur."
+          }
+        }
+      }
+    },
     "The most accurate Game Boy core.": {
       "localizations": {
         "fr": {
@@ -1728,6 +1808,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Très précis, avec mise à l’échelle."
+          }
+        }
+      }
+    },
+    "Wolfenstein 3D and Spear of Destiny.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wolfenstein 3D et Spear of Destiny."
           }
         }
       }

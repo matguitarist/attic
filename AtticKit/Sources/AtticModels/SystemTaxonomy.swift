@@ -839,6 +839,62 @@ public enum SystemTaxonomy {
             category: .computer, otherShortNames: ["tyrquake"]
         ),
         SystemDefinition(
+            canonicalID: .cannonball,
+            displayName: "Cannonball",
+            batoceraShortName: "cannonball",
+            esdeShortName: "cannonball",
+            retroArchSystemIDs: ["cannonball"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .cavestory,
+            displayName: "Cave Story",
+            batoceraShortName: "cavestory",
+            esdeShortName: "cavestory",
+            retroArchSystemIDs: ["cave_story"],
+            category: .computer, otherShortNames: ["nxengine"]
+        ),
+        SystemDefinition(
+            canonicalID: .dinothawr,
+            displayName: "Dinothawr",
+            batoceraShortName: "dinothawr",
+            esdeShortName: "dinothawr",
+            retroArchSystemIDs: ["dinothawr"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .ecwolf,
+            displayName: "Wolfenstein 3D",
+            batoceraShortName: "ecwolf",
+            esdeShortName: "ecwolf",
+            retroArchSystemIDs: ["wolfenstein_3d", "ecwolf"],
+            category: .computer, otherShortNames: ["wolf3d"]
+        ),
+        SystemDefinition(
+            canonicalID: .reminiscence,
+            displayName: "Flashback",
+            batoceraShortName: "reminiscence",
+            esdeShortName: "reminiscence",
+            retroArchSystemIDs: ["flashback", "reminiscence"],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .doom3,
+            displayName: "DOOM 3",
+            batoceraShortName: "doom3",
+            esdeShortName: "doom3",
+            retroArchSystemIDs: ["doom_3", "boom3"],
+            category: .computer, otherShortNames: ["boom3"]
+        ),
+        SystemDefinition(
+            canonicalID: .j2me,
+            displayName: "Java ME",
+            batoceraShortName: "j2me",
+            esdeShortName: "j2me",
+            retroArchSystemIDs: ["j2me"],
+            category: .handheld, otherShortNames: ["javame"]
+        ),
+        SystemDefinition(
             canonicalID: .easyrpg,
             displayName: "EasyRPG",
             batoceraShortName: "easyrpg",
@@ -1005,6 +1061,62 @@ public enum SystemTaxonomy {
             esdeShortName: "astrocde",
             retroArchSystemIDs: [],
             category: .console, otherShortNames: ["astrocde"]
+        ),
+        SystemDefinition(
+            canonicalID: .apfm1000,
+            displayName: "APF M-1000",
+            batoceraShortName: "apfm1000",
+            esdeShortName: "apfm1000",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .socrates,
+            displayName: "VTech Socrates",
+            batoceraShortName: "socrates",
+            esdeShortName: "socrates",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .pv2000,
+            displayName: "Casio PV-2000",
+            batoceraShortName: "pv2000",
+            esdeShortName: "pv2000",
+            retroArchSystemIDs: [],
+            category: .console
+        ),
+        SystemDefinition(
+            canonicalID: .tutor,
+            displayName: "Tomy Tutor",
+            batoceraShortName: "tutor",
+            esdeShortName: "tutor",
+            retroArchSystemIDs: [],
+            category: .computer, otherShortNames: ["pyuuta"]
+        ),
+        SystemDefinition(
+            canonicalID: .aquarius,
+            displayName: "Mattel Aquarius",
+            batoceraShortName: "aquarius",
+            esdeShortName: "aquarius",
+            retroArchSystemIDs: [],
+            category: .computer
+        ),
+        SystemDefinition(
+            canonicalID: .vg5k,
+            displayName: "Philips VG 5000",
+            batoceraShortName: "vg5k",
+            esdeShortName: "vg5k",
+            retroArchSystemIDs: [],
+            category: .computer, otherShortNames: ["vg5000"]
+        ),
+        SystemDefinition(
+            canonicalID: .p2000t,
+            displayName: "Philips P2000T",
+            batoceraShortName: "p2000t",
+            esdeShortName: "p2000t",
+            retroArchSystemIDs: ["p2000t"],
+            category: .computer
         ),
         SystemDefinition(
             canonicalID: .crvision,
