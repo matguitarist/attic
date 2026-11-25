@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.14.1</title>
+            <pubDate>Wed, 25 Nov 2026 10:37:40 -0500</pubDate>
+            <sparkle:version>59</sparkle:version>
+            <sparkle:shortVersionString>2.14.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- Downloads of emulators, cores, LaunchBox's database and arcade DATs pick up where they stopped after a dropped connection, and MAME's game list is checked against GitHub's checksum
+- An emulator, core or media pack whose archive would write outside its folder, or fails halfway, leaves nothing behind
+- Imports, checks and installs can't hang on a tool that prints a lot or waits for an answer, and closing a game that can't run also closes what it started
+- Covers, logos and fan art are kept as small HEIC pictures and show without slowing the library down
+- Manuals with a searchable text layer open without being redrawn
+- Tidy Up and unzipped-game sizes count a hard-linked file once
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.14.1/Attic-2.14.1.zip" length="25208080" type="application/octet-stream" sparkle:edSignature="Xfp2PiDBHIngkpIrab/i40pFH/Yo2k4K+uSSlHJ1oY8BHnwbNg+Yvw/X+tAZ4wdBIBOBY3zuYr90NViMPoxdDg=="/>
+        </item>
+        <item>
             <title>2.14.0</title>
             <pubDate>Wed, 18 Nov 2026 21:40:12 -0500</pubDate>
             <sparkle:version>58</sparkle:version>
