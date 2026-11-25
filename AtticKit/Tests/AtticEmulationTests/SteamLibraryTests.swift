@@ -78,6 +78,27 @@ struct SteamLibraryTests {
         #expect(games.first?.title == "Blue Prince")
     }
 
+    /// Steam's own tools never become games, even with a Mac app inside.
+    @Test func leavesOutSteamsOwnToolsEvenWithAMacApp() throws {
+        try install("1070560", "Steam Linux Runtime")
+        try install("367520", "Hollow Knight")
+        #expect(SteamLibrary.installedGames(steamFolder: steam).map(\.appID) == ["367520"])
+    }
+
+    /// A manifest Steam wrote without StateFlags, or with a name that isn't
+    /// UTF-8, still gives its game.
+    @Test func readsManifestsWithoutStateFlagsOrUTF8() throws {
+        try install("367520", "Hollow Knight")
+        try write(steam.appending(path: "steamapps/appmanifest_367520.acf"), """
+        "AppState" { "appid" "367520" "name" "Hollow Knight" "installdir" "Hollow Knight" }
+        """)
+        try install("504230", "Celeste")
+        let manifest = steam.appending(path: "steamapps/appmanifest_504230.acf")
+        try (Data(#""AppState" { "appid" "504230" "StateFlags" "4" "installdir" "Celeste" "name" "Celeste "#.utf8) + Data([0xE9]) + Data(#"" }"#.utf8))
+            .write(to: manifest)
+        #expect(SteamLibrary.installedGames(steamFolder: steam).map(\.appID) == ["504230", "367520"])
+    }
+
     @Test func anInstallFolderCanBeTheAppItself() throws {
         try install("413150", "Stardew Valley", macApp: false)
         try FileManager.default.createDirectory(at: steam.appending(path: "steamapps/common/Stardew Valley/Contents/MacOS"), withIntermediateDirectories: true)
@@ -129,20 +150,6 @@ struct SteamLibraryTests {
         #expect(SteamLibrary.appID(shortcut: shortcut) == "504230")
     }
 
-    @Test func parsesKeyValuesWithEscapesAndComments() {
-        let vdf = VDF.parse("""
-        // a comment
-        "AppState"
-        {
-            "name"  "Say \\"Hi\\""
-            "NoQuotes" 12
-            "Nested" { "a" "b" }
-        }
-        """)
-        #expect(vdf["appstate"]?["name"]?.string == "Say \"Hi\"")
-        #expect(vdf["AppState"]?["noquotes"]?.string == "12")
-        #expect(vdf["AppState"]?["Nested"]?["a"]?.string == "b")
-    }
 }
 
 struct SteamStoreTests {
@@ -228,20 +235,6 @@ struct SteamStoreTests {
         #expect(SteamStore.details(from: Data(#"{"1":{"success":false}}"#.utf8), appID: "1") == nil)
     }
 
-    @Test func buildsAssetURLsFromTheirFormat() {
-        let json = """
-        {"response":{"store_items":[{"assets":{
-          "asset_url_format":"steam/apps/3808690/${FILENAME}?t=1",
-          "library_capsule":"aa/library_capsule.jpg","library_capsule_2x":"bb/library_capsule_2x.jpg",
-          "library_hero":"cc/library_hero.jpg"
-        }}]}}
-        """
-        let assets = SteamStore.assets(from: Data(json.utf8))
-        #expect(assets.cover?.absoluteString == "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3808690/bb/library_capsule_2x.jpg?t=1")
-        #expect(assets.hero?.absoluteString == "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3808690/cc/library_hero.jpg?t=1")
-        #expect(assets.logo == nil)
-    }
-
     @Test func findsTheLibraryLogoInTheAppInfo() {
         let json = """
         {"data":{"3808690":{"common":{"library_assets_full":{"library_logo":{
@@ -252,11 +245,6 @@ struct SteamStoreTests {
         #expect(SteamStore.libraryLogo(fromAppInfo: Data(#"{"data":{"1":{"common":{}}}}"#.utf8), appID: "1") == nil)
     }
 
-    @Test func readsBothDateOrders() {
-        #expect(SteamStore.releaseDate("Feb 24, 2017") != nil)
-        #expect(SteamStore.releaseDate("24 Feb, 2017") != nil)
-        #expect(SteamStore.releaseDate("Coming soon") == nil)
-    }
 }
 
 struct SteamGridDBTests {

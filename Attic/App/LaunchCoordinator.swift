@@ -7,6 +7,7 @@ import AtticPersistence
 import AtticEmulation
 import AtticLibraryScanning
 import ProcessKit
+import SteamKit
 
 /// Resolves a game's launch target (per-game override, else per-system
 /// default, via `LaunchTargetResolution`) and runs it through whichever
@@ -182,7 +183,7 @@ final class LaunchCoordinator {
         }
         state = .launching
         AppLog.post(.info, "Launching “\(game.title)” through Steam (app \(installed.appID)).")
-        NSWorkspace.shared.open(SteamLibrary.runURL(appID: installed.appID))
+        NSWorkspace.shared.open(SteamLink.run(appID: installed.appID))
         Task { await follow(game, installedIn: installed.folder) }
     }
 

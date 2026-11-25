@@ -27,6 +27,9 @@ packages:
   FileKit:
     url: https://github.com/matguitarist/FileKit
     from: 0.2.0
+  SteamKit:
+    url: https://github.com/matguitarist/SteamKit
+    from: 0.1.0
 
 targets:
   Attic:
@@ -89,4 +92,5 @@ targets:
       - package: ArchiveKit
       - package: DownloadKit
       - package: FileKit
+      - package: SteamKit
       - package: Sparkle

@@ -19,7 +19,8 @@ let package = Package(
         .package(url: "https://github.com/matguitarist/ProcessKit", from: "0.2.2"),
         .package(url: "https://github.com/matguitarist/ArchiveKit", from: "0.2.0"),
         .package(url: "https://github.com/matguitarist/DownloadKit", from: "0.2.0"),
-        .package(url: "https://github.com/matguitarist/FileKit", from: "0.2.0")
+        .package(url: "https://github.com/matguitarist/FileKit", from: "0.2.0"),
+        .package(url: "https://github.com/matguitarist/SteamKit", from: "0.1.0")
     ],
     targets: [
         .target(name: "AtticModels"),
@@ -33,7 +34,8 @@ let package = Package(
         .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning", .product(name: "ProcessKit", package: "ProcessKit"),
                                                 .product(name: "ArchiveKit", package: "ArchiveKit"),
                                                 .product(name: "DownloadKit", package: "DownloadKit"),
-                                                .product(name: "FileKit", package: "FileKit")],
+                                                .product(name: "FileKit", package: "FileKit"),
+                                                .product(name: "SteamKit", package: "SteamKit")],
                 resources: [.process("Resources")]),
         .target(name: "AtticScraping", dependencies: ["AtticModels"]),
 
@@ -42,7 +44,8 @@ let package = Package(
         .testTarget(name: "AtticLibraryScanningTests", dependencies: ["AtticLibraryScanning", .product(name: "PictureKit", package: "PictureKit"),
                                                                .product(name: "ArchiveKit", package: "ArchiveKit")]),
         .testTarget(name: "AtticEmulationTests", dependencies: ["AtticEmulation", "AtticLibraryScanning", .product(name: "ArchiveKit", package: "ArchiveKit"),
-                                                         .product(name: "DownloadKit", package: "DownloadKit")]),
+                                                         .product(name: "DownloadKit", package: "DownloadKit"),
+                                                         .product(name: "SteamKit", package: "SteamKit")]),
         .testTarget(name: "AtticScrapingTests", dependencies: ["AtticScraping"])
     ]
 )
