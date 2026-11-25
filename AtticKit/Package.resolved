@@ -1,0 +1,15 @@
+{
+  "originHash" : "f71079173f1f281d8114be5f938b8bdb107c7a66c4528a7da639ff5f4c2a5cef",
+  "pins" : [
+    {
+      "identity" : "picturekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/matguitarist/PictureKit",
+      "state" : {
+        "revision" : "4f99ecb29a267c7bd5edb18252d6d5d7af394cfc",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}

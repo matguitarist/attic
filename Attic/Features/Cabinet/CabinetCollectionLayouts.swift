@@ -1,6 +1,6 @@
 import SwiftUI
 import SwiftData
-import ImageIO
+import PictureKit
 import AtticModels
 import AtticPersistence
 
@@ -512,9 +512,7 @@ struct BezelWindow: Sendable {
     }
 
     nonisolated static func measure(_ url: URL) -> BezelWindow? {
-        let options = [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceThumbnailMaxPixelSize: 320] as CFDictionary
-        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
-              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options) else { return nil }
+        guard let image = Pictures.thumbnail(at: url, maxPixels: 320) else { return nil }
         let width = image.width, height = image.height
         var alpha = [UInt8](repeating: 0, count: width * height)
         let drawn = alpha.withUnsafeMutableBytes { bytes in

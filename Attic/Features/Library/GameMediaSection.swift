@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import PictureKitUI
 
 /// Every kind of media the game's system can have, as a tile each: the
 /// picture when it's there, a dashed one when it's missing. Click to open
@@ -176,7 +177,7 @@ struct GameMediaSection: View {
 
     private func remove(_ kind: MediaKind, at url: URL) {
         try? FileManager.default.trashItem(at: url, resultingItemURL: nil)
-        CoverArtThumbnailCache.shared.invalidate(url)
+        PictureCache.shared.forgetMedia(url)
         switch kind {
         case .covers where game.coverArtPath == url.path:
             game.coverArtPath = nil

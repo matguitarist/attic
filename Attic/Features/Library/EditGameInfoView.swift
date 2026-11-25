@@ -2,6 +2,7 @@ import SwiftUI
 import AtticLibraryScanning
 import UniformTypeIdentifiers
 import AtticPersistence
+import PictureKitUI
 
 /// Which game the library window's Edit Info sheet is showing. One per
 /// library window; the inspector, the grid's context menu and Game › Edit
@@ -249,7 +250,7 @@ enum CustomCoverArt {
         let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .covers)
         for file in MediaFolder.existingFiles(base: base) {
             try? FileManager.default.trashItem(at: file, resultingItemURL: nil)
-            CoverArtThumbnailCache.shared.invalidate(file)
+            PictureCache.shared.forgetMedia(file)
         }
     }
 }

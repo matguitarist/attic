@@ -2,6 +2,7 @@ import Foundation
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import PictureKitUI
 
 /// What importing from another front-end's folder would bring, system by
 /// system: counts of what the games lack and it has, and of what it has
@@ -181,7 +182,7 @@ extension ToolsCoordinator {
             let matches = sources.flatMap { Self.matches(bySystem[$0.system] ?? [], $0) }
             return Self.copyMedia(matches, replacing: replacing, progress: progress)
         }.value
-        for url in stored { CoverArtThumbnailCache.shared.invalidate(url) }
+        for url in stored { PictureCache.shared.forgetMedia(url) }
         let changed = await scanCoordinator.applyImported(info, replacing: replacing)
         activity = nil
         var lines: [String] = []

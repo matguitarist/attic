@@ -1,5 +1,5 @@
-import ImageIO
 import PDFKit
+import PictureKit
 import SwiftUI
 import SwiftData
 import AtticModels
@@ -149,11 +149,8 @@ struct CabinetGamePage: View {
 
     /// Read from the file's header, without decoding the picture.
     static func aspectRatio(of url: URL?) -> CGFloat? {
-        guard let url, let source = CGImageSourceCreateWithURL(url as CFURL, nil),
-              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
-              let height = properties[kCGImagePropertyPixelHeight] as? CGFloat, height > 0 else { return nil }
-        return width / height
+        guard let url, let info = Pictures.info(at: url) else { return nil }
+        return CGFloat(info.width) / CGFloat(info.height)
     }
 
     /// The whole description, scrolled with up and down.

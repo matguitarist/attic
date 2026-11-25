@@ -1,5 +1,6 @@
 import Foundation
-import ImageIO
+import CoreGraphics
+import PictureKit
 import Synchronization
 import AtticModels
 
@@ -174,9 +175,9 @@ public enum MediaHealth {
         let bytes = (try? file.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0
         guard bytes > 0 else { return .unreadable }
         guard MediaFolder.imageExtensions.contains(file.pathExtension.lowercased()) else { return nil }
-        guard let source = CGImageSourceCreateWithURL(file as CFURL, nil),
-              let size = MediaQuality.size(ofImage: file) else { return .unreadable }
-        if isBlank(source) { return .blank }
+        guard let info = Pictures.info(at: file) else { return .unreadable }
+        if isBlank(info, Pictures.thumbnail(at: file, maxPixels: 48)) { return .blank }
+        let size = CGSize(width: info.width, height: info.height)
         if isTooSmall(size, kind: kind) {
             return .small(width: Int(size.width), height: Int(size.height))
         }
@@ -187,16 +188,12 @@ public enum MediaHealth {
     /// shows something, and, unless `file` is blank or broken, is
     /// noticeably larger.
     public static func isBetter(_ data: Data, than file: URL, kind: MediaKind) -> Bool {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? Int,
-              let height = properties[kCGImagePropertyPixelHeight] as? Int,
-              !isBlank(source) else { return false }
+        guard let info = Pictures.info(data), !isBlank(info, Pictures.thumbnail(of: data, maxPixels: 48)) else { return false }
         switch problem(with: file, kind: kind) {
         case .blank?, .unreadable?: return true
         default:
             guard let current = MediaQuality.size(ofImage: file) else { return true }
-            return CGFloat(max(width, height)) >= max(current.width, current.height) * 1.25
+            return CGFloat(info.longSide) >= max(current.width, current.height) * 1.25
         }
     }
 
@@ -214,12 +211,8 @@ public enum MediaHealth {
 
     /// Nothing drawn: every pixel of a small copy clear. Only pictures with
     /// transparency are drawn to see.
-    static func isBlank(_ source: CGImageSource) -> Bool {
-        let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
-        guard properties?[kCGImagePropertyHasAlpha] as? Bool == true,
-              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [
-                  kCGImageSourceCreateThumbnailFromImageAlways: true,
-                  kCGImageSourceThumbnailMaxPixelSize: 48] as CFDictionary) else { return false }
+    static func isBlank(_ info: PictureInfo, _ thumbnail: @autoclosure () -> CGImage?) -> Bool {
+        guard info.hasAlpha, let image = thumbnail() else { return false }
         let (width, height) = (image.width, image.height)
         var pixels = [UInt8](repeating: 0, count: width * height * 4)
         return pixels.withUnsafeMutableBytes { buffer in

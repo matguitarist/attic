@@ -12,6 +12,9 @@ packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: 2.10.0
+  PictureKit:
+    url: https://github.com/matguitarist/PictureKit
+    from: 0.1.0
 
 targets:
   Attic:
@@ -64,4 +67,6 @@ targets:
         product: AtticEmulation
       - package: AtticKit
         product: AtticScraping
+      - package: PictureKit
+        product: PictureKitUI
       - package: Sparkle

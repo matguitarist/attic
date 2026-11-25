@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import AtticModels
 import AtticPersistence
+import PictureKitUI
 
 /// Cabinet Mode's screensaver, as arcade cabinets do it: after a while with
 /// no input, random games show their video (or, without one, their art,
@@ -101,7 +102,7 @@ struct CabinetAttractView: View {
         videoURL = video
         image = nil
         if video == nil, let art = game.fanartURL ?? game.titleScreenURL ?? game.coverArtURL {
-            image = await CoverArtThumbnailCache.shared.thumbnail(for: art, maxPixelSize: 1920)
+            image = await PictureCache.shared.image(.file(art), maxPixels: 1920)
             zoomed = true
         }
         try? await Task.sleep(for: .seconds(video == nil ? Self.pictureSeconds : Self.videoSeconds))

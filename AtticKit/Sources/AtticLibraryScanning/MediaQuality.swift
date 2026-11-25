@@ -1,24 +1,17 @@
 import Foundation
-import ImageIO
 import AVFoundation
+import PictureKit
 
 /// How sharp a picture or video is, by its size in pixels, to tell a
 /// low-quality file worth replacing from a good one.
 public enum MediaQuality {
     /// A picture's size, read from its header without decoding it.
     public static func size(ofImage url: URL) -> CGSize? {
-        CGImageSourceCreateWithURL(url as CFURL, nil).flatMap(size)
+        Pictures.info(at: url).map { CGSize(width: $0.width, height: $0.height) }
     }
 
     public static func size(ofImageData data: Data) -> CGSize? {
-        CGImageSourceCreateWithData(data as CFData, nil).flatMap(size)
-    }
-
-    private static func size(_ source: CGImageSource) -> CGSize? {
-        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? Int,
-              let height = properties[kCGImagePropertyPixelHeight] as? Int else { return nil }
-        return CGSize(width: width, height: height)
+        Pictures.info(data).map { CGSize(width: $0.width, height: $0.height) }
     }
 
     /// A video's picture size, turned the way it plays.

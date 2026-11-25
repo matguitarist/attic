@@ -3,6 +3,7 @@ import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
+import PictureKitUI
 
 /// What EmuMovies has for the library's systems, looked up one system at
 /// a time as they're picked in the report: the artwork packs in its
@@ -380,7 +381,7 @@ extension ToolsCoordinator {
                 done += job.bytes
             }
 
-            for url in stored { CoverArtThumbnailCache.shared.invalidate(url) }
+            for url in stored { PictureCache.shared.forgetMedia(url) }
             let changed = await scanCoordinator.applyImported(info, replacing: true)
             if changed > 0 || !stored.isEmpty {
                 activity = Activity(title: String(localized: "Updating the library…"))

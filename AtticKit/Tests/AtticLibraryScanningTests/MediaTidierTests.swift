@@ -1,6 +1,7 @@
 import Foundation
 import CoreGraphics
 import Testing
+import PictureKit
 @testable import AtticLibraryScanning
 
 struct MediaTidierTests {
@@ -295,6 +296,46 @@ struct MediaTidierTests {
         #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
     }
 
+    @Test func coversAtticMarkedBeforeAreLeft() throws {
+        try touch(roms.appending(path: "snes/Game.sfc"))
+        let cover = media.appending(path: "snes/2dboxes/Game.png")
+        try touch(cover)
+        #expect(MediaTidier.plan(romsRoots: [roms]).compress.count == 1)
+        _ = setxattr(cover.path, MediaTidier.coverCheckedAttribute, [1], 1, 0, 0)
+        #expect(MediaTidier.plan(romsRoots: [roms]).compress.isEmpty)
+    }
+
+    @Test func anIncomingCoverIsStoredAsHEICAndAScreenshotAsItIs() throws {
+        let snes = roms.appending(path: "snes")
+        // Noise, like a painting: what PNG is worst at, so HEIC is smaller.
+        let (width, height) = (600, 800)
+        var pixels = [UInt8](repeating: 255, count: width * height * 4)
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            pixels[index] = UInt8.random(in: 0...255)
+            pixels[index + 1] = UInt8(index / 4 % width * 255 / width)
+        }
+        let context = try #require(CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                             space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        let image = try #require(context.makeImage())
+        let png = try #require(Pictures.encode(image, as: .png))
+        try touch(media.appending(path: "snes/2dboxes/Game.jpg"))
+
+        let cover = try MediaFolder.store(png, fileExtension: "png", forSystemFolder: snes, romRelativePath: "Game.sfc", kind: .covers)
+        #expect(cover.lastPathComponent == "Game.heic")
+        #expect(Pictures.info(at: cover)?.width == width)
+        let size = try #require(try cover.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+        #expect(size < png.count)
+        #expect(!exists(media.appending(path: "snes/2dboxes/Game.jpg")))
+
+        let screenshot = try MediaFolder.store(png, fileExtension: "png", forSystemFolder: snes, romRelativePath: "Game.sfc", kind: .screenshots)
+        #expect(screenshot.lastPathComponent == "Game.png")
+
+        // Scraped fan art is scaled down to the size asked.
+        let fanart = try MediaFolder.store(png, fileExtension: "png", forSystemFolder: snes, romRelativePath: "Game.sfc", kind: .fanart, maxPixelSize: 400)
+        #expect(fanart.pathExtension == "heic")
+        #expect(Pictures.info(at: fanart)?.longSide == 400)
+    }
+
     @Test func aCoverWithAHEICBesideItIsntOffered() throws {
         try touch(roms.appending(path: "snes/Game.sfc"))
         try touch(media.appending(path: "snes/2dboxes/Game.png"))
@@ -339,10 +380,16 @@ struct ManualCompressionTests {
 
     @Test func heavyScansAreRedoneOnlyOnce() throws {
         let manual = try heavyManual()
-        #expect(MediaFolder.manualIsWorthCompressing(manual))
-        let replaced = MediaFolder.compressManual(manual)
+        #expect(MediaTidier.manualIsWorthShrinking(manual))
+        let replaced = MediaTidier.shrinkManual(manual)
         #expect(FileManager.default.fileExists(atPath: manual.path))
         // Either way, it's never offered again.
-        #expect(!MediaFolder.manualIsWorthCompressing(manual), "replaced: \(replaced)")
+        #expect(!MediaTidier.manualIsWorthShrinking(manual), "replaced: \(replaced)")
+    }
+
+    @Test func manualsAtticMarkedBeforeAreLeft() throws {
+        let manual = try heavyManual()
+        _ = setxattr(manual.path, MediaTidier.manualCheckedAttribute, "1", 1, 0, 0)
+        #expect(!MediaTidier.manualIsWorthShrinking(manual))
     }
 }

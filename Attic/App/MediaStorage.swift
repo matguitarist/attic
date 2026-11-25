@@ -3,6 +3,7 @@ import SwiftData
 import AtticPersistence
 import AtticModels
 import AtticLibraryScanning
+import PictureKitUI
 
 extension Game {
     /// The system's folder in ROMs, which its media folder is named after.
@@ -56,7 +57,7 @@ extension Game {
     /// finds it (see `MediaFolder`).
     func storeMedia(_ data: Data, fileExtension: String, kind: MediaKind) throws -> URL {
         let url = try MediaFolder.store(data, fileExtension: fileExtension, forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: kind)
-        CoverArtThumbnailCache.shared.invalidate(url)
+        PictureCache.shared.forgetMedia(url)
         // A video isn't a thumbnail, but its view watches the same revision.
         return url
     }

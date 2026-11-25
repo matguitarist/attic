@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import AVKit
+import PictureKitUI
 
 /// A game's video, looping without controls, for the game panel's header.
 struct VideoPreviewView: NSViewRepresentable {
@@ -76,7 +77,7 @@ struct GameHeaderMedia: View {
                 .help(isMuted ? String(localized: "Play the video's sound") : String(localized: "Mute the video"))
             }
         }
-        .task(id: [videoURL?.path, playsPreviews.description, String(MediaRevisions.shared.revision(of: videoURL))]) {
+        .task(id: [videoURL?.path, playsPreviews.description, String(videoURL.map { PictureRevisions.shared.revision(of: PictureSource.file($0).id) } ?? 0)]) {
             showsVideo = false
             guard playsPreviews, let videoURL, Self.canPlay(videoURL) else { return }
             try? await Task.sleep(for: .seconds(1))

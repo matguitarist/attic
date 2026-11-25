@@ -5,6 +5,7 @@ import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
+import PictureKitUI
 
 /// Pictures of Cabinet Mode for checking a change without a library or a
 /// person at the screen: `ATTIC_SNAPSHOT=<folder>` (see tools/snap.sh)
@@ -32,6 +33,9 @@ enum CabinetSnapshot {
         NSApp.setActivationPolicy(.prohibited)
         do {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            if themeIDs == nil || themeIDs?.contains("picture") == true {
+                try checkIncomingPicture(into: folder)
+            }
             let seed = try Seed()
             for theme in CabinetTheme.builtIns where themeIDs?.contains(theme.id) ?? true {
                 for art in arts {
@@ -172,7 +176,44 @@ enum CabinetSnapshot {
         window.orderOut(nil)
     }
 
-    enum SnapshotError: Error { case capture }
+    enum SnapshotError: Error {
+        case capture
+        case picture(String)
+    }
+
+    /// Checks the way every scraped or picked cover comes in: a heavy PNG
+    /// is stored as HEIC, smaller and the same size, and the cover view
+    /// shows it. Writes `picture-check.png`.
+    private static func checkIncomingPicture(into folder: URL) throws {
+        let roms = URL(fileURLWithPath: NSTemporaryDirectory()).appending(path: "Attic-snapshot-picture/ROMs/snes", directoryHint: .isDirectory)
+        try? FileManager.default.removeItem(at: roms.deletingLastPathComponent().deletingLastPathComponent())
+        // Noise over a gradient, like a scanned box: what PNG is worst at.
+        let (width, height) = (900, 1200)
+        var pixels = [UInt8](repeating: 255, count: width * height * 4)
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            pixels[index] = UInt8.random(in: 0...255)
+            pixels[index + 1] = UInt8(index / 4 % width * 255 / width)
+            pixels[index + 2] = UInt8(index / 4 / width * 255 / height)
+        }
+        guard let context = CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+              let image = context.makeImage(), let png = Pictures.encode(image, as: .png) else { throw SnapshotError.picture("no PNG drawn") }
+        let stored = try MediaFolder.store(png, fileExtension: "png", forSystemFolder: roms, romRelativePath: "Picture Check.sfc", kind: .covers)
+        let bytes = MediaFolder.fileSize(stored)
+        guard stored.pathExtension == "heic", bytes < png.count,
+              let info = Pictures.info(at: stored), info.width == width, info.height == height else {
+            throw SnapshotError.picture("cover stored as \(stored.lastPathComponent), \(bytes) bytes from \(png.count)")
+        }
+        let file = folder.appending(path: "picture-check.png")
+        let size = CGSize(width: 300, height: 400)
+        try capture(GameCoverArtView(url: stored, title: "Picture Check", showBackground: false), to: file, size: size)
+        let shown = (1...3).contains { scale in
+            PictureCache.shared.cached(.file(stored), maxPixels: Int(size.height) * scale) != nil
+        }
+        guard shown else { throw SnapshotError.picture("the stored cover wasn't shown") }
+        print("Picture check: cover stored as HEIC, \(bytes / 1024) KB from \(png.count / 1024) KB, and shown")
+        print(file.path)
+    }
 
     /// A few games in a scratch ROMs folder, each with drawn art: SNES
     /// cartridges (one without a picture of its cartridge), PlayStation

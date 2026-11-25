@@ -4,6 +4,7 @@ import SwiftData
 import AtticModels
 import AtticPersistence
 import AtticEmulation
+import PictureKitUI
 
 /// One input to Cabinet Mode, from either the controller or the keyboard —
 /// wrapped with a sequence number so repeating the same command still
@@ -834,7 +835,7 @@ struct CabinetBackdrop: View {
                     return
                 }
                 // Blurred, so a small decode is plenty; sharp needs more.
-                image = await CoverArtThumbnailCache.shared.thumbnail(for: artURL, maxPixelSize: backdrop.blur >= 20 ? 256 : 1920)
+                image = await PictureCache.shared.image(.file(artURL), maxPixels: backdrop.blur >= 20 ? 256 : 1920)
             }
     }
 }

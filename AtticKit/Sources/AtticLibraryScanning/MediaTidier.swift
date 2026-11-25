@@ -1,5 +1,6 @@
 import Foundation
 import AtticModels
+import PictureKit
 
 /// What tidying a ROMs folder would do; see `MediaTidier`.
 public struct MediaTidyPlan: Sendable {
@@ -27,7 +28,7 @@ public struct MediaTidyPlan: Sendable {
     /// PNG and JPEG covers to rewrite as HEIC, after the moves.
     public var compress: [URL] = []
     /// Heavy scanned manuals to redraw lighter (see
-    /// `MediaFolder.compressManual`).
+    /// `MediaTidier.shrinkManual`).
     public var manuals: [URL] = []
     /// For each duplicate game going to the Trash, the copy kept.
     public var keptCopies: [URL: URL] = [:]
@@ -191,11 +192,16 @@ public enum MediaTidier {
         }
         var compressed = 0
         for url in plan.compress {
-            if MediaFolder.compressToHEIC(url) != nil { compressed += 1 }
+            if PictureFile.compress(url, to: .artwork, original: .trash) != nil {
+                compressed += 1
+            } else if FileManager.default.fileExists(atPath: url.path) {
+                // One that can't be read is left too, not offered on every tidy.
+                PictureFile.mark(url)
+            }
             step()
         }
         for url in plan.manuals {
-            MediaFolder.compressManual(url)
+            shrinkManual(url)
             step()
         }
         return compressed
@@ -335,7 +341,7 @@ public enum MediaTidier {
                     plan.discard(file, .missingGames)
                 } else if kind.isStoredAsHEIC, isCompressible(file) {
                     plan.compress.append(file)
-                } else if kind == .manuals, MediaFolder.manualIsWorthCompressing(file) {
+                } else if kind == .manuals, manualIsWorthShrinking(file) {
                     plan.manuals.append(file)
                 }
             }
@@ -395,7 +401,28 @@ public enum MediaTidier {
     /// libretro thumbnails often shrink by half, though small ones don't
     /// (they're marked then, so they don't come up on every tidy).
     private static func isCompressible(_ url: URL) -> Bool {
-        MediaFolder.coverIsWorthCompressing(url)
+        ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased())
+            && PictureFile.isWorthCompressing(url, to: .artwork, alsoChecked: [coverCheckedAttribute])
+    }
+
+    /// Set by Attic before PictureKit on a cover HEIC didn't make smaller.
+    static let coverCheckedAttribute = "com.attic.cover-checked"
+    /// Set by Attic before PictureKit on a manual that didn't get smaller.
+    static let manualCheckedAttribute = "com.attic.manual-checked"
+    /// The Creator Attic wrote into manuals it redrew before PictureKit.
+    static let manualCreator = "Attic"
+
+    /// Whether a manual is a heavy scan not tried yet, by Attic or PictureKit.
+    static func manualIsWorthShrinking(_ url: URL) -> Bool {
+        ScannedPDF.isWorthShrinking(url, alsoChecked: [manualCheckedAttribute], alsoCreators: [manualCreator])
+    }
+
+    /// Redraws each page at 150 dpi as a JPEG, which keeps scanned text
+    /// sharp at full screen; the old file goes to the Trash only when the
+    /// new one is at most 60% of its size. Returns whether it was replaced.
+    @discardableResult
+    static func shrinkManual(_ url: URL) -> Bool {
+        ScannedPDF.shrink(url, original: .trash)
     }
 
     private static func children(of folder: URL) -> [URL] {

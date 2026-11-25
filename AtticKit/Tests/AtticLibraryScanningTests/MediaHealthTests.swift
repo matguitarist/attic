@@ -88,37 +88,4 @@ struct MediaHealthTests {
         #expect(!MediaHealth.isBetter(Data("not a picture".utf8), than: small, kind: .logos))
         #expect(MediaHealth.isBetter(try png(width: 100, height: 40), than: broken, kind: .logos))
     }
-
-    @Test func aPickedPictureComesInAsHEICWhenThatsSmaller() throws {
-        let folder = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
-        defer { try? FileManager.default.removeItem(at: folder) }
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        // Noise, like a painting: what PNG is worst at.
-        let (width, height) = (600, 800)
-        var pixels = [UInt8](repeating: 255, count: width * height * 4)
-        for index in stride(from: 0, to: pixels.count, by: 4) {
-            pixels[index] = UInt8.random(in: 0...255)
-            pixels[index + 1] = UInt8(index / 4 % width * 255 / width)
-            pixels[index + 2] = UInt8(index / 4 / width * 255 / height)
-        }
-        let context = try #require(CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
-                                             space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
-        let output = NSMutableData()
-        let destination = try #require(CGImageDestinationCreateWithData(output, UTType.png.identifier as CFString, 1, nil))
-        CGImageDestinationAddImage(destination, try #require(context.makeImage()), nil)
-        #expect(CGImageDestinationFinalize(destination))
-        let picked = folder.appending(path: "Artwork.PNG")
-        try (output as Data).write(to: picked)
-
-        let stored = try MediaFolder.copyPicture(picked, toBase: folder.appending(path: "artwork"))
-        #expect(stored.lastPathComponent == "artwork.heic")
-        let size = try #require(try stored.resourceValues(forKeys: [.fileSizeKey]).fileSize)
-        #expect(size < output.length)
-        #expect(FileManager.default.fileExists(atPath: picked.path))
-
-        // Not a picture HEIC can be made from: copied as it is.
-        let video = folder.appending(path: "clip.mp4")
-        try Data("not really".utf8).write(to: video)
-        #expect(try MediaFolder.copyPicture(video, toBase: folder.appending(path: "video")).lastPathComponent == "video.mp4")
-    }
 }

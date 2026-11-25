@@ -1,6 +1,7 @@
 import Foundation
 import AtticModels
 import AtticLibraryScanning
+import PictureKitUI
 
 /// A game to move to the Trash, with what's needed to find its files and
 /// its media.
@@ -62,7 +63,7 @@ extension ToolsCoordinator {
             for file in MediaFolder.existingFiles(base: base) + [base.appendingPathExtension("pdf")]
             where manager.fileExists(atPath: file.path) {
                 try? manager.trashItem(at: file, resultingItemURL: nil)
-                CoverArtThumbnailCache.shared.invalidate(file)
+                PictureCache.shared.forgetMedia(file)
             }
         }
         return size
