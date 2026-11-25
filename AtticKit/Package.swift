@@ -18,19 +18,22 @@ let package = Package(
         .package(url: "https://github.com/matguitarist/PictureKit", from: "0.2.0"),
         .package(url: "https://github.com/matguitarist/ProcessKit", from: "0.1.1"),
         .package(url: "https://github.com/matguitarist/ArchiveKit", from: "0.1.1"),
-        .package(url: "https://github.com/matguitarist/DownloadKit", from: "0.1.0")
+        .package(url: "https://github.com/matguitarist/DownloadKit", from: "0.1.0"),
+        .package(url: "https://github.com/matguitarist/FileKit", from: "0.1.0")
     ],
     targets: [
         .target(name: "AtticModels"),
         .target(name: "AtticPersistence", dependencies: ["AtticModels"]),
         .target(name: "AtticLibraryScanning", dependencies: ["AtticModels", .product(name: "PictureKit", package: "PictureKit"),
                                                      .product(name: "ProcessKit", package: "ProcessKit"),
-                                                     .product(name: "ArchiveKit", package: "ArchiveKit")]),
+                                                     .product(name: "ArchiveKit", package: "ArchiveKit"),
+                                                     .product(name: "FileKit", package: "FileKit")]),
         // Resources holds the String Catalog for user-visible text
         // (emulator descriptions, install errors).
         .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning", .product(name: "ProcessKit", package: "ProcessKit"),
                                                 .product(name: "ArchiveKit", package: "ArchiveKit"),
-                                                .product(name: "DownloadKit", package: "DownloadKit")],
+                                                .product(name: "DownloadKit", package: "DownloadKit"),
+                                                .product(name: "FileKit", package: "FileKit")],
                 resources: [.process("Resources")]),
         .target(name: "AtticScraping", dependencies: ["AtticModels"]),
 

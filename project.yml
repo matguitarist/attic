@@ -24,6 +24,9 @@ packages:
   DownloadKit:
     url: https://github.com/matguitarist/DownloadKit
     from: 0.1.0
+  FileKit:
+    url: https://github.com/matguitarist/FileKit
+    from: 0.1.0
 
 targets:
   Attic:
@@ -81,4 +84,5 @@ targets:
       - package: ProcessKit
       - package: ArchiveKit
       - package: DownloadKit
+      - package: FileKit
       - package: Sparkle

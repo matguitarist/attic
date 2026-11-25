@@ -1,5 +1,6 @@
 import Foundation
 import ArchiveKit
+import FileKit
 import ProcessKit
 
 /// Resolves a `.zip` or `.7z` ROM to a real, extracted file before it's
@@ -117,8 +118,7 @@ public struct ZippedROMExtractor: Sendable {
     }
 
     private static func size(of folder: URL) -> Int64 {
-        let files = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.fileSizeKey])?.allObjects as? [URL] ?? []
-        return files.reduce(0) { $0 + Int64((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
+        (try? FolderSize.summary(of: folder))?.logical ?? 0
     }
 
     private func listEntries(in archiveURL: URL, kind: ArchiveKind) throws -> [String] {

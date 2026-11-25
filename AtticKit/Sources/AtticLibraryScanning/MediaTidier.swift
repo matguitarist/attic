@@ -1,4 +1,5 @@
 import Foundation
+import FileKit
 import AtticModels
 import PictureKit
 
@@ -439,15 +440,9 @@ public enum MediaTidier {
         (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
     }
 
+    /// What the disk gives it, as the Finder shows; a hard-linked file once.
     private static func size(of url: URL) -> Int64 {
-        let keys: Set<URLResourceKey> = [.totalFileAllocatedSizeKey, .isDirectoryKey]
-        if !isDirectory(url) {
-            return Int64((try? url.resourceValues(forKeys: keys).totalFileAllocatedSize) ?? 0)
-        }
-        guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: Array(keys)) else { return 0 }
-        return enumerator.reduce(Int64(0)) { total, item in
-            total + Int64(((item as? URL).flatMap { try? $0.resourceValues(forKeys: keys).totalFileAllocatedSize }) ?? 0)
-        }
+        (try? FolderSize.summary(of: url))?.allocated ?? 0
     }
 
     // MARK: - Gamelists
