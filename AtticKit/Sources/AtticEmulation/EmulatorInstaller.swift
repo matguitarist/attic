@@ -1,4 +1,5 @@
 import Foundation
+import ArchiveKit
 import ProcessKit
 
 /// Fetches a remote file to a temporary local URL. Abstracted so installer
@@ -118,7 +119,7 @@ public struct EmulatorInstaller: Sendable {
     @concurrent public func installShaderPack(into directory: URL) async throws {
         let archive = try await downloader.download(from: EmulatorCatalog.slangShadersURL)
         defer { try? FileManager.default.removeItem(at: archive) }
-        let staging = try extractToStaging(archive, near: directory)
+        let staging = try await extractToStaging(archive, near: directory)
         defer { try? FileManager.default.removeItem(at: staging) }
         guard FileManager.default.fileExists(atPath: staging.appending(path: "crt").path) else {
             throw InstallError.missingFileInArchive("crt")
@@ -136,7 +137,7 @@ public struct EmulatorInstaller: Sendable {
         defer { try? FileManager.default.removeItem(at: archive) }
 
         let fileName = "\(coreIdentifier).dylib"
-        let staging = try extractToStaging(archive, near: paths.coresDirectory)
+        let staging = try await extractToStaging(archive, near: paths.coresDirectory)
         defer { try? FileManager.default.removeItem(at: staging) }
 
         let extracted = staging.appending(path: fileName)
@@ -159,7 +160,7 @@ public struct EmulatorInstaller: Sendable {
               let archiveName = EmulatorCatalog.coreSystemFiles[coreIdentifier] else { return }
         let archive = try await downloader.download(from: EmulatorCatalog.systemFilesURL(archiveName))
         defer { try? FileManager.default.removeItem(at: archive) }
-        let staging = try extractToStaging(archive, near: systemDirectory)
+        let staging = try await extractToStaging(archive, near: systemDirectory)
         defer { try? FileManager.default.removeItem(at: staging) }
         try EmulationFolder.copyMissingFiles(from: staging, to: systemDirectory)
     }
@@ -171,7 +172,7 @@ public struct EmulatorInstaller: Sendable {
         let archive = try await downloader.download(from: EmulatorCatalog.coreInfoArchiveURL)
         defer { try? FileManager.default.removeItem(at: archive) }
 
-        let staging = try extractToStaging(archive, near: paths.coreInfoDirectory)
+        let staging = try await extractToStaging(archive, near: paths.coreInfoDirectory)
         defer { try? FileManager.default.removeItem(at: staging) }
 
         let infoFiles = (try? FileManager.default.contentsOfDirectory(at: staging, includingPropertiesForKeys: nil))?
@@ -281,11 +282,11 @@ public struct EmulatorInstaller: Sendable {
         let staging: URL
         switch emulator.archive {
         case .zip:
-            staging = try extractToStaging(asset, near: destination)
+            staging = try await extractToStaging(asset, near: destination)
         case .dolphinReleaseFeed:
             staging = try Self.copyApp(named: emulator.appBundleName, fromDiskImage: asset, near: destination)
         case .githubRelease:
-            staging = try extractAnyArchive(asset, named: release.fileName, appName: emulator.appBundleName, near: destination)
+            staging = try await extractAnyArchive(asset, named: release.fileName, appName: emulator.appBundleName, near: destination)
         }
         defer { try? FileManager.default.removeItem(at: staging) }
 
@@ -405,10 +406,10 @@ public struct EmulatorInstaller: Sendable {
 
     /// Unpacks a downloaded release into a new staging directory, by its
     /// file name's extension.
-    private func extractAnyArchive(_ archive: URL, named name: String, appName: String, near destination: URL) throws -> URL {
+    private func extractAnyArchive(_ archive: URL, named name: String, appName: String, near destination: URL) async throws -> URL {
         let lowercased = name.lowercased()
         if lowercased.hasSuffix(".zip") {
-            return try extractToStaging(archive, near: destination)
+            return try await extractToStaging(archive, near: destination)
         }
         if lowercased.hasSuffix(".dmg") {
             return try Self.copyApp(named: appName, fromDiskImage: archive, near: destination)
@@ -416,7 +417,7 @@ public struct EmulatorInstaller: Sendable {
         // .7z, .tar.xz, .tar.gz: macOS's bsdtar reads them all.
         let staging = try Self.makeStagingDirectory(near: destination)
         do {
-            try Self.run("/usr/bin/tar", ["-xf", archive.path, "-C", staging.path])
+            try await Self.unpacking { try await AnyArchive.unpack(archive, into: staging, replacing: true, replaced: .delete) }
         } catch {
             try? FileManager.default.removeItem(at: staging)
             throw error
@@ -485,17 +486,29 @@ public struct EmulatorInstaller: Sendable {
         return try fileManager.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: destination, create: true)
     }
 
-    private func extractToStaging(_ archive: URL, near destination: URL) throws -> URL {
+    private func extractToStaging(_ archive: URL, near destination: URL) async throws -> URL {
         let staging = try Self.makeStagingDirectory(near: destination)
         do {
-            // ditto, not unzip: it preserves the code signatures, symlinks
-            // and extended attributes inside .app bundles.
-            try Self.run("/usr/bin/ditto", ["-x", "-k", archive.path, staging.path])
+            // ArchiveKit unpacks with ditto, not unzip: it preserves the code
+            // signatures, symlinks and extended attributes inside .app bundles.
+            try await Self.unpacking { try await Zip.unpack(archive, into: staging, replacing: true, replaced: .delete) }
         } catch {
             try? FileManager.default.removeItem(at: staging)
             throw error
         }
         return staging
+    }
+
+    /// ArchiveKit's failures in the installer's words: the tool's own last
+    /// words, or what ArchiveKit says (an entry that would land outside).
+    private static func unpacking(_ work: () async throws -> Void) async throws {
+        do {
+            try await work()
+        } catch ArchiveError.toolFailed(let detail) {
+            throw InstallError.extractionFailed(detail)
+        } catch let error as ArchiveError {
+            throw InstallError.extractionFailed(error.localizedDescription)
+        }
     }
 
     /// Replaces `directory/<name>` (by default the item's own name) with

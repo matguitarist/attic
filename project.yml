@@ -18,6 +18,9 @@ packages:
   ProcessKit:
     url: https://github.com/matguitarist/ProcessKit
     from: 0.1.1
+  ArchiveKit:
+    url: https://github.com/matguitarist/ArchiveKit
+    from: 0.1.1
 
 targets:
   Attic:
@@ -73,4 +76,5 @@ targets:
       - package: PictureKit
         product: PictureKitUI
       - package: ProcessKit
+      - package: ArchiveKit
       - package: Sparkle

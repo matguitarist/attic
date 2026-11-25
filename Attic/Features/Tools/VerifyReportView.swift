@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import AtticModels
 import AtticEmulation
+import ArchiveKit
 
 /// What checking the games against No-Intro's DATs found, system by
 /// system; or, before there are any DATs, where to get them.
@@ -281,16 +282,7 @@ struct VerifyReportView: View {
         case "dat", "xml":
             return [undated(file.lastPathComponent)]
         case "zip":
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/zipinfo")
-            process.arguments = ["-1", file.path]
-            let pipe = Pipe()
-            process.standardOutput = pipe
-            process.standardError = FileHandle.nullDevice
-            guard (try? process.run()) != nil else { return [] }
-            let output = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return String(decoding: output, as: UTF8.self).split(whereSeparator: \.isNewline)
+            return ((try? Zip.names(file)) ?? [])
                 .map { ($0 as NSString).lastPathComponent }
                 .filter { ["dat", "xml"].contains(($0 as NSString).pathExtension.lowercased()) }
                 .map(undated)

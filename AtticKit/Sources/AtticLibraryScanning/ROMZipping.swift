@@ -1,8 +1,8 @@
 import Foundation
+import ArchiveKit
 import AtticModels
 
-/// Cartridge games zipped: each ROM in a .zip of its own, with macOS's
-/// `zip`. Attic unzips a game when it starts (see `ZippedROMExtractor`),
+/// Cartridge games zipped: each ROM in a .zip of its own, by ArchiveKit. Attic unzips a game when it starts (see `ZippedROMExtractor`),
 /// with the same name, so its saves and media still match.
 ///
 /// Only cartridge systems: a disc game is a CHD's job, and arcade, DOS or
@@ -62,15 +62,18 @@ public enum ROMZipping {
     /// smaller puts it in the ROM's place (the ROM goes to the Trash).
     /// Returns the zip, or nil when the ROM stays.
     @discardableResult
-    public static func zip(_ rom: URL) -> URL? {
+    public static func zip(_ rom: URL) async -> URL? {
         let fileManager = FileManager.default
         let folder = rom.deletingLastPathComponent()
         let destination = rom.deletingPathExtension().appendingPathExtension("zip")
         let partial = folder.appending(path: ".\(destination.lastPathComponent).partial")
         try? fileManager.removeItem(at: partial)
-        guard !fileManager.fileExists(atPath: destination.path),
-              run("/usr/bin/zip", ["-q", "-X", "-9", "-j", partial.path, rom.path]),
-              run("/usr/bin/unzip", ["-tqq", partial.path]) else {
+        guard !fileManager.fileExists(atPath: destination.path) else { return nil }
+        do {
+            // A plain zip at the best compression, tested before it counts.
+            try await Zip.pack(rom, to: partial, macMetadata: false, level: 9)
+            try await Zip.test(partial)
+        } catch {
             try? fileManager.removeItem(at: partial)
             return nil
         }
@@ -83,16 +86,5 @@ public enum ROMZipping {
         try? fileManager.trashItem(at: rom, resultingItemURL: nil)
         ReplacedGameFile.repoint(in: folder, from: rom.lastPathComponent, to: destination.lastPathComponent)
         return destination
-    }
-
-    private static func run(_ path: String, _ arguments: [String]) -> Bool {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: path)
-        process.arguments = arguments
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return false }
-        process.waitUntilExit()
-        return process.terminationReason == .exit && process.terminationStatus == 0
     }
 }

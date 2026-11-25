@@ -1,4 +1,6 @@
 import Foundation
+import ArchiveKit
+import ProcessKit
 
 /// Resolves a `.zip` or `.7z` ROM to a real, extracted file before it's
 /// handed to RetroArch. (`.7z` goes through macOS's own `tar` — bsdtar /
@@ -61,7 +63,9 @@ public struct ZippedROMExtractor: Sendable {
     /// re-extracted every time.
     public func resolvedROMURL(for romURL: URL) -> URL {
         guard let kind = ArchiveKind(romURL) else { return romURL }
-        guard let entries = try? listEntries(in: romURL, kind: kind), let romEntry = Self.chooseROMEntry(from: entries) else {
+        guard let entries = try? listEntries(in: romURL, kind: kind), let romEntry = Self.chooseROMEntry(from: entries),
+              // An entry named to land outside the cache is never written.
+              Zip.unsafeEntry([romEntry]) == nil else {
             return romURL
         }
 
@@ -118,42 +122,23 @@ public struct ZippedROMExtractor: Sendable {
     }
 
     private func listEntries(in archiveURL: URL, kind: ArchiveKind) throws -> [String] {
-        let process = Process()
         switch kind {
         case .zip:
-            process.executableURL = unzipBinaryURL
-            process.arguments = ["-Z1", archiveURL.path]
+            return try Zip.names(archiveURL)
         case .sevenZip:
-            process.executableURL = tarBinaryURL
-            process.arguments = ["-tf", archiveURL.path]
+            return try Shell.runSync(tarBinaryURL.path, ["-tf", archiveURL.path]).check().lines
         }
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = Pipe()
-        try process.run()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-
-        guard let output = String(data: data, encoding: .utf8) else { return [] }
-        return output.split(separator: "\n").map(String.init)
     }
 
+    /// Synchronous, as a game starts: ArchiveKit's `Zip.extract` is async only.
     private func extract(entry: String, from archiveURL: URL, kind: ArchiveKind, to destinationDirectory: URL) throws {
-        let process = Process()
-        switch kind {
-        case .zip:
-            process.executableURL = unzipBinaryURL
-            process.arguments = ["-o", archiveURL.path, entry, "-d", destinationDirectory.path]
-        case .sevenZip:
-            process.executableURL = tarBinaryURL
-            process.arguments = ["-xf", archiveURL.path, "-C", destinationDirectory.path, entry]
+        let (tool, arguments) = switch kind {
+        case .zip: (unzipBinaryURL.path, ["-o", archiveURL.path, entry, "-d", destinationDirectory.path])
+        case .sevenZip: (tarBinaryURL.path, ["-xf", archiveURL.path, "-C", destinationDirectory.path, entry])
         }
-        process.standardOutput = Pipe()
-        process.standardError = Pipe()
-        try process.run()
-        process.waitUntilExit()
+        // Whether it worked is told by the file being there, as unzip
+        // warns with a status of its own.
+        _ = try Shell.runSync(tool, arguments, options: Shell.Options(stdout: .discard))
     }
 
     /// A zip with exactly one real (non-directory, non-macOS-metadata)

@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import ArchiveKit
 @testable import AtticLibraryScanning
 @testable import AtticModels
 
@@ -29,36 +30,23 @@ struct ROMZippingTests {
         #expect(ROMZipping.candidates(in: base.appending(path: "snesh"), system: .snesh).count == 1)
     }
 
-    @Test func zipsWhenItSavesSpace() throws {
+    @Test func zipsWhenItSavesSpace() async throws {
         let rom = try write("ROMs/snes/Mario (USA).sfc", compressible)
         let gamelist = try write("Gamelists/snes/gamelist.xml", Data("<gameList><game><path>./Mario (USA).sfc</path></game></gameList>".utf8))
-        let zip = try #require(ROMZipping.zip(rom))
+        let zip = try #require(await ROMZipping.zip(rom))
         #expect(zip.lastPathComponent == "Mario (USA).zip")
         #expect(!FileManager.default.fileExists(atPath: rom.path))
         #expect(try String(contentsOf: gamelist, encoding: .utf8).contains("./Mario (USA).zip"))
         // What Attic unzips at launch is the game, under its own name.
-        let unzipped = ZippedROMCheck.entries(zip)
+        let unzipped = try Zip.names(zip)
         #expect(unzipped == ["Mario (USA).sfc"])
 
         // Random data doesn't shrink: the ROM stays, and isn't offered again.
         let noise = try write("ROMs/snes/Noise.sfc", random)
-        #expect(ROMZipping.zip(noise) == nil)
+        #expect(await ROMZipping.zip(noise) == nil)
         #expect(FileManager.default.fileExists(atPath: noise.path))
         #expect(ROMZipping.candidates(in: base.appending(path: "ROMs/snes"), system: .snes).isEmpty)
         let hidden = try FileManager.default.contentsOfDirectory(atPath: base.appending(path: "ROMs/snes").path)
         #expect(Set(hidden) == ["Mario (USA).zip", "Noise.sfc"])
-    }
-}
-
-private enum ZippedROMCheck {
-    static func entries(_ zip: URL) -> [String] {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/zipinfo")
-        process.arguments = ["-1", zip.path]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        try? process.run()
-        process.waitUntilExit()
-        return String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self).split(separator: "\n").map(String.init)
     }
 }

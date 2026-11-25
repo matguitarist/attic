@@ -160,7 +160,7 @@ final class ToolsCoordinator {
             }
         }
         let result = await Task.detached(priority: .userInitiated) {
-            GameCompressionPlan.apply(plan, chdman: chdman, progress: progress)
+            await GameCompressionPlan.apply(plan, chdman: chdman, progress: progress)
         }.value
         await scanCoordinator.scan(romsRootURLs: romsRoots)
         activity = nil
@@ -550,9 +550,9 @@ final class ToolsCoordinator {
         let result = await Task.detached(priority: .userInitiated) { () -> GameCompressionPlan.Result in
             switch conversion {
             case .discs(let discs):
-                return GameCompressionPlan.apply(GameCompressionPlan(discs: discs), chdman: chdman)
+                return await GameCompressionPlan.apply(GameCompressionPlan(discs: discs), chdman: chdman)
             case .cartridge(let rom):
-                return GameCompressionPlan.apply(GameCompressionPlan(cartridges: [rom]), chdman: chdman)
+                return await GameCompressionPlan.apply(GameCompressionPlan(cartridges: [rom]), chdman: chdman)
             case .back(let chds):
                 var result = GameCompressionPlan.Result()
                 for chd in chds {
@@ -636,9 +636,12 @@ final class ToolsCoordinator {
         if quietly, !FileManager.default.fileExists(atPath: folder.deletingLastPathComponent().path) { return }
         reportHost = host
         activity = Activity(title: String(localized: "Backing up saves…"))
-        let result = await Task.detached(priority: .utility) { () -> Result<URL, Error> in
-            Result { try SaveBackup.create(from: emulationRoot, to: folder) }
-        }.value
+        let result: Result<URL, Error>
+        do {
+            result = .success(try await SaveBackup.create(from: emulationRoot, to: folder))
+        } catch {
+            result = .failure(error)
+        }
         activity = nil
         switch result {
         case .success(let zip):

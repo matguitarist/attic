@@ -4,6 +4,8 @@ import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
 import PictureKitUI
+import ArchiveKit
+import ProcessKit
 
 /// What EmuMovies has for the library's systems, looked up one system at
 /// a time as they're picked in the report: the artwork packs in its
@@ -482,7 +484,7 @@ extension ToolsCoordinator {
         defer { try? FileManager.default.removeItem(at: unpacked) }
         try FileManager.default.createDirectory(at: unpacked, withIntermediateDirectories: true)
         let (first, split) = (archives[0], pack.isSplit)
-        try await Task.detached { try unpack(first, split: split, to: unpacked, unar: unar) }.value
+        try await unpack(first, split: split, to: unpacked, unar: unar)
 
         return await Task.detached(priority: .userInitiated) {
             let files = (FileManager.default.enumerator(at: unpacked, includingPropertiesForKeys: nil)?.allObjects as? [URL] ?? [])
@@ -509,21 +511,19 @@ extension ToolsCoordinator {
         }.value
     }
 
-    /// Opens an archive: zip, 7z and rar with macOS's `bsdtar`, a split
-    /// rar with `unar`.
-    nonisolated private static func unpack(_ archive: URL, split: Bool, to folder: URL, unar: URL?) throws {
-        let process = Process()
+    /// Opens an archive: zip, 7z and rar with ArchiveKit (macOS's `bsdtar`,
+    /// names checked first), a split rar with `unar`.
+    nonisolated private static func unpack(_ archive: URL, split: Bool, to folder: URL, unar: URL?) async throws {
         if split {
             guard let unar else { throw EmuMoviesServer.Failure.transfer(String(localized: "Split archives need unar: brew install unar")) }
-            process.executableURL = unar
-            process.arguments = ["-quiet", "-force-overwrite", "-no-directory", "-output-directory", folder.path, archive.path]
+            _ = try await Shell.run(unar.path, ["-quiet", "-force-overwrite", "-no-directory", "-output-directory", folder.path, archive.path],
+                                    options: Shell.Options(stdout: .discard, stderr: .discard))
         } else {
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/bsdtar")
-            process.arguments = ["-xf", archive.path, "-C", folder.path]
+            do {
+                try await AnyArchive.unpack(archive, into: folder, replacing: true, replaced: .delete)
+            } catch let error as ArchiveError {
+                throw EmuMoviesServer.Failure.transfer(error.localizedDescription)
+            }
         }
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        try process.run()
-        process.waitUntilExit()
     }
 }

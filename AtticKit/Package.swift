@@ -16,23 +16,27 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/matguitarist/PictureKit", from: "0.2.0"),
-        .package(url: "https://github.com/matguitarist/ProcessKit", from: "0.1.1")
+        .package(url: "https://github.com/matguitarist/ProcessKit", from: "0.1.1"),
+        .package(url: "https://github.com/matguitarist/ArchiveKit", from: "0.1.1")
     ],
     targets: [
         .target(name: "AtticModels"),
         .target(name: "AtticPersistence", dependencies: ["AtticModels"]),
         .target(name: "AtticLibraryScanning", dependencies: ["AtticModels", .product(name: "PictureKit", package: "PictureKit"),
-                                                     .product(name: "ProcessKit", package: "ProcessKit")]),
+                                                     .product(name: "ProcessKit", package: "ProcessKit"),
+                                                     .product(name: "ArchiveKit", package: "ArchiveKit")]),
         // Resources holds the String Catalog for user-visible text
         // (emulator descriptions, install errors).
-        .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning", .product(name: "ProcessKit", package: "ProcessKit")],
+        .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning", .product(name: "ProcessKit", package: "ProcessKit"),
+                                                .product(name: "ArchiveKit", package: "ArchiveKit")],
                 resources: [.process("Resources")]),
         .target(name: "AtticScraping", dependencies: ["AtticModels"]),
 
         .testTarget(name: "AtticModelsTests", dependencies: ["AtticModels"]),
         .testTarget(name: "AtticPersistenceTests", dependencies: ["AtticPersistence"]),
-        .testTarget(name: "AtticLibraryScanningTests", dependencies: ["AtticLibraryScanning", .product(name: "PictureKit", package: "PictureKit")]),
-        .testTarget(name: "AtticEmulationTests", dependencies: ["AtticEmulation", "AtticLibraryScanning"]),
+        .testTarget(name: "AtticLibraryScanningTests", dependencies: ["AtticLibraryScanning", .product(name: "PictureKit", package: "PictureKit"),
+                                                               .product(name: "ArchiveKit", package: "ArchiveKit")]),
+        .testTarget(name: "AtticEmulationTests", dependencies: ["AtticEmulation", "AtticLibraryScanning", .product(name: "ArchiveKit", package: "ArchiveKit")]),
         .testTarget(name: "AtticScrapingTests", dependencies: ["AtticScraping"])
     ]
 )

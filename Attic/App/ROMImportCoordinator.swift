@@ -5,6 +5,7 @@ import AtticModels
 import AtticLibraryScanning
 import AtticEmulation
 import ProcessKit
+import ArchiveKit
 
 /// Files games dropped on the library window into the right ROMs folder,
 /// with the media and gamelist that came with them.
@@ -465,16 +466,8 @@ extension ROMImportCoordinator {
     nonisolated static func effectiveExtension(_ url: URL) -> String {
         let ext = url.pathExtension.lowercased()
         guard ext == "zip" else { return ext }
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/zipinfo")
-        process.arguments = ["-1", url.path]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return ext }
-        let output = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-        process.waitUntilExit()
-        let inner = Set(output.split(separator: "\n").filter { !$0.hasSuffix("/") }.map { ($0 as NSString).pathExtension.lowercased() })
+        guard let names = try? Zip.names(url) else { return ext }
+        let inner = Set(names.filter { !$0.hasSuffix("/") }.map { ($0 as NSString).pathExtension.lowercased() })
         return inner.count == 1 ? inner.first! : ext
     }
 

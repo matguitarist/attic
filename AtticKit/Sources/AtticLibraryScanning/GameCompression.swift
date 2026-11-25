@@ -61,7 +61,7 @@ public struct GameCompressionPlan: Sendable {
     /// Carries out `plan`; discs only with `chdman`. `progress` gets the
     /// share done, by size (a disc takes far longer than a cartridge),
     /// and the game being compressed.
-    public static func apply(_ plan: GameCompressionPlan, chdman: URL?, progress: (Double, String) -> Void = { _, _ in }) -> Result {
+    public static func apply(_ plan: GameCompressionPlan, chdman: URL?, progress: (Double, String) -> Void = { _, _ in }) async -> Result {
         let discs = chdman == nil ? [] : plan.discs
         let total = Double(max(discs.reduce(0) { $0 + $1.bytes } + plan.cartridges.reduce(0) { $0 + MediaFolder.fileSize($1) }, 1))
         var done: Int64 = 0
@@ -81,7 +81,7 @@ public struct GameCompressionPlan: Sendable {
         for rom in plan.cartridges {
             let before = MediaFolder.fileSize(rom)
             progress(Double(done) / total, rom.deletingPathExtension().lastPathComponent)
-            if let zip = ROMZipping.zip(rom) {
+            if let zip = await ROMZipping.zip(rom) {
                 result.compressed += 1
                 result.savedBytes += before - MediaFolder.fileSize(zip)
             }

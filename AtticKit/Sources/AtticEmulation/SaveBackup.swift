@@ -1,4 +1,5 @@
 import Foundation
+import ArchiveKit
 import AtticModels
 
 /// A zip of what can't be downloaded again: saves, save states,
@@ -11,51 +12,34 @@ public enum SaveBackup {
     static let namePrefix = "Attic Backup "
     public static let keptCount = 5
 
-    /// Writes `<destination>/Attic Backup <date>.zip` and trims the folder
-    /// to the newest `keptCount` backups. Returns the zip.
-    public static func create(from emulationRoot: URL, to destination: URL, date: Date = .now) throws -> URL {
-        let fileManager = FileManager.default
-        let folders = folderNames.filter { fileManager.fileExists(atPath: emulationRoot.appending(path: $0).path) }
+    /// Writes `<destination>/Attic Backup <date>.zip` with ArchiveKit (beside
+    /// it first, moved into place when whole) and trims the folder to the
+    /// newest `keptCount` backups, the others going to `disposal` (the
+    /// Trash). Returns the zip.
+    public static func create(from emulationRoot: URL, to destination: URL, date: Date = .now,
+                              disposal: Disposal = .trash) async throws -> URL {
+        let folders = folderNames.filter { FileManager.default.fileExists(atPath: emulationRoot.appending(path: $0).path) }
         guard !folders.isEmpty else { throw BackupError.nothingToBackUp }
-        try fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
-
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"
-        let zip = destination.appending(path: "\(namePrefix)\(formatter.string(from: date)).zip")
-        let partial = destination.appending(path: ".\(zip.lastPathComponent).partial")
-        try? fileManager.removeItem(at: partial)
-
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
-        process.currentDirectoryURL = emulationRoot
-        process.arguments = ["-r", "-q", "-y", partial.path] + folders + ["-x", "*.DS_Store"]
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        try process.run()
-        process.waitUntilExit()
-        guard process.terminationStatus == 0, fileManager.fileExists(atPath: partial.path) else {
-            try? fileManager.removeItem(at: partial)
-            throw BackupError.zipFailed
+        let backups = BackupFolder(root: destination, disposal: disposal)
+        let backup: BackupFolder.Backup
+        do {
+            // A plain zip, as zip(1) wrote: any tool, on any system, reads it.
+            backup = try await backups.backUp(from: emulationRoot, items: folders,
+                                              name: namePrefix + BackupFolder.stamp(date), macMetadata: false)
+        } catch let error as ArchiveError {
+            throw error == .nothingToBackUp ? BackupError.nothingToBackUp : BackupError.zipFailed
         }
-        try fileManager.moveItem(at: partial, to: zip)
-        prune(destination)
-        return zip
+        _ = try? backups.prune(keep: keptCount, matching: isBackup)
+        return backup.url
     }
 
     /// The backups in `folder`, newest first.
     public static func backups(in folder: URL) -> [URL] {
-        ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)) ?? [])
-            .filter { $0.lastPathComponent.hasPrefix(namePrefix) && $0.pathExtension.lowercased() == "zip" }
-            // The date in the name sorts as text.
-            .sorted { $0.lastPathComponent > $1.lastPathComponent }
+        BackupFolder(root: folder).list().filter(isBackup).map(\.url)
     }
 
-    /// Moves all but the newest `keptCount` backups to the Trash.
-    static func prune(_ folder: URL) {
-        for old in backups(in: folder).dropFirst(keptCount) {
-            try? FileManager.default.trashItem(at: old, resultingItemURL: nil)
-        }
+    private static func isBackup(_ backup: BackupFolder.Backup) -> Bool {
+        backup.name.hasPrefix(namePrefix)
     }
 
     /// Whether a weekly backup is due.

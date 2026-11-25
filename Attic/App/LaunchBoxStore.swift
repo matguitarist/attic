@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import AtticModels
 import AtticScraping
+import ArchiveKit
 
 /// LaunchBox's games database, kept offline. Downloaded from LaunchBox
 /// (109 MB) the first time a scrape needs it and indexed for the
@@ -113,7 +114,7 @@ final class LaunchBoxStore {
             state = .indexing
             let destination = Self.indexURL
             let summary = try await Task.detached(priority: .utility) {
-                try Self.unzip(zip, into: work)
+                try await Self.unzip(zip, into: work)
                 try? FileManager.default.removeItem(at: zip)
                 let mame = work.appending(path: "Mame.xml")
                 return try LaunchBoxIndexBuilder.build(
@@ -143,14 +144,10 @@ final class LaunchBoxStore {
     }
 
     /// Only the files the index is made from.
-    nonisolated private static func unzip(_ zip: URL, into folder: URL) throws {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
-        process.arguments = ["-o", "-q", zip.path, "Metadata.xml", "Files.xml", "Mame.xml", "-d", folder.path]
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        try process.run()
-        process.waitUntilExit()
+    nonisolated private static func unzip(_ zip: URL, into folder: URL) async throws {
+        for name in ["Metadata.xml", "Files.xml", "Mame.xml"] {
+            try? await Zip.extract(name, from: zip, to: folder.appending(path: name))
+        }
         guard FileManager.default.fileExists(atPath: folder.appending(path: "Metadata.xml").path) else {
             throw LaunchBoxIndexError.unreadable("Metadata.zip")
         }
