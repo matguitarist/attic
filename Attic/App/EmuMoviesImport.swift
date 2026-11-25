@@ -381,7 +381,7 @@ extension ToolsCoordinator {
                 done += job.bytes
             }
 
-            for url in stored { PictureCache.shared.forgetMedia(url) }
+            for url in stored { PictureCache.shared.forget(.file(url)) }
             let changed = await scanCoordinator.applyImported(info, replacing: true)
             if changed > 0 || !stored.isEmpty {
                 activity = Activity(title: String(localized: "Updating the library…"))

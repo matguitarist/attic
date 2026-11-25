@@ -34,10 +34,7 @@ public enum MediaKind: String, CaseIterable, Sendable {
     /// smaller, scaled down to `maxPixelSize` when it's given. Nil keeps
     /// it as it is.
     public func pictureStyle(maxPixelSize: Int? = nil) -> PictureStyle? {
-        guard isStoredAsHEIC else { return nil }
-        var style = PictureStyle.artwork
-        style.longSide = maxPixelSize
-        return style
+        isStoredAsHEIC ? PictureStyle.artwork.withLongSide(maxPixelSize) : nil
     }
 
     /// Folders Attic named differently before, by the kind they hold.
@@ -207,13 +204,13 @@ public enum MediaFolder {
     public static func store(_ data: Data, fileExtension: String, forSystemFolder systemFolder: URL, romRelativePath: String,
                              kind: MediaKind, maxPixelSize: Int? = nil) throws -> URL {
         let base = baseURL(forSystemFolder: systemFolder, romRelativePath: romRelativePath, kind: kind)
-        try FileManager.default.createDirectory(at: base.deletingLastPathComponent(), withIntermediateDirectories: true)
-        for existing in existingFiles(base: base) {
-            try? FileManager.default.trashItem(at: existing, resultingItemURL: nil)
-        }
         if let style = kind.pictureStyle(maxPixelSize: maxPixelSize),
            let stored = try? PictureFile.store(data, at: base, style: style, replaced: .trash) {
             return stored
+        }
+        try FileManager.default.createDirectory(at: base.deletingLastPathComponent(), withIntermediateDirectories: true)
+        for existing in existingFiles(base: base) {
+            try? FileManager.default.trashItem(at: existing, resultingItemURL: nil)
         }
         let ext = fileExtension.isEmpty ? (kind == .videos ? "mp4" : "png") : fileExtension.lowercased()
         let destination = base.appendingPathExtension(ext)

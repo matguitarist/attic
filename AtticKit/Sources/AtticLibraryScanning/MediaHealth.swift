@@ -176,7 +176,7 @@ public enum MediaHealth {
         guard bytes > 0 else { return .unreadable }
         guard MediaFolder.imageExtensions.contains(file.pathExtension.lowercased()) else { return nil }
         guard let info = Pictures.info(at: file) else { return .unreadable }
-        if isBlank(info, Pictures.thumbnail(at: file, maxPixels: 48)) { return .blank }
+        if isBlank(info, Pictures.isBlank(at: file)) { return .blank }
         let size = CGSize(width: info.width, height: info.height)
         if isTooSmall(size, kind: kind) {
             return .small(width: Int(size.width), height: Int(size.height))
@@ -188,7 +188,7 @@ public enum MediaHealth {
     /// shows something, and, unless `file` is blank or broken, is
     /// noticeably larger.
     public static func isBetter(_ data: Data, than file: URL, kind: MediaKind) -> Bool {
-        guard let info = Pictures.info(data), !isBlank(info, Pictures.thumbnail(of: data, maxPixels: 48)) else { return false }
+        guard let info = Pictures.info(data), !isBlank(info, Pictures.isBlank(data)) else { return false }
         switch problem(with: file, kind: kind) {
         case .blank?, .unreadable?: return true
         default:
@@ -211,16 +211,7 @@ public enum MediaHealth {
 
     /// Nothing drawn: every pixel of a small copy clear. Only pictures with
     /// transparency are drawn to see.
-    static func isBlank(_ info: PictureInfo, _ thumbnail: @autoclosure () -> CGImage?) -> Bool {
-        guard info.hasAlpha, let image = thumbnail() else { return false }
-        let (width, height) = (image.width, image.height)
-        var pixels = [UInt8](repeating: 0, count: width * height * 4)
-        return pixels.withUnsafeMutableBytes { buffer in
-            guard let context = CGContext(data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8,
-                                          bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
-                                          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
-            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
-            return !stride(from: 3, to: buffer.count, by: 4).contains { buffer[$0] > 8 }
-        }
+    static func isBlank(_ info: PictureInfo, _ blank: @autoclosure () -> Bool?) -> Bool {
+        info.hasAlpha && blank() == true
     }
 }

@@ -177,7 +177,7 @@ struct GameMediaSection: View {
 
     private func remove(_ kind: MediaKind, at url: URL) {
         try? FileManager.default.trashItem(at: url, resultingItemURL: nil)
-        PictureCache.shared.forgetMedia(url)
+        PictureCache.shared.forget(.file(url))
         switch kind {
         case .covers where game.coverArtPath == url.path:
             game.coverArtPath = nil

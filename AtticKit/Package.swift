@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "AtticScraping", targets: ["AtticScraping"])
     ],
     dependencies: [
-        .package(url: "https://github.com/matguitarist/PictureKit", from: "0.1.0")
+        .package(url: "https://github.com/matguitarist/PictureKit", from: "0.2.0")
     ],
     targets: [
         .target(name: "AtticModels"),

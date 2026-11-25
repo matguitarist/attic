@@ -14,7 +14,7 @@ packages:
     exactVersion: 2.10.0
   PictureKit:
     url: https://github.com/matguitarist/PictureKit
-    from: 0.1.0
+    from: 0.2.0
 
 targets:
   Attic:

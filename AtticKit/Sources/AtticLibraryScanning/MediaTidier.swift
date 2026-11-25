@@ -192,12 +192,7 @@ public enum MediaTidier {
         }
         var compressed = 0
         for url in plan.compress {
-            if PictureFile.compress(url, to: .artwork, original: .trash) != nil {
-                compressed += 1
-            } else if FileManager.default.fileExists(atPath: url.path) {
-                // One that can't be read is left too, not offered on every tidy.
-                PictureFile.mark(url)
-            }
+            if PictureFile.compress(url, to: .artwork, original: .trash) != nil { compressed += 1 }
             step()
         }
         for url in plan.manuals {
@@ -413,6 +408,7 @@ public enum MediaTidier {
     static let manualCreator = "Attic"
 
     /// Whether a manual is a heavy scan not tried yet, by Attic or PictureKit.
+    /// A scan with a text layer (OCR) is left, so it stays searchable.
     static func manualIsWorthShrinking(_ url: URL) -> Bool {
         ScannedPDF.isWorthShrinking(url, alsoChecked: [manualCheckedAttribute], alsoCreators: [manualCreator])
     }

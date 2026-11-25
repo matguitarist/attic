@@ -182,7 +182,7 @@ extension ToolsCoordinator {
             let matches = sources.flatMap { Self.matches(bySystem[$0.system] ?? [], $0) }
             return Self.copyMedia(matches, replacing: replacing, progress: progress)
         }.value
-        for url in stored { PictureCache.shared.forgetMedia(url) }
+        for url in stored { PictureCache.shared.forget(.file(url)) }
         let changed = await scanCoordinator.applyImported(info, replacing: replacing)
         activity = nil
         var lines: [String] = []

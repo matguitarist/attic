@@ -63,7 +63,7 @@ extension ToolsCoordinator {
             for file in MediaFolder.existingFiles(base: base) + [base.appendingPathExtension("pdf")]
             where manager.fileExists(atPath: file.path) {
                 try? manager.trashItem(at: file, resultingItemURL: nil)
-                PictureCache.shared.forgetMedia(file)
+                PictureCache.shared.forget(.file(file))
             }
         }
         return size

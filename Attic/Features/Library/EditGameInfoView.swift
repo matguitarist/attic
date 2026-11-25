@@ -250,7 +250,7 @@ enum CustomCoverArt {
         let base = MediaFolder.baseURL(forSystemFolder: game.systemFolderURL, romRelativePath: game.romRelativePath, kind: .covers)
         for file in MediaFolder.existingFiles(base: base) {
             try? FileManager.default.trashItem(at: file, resultingItemURL: nil)
-            PictureCache.shared.forgetMedia(file)
+            PictureCache.shared.forget(.file(file))
         }
     }
 }

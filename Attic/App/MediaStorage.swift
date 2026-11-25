@@ -57,7 +57,7 @@ extension Game {
     /// finds it (see `MediaFolder`).
     func storeMedia(_ data: Data, fileExtension: String, kind: MediaKind) throws -> URL {
         let url = try MediaFolder.store(data, fileExtension: fileExtension, forSystemFolder: systemFolderURL, romRelativePath: romRelativePath, kind: kind)
-        PictureCache.shared.forgetMedia(url)
+        PictureCache.shared.forget(.file(url))
         // A video isn't a thumbnail, but its view watches the same revision.
         return url
     }
