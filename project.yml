@@ -21,6 +21,9 @@ packages:
   ArchiveKit:
     url: https://github.com/matguitarist/ArchiveKit
     from: 0.1.1
+  DownloadKit:
+    url: https://github.com/matguitarist/DownloadKit
+    from: 0.1.0
 
 targets:
   Attic:
@@ -77,4 +80,5 @@ targets:
         product: PictureKitUI
       - package: ProcessKit
       - package: ArchiveKit
+      - package: DownloadKit
       - package: Sparkle

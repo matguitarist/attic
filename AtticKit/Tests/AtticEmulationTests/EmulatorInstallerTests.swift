@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import DownloadKit
 @testable import AtticEmulation
 @testable import AtticModels
 
@@ -117,15 +118,31 @@ struct EmulatorInstallerTests {
 
     @Test func readsAGitHubReleaseAsset() throws {
         let json = Data("""
-        {"tag_name": "v2.8.2", "assets": [
+        {"id": 10, "tag_name": "v2.8.2", "assets": [
           {"id": 1, "name": "pcsx2-v2.8.2-windows.zip", "browser_download_url": "https://example.com/w.zip", "updated_at": "2026-10-01T00:00:00Z"},
           {"id": 2, "name": "pcsx2-v2.8.2-macos-Qt.tar.xz", "browser_download_url": "https://example.com/m.tar.xz", "updated_at": "2026-10-02T00:00:00Z"}
         ]}
         """.utf8)
-        let release = try #require(EmulatorInstaller.release(inGitHubRelease: json, suffix: "-macos-Qt.tar.xz"))
+        let release = try #require(EmulatorInstaller.release(in: try GitHubRelease.decode(json), suffix: "-macos-Qt.tar.xz"))
         #expect(release.version == "v2.8.2")
         #expect(release.fileName == "pcsx2-v2.8.2-macos-Qt.tar.xz")
+        // The same identity Attic recorded before DownloadKit read the release.
         #expect(release.identity == "2 2026-10-02T00:00:00Z")
+    }
+
+    @Test func aGitHubEmulatorsReleaseIsReadFromItsFeed() async throws {
+        let feed = root.appending(path: "latest.json")
+        try Data("""
+        {"id": 10, "tag_name": "v2.8.2", "assets": [
+          {"id": 2, "name": "pcsx2-v2.8.2-macos-Qt.tar.xz", "browser_download_url": "https://example.com/m.tar.xz", "updated_at": "2026-10-02T00:00:00Z"}
+        ]}
+        """.utf8).write(to: feed)
+        let emulator = EmulatorCatalog.pcsx2
+        let installer = EmulatorInstaller(paths: paths, downloader: FixtureDownloader(archivesByURL: [emulator.downloadURL: feed]))
+        let release = try await installer.latestRelease(of: emulator)
+        #expect(release.identity == "2 2026-10-02T00:00:00Z")
+        #expect(release.version == "v2.8.2")
+        #expect(release.downloadURL.absoluteString == "https://example.com/m.tar.xz")
     }
 
     @Test func remembersWhatItInstalled() async throws {
@@ -165,16 +182,18 @@ struct DolphinReleaseFeedTests {
 }
 
 struct GitHubReleaseTests {
-    @Test func picksTheAssetBySuffixSkippingDebugBuilds() {
+    @Test func picksTheAssetBySuffixSkippingDebugBuilds() throws {
         let json = """
-        {"tag_name": "v0.8.136", "assets": [
-          {"name": "xemu-0.8.136-dbg-macos-universal.zip", "browser_download_url": "https://example.com/dbg.zip"},
-          {"name": "xemu-0.8.136-macos-universal-unsigned.zip", "browser_download_url": "https://example.com/unsigned.zip"},
-          {"name": "xemu-0.8.136-macos-universal.zip", "browser_download_url": "https://example.com/release.zip"}
+        {"id": 7, "tag_name": "v0.8.136", "assets": [
+          {"id": 1, "name": "xemu-0.8.136-dbg-macos-universal.zip", "browser_download_url": "https://example.com/dbg.zip"},
+          {"id": 2, "name": "xemu-0.8.136-macos-universal-unsigned.zip", "browser_download_url": "https://example.com/unsigned.zip"},
+          {"id": 3, "name": "xemu-0.8.136-macos-universal.zip", "browser_download_url": "https://example.com/release.zip"}
         ]}
         """
-        #expect(EmulatorInstaller.assetURL(inGitHubRelease: Data(json.utf8), suffix: "-macos-universal.zip")?.absoluteString
-            == "https://example.com/release.zip")
+        let release = EmulatorInstaller.release(in: try GitHubRelease.decode(Data(json.utf8)), suffix: "-macos-universal.zip")
+        #expect(release?.downloadURL.absoluteString == "https://example.com/release.zip")
+        // No upload date: the asset's ID alone, as before.
+        #expect(release?.identity == "3 ")
     }
 
     @Test func findsAnAppNestedInAFolder() throws {

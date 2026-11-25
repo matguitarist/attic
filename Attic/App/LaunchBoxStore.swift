@@ -3,6 +3,7 @@ import Observation
 import AtticModels
 import AtticScraping
 import ArchiveKit
+import DownloadKit
 
 /// LaunchBox's games database, kept offline. Downloaded from LaunchBox
 /// (109 MB) the first time a scrape needs it and indexed for the
@@ -105,11 +106,13 @@ final class LaunchBoxStore {
         do {
             state = .downloading
             AppLog.post(.info, "Downloading LaunchBox's games database…")
-            let (download, response) = try await URLSession.shared.download(from: LaunchBoxIndex.downloadURL)
-            guard (response as? HTTPURLResponse)?.statusCode ?? 200 == 200 else { throw URLError(.badServerResponse) }
-            try FileManager.default.createDirectory(at: work, withIntermediateDirectories: true)
             let zip = work.appending(path: "Metadata.zip")
-            try FileManager.default.moveItem(at: download, to: zip)
+            do {
+                // Some 100 MB: a dropped connection carries on where it stopped.
+                try await Download.file(LaunchBoxIndex.downloadURL, to: zip, options: DownloadOptions(retry: .patient))
+            } catch is DownloadError {
+                throw URLError(.badServerResponse)
+            }
 
             state = .indexing
             let destination = Self.indexURL

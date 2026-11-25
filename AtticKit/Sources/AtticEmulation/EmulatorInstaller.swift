@@ -1,5 +1,6 @@
 import Foundation
 import ArchiveKit
+import DownloadKit
 import ProcessKit
 
 /// Fetches a remote file to a temporary local URL. Abstracted so installer
@@ -9,34 +10,50 @@ public protocol FileDownloading: Sendable {
     /// What identifies the file now at `url` (its ETag or date), to tell a
     /// new build behind a fixed link; nil when unknown.
     func stamp(of url: URL) async -> String?
+    /// The GitHub release a "releases/latest" API URL answers with.
+    func gitHubRelease(at url: URL) async throws -> GitHubRelease
 }
 
 public extension FileDownloading {
     func stamp(of url: URL) async -> String? { nil }
+
+    /// Read from what `download(from:)` hands back, for a fixture.
+    func gitHubRelease(at url: URL) async throws -> GitHubRelease {
+        let feed = try await download(from: url)
+        defer { try? FileManager.default.removeItem(at: feed) }
+        return try GitHubRelease.decode(Data(contentsOf: feed))
+    }
 }
 
-public struct URLSessionDownloader: FileDownloading {
+/// Downloads with DownloadKit: a dropped connection is tried again from
+/// where it stopped, and the file only appears once it's whole.
+public struct NetworkDownloader: FileDownloading {
     public init() {}
 
     public func download(from url: URL) async throws -> URL {
-        let (temporaryURL, response) = try await URLSession.shared.download(from: url)
-        if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-            throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: http.statusCode)
+        // Somewhere that survives until the caller extracts it, under the
+        // link's name.
+        let kept = FileManager.default.temporaryDirectory.appending(path: "attic-\(UUID().uuidString)-\(url.lastPathComponent)")
+        do {
+            return try await Download.file(url, to: kept)
+        } catch DownloadError.http(let status, _) {
+            throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: status)
         }
-        // URLSession deletes its temp file once this call returns — move it
-        // somewhere that survives until the caller extracts it.
-        let keptURL = FileManager.default.temporaryDirectory.appending(path: "attic-\(UUID().uuidString)-\(url.lastPathComponent)")
-        try FileManager.default.moveItem(at: temporaryURL, to: keptURL)
-        return keptURL
     }
 
     public func stamp(of url: URL) async -> String? {
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-        guard let (_, response) = try? await URLSession.shared.data(for: request),
-              let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { return nil }
-        let parts = [http.value(forHTTPHeaderField: "ETag"), http.value(forHTTPHeaderField: "Last-Modified")].compactMap { $0 }
-        return parts.isEmpty ? nil : parts.joined(separator: " ")
+        await Download.stamp(of: url)
+    }
+
+    public func gitHubRelease(at url: URL) async throws -> GitHubRelease {
+        do {
+            return try await GitHubRelease.latest(at: url)
+        } catch DownloadError.http(let status, _) {
+            throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: status)
+        } catch DownloadError.rateLimited {
+            // GitHub's rate limit, which it answers with a 403.
+            throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: 403)
+        }
     }
 }
 
@@ -107,7 +124,7 @@ public struct EmulatorInstaller: Sendable {
     public let paths: Paths
     private let downloader: FileDownloading
 
-    public init(paths: Paths, downloader: FileDownloading = URLSessionDownloader()) {
+    public init(paths: Paths, downloader: FileDownloading = NetworkDownloader()) {
         self.paths = paths
         self.downloader = downloader
     }
@@ -249,9 +266,13 @@ public struct EmulatorInstaller: Sendable {
             let version = dmgURL.deletingPathExtension().lastPathComponent.replacingOccurrences(of: "dolphin-", with: "")
             return StandaloneRelease(identity: dmgURL.absoluteString, version: version, downloadURL: dmgURL, fileName: dmgURL.lastPathComponent)
         case .githubRelease(let assetSuffix):
-            let feed = try await downloader.download(from: emulator.downloadURL)
-            defer { try? FileManager.default.removeItem(at: feed) }
-            guard let release = Self.release(inGitHubRelease: try Data(contentsOf: feed), suffix: assetSuffix) else {
+            let feed: GitHubRelease
+            do {
+                feed = try await downloader.gitHubRelease(at: emulator.downloadURL)
+            } catch is DownloadError, is DecodingError {
+                throw InstallError.releaseNotFound(emulator.name)
+            }
+            guard let release = Self.release(in: feed, suffix: assetSuffix) else {
                 throw InstallError.releaseNotFound(emulator.name)
             }
             return release
@@ -361,39 +382,20 @@ public struct EmulatorInstaller: Sendable {
         return staging
     }
 
-    /// The download in a GitHub "latest release" API response whose name
-    /// ends with `suffix`, skipping debug-symbol builds.
-    static func assetURL(inGitHubRelease data: Data, suffix: String) -> URL? {
-        struct Release: Decodable {
-            struct Asset: Decodable {
-                let name: String
-                let browser_download_url: URL
-            }
-            let assets: [Asset]
-        }
-        return (try? JSONDecoder().decode(Release.self, from: data))?.assets
-            .first { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") }?
-            .browser_download_url
+    /// The asset of a GitHub release whose name ends with `suffix`,
+    /// skipping debug-symbol builds, as a release (identified by the
+    /// asset's ID and date).
+    static func release(in release: GitHubRelease, suffix: String) -> StandaloneRelease? {
+        guard let asset = release.assets.first(where: { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") })
+        else { return nil }
+        return StandaloneRelease(identity: identity(of: asset), version: release.tag, downloadURL: asset.url, fileName: asset.name)
     }
 
-    /// The asset of a GitHub "latest release" API response whose name ends
-    /// with `suffix`, as a release (identified by the asset's ID and date).
-    static func release(inGitHubRelease data: Data, suffix: String) -> StandaloneRelease? {
-        struct Release: Decodable {
-            struct Asset: Decodable {
-                let id: Int
-                let name: String
-                let browser_download_url: URL
-                let updated_at: String?
-            }
-            let tag_name: String?
-            let assets: [Asset]
-        }
-        guard let release = try? JSONDecoder().decode(Release.self, from: data),
-              let asset = release.assets.first(where: { matches($0.name, suffix: suffix) && !$0.name.contains("-dbg-") && !$0.name.contains("debug") })
-        else { return nil }
-        return StandaloneRelease(identity: "\(asset.id) \(asset.updated_at ?? "")", version: release.tag_name,
-                                 downloadURL: asset.browser_download_url, fileName: asset.name)
+    /// "<asset id> <updated_at>", the date as GitHub writes it
+    /// ("2026-10-02T00:00:00Z"): the same text Attic recorded at install
+    /// before DownloadKit, so no emulator looks out of date.
+    static func identity(of asset: GitHubRelease.Asset) -> String {
+        "\(asset.id) \(asset.updated.map { $0.formatted(.iso8601) } ?? "")"
     }
 
     /// `suffix` ends the name; a `*` in it matches anything (a version).

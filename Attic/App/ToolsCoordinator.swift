@@ -4,6 +4,7 @@ import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
 import ProcessKit
+import DownloadKit
 
 /// The Tools menu's work: the Tidy Up and Compress Games reports, a
 /// single game's compression or conversion back, and their progress,
@@ -378,25 +379,17 @@ final class ToolsCoordinator {
                 // Built in: read from Keisho itself.
                 break
             case .fbneo:
-                let (data, response) = try await URLSession.shared.data(from: ArcadeNameIndex.datURL)
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                let data = try await Download.data(from: ArcadeNameIndex.datURL)
                 try data.write(to: datsFolder.appending(path: "FinalBurn Neo (Arcade only).dat"), options: .atomic)
             case .mame:
                 // The newest release's -listxml, as MAME publishes it.
-                let latest = URL(string: "https://api.github.com/repos/mamedev/mame/releases/latest")!
-                let (json, _) = try await URLSession.shared.data(from: latest)
-                struct Release: Decodable {
-                    struct Asset: Decodable { let name: String; let browser_download_url: URL }
-                    let assets: [Asset]
-                }
-                guard let asset = try JSONDecoder().decode(Release.self, from: json).assets.first(where: { ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: $0.name)) }) else {
+                let release = try await GitHubRelease.latest(owner: "mamedev", repo: "mame")
+                guard let asset = release.assets.first(where: { ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: $0.name)) }) else {
                     throw URLError(.resourceUnavailable)
                 }
-                let (file, response) = try await URLSession.shared.download(from: asset.browser_download_url)
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                // Checked against the SHA-256 GitHub publishes for it.
                 let target = datsFolder.appending(path: asset.name)
-                try? FileManager.default.removeItem(at: target)
-                try FileManager.default.moveItem(at: file, to: target)
+                try await Download.file(asset.url, to: target, sha256: asset.sha256)
                 // An older version's list goes, so it isn't read instead.
                 let older = ((try? FileManager.default.contentsOfDirectory(at: datsFolder, includingPropertiesForKeys: nil)) ?? [])
                     .filter { $0.lastPathComponent != asset.name && ArcadeVerifier.isArcadeZip($0) }

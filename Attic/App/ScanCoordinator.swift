@@ -3,6 +3,7 @@ import Observation
 import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
+import DownloadKit
 import AtticEmulation
 
 /// Bridges `LibraryScanner`'s output into `LibraryStore`. Lives in the app
@@ -154,11 +155,7 @@ final class ScanCoordinator {
         }
         guard systems.contains(where: isArcade) else { return systems }
         func fetch(_ url: URL) -> @Sendable () async throws -> Data {
-            {
-                let (data, response) = try await URLSession.shared.data(from: url)
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
-                return data
-            }
+            { try await Download.data(from: url) }
         }
         // FinalBurn Neo's first (it has years and makers), then MAME's
         // names for the boards it doesn't run.
