@@ -1,6 +1,6 @@
 import Foundation
 
-/// Launches RetroArch.app's binary directly via `Process`
+/// Launches RetroArch.app's binary directly through ProcessKit
 /// (`Contents/MacOS/RetroArch -L <core.dylib> <rom>`) — never `open -a`,
 /// which has a confirmed macOS bug silently dropping passed arguments
 /// (libretro/RetroArch#2864) and, since it detaches, wouldn't give a usable
@@ -23,11 +23,9 @@ public struct RetroArchLauncher: Sendable {
         coreDylibURL: URL, romURL: URL, configURL: URL? = nil, appendConfigURL: URL? = nil, extraArguments: [String] = [],
         onOutput: (@Sendable (String) -> Void)? = nil
     ) throws -> RunningGameSession {
-        let process = Process()
-        process.executableURL = retroArchBinaryURL
-        process.arguments = (onOutput == nil ? [] : ["--verbose"])
+        let arguments = (onOutput == nil ? [] : ["--verbose"])
             + Self.buildArguments(coreDylibURL: coreDylibURL, romURL: romURL, configURL: configURL, appendConfigURL: appendConfigURL, extraArguments: extraArguments)
-        return try RunningGameSession(starting: process, onOutput: onOutput, readsStandardOutput: false)
+        return try RunningGameSession(retroArchBinaryURL, arguments, onOutput: onOutput, readsStandardOutput: false)
     }
 
     /// Pure argv construction, split out so it's testable without spawning

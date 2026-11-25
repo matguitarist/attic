@@ -6,6 +6,7 @@ import AtticModels
 import AtticPersistence
 import AtticEmulation
 import AtticLibraryScanning
+import ProcessKit
 
 /// Resolves a game's launch target (per-game override, else per-system
 /// default, via `LaunchTargetResolution`) and runs it through whichever
@@ -209,15 +210,15 @@ final class LaunchCoordinator {
                 }
             }
         case .script(let url):
-            let process = PortLaunch.scriptProcess(url)
+            let script: Shell.RunningCommand
             do {
-                try process.run()
+                script = try PortLaunch.startScript(url)
             } catch {
                 state = .failed(String(localized: "Couldn't launch: \(error.localizedDescription)"))
                 AppLog.post(.error, "Couldn't run “\(url.lastPathComponent)”: \(error.localizedDescription)")
                 return
             }
-            Task { await timePort(game) { process.isRunning } }
+            Task { await timePort(game) { script.isRunning } }
         }
     }
 

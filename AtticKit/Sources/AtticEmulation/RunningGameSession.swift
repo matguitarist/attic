@@ -1,59 +1,63 @@
 import Foundation
+import ProcessKit
 
-/// Thin wrapper around a launched `Process`, exposing an async termination
-/// signal. Launchers spawn the binary directly (never `open -a`) so this
-/// gets a real PID and a reliable `terminationHandler` — `open` detaches
-/// and silently drops arguments on macOS (see RetroArchLauncher).
-///
-/// `Process` isn't `Sendable`, but all access here is funneled through
-/// `terminationHandler`/`isRunning`/`terminate()`, which are documented
-/// thread-safe on `Process`, so this is a safe `@unchecked Sendable`.
-public final class RunningGameSession: @unchecked Sendable {
-    private let process: Process
+/// A launched emulator, through ProcessKit's `Shell.start`: a real PID,
+/// its end, and a stop. Launchers spawn the binary directly (never
+/// `open -a`), since `open` detaches and silently drops arguments on
+/// macOS (see RetroArchLauncher).
+public final class RunningGameSession: Sendable {
+    private let command: Shell.RunningCommand
 
     /// The program and its arguments, for Attic's log.
-    public var commandLine: [String] {
-        [process.executableURL?.path ?? ""] + (process.arguments ?? [])
-    }
+    public let commandLine: [String]
 
-    /// Starts `process`. With `onOutput`, what it prints comes back line by
-    /// line, on a background thread: standard error, and standard output
-    /// unless `readsStandardOutput` is false (RetroArch prints its messages
-    /// to both). Without, it goes wherever Attic's own output goes.
-    init(starting process: Process, onOutput: (@Sendable (String) -> Void)?, readsStandardOutput: Bool = true) throws {
-        self.process = process
+    /// Starts `executableURL`. With `onOutput`, what it prints comes back
+    /// line by line, on a background thread: standard error, and standard
+    /// output unless `readsStandardOutput` is false (RetroArch prints its
+    /// messages to both). Without, its output is dropped.
+    init(
+        _ executableURL: URL, _ arguments: [String], directory: URL? = nil, environment: [String: String] = [:],
+        onOutput: (@Sendable (String) -> Void)?, readsStandardOutput: Bool = true
+    ) throws {
+        commandLine = [executableURL.path] + arguments
+        var options = Shell.Options(directory: directory, environment: environment, stdout: .discard, stderr: .discard)
+        var tool = executableURL.path
+        var toolArguments = arguments
         if let onOutput {
-            let error = Pipe()
-            process.standardError = error
-            LineSplitter(onLine: onOutput).attach(to: error)
-            if readsStandardOutput {
-                // Its own splitter, so the two never mix mid-line.
-                let output = Pipe()
-                process.standardOutput = output
-                LineSplitter(onLine: onOutput).attach(to: output)
-            } else {
-                process.standardOutput = FileHandle.nullDevice
+            options.stdout = .capture
+            options.stderr = .merged
+            // Only \n ends a line; the line's indent stays for `EmulatorOutput`.
+            options.lineBreaks = .newline
+            options.onLine = { line in
+                if let line = Self.trimmed(line) { onOutput(line) }
+            }
+            if !readsStandardOutput {
+                // Standard error alone: zsh swaps it onto the pipe and drops
+                // standard output, then becomes the emulator (same PID).
+                toolArguments = ["-c", #"exec "$0" "$@" 2>&1 >/dev/null"#, tool] + arguments
+                tool = "/bin/zsh"
             }
         }
-        try process.run()
+        command = try Shell.start(tool, toolArguments, options: options)
     }
 
-    public var isRunning: Bool { process.isRunning }
-    public var processIdentifier: pid_t { process.processIdentifier }
+    /// The line without its trailing spaces; nil when nothing is left.
+    static func trimmed(_ line: String) -> String? {
+        var line = line
+        while line.last?.isWhitespace == true { line.removeLast() }
+        return line.isEmpty ? nil : line
+    }
 
+    public var isRunning: Bool { command.isRunning }
+    public var processIdentifier: pid_t { command.pid }
+
+    /// Its exit status once it has ended (128 + the signal when one ended it).
     public func waitUntilExit() async -> Int32 {
-        await withCheckedContinuation { continuation in
-            if !process.isRunning {
-                continuation.resume(returning: process.terminationStatus)
-                return
-            }
-            process.terminationHandler = { proc in
-                continuation.resume(returning: proc.terminationStatus)
-            }
-        }
+        await command.wait().status
     }
 
+    /// Stops it and whatever it started.
     public func terminate() {
-        process.terminate()
+        command.stop()
     }
 }

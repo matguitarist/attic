@@ -35,26 +35,28 @@ public struct NetworkDownloader: FileDownloading {
         // link's name.
         let kept = FileManager.default.temporaryDirectory.appending(path: "attic-\(UUID().uuidString)-\(url.lastPathComponent)")
         do {
-            return try await Download.file(url, to: kept)
+            return try await Download.file(url, to: kept, options: Self.options)
         } catch DownloadError.http(let status, _) {
             throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: status)
         }
     }
 
     public func stamp(of url: URL) async -> String? {
-        await Download.stamp(of: url)
+        await Download.stamp(of: url, options: Self.options)
     }
 
     public func gitHubRelease(at url: URL) async throws -> GitHubRelease {
         do {
-            return try await GitHubRelease.latest(at: url)
-        } catch DownloadError.http(let status, _) {
+            return try await GitHubRelease.latest(at: url, options: Self.options)
+        } catch let error as DownloadError {
+            // An error status, or GitHub's rate limit (a 403 or 429).
+            guard let status = error.status else { throw error }
             throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: status)
-        } catch DownloadError.rateLimited {
-            // GitHub's rate limit, which it answers with a 403.
-            throw EmulatorInstaller.InstallError.downloadFailed(url: url, statusCode: 403)
         }
     }
+
+    /// The system's own User-Agent, which Attic always sent.
+    static let options = DownloadOptions(usesSystemUserAgent: true)
 }
 
 /// An emulator's current release upstream: what identifies the build (to
@@ -395,7 +397,7 @@ public struct EmulatorInstaller: Sendable {
     /// ("2026-10-02T00:00:00Z"): the same text Attic recorded at install
     /// before DownloadKit, so no emulator looks out of date.
     static func identity(of asset: GitHubRelease.Asset) -> String {
-        "\(asset.id) \(asset.updated.map { $0.formatted(.iso8601) } ?? "")"
+        "\(asset.id) \(asset.updatedText ?? "")"
     }
 
     /// `suffix` ends the name; a `*` in it matches anything (a version).

@@ -76,9 +76,9 @@ struct PortLaunchTests {
     }
 
     @Test func scriptsRunFromTheirFolder() {
-        let process = PortLaunch.scriptProcess(URL(filePath: "/ports/OpenGOAL/run.sh"))
-        #expect(process.arguments == ["/ports/OpenGOAL/run.sh"])
-        #expect(process.currentDirectoryURL?.path == "/ports/OpenGOAL")
+        let (arguments, options) = PortLaunch.scriptCommand(URL(filePath: "/ports/OpenGOAL/run.sh"))
+        #expect(arguments == ["/ports/OpenGOAL/run.sh"])
+        #expect(options.directory?.path == "/ports/OpenGOAL")
     }
 
     @Test func portsFolderIsASystem() {

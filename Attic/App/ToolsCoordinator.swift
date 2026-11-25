@@ -379,17 +379,17 @@ final class ToolsCoordinator {
                 // Built in: read from Keisho itself.
                 break
             case .fbneo:
-                let data = try await Download.data(from: ArcadeNameIndex.datURL)
+                let data = try await Download.data(from: ArcadeNameIndex.datURL, options: DownloadOptions(usesSystemUserAgent: true))
                 try data.write(to: datsFolder.appending(path: "FinalBurn Neo (Arcade only).dat"), options: .atomic)
             case .mame:
                 // The newest release's -listxml, as MAME publishes it.
-                let release = try await GitHubRelease.latest(owner: "mamedev", repo: "mame")
+                let release = try await GitHubRelease.latest(owner: "mamedev", repo: "mame", options: DownloadOptions(usesSystemUserAgent: true))
                 guard let asset = release.assets.first(where: { ArcadeVerifier.isArcadeZip(URL(fileURLWithPath: $0.name)) }) else {
                     throw URLError(.resourceUnavailable)
                 }
                 // Checked against the SHA-256 GitHub publishes for it.
                 let target = datsFolder.appending(path: asset.name)
-                try await Download.file(asset.url, to: target, sha256: asset.sha256)
+                try await Download.file(asset.url, to: target, sha256: asset.sha256, options: DownloadOptions(usesSystemUserAgent: true))
                 // An older version's list goes, so it isn't read instead.
                 let older = ((try? FileManager.default.contentsOfDirectory(at: datsFolder, includingPropertiesForKeys: nil)) ?? [])
                     .filter { $0.lastPathComponent != asset.name && ArcadeVerifier.isArcadeZip($0) }

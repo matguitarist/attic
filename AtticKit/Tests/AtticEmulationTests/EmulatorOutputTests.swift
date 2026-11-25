@@ -67,12 +67,42 @@ struct EmulatorOutputTests {
         #expect(diagnosis.problem == nil)
     }
 
-    @Test func splitsChunksIntoLines() {
+    @Test func linesKeepTheirIndentAndLoseTrailingSpaces() {
+        #expect(RunningGameSession.trimmed("[WARN] two \r") == "[WARN] two")
+        #expect(RunningGameSession.trimmed("\tthree") == "\tthree")
+        #expect(RunningGameSession.trimmed("  ") == nil)
+    }
+
+    /// A shell script standing in for an emulator.
+    private func fakeEmulator(_ body: String) throws -> URL {
+        let script = FileManager.default.temporaryDirectory.appending(path: "attic-fake-emulator-\(UUID().uuidString).sh")
+        try ("#!/bin/sh\n" + body + "\n").write(to: script, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
+        return script
+    }
+
+    @Test func emulatorOutputComesBackLineByLine() async throws {
         let lines = Mutex<[String]>([])
-        let splitter = LineSplitter { line in lines.withLock { $0.append(line) } }
-        splitter.feed(Data("[INFO] one\n[WA".utf8))
-        splitter.feed(Data("RN] two\r\n\n\tthree".utf8))
-        splitter.finish()
-        #expect(lines.withLock { $0 } == ["[INFO] one", "[WARN] two", "\tthree"])
+        let script = try fakeEmulator(#"printf '[INFO] one\n\n\tthree \r\n'; printf '[WARN] two\n' >&2"#)
+        defer { try? FileManager.default.removeItem(at: script) }
+        let session = try CustomEmulatorLauncher().launch(
+            executableURL: script, argumentTemplate: "{romPath}", romURL: URL(filePath: "/dev/null"),
+            onOutput: { line in lines.withLock { $0.append(line) } }
+        )
+        #expect(await session.waitUntilExit() == 0)
+        #expect(Set(lines.withLock { $0 }) == ["[INFO] one", "\tthree", "[WARN] two"])
+    }
+
+    @Test func retroArchIsReadFromStandardErrorAlone() async throws {
+        let lines = Mutex<[String]>([])
+        let script = try fakeEmulator(#"echo "[INFO] out $*"; echo "[INFO] err" >&2"#)
+        defer { try? FileManager.default.removeItem(at: script) }
+        let session = try RetroArchLauncher(retroArchBinaryURL: script).launch(
+            coreDylibURL: URL(filePath: "/dev/null"), romURL: URL(filePath: "/dev/null"),
+            onOutput: { line in lines.withLock { $0.append(line) } }
+        )
+        #expect(session.commandLine.first == script.path)
+        #expect(await session.waitUntilExit() == 0)
+        #expect(lines.withLock { $0 } == ["[INFO] err"])
     }
 }

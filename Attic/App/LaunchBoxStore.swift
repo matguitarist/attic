@@ -107,12 +107,8 @@ final class LaunchBoxStore {
             state = .downloading
             AppLog.post(.info, "Downloading LaunchBox's games database…")
             let zip = work.appending(path: "Metadata.zip")
-            do {
-                // Some 100 MB: a dropped connection carries on where it stopped.
-                try await Download.file(LaunchBoxIndex.downloadURL, to: zip, options: DownloadOptions(retry: .patient))
-            } catch is DownloadError {
-                throw URLError(.badServerResponse)
-            }
+            // Some 100 MB: a dropped connection carries on where it stopped.
+            try await Download.file(LaunchBoxIndex.downloadURL, to: zip, options: DownloadOptions(retry: .patient, usesSystemUserAgent: true))
 
             state = .indexing
             let destination = Self.indexURL

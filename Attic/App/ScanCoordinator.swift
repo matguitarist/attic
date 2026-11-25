@@ -155,7 +155,7 @@ final class ScanCoordinator {
         }
         guard systems.contains(where: isArcade) else { return systems }
         func fetch(_ url: URL) -> @Sendable () async throws -> Data {
-            { try await Download.data(from: url) }
+            { try await Download.data(from: url, options: DownloadOptions(usesSystemUserAgent: true)) }
         }
         // FinalBurn Neo's first (it has years and makers), then MAME's
         // names for the boards it doesn't run.
