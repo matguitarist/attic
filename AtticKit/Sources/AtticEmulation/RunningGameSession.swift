@@ -26,6 +26,8 @@ public final class RunningGameSession: Sendable {
         if let onOutput {
             options.stdout = .capture
             options.stderr = .merged
+            // A game runs for hours: only the end of what it printed stays.
+            options.keepsLast = Self.keptOutput
             // Only \n ends a line; the line's indent stays for `EmulatorOutput`.
             options.lineBreaks = .newline
             options.onLine = { line in
@@ -40,6 +42,13 @@ public final class RunningGameSession: Sendable {
         }
         command = try Shell.start(tool, toolArguments, options: options)
     }
+
+    /// The most output kept in memory while a game runs; every line still
+    /// reaches `onOutput`.
+    static let keptOutput = 64 << 10
+
+    /// What it printed, the last `keptOutput` bytes, once it has ended.
+    var output: Shell.Output? { command.output }
 
     /// The line without its trailing spaces; nil when nothing is left.
     static func trimmed(_ line: String) -> String? {

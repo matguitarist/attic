@@ -9953,6 +9953,26 @@
         }
       }
     },
+    "LaunchBox's server couldn't send its games database (HTTP %lld). Try again later.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur de LaunchBox n’a pas pu envoyer sa base de jeux (HTTP %lld). Réessayez plus tard."
+          }
+        }
+      }
+    },
+    "LaunchBox's server couldn't send its games database. Try again later.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur de LaunchBox n’a pas pu envoyer sa base de jeux. Réessayez plus tard."
+          }
+        }
+      }
+    },
     "Layout": {
       "localizations": {
         "fr": {

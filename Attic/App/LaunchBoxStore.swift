@@ -107,8 +107,13 @@ final class LaunchBoxStore {
             state = .downloading
             AppLog.post(.info, "Downloading LaunchBox's games database…")
             let zip = work.appending(path: "Metadata.zip")
-            // Some 100 MB: a dropped connection carries on where it stopped.
-            try await Download.file(LaunchBoxIndex.downloadURL, to: zip, options: DownloadOptions(retry: .patient, usesSystemUserAgent: true))
+            do {
+                // Some 100 MB: a dropped connection carries on where it stopped.
+                try await Download.file(LaunchBoxIndex.downloadURL, to: zip, options: DownloadOptions(retry: .patient, usesSystemUserAgent: true))
+            } catch let error as DownloadError {
+                // DownloadKit's own words are English only.
+                throw DownloadFailed(status: error.status)
+            }
 
             state = .indexing
             let destination = Self.indexURL
@@ -155,4 +160,18 @@ final class LaunchBoxStore {
     private static func size(of url: URL) -> Int64 {
         Int64((try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)
     }
+
+    /// LaunchBox's server refused the download, in the person's language.
+    private struct DownloadFailed: LocalizedError {
+        let status: Int?
+
+        var errorDescription: String? {
+            if let status {
+                String(localized: "LaunchBox's server couldn't send its games database (HTTP \(status)). Try again later.")
+            } else {
+                String(localized: "LaunchBox's server couldn't send its games database. Try again later.")
+            }
+        }
+    }
+
 }

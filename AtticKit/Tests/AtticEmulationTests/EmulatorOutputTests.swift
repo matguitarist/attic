@@ -93,6 +93,22 @@ struct EmulatorOutputTests {
         #expect(Set(lines.withLock { $0 }) == ["[INFO] one", "\tthree", "[WARN] two"])
     }
 
+    @Test func aChattyEmulatorKeepsOnlyTheEndOfItsOutput() async throws {
+        let count = Mutex(0)
+        // 20,000 lines of 60 bytes: some 1.2 MB, far past what's kept.
+        let script = try fakeEmulator(#"i=0; while [ $i -lt 20000 ]; do echo "[INFO] frame $i padding padding padding padding padding"; i=$((i+1)); done"#)
+        defer { try? FileManager.default.removeItem(at: script) }
+        let session = try CustomEmulatorLauncher().launch(
+            executableURL: script, argumentTemplate: "{romPath}", romURL: URL(filePath: "/dev/null"),
+            onOutput: { _ in count.withLock { $0 += 1 } }
+        )
+        #expect(await session.waitUntilExit() == 0)
+        #expect(count.withLock { $0 } == 20000)
+        let kept = try #require(session.output)
+        #expect(kept.stdout.count <= RunningGameSession.keptOutput)
+        #expect(kept.text.hasSuffix("[INFO] frame 19999 padding padding padding padding padding\n"))
+    }
+
     @Test func retroArchIsReadFromStandardErrorAlone() async throws {
         let lines = Mutex<[String]>([])
         let script = try fakeEmulator(#"echo "[INFO] out $*"; echo "[INFO] err" >&2"#)
