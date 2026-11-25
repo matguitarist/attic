@@ -3944,6 +3944,16 @@
         }
       }
     },
+    "All Releases": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toutes les versions"
+          }
+        }
+      }
+    },
     "All Systems": {
       "localizations": {
         "fr": {
@@ -5831,6 +5841,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Consoles"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
           }
         }
       }
@@ -17313,6 +17333,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nouveautés d’%@"
+          }
+        }
+      }
+    },
+    "What’s New in %@ %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveautés d’%1$@ %2$@"
           }
         }
       }

@@ -43,6 +43,10 @@ targets:
       - path: Attic/Resources/AppIcon.icon
         type: file
         buildPhase: resources
+      # What's New: release-notes/<version>.md, bundled as Resources/release-notes.
+      - path: release-notes
+        type: folder
+        buildPhase: resources
     configFiles:
       Debug: Config/Signing.xcconfig
       Release: Config/Signing.xcconfig

@@ -89,6 +89,7 @@ struct AtticApp: App {
                 // points wide), or collapsed the sidebar while still
                 // drawing it, pushing everything off both edges.
                 .frame(minWidth: 1120, minHeight: 560)
+                .whatsNew(app: "Attic", repository: "matguitarist/attic")
                 .task { await scanCoordinator.refreshGameCounts() }
                 // The weekly save backup, a minute in so launch stays quick.
                 .task {
