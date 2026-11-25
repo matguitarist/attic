@@ -3,6 +3,21 @@
     <channel>
         <title>Attic</title>
         <item>
+            <title>2.15.0</title>
+            <pubDate>Wed, 25 Nov 2026 17:03:18 -0500</pubDate>
+            <sparkle:version>60</sparkle:version>
+            <sparkle:shortVersionString>2.15.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[## The same Help menu as every app
+
+- **What's New in Attic** opens the latest release notes.
+- **Report a Problem…** opens a new GitHub issue with the app version, build and macOS version already filled in.
+- **Check for Updates…** is always in the Attic menu, greyed out when updates aren't available.
+- **Show Log** (⌥⌘L) moved from the Window menu to the Help menu.
+]]></description>
+            <enclosure url="https://github.com/matguitarist/attic/releases/download/v2.15.0/Attic-2.15.0.zip" length="25238442" type="application/octet-stream" sparkle:edSignature="gwqRcqUyRO8i8mATuQR+1YbIUOR/fG5/03KmqLD2EbpPdlxk3Q20iwj41lOk/uJTCOQghDIX9y9Z0n4Xx0FfBw=="/>
+        </item>
+        <item>
             <title>2.14.1</title>
             <pubDate>Wed, 25 Nov 2026 10:37:40 -0500</pubDate>
             <sparkle:version>59</sparkle:version>
