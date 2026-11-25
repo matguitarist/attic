@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 import AtticModels
 import AtticLibraryScanning
 
@@ -226,16 +227,10 @@ extension ArcadeVerifier {
         // Beside the old one, so the move into place stays on its disk.
         let written = rebuild.zip.deletingLastPathComponent().appending(path: ".\(rebuild.name).attic-rebuild.zip")
         try? manager.removeItem(at: written)
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
-        process.currentDirectoryURL = staging
-        process.arguments = ["-q", "-X", "-D", "-9", written.path] + rebuild.parts.map(\.name)
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        try process.run()
-        process.waitUntilExit()
+        let zipped = try Shell.runSync("/usr/bin/zip", ["-q", "-X", "-D", "-9", written.path] + rebuild.parts.map(\.name),
+                                       options: Shell.Options(directory: staging, stdout: .discard, stderr: .discard))
         let crcs = Swift.Set((ZipContents.entries(of: written) ?? []).map(\.crc))
-        guard process.terminationStatus == 0, rebuild.parts.allSatisfy({ crcs.contains($0.crc) }) else {
+        guard zipped.succeeded, rebuild.parts.allSatisfy({ crcs.contains($0.crc) }) else {
             try? manager.removeItem(at: written)
             throw RebuildError.zipFailed
         }
@@ -246,15 +241,7 @@ extension ArcadeVerifier {
     }
 
     private static func run(_ tool: String, _ arguments: [String]) -> Data? {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: tool)
-        process.arguments = arguments
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return nil }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return process.terminationStatus == 0 ? data : nil
+        guard let output = try? Shell.runSync(tool, arguments, options: Shell.Options(stderr: .discard)), output.succeeded else { return nil }
+        return output.stdout
     }
 }

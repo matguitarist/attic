@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 
 /// The EmuMovies file server over FTP with TLS, through macOS's `curl`
 /// (URLSession no longer speaks FTP). The login goes to curl on its
@@ -76,66 +77,26 @@ public struct EmuMoviesServer: Sendable {
     }
 
     private func run(_ arguments: [String], output: URL?) async throws -> Data {
-        let process = Process()
-        process.executableURL = curl
         // --globoff: names hold brackets, which curl would read as ranges.
-        process.arguments = ["--silent", "--show-error", "--fail", "--globoff", "--ssl-reqd",
-                             "--connect-timeout", "30", "--speed-limit", "1024", "--speed-time", "60",
-                             "--config", "-"]
+        let arguments = ["--silent", "--show-error", "--fail", "--globoff", "--ssl-reqd",
+                         "--connect-timeout", "30", "--speed-limit", "1024", "--speed-time", "60",
+                         "--config", "-"]
             + (output.map { ["--output", $0.path] } ?? []) + arguments
-        let input = Pipe()
-        let stdout = Pipe()
-        let stderr = Pipe()
-        process.standardInput = input
-        process.standardOutput = stdout
-        process.standardError = stderr
-
-        return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
-                // Read both pipes as they fill, or a big listing would
-                // block curl before it exits.
-                let collected = Collected()
-                stdout.fileHandleForReading.readabilityHandler = { handle in collected.append(handle.availableData, error: false) }
-                stderr.fileHandleForReading.readabilityHandler = { handle in collected.append(handle.availableData, error: true) }
-                process.terminationHandler = { process in
-                    stdout.fileHandleForReading.readabilityHandler = nil
-                    stderr.fileHandleForReading.readabilityHandler = nil
-                    collected.append(stdout.fileHandleForReading.readDataToEndOfFile(), error: false)
-                    collected.append(stderr.fileHandleForReading.readDataToEndOfFile(), error: true)
-                    let (data, message) = collected.result()
-                    switch process.terminationStatus {
-                    case 0: continuation.resume(returning: data)
-                    case _ where process.terminationReason == .uncaughtSignal: continuation.resume(throwing: Failure.cancelled)
-                    // 67: login denied. 9: the server refused the folder,
-                    // which it also does to a refused login.
-                    case 67: continuation.resume(throwing: Failure.login)
-                    default: continuation.resume(throwing: Failure.transfer(message.trimmingCharacters(in: .whitespacesAndNewlines)))
-                    }
-                }
-                do {
-                    try process.run()
-                    input.fileHandleForWriting.write(Data(config().utf8))
-                    try? input.fileHandleForWriting.close()
-                } catch {
-                    continuation.resume(throwing: Failure.transfer(error.localizedDescription))
-                }
-            }
-        } onCancel: {
-            if process.isRunning { process.terminate() }
+        let result: Shell.Output
+        do {
+            result = try await Shell.run(curl.path, arguments, options: Shell.Options(input: .data(Data(config().utf8))))
+        } catch is CancellationError {
+            throw Failure.cancelled
+        } catch {
+            throw Failure.transfer(error.localizedDescription)
         }
-    }
-}
-
-private final class Collected: @unchecked Sendable {
-    private let lock = NSLock()
-    private var data = Data()
-    private var error = Data()
-
-    func append(_ chunk: Data, error isError: Bool) {
-        lock.withLock { if isError { error.append(chunk) } else { data.append(chunk) } }
-    }
-
-    func result() -> (Data, String) {
-        lock.withLock { (data, String(decoding: error, as: UTF8.self)) }
+        switch result.status {
+        case 0: return result.stdout
+        case _ where result.signal != nil: throw Failure.cancelled
+        // 67: login denied. 9: the server refused the folder, which it
+        // also does to a refused login.
+        case 67: throw Failure.login
+        default: throw Failure.transfer(result.errorText.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
     }
 }

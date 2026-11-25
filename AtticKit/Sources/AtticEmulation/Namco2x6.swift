@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 
 /// Namco System 246, 256 and Super 256 games, as MAME romsets: `soulclb2.zip`
 /// holds the security dongle (`sc23vera.ic002` and its spare area
@@ -153,15 +154,7 @@ public enum Namco2x6 {
     }
 
     static func run(_ executable: String, _ arguments: [String]) -> Data? {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: executable)
-        process.arguments = arguments
-        let output = Pipe()
-        process.standardOutput = output
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return nil }
-        let data = output.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return process.terminationStatus == 0 ? data : nil
+        guard let output = try? Shell.runSync(executable, arguments, options: Shell.Options(stderr: .discard)), output.succeeded else { return nil }
+        return output.stdout
     }
 }

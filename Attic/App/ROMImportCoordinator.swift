@@ -4,6 +4,7 @@ import AppKit
 import AtticModels
 import AtticLibraryScanning
 import AtticEmulation
+import ProcessKit
 
 /// Files games dropped on the library window into the right ROMs folder,
 /// with the media and gamelist that came with them.
@@ -201,14 +202,9 @@ final class ROMImportCoordinator {
                 arguments = [item.path]
             }
             progress = .installingInVita3K(name: item.lastPathComponent)
-            let installed = await Task.detached(priority: .userInitiated) { () -> Bool in
-                let process = Process()
-                process.executableURL = executable
-                process.arguments = arguments
-                guard (try? process.run()) != nil else { return false }
-                process.waitUntilExit()
-                return process.terminationReason == .exit && process.terminationStatus == 0
-            }.value
+            let output = try? await Shell.run(executable.path, arguments,
+                                              options: Shell.Options(stdout: .discard, stderr: .discard))
+            let installed = output?.succeeded == true
             if installed { sentToVita3K += 1 } else { vita3KFailed.append(item.lastPathComponent) }
         }
         let roots = romsRoots

@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 
 /// Fetches a remote file to a temporary local URL. Abstracted so installer
 /// tests can hand back local fixture archives instead of hitting the network.
@@ -513,18 +514,10 @@ public struct EmulatorInstaller: Sendable {
     }
 
     static func run(_ executable: String, _ arguments: [String]) throws {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: executable)
-        process.arguments = arguments
-        let errorPipe = Pipe()
-        process.standardError = errorPipe
-        process.standardOutput = Pipe()
-        try process.run()
-        process.waitUntilExit()
-        guard process.terminationStatus == 0 else {
-            let detail = String(data: errorPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
-                .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            throw InstallError.extractionFailed(detail.isEmpty ? "\(executable) exited with \(process.terminationStatus)" : detail)
+        let output = try Shell.runSync(executable, arguments, options: Shell.Options(stdout: .discard))
+        guard output.succeeded else {
+            let detail = output.errorText.trimmingCharacters(in: .whitespacesAndNewlines)
+            throw InstallError.extractionFailed(detail.isEmpty ? "\(executable) exited with \(output.status)" : detail)
         }
     }
 }

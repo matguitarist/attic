@@ -3,6 +3,7 @@ import AtticModels
 import AtticPersistence
 import AtticLibraryScanning
 import AtticEmulation
+import ProcessKit
 
 /// The Tools menu's work: the Tidy Up and Compress Games reports, a
 /// single game's compression or conversion back, and their progress,
@@ -586,16 +587,9 @@ final class ToolsCoordinator {
         guard let brew = Self.brew, !isInstallingCHDMan else { return }
         isInstallingCHDMan = true
         chdmanError = nil
-        let ok = await Task.detached { () -> Bool in
-            let process = Process()
-            process.executableURL = brew
-            process.arguments = ["install", "rom-tools"]
-            process.standardOutput = FileHandle.nullDevice
-            process.standardError = FileHandle.nullDevice
-            guard (try? process.run()) != nil else { return false }
-            process.waitUntilExit()
-            return process.terminationStatus == 0
-        }.value
+        let installed = try? await Shell.run(brew.path, ["install", "rom-tools"],
+                                             options: Shell.Options(stdout: .discard, stderr: .discard))
+        let ok = installed?.succeeded == true
         isInstallingCHDMan = false
         refreshCHDMan()
         if !ok || chdman == nil {

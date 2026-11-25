@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 import AtticModels
 
 /// Disc games as CHD: one compressed, lossless file per disc instead of a
@@ -161,14 +162,7 @@ public enum CHDConversion {
     }
 
     private static func run(_ executable: URL, _ arguments: [String], in folder: URL? = nil) -> Bool {
-        let process = Process()
-        process.executableURL = executable
-        process.arguments = arguments
-        process.currentDirectoryURL = folder
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return false }
-        process.waitUntilExit()
-        return process.terminationReason == .exit && process.terminationStatus == 0
+        let output = try? Shell.runSync(executable.path, arguments, options: Shell.Options(directory: folder, stdout: .discard, stderr: .discard))
+        return output?.succeeded == true
     }
 }

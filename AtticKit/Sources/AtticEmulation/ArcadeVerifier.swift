@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 import AtticModels
 import AtticLibraryScanning
 
@@ -285,18 +286,12 @@ public struct ArcadeVerifier: Sendable {
             // MAME's list unpacks to some 300 MB: read as a stream from a
             // temporary file rather than into memory.
             let out = FileManager.default.temporaryDirectory.appending(path: "attic-\(UUID().uuidString).xml")
-            FileManager.default.createFile(atPath: out.path, contents: nil)
-            guard let handle = try? FileHandle(forWritingTo: out) else { return nil }
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
-            process.arguments = ["-p", file.path]
-            process.standardOutput = handle
-            process.standardError = FileHandle.nullDevice
-            guard (try? process.run()) != nil else { return nil }
-            process.waitUntilExit()
-            try? handle.close()
-            xml = out
             temporary = out
+            guard (try? Shell.runSync("/usr/bin/unzip", ["-p", file.path], options: Shell.Options(stdout: .file(out), stderr: .discard))) != nil else {
+                try? FileManager.default.removeItem(at: out)
+                return nil
+            }
+            xml = out
         }
         defer { if let temporary { try? FileManager.default.removeItem(at: temporary) } }
         guard let parser = XMLParser(contentsOf: xml) else { return nil }

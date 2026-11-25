@@ -15,15 +15,18 @@ let package = Package(
         .library(name: "AtticScraping", targets: ["AtticScraping"])
     ],
     dependencies: [
-        .package(url: "https://github.com/matguitarist/PictureKit", from: "0.2.0")
+        .package(url: "https://github.com/matguitarist/PictureKit", from: "0.2.0"),
+        .package(url: "https://github.com/matguitarist/ProcessKit", from: "0.1.1")
     ],
     targets: [
         .target(name: "AtticModels"),
         .target(name: "AtticPersistence", dependencies: ["AtticModels"]),
-        .target(name: "AtticLibraryScanning", dependencies: ["AtticModels", .product(name: "PictureKit", package: "PictureKit")]),
+        .target(name: "AtticLibraryScanning", dependencies: ["AtticModels", .product(name: "PictureKit", package: "PictureKit"),
+                                                     .product(name: "ProcessKit", package: "ProcessKit")]),
         // Resources holds the String Catalog for user-visible text
         // (emulator descriptions, install errors).
-        .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning"], resources: [.process("Resources")]),
+        .target(name: "AtticEmulation", dependencies: ["AtticModels", "AtticLibraryScanning", .product(name: "ProcessKit", package: "ProcessKit")],
+                resources: [.process("Resources")]),
         .target(name: "AtticScraping", dependencies: ["AtticModels"]),
 
         .testTarget(name: "AtticModelsTests", dependencies: ["AtticModels"]),

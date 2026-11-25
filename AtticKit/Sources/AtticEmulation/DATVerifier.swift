@@ -1,4 +1,5 @@
 import Foundation
+import ProcessKit
 import AtticModels
 
 /// Checks games against the DAT files in a folder (No-Intro's, from
@@ -229,15 +230,7 @@ public struct DATVerifier: Sendable {
     }
 
     private static func run(_ tool: String, _ arguments: [String]) -> Data? {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: tool)
-        process.arguments = arguments
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return nil }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return process.terminationStatus == 0 ? data : nil
+        guard let output = try? Shell.runSync(tool, arguments, options: Shell.Options(stderr: .discard)), output.succeeded else { return nil }
+        return output.stdout
     }
 }
