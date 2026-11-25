@@ -307,22 +307,13 @@ struct CabinetCommands: Commands {
     }
 }
 
-/// Help › Attic Help (⌘?) opens the help window instead of the system's
-/// "Help isn't available" placeholder.
-struct HelpCommands: Commands {
-    let navigator: HelpNavigator
+/// Attic's other windows: the library's state. The Help menu (with Show Log,
+/// ⌥⌘L, for what emulators said when a game won't start) is the shared
+/// StandardCommands (App/AppCommands.swift).
+struct WindowCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
-        CommandGroup(replacing: .help) {
-            Button("Attic Help") {
-                openWindow(id: HelpView.windowID)
-            }
-            .keyboardShortcut("?", modifiers: .command)
-        }
-
-        // Attic's other windows: the library's state, and what emulators
-        // said, for when a game won't start.
         CommandGroup(before: .windowList) {
             Button("Library Health") {
                 openWindow(id: LibraryHealthView.windowID)
@@ -330,10 +321,6 @@ struct HelpCommands: Commands {
             Button("Library Statistics") {
                 openWindow(id: LibraryStatsView.windowID)
             }
-            Button("Log") {
-                openWindow(id: LogView.windowID)
-            }
-            .keyboardShortcut("l", modifiers: [.command, .option])
             Divider()
         }
     }

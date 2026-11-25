@@ -154,6 +154,16 @@
         }
       }
     },
+    "%@ Help": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aide d’%@"
+          }
+        }
+      }
+    },
     "%@ Needs a BIOS": {
       "localizations": {
         "fr": {
@@ -242,6 +252,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ a besoin de fichiers absents du set de ce jeu : %2$@."
+          }
+        }
+      }
+    },
+    "%@ on GitHub": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sur GitHub"
           }
         }
       }
@@ -3453,6 +3473,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "À propos"
+          }
+        }
+      }
+    },
+    "About %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos d’%@"
           }
         }
       }
@@ -13731,6 +13761,16 @@
         }
       }
     },
+    "Report a Problem…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signaler un problème…"
+          }
+        }
+      }
+    },
     "Request API access on screenscraper.fr": {
       "localizations": {
         "fr": {
@@ -17263,6 +17303,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Restes des dossiers de médias de Batocera"
+          }
+        }
+      }
+    },
+    "What’s New in %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveautés d’%@"
           }
         }
       }

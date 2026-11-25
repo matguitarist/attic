@@ -126,7 +126,11 @@ struct AtticApp: App {
         .windowResizability(.contentMinSize)
         .defaultSize(width: 1400, height: 860)
         .commands {
-            UpdateCommands(updater: appUpdater)
+            // The main scene is a WindowGroup: Help and Show Log open their own windows.
+            StandardCommands(app: "Attic", repository: "matguitarist/attic",
+                             updates: AppUpdates(isAvailable: appUpdater.canCheckForUpdates) { appUpdater.checkForUpdates() },
+                             help: .window(HelpView.windowID), log: .window(LogView.windowID),
+                             logShortcut: KeyboardShortcut("l", modifiers: [.command, .option]), mainWindow: nil)
             SidebarCommands()
             InspectorCommands()
             CabinetCommands()
@@ -134,7 +138,7 @@ struct AtticApp: App {
             GameCommands(launchCoordinator: launchCoordinator, retroArchStore: retroArchSettingsStore,
                          tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore)
             ToolsCommands(tools: toolsCoordinator, scanCoordinator: scanCoordinator, romsRootsStore: romsRootsStore, emulationFolderStore: emulationFolderStore)
-            HelpCommands(navigator: helpNavigator)
+            WindowCommands()
         }
 
         // Its own window so the library keeps its state underneath; it
@@ -150,7 +154,7 @@ struct AtticApp: App {
         .defaultSize(width: 1280, height: 800)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
-        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        // Listed in the Window menu by `WindowCommands` (Help and Log in Help), Cabinet Mode in View.
         .commandsRemoved()
         .modelContainer(modelContainer)
 
@@ -171,7 +175,7 @@ struct AtticApp: App {
         .defaultSize(width: 760, height: 720)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
-        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        // Listed in the Window menu by `WindowCommands` (Help and Log in Help), Cabinet Mode in View.
         .commandsRemoved()
         .modelContainer(modelContainer)
 
@@ -182,7 +186,7 @@ struct AtticApp: App {
         .defaultSize(width: 1180, height: 760)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
-        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        // Listed in the Window menu by `WindowCommands` (Help and Log in Help), Cabinet Mode in View.
         .commandsRemoved()
         .modelContainer(modelContainer)
 
@@ -193,7 +197,7 @@ struct AtticApp: App {
         .defaultSize(width: 900, height: 640)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
-        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        // Listed in the Window menu by `WindowCommands` (Help and Log in Help), Cabinet Mode in View.
         .commandsRemoved()
         .modelContainer(modelContainer)
 
@@ -204,7 +208,7 @@ struct AtticApp: App {
         .defaultSize(width: 1000, height: 600)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
-        // Listed in the Window menu by `HelpCommands`, Cabinet Mode in View.
+        // Listed in the Window menu by `WindowCommands` (Help and Log in Help), Cabinet Mode in View.
         .commandsRemoved()
 
         Settings {

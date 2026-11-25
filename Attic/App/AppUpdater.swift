@@ -39,15 +39,3 @@ final class AppUpdater {
         controller.updater.checkForUpdates()
     }
 }
-
-/// "Check for Updates…" under About Attic, where Mac apps keep it.
-struct UpdateCommands: Commands {
-    let updater: AppUpdater
-
-    var body: some Commands {
-        CommandGroup(after: .appInfo) {
-            Button("Check for Updates…") { updater.checkForUpdates() }
-                .disabled(!updater.canCheckForUpdates)
-        }
-    }
-}
